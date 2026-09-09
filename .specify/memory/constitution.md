@@ -1,6 +1,32 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version: 1.7.2 → 1.7.3
+Bump type: PATCH — a factual correction. No principle added, removed, or redefined; no obligation
+  changed — only the addresses those obligations point at.
+Rationale: The repository moved from the `xavient` organisation to `telus-digital`, and three
+  normative passages named the old owner in a URL: the distribution statement under Principle V, the
+  CLI install command under Principle VI, and the "No silent drift" rule that CI enforces literally.
+  The Pages address in the first of those was already dead — GitHub does not redirect Pages across an
+  organisation rename — so the constitution was pointing at a 404 while asserting where the site is
+  served. Leaving the raw URLs stale is the worse problem of the two: they are the install path, they
+  currently resolve only through GitHub's rename redirect, and that redirect lasts only as long as the
+  freed `xavient` name goes unclaimed.
+
+Modified principles: (none)
+Modified sections:
+  V. The Catalog and Package Are Maintained in Sync — the Pages address is now
+    <https://telus-digital.github.io/spectra/>
+  VI. Two Channels, Two Version Numbers — the CLI install command names the new git URL
+  Publishing & Distribution Standards → No silent drift — the required raw URL form is now
+    `raw.githubusercontent.com/telus-digital/spectra/main/...`
+Added sections: (none)
+Removed sections: (none)
+Templates requiring updates: (none — no plan/spec/tasks template carries a repository URL)
+Follow-up TODOs: (none)
+
+SYNC IMPACT REPORT
+==================
 Version: 1.7.1 → 1.7.2
 Bump type: PATCH — a clarification. No new obligation beyond a file the extension already had to
   carry in spirit; no principle added, removed, or redefined.
@@ -389,7 +415,7 @@ their output in the actual codebase and its constitution. Context-awareness is t
 The repository is **public** — anyone can access it with no authentication — and Spectra is
 distributed straight from it over direct `raw.githubusercontent.com` links: the root `catalog.json`
 is the install-facing catalog and the single downloadable package lives at `docs/packages/spectra.zip`.
-GitHub Pages serves `main` `/docs` at <https://xavient.github.io/spectra/>, but it publishes the
+GitHub Pages serves `main` `/docs` at <https://telus-digital.github.io/spectra/>, but it publishes the
 landing page only — **no part of the install path depends on it.** **Anyone can add the catalog and
 install the extension anonymously.** Two small maintainer scripts under `tools/` produce the generated
 artifacts — `build_package.py` for the zip and `generate_agent_docs.py` for the agent listings — and
@@ -446,7 +472,7 @@ Spectra ships through **two** distribution channels, and each carries its **own*
   into the `spectra` entry of `catalog.json`) and MUST bump — per SemVer — whenever a command (agent) is
   added, changed, or removed. This channel is **never tagged**: merging to `main` is its release.
 - **CLI channel** — the `spectra_cli/` package, distributed as a `uv` tool installed from this repo's
-  git URL (`uv tool install spectra-cli --from git+https://github.com/xavient/spectra`). Its version is
+  git URL (`uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra`). Its version is
   authoritative in the root `VERSION` file (read by `pyproject.toml`, reported at runtime via
   `importlib.metadata`, and mirrored by the release tag) and MUST bump — per SemVer — only when the CLI
   itself changes in a way consumers should pick up.
@@ -624,7 +650,7 @@ being re-litigated per agent, which is exactly how the `adr`/`brd` divergence ar
   only the installed package MUST be able to read what the licence does not grant.
 - **No silent drift.** Before publishing, verify that `catalog.json`, `docs/packages/spectra.zip`, and
   `docs/index.html` all agree with the `spectra/` folder and use the raw
-  `raw.githubusercontent.com/xavient/spectra/main/...` URLs; any mismatch MUST be resolved first. CI
+  `raw.githubusercontent.com/telus-digital/spectra/main/...` URLs; any mismatch MUST be resolved first. CI
   enforces this: `.github/workflows/ci.yml` fails when `extension.yml` and `catalog.json` disagree on
   the version or the command count, when the committed zip has drifted from the `spectra/` folder, or
   when `tools/generate_agent_docs.py --check` finds a generated region out of date with
@@ -703,4 +729,4 @@ and why, and MUST update this file together with any dependent templates and doc
 binding. Complexity that violates a principle MUST be justified or removed; unjustified violations
 block merge.
 
-**Version**: 1.7.2 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-08-31
+**Version**: 1.7.3 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-09-09

@@ -16,7 +16,7 @@ reproduction steps, and the impact you observed.
 We aim to acknowledge reports within five business days.
 
 For anything that is not a security issue, a normal
-[issue](https://github.com/xavient/spectra/issues) is the right channel.
+[issue](https://github.com/telus-digital/spectra/issues) is the right channel.
 
 ## Scope
 

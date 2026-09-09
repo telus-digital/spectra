@@ -7,7 +7,7 @@ Spectra is a **single self-contained** [Spec Kit](https://github.com/github/spec
 `spectra/`, at the repo root. Every Spectra capability is a **command** under it, registered in one
 `spectra/extension.yml` and named in the unified `speckit.spectra.<command>` namespace — Spec Kit
 validates command names against `^speckit\.<extension-id>\.<command>$`, so the middle segment must be
-the extension id (`spectra`). Spectra is distributed straight from the **public** `xavient/spectra`
+the extension id (`spectra`). Spectra is distributed straight from the **public** `telus-digital/spectra`
 repo over direct `raw.githubusercontent.com` links — a root `catalog.json` lists the extension, and
 anyone installs it by name with **no authentication** (the catalog is public, so the raw URLs resolve
 anonymously). Read the
@@ -69,7 +69,7 @@ extension** — the agents, shipped over raw links and versioned in `extension.y
 
 New capabilities are added as command files under `spectra/commands/`, not as new top-level folders
 and not as CLI code. The repo is **public**; clients fetch the catalog and package over **direct
-`raw.githubusercontent.com` links** to `xavient/spectra`, so anyone installs by name with no
+`raw.githubusercontent.com` links** to `telus-digital/spectra`, so anyone installs by name with no
 authentication. There is no build script: when you add or change a command you update `catalog.json`
 and `docs/packages/spectra.zip` by hand (see [Publish](#publish-the-catalog-and-package)).
 `catalog.json` is the single source of truth for the catalog.
@@ -90,7 +90,7 @@ The manifest. Field reference:
 | `extension.category` | yes | Grouping, e.g. `docs`, `quality`, `security`. |
 | `extension.effect` | yes | `read-only` or `read-write` — what the commands do to the project. |
 | `extension.author` | yes | `TELUS Digital`. |
-| `extension.repository` | yes | `https://github.com/xavient/spectra`. |
+| `extension.repository` | yes | `https://github.com/telus-digital/spectra`. |
 | `extension.license` | yes | `Apache-2.0`. |
 | `extension.homepage` | no | Link to the extension folder. |
 | `requires.speckit_version` | yes | The Spec Kit version range you actually tested against — see [Compatibility](#compatibility). |
@@ -110,9 +110,9 @@ extension:
   category: "workflow"
   effect: "read-write"
   author: "TELUS Digital"
-  repository: "https://github.com/xavient/spectra"
+  repository: "https://github.com/telus-digital/spectra"
   license: "Apache-2.0"
-  homepage: "https://github.com/xavient/spectra/tree/main/spectra"
+  homepage: "https://github.com/telus-digital/spectra/tree/main/spectra"
 
 requires:
   speckit_version: ">=0.11.0"
@@ -300,16 +300,16 @@ You don't need to publish to try the extension — install it straight from your
 
 ## Publish the catalog and package
 
-The extension is distributed from the `xavient/spectra` repo itself, fetched over direct
+The extension is distributed from the `telus-digital/spectra` repo itself, fetched over direct
 `raw.githubusercontent.com` links. The repo is **public**, so clients fetch the catalog and download
 packages with **no authentication** — the raw URLs resolve anonymously. There is no catalog server;
 only the raw links. (The `spectra` CLI is the other channel, published as a GitHub Release; see
 [Release the CLI](#release-the-cli-spectra-cli).)
 
-> Clients reach the catalog at `https://raw.githubusercontent.com/xavient/spectra/main/catalog.json`
-> and the package at `https://raw.githubusercontent.com/xavient/spectra/main/docs/packages/spectra.zip`
+> Clients reach the catalog at `https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json`
+> and the package at `https://raw.githubusercontent.com/telus-digital/spectra/main/docs/packages/spectra.zip`
 > — **raw links, not Pages**. GitHub Pages *is* enabled (serving `main` `/docs` at
-> <https://xavient.github.io/spectra/>), but it publishes the landing page only; nothing in the install
+> <https://telus-digital.github.io/spectra/>), but it publishes the landing page only; nothing in the install
 > path depends on it. If the repo is ever renamed or moved, update those URLs (and the links in this
 > file and the README) together.
 
@@ -334,7 +334,7 @@ maintained by hand and committed:
 - `assets/TELUS_Digital_logo.png` — the one logo, used by the README and the landing page.
 
 The `catalog_url` and every `download_url` in `catalog.json`, and the literal URLs in this file and
-the README, must all use the `raw.githubusercontent.com/xavient/spectra/main/...` form.
+the README, must all use the `raw.githubusercontent.com/telus-digital/spectra/main/...` form.
 
 ### Test, then publish
 
@@ -352,7 +352,7 @@ install-allowed, so installs resolve by name with no untrusted-source prompt (an
 since the catalog is public):
 
 ```bash
-specify extension catalog add https://raw.githubusercontent.com/xavient/spectra/main/catalog.json \
+specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json \
   --name spectra --install-allowed
 ```
 
@@ -363,7 +363,7 @@ specify extension add spectra
 ```
 
 A one-off or offline install can still go straight from a zip with
-`specify extension add spectra --from https://raw.githubusercontent.com/xavient/spectra/main/docs/packages/spectra.zip` —
+`specify extension add spectra --from https://raw.githubusercontent.com/telus-digital/spectra/main/docs/packages/spectra.zip` —
 that path shows the untrusted-source prompt (*"Continue with installation? [y/N]"*), which they answer `y`.
 
 **Shipping updates.** Because users install from a registered catalog, `specify extension update spectra`
@@ -379,7 +379,7 @@ the `spectra_cli/` package, installed by consumers as a [`uv`](https://docs.astr
 straight from this repo's git URL.
 
 ```bash
-uv tool install spectra-cli --from git+https://github.com/xavient/spectra
+uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra
 ```
 
 There is **no build artifact and no release asset** — uv builds the wheel from source at install time.
@@ -443,12 +443,12 @@ at all. Bump the extension, not this. See [Publish the catalog and package](#pub
    > version pill at an ancient version. `make_latest: true` in the workflow protects new releases;
    > for anything done by hand, verify afterwards:
    > ```bash
-   > gh api repos/xavient/spectra/releases/latest --jq '{tag: .tag_name, name: .name}'
+   > gh api repos/telus-digital/spectra/releases/latest --jq '{tag: .tag_name, name: .name}'
    > ```
-   > and fix with `gh release edit <newest-tag> -R xavient/spectra --latest`.
+   > and fix with `gh release edit <newest-tag> -R telus-digital/spectra --latest`.
 4. **Smoke-test what a consumer gets**, from any directory:
    ```bash
-   uv tool install spectra-cli --from git+https://github.com/xavient/spectra --force
+   uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra --force
    spectra              # the banner's `cli vX.Y.Z` line is the version, and works anywhere
    ```
    `spectra version` is deliberately *not* used here: it reports the whole stack and so requires a
@@ -458,12 +458,12 @@ at all. Bump the extension, not this. See [Publish the catalog and package](#pub
 ### How consumers get it
 
 ```bash
-uv tool install spectra-cli --from git+https://github.com/xavient/spectra
+uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra
 spectra
 ```
 
 Unpinned, so new installs track `main`. Keep `main` releasable. A specific version is pinned by
-appending the tag (`--from git+https://github.com/xavient/spectra@3.0.0`), which is exactly what
+appending the tag (`--from git+https://github.com/telus-digital/spectra@3.0.0`), which is exactly what
 `spectra update` does. Keep the README's [Installation](README.md#installation) section and the
 landing page in sync if the install command ever changes.
 
@@ -502,7 +502,7 @@ preserves the ability to relicense in future without collecting a CLA from anyon
 provenance of every command file unambiguous.
 
 **Issues are open to everyone.** Bug reports, feature requests, and questions are welcome at
-<https://github.com/xavient/spectra/issues> regardless of affiliation. Security vulnerabilities are
+<https://github.com/telus-digital/spectra/issues> regardless of affiliation. Security vulnerabilities are
 the exception — report those privately, per [`SECURITY.md`](SECURITY.md).
 
 TELUS Digital engineers who need to open pull requests must be added as repository collaborators —

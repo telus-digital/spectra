@@ -25,7 +25,7 @@
 # registered. Exit the shell and the machine is gone.
 set -euo pipefail
 
-REPO_URL="https://github.com/xavient/spectra"
+REPO_URL="https://github.com/telus-digital/spectra"
 IMAGE="spectra-cli-test"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"

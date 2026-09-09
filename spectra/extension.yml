@@ -3,14 +3,14 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.12.0"
+  version: "1.12.1"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
   author: "TELUS Digital"
-  repository: "https://github.com/xavient/spectra"
+  repository: "https://github.com/telus-digital/spectra"
   license: "Apache-2.0"
-  homepage: "https://github.com/xavient/spectra/tree/main/spectra"
+  homepage: "https://github.com/telus-digital/spectra/tree/main/spectra"
 
 requires:
   # Bump this to the spec-kit version you actually test against.

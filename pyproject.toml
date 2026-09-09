@@ -22,8 +22,8 @@ dynamic = ["version"]
 spectra = "spectra_cli.cli:main"
 
 [project.urls]
-Homepage = "https://xavient.github.io/spectra/"
-Repository = "https://github.com/xavient/spectra"
+Homepage = "https://telus-digital.github.io/spectra/"
+Repository = "https://github.com/telus-digital/spectra"
 
 # The committed VERSION file is the single source of truth for the CLI channel's version
 # (constitution Principle VI). setuptools reads its raw contents here and the tool reports it at

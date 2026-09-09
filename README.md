@@ -236,7 +236,7 @@ The recommended path — **you don't need to clone this repo.** Spectra ships as
 [`uv`](https://docs.astral.sh/uv/) tool. Install it once, from anywhere:
 
 ```bash
-uv tool install spectra-cli --from git+https://github.com/xavient/spectra
+uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra
 ```
 
 That puts a `spectra` command on your `PATH`. Then `cd` into the project you want Spectra in and run
@@ -445,7 +445,7 @@ resolve against it:
 
 ```bash
 specify extension catalog add \
-  https://raw.githubusercontent.com/xavient/spectra/main/catalog.json \
+  https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json \
   --name spectra --priority 5 --install-allowed
 ```
 
@@ -456,7 +456,7 @@ specify extension catalog add \
 ```yaml
 catalogs:
   - name: "spectra"
-    url: "https://raw.githubusercontent.com/xavient/spectra/main/catalog.json"
+    url: "https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json"
     priority: 5
     install_allowed: true
 ```
@@ -508,7 +508,7 @@ Spectra ships two things, and they carry **two different version numbers on purp
 | What it is | the uv tool that sets everything up | the agents your AI assistant runs |
 | You install it with | `uv tool install spectra-cli --from git+…` | `specify extension add spectra` |
 | You update it with | `spectra update` (or `spectra cli uninstall` to remove it) | `spectra update` (or `specify extension update spectra`) |
-| Its version comes from | the latest [GitHub Release](https://github.com/xavient/spectra/releases) | `version` in [`catalog.json`](catalog.json) |
+| Its version comes from | the latest [GitHub Release](https://github.com/telus-digital/spectra/releases) | `version` in [`catalog.json`](catalog.json) |
 
 They are **not** expected to match, and a bump to one does not imply a bump to the other. Adding a new
 agent bumps the extension only — you do **not** need a new `spectra` command to get it, because the
@@ -516,12 +516,12 @@ command reads the live catalog every time it runs. Changing the setup flow bumps
 
 Git tags and GitHub Releases on this repo belong to the **command** channel; the extension is
 published continuously from `main` over raw URLs and is never tagged. Both current versions are shown
-live on the [Spectra landing page](https://xavient.github.io/spectra/).
+live on the [Spectra landing page](https://telus-digital.github.io/spectra/).
 
 ## Support and compatibility
 
 - **Getting help.** Bug reports and feature requests are welcome at
-  <https://github.com/xavient/spectra/issues>. Pull request creation is restricted to TELUS Digital
+  <https://github.com/telus-digital/spectra/issues>. Pull request creation is restricted to TELUS Digital
   collaborators, so please open an issue rather than a PR.
 - **Security issues.** Please do not report vulnerabilities in a public issue — see
   [SECURITY.md](SECURITY.md).
