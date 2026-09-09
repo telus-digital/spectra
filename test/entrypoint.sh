@@ -7,7 +7,7 @@
 #
 # The CLI source arrives via SPECTRA_SOURCE (set by test/run.sh):
 #   * /work/src                               — the local working copy, mounted read-only
-#   * git+https://github.com/xavient/spectra  — the published CLI (optionally @<tag>)
+#   * git+https://github.com/telus-digital/spectra  — the published CLI (optionally @<tag>)
 #
 # Commands (CMD / `docker run ... <cmd>`):
 #   shell    install the CLI, then drop into an interactive shell (default)

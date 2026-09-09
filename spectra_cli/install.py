@@ -30,7 +30,7 @@ from spectra_cli.version import find_uv
 # Constants
 # --------------------------------------------------------------------------- #
 
-CATALOG_URL = "https://raw.githubusercontent.com/xavient/spectra/main/catalog.json"
+CATALOG_URL = "https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json"
 SPECKIT_INSTALL_URL = "https://github.com/github/spec-kit"
 
 # Spec Kit bootstrap (used when `specify` is missing).

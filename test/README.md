@@ -38,7 +38,7 @@ test/run.sh                  # interactive shell, tests your LOCAL working copy
 test/run.sh install          # installs the CLI, runs `spectra install`, then drops you in to look
 test/run.sh run              # runs `spectra install` once, exits with its code
 
-test/run.sh --published      # installs from git+https://github.com/xavient/spectra (main)
+test/run.sh --published      # installs from git+https://github.com/telus-digital/spectra (main)
 test/run.sh --published 3.0.0 run   # …or from that tag
 ```
 

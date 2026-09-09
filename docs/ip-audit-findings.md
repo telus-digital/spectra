@@ -3,6 +3,12 @@
 **Scope:** `xavient/spectra`, audited at commit `1b0cad6` on 2026-08-31 as part of the licensing and
 IP remediation described in `CONTRIBUTING.md` → [Licensing and IP](../CONTRIBUTING.md#licensing-and-ip).
 
+**Update 2026-09-09.** The repository has since moved to `telus-digital/spectra`, which resolves the
+organisation mismatch raised in [§5.2](#5-copyright-entity-name) — the copyright entity and the org
+name now agree, and no install URL names the acquired entity. The finding is left in place, and the
+old org name is left in the text below, because this report is a record of what was true at commit
+`1b0cad6`. Everything else here still stands.
+
 **Status: report only.** Nothing in this document was fixed by the change that created it. Every item
 here either needs a legal decision, needs a fact only a human can confirm, or is a judgement call
 about naming and scope that belongs to the repository owner. The mechanical remediation — the

@@ -3,6 +3,20 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.12.1] - 2026-09-09
+
+### Changed
+- **The extension now points at `github.com/telus-digital/spectra`.** The repository moved from the
+  `xavient` organisation to `telus-digital`, and the manifest's `repository` and `homepage` URLs moved
+  with it — as did the links in the packaged `NOTICE` and `TRADEMARK.md`, the two files a consumer reads
+  to find out who owns the work and where to raise an issue. No command changed: the roster, the
+  templates, and the behaviour of every agent are identical to 1.12.0.
+
+  The version moves because the packaged bytes did. GitHub keeps the old paths reachable with a rename
+  redirect, so nothing breaks today — but that redirect holds only while the `xavient` organisation name
+  stays unclaimed, and an install path resolving through a name anyone can register is not something to
+  leave sitting in a shipped package.
+
 ## [1.12.0] - 2026-09-03
 
 ### Added

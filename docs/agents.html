@@ -149,14 +149,14 @@
   <div class="wrap">
     <header class="site">
       <a class="brand" href="index.html" aria-label="SPECTRA — home">
-        <img class="logo" src="https://raw.githubusercontent.com/xavient/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
       </a>
       <nav class="nav" aria-label="Primary">
         <a class="nav-page" href="index.html">Home</a>
         <a class="nav-page" href="capability-brief.html">Capability Brief</a>
         <a class="nav-page" href="agents.html" aria-current="page">Agents</a>
         <a class="nav-page" href="e-learning/index.html">E-Learning</a>
-        <a class="nav-page" href="https://github.com/xavient/spectra">GitHub</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
         <span class="nav-sep" aria-hidden="true"></span>
         <a class="nav-jump" href="index.html#install">Install</a>
       </nav>
@@ -183,8 +183,8 @@
 
   <footer class="site">
     <span>SPECTRA &middot; a curated catalog of Spec Kit extensions &middot; by TELUS Digital</span>
-    <span><a href="https://github.com/xavient/spectra">github.com/xavient/spectra</a></span>
-  <span class="legal">Copyright 2026 TELUS Digital. Licensed under the <a href="https://github.com/xavient/spectra/blob/main/LICENSE">Apache License 2.0</a>; see <a href="https://github.com/xavient/spectra/blob/main/NOTICE">NOTICE</a>. The licence grants no trademark rights &mdash; "TELUS", "TELUS Digital", "Spectra", and the TELUS Digital logo are excluded, and forks must rebrand (<a href="https://github.com/xavient/spectra/blob/main/TRADEMARK.md">TRADEMARK.md</a>). Spectra agents produce drafts for human review; their output is not legal, regulatory, medical, financial, or compliance advice and does not constitute certification or audit.</span>
+    <span><a href="https://github.com/telus-digital/spectra">github.com/telus-digital/spectra</a></span>
+  <span class="legal">Copyright 2026 TELUS Digital. Licensed under the <a href="https://github.com/telus-digital/spectra/blob/main/LICENSE">Apache License 2.0</a>; see <a href="https://github.com/telus-digital/spectra/blob/main/NOTICE">NOTICE</a>. The licence grants no trademark rights &mdash; "TELUS", "TELUS Digital", "Spectra", and the TELUS Digital logo are excluded, and forks must rebrand (<a href="https://github.com/telus-digital/spectra/blob/main/TRADEMARK.md">TRADEMARK.md</a>). Spectra agents produce drafts for human review; their output is not legal, regulatory, medical, financial, or compliance advice and does not constitute certification or audit.</span>
   </footer>
 
 </div>
@@ -196,7 +196,7 @@
 
   var PROVIDERS = { spectra: "Spectra", speckit: "Spec Kit" };
 
-  fetch("https://raw.githubusercontent.com/xavient/spectra/main/agents-list.json")
+  fetch("https://raw.githubusercontent.com/telus-digital/spectra/main/agents-list.json")
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
       if (!data || !Array.isArray(data.agents) || !Array.isArray(data.phases)) {

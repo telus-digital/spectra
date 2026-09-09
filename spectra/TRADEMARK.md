@@ -37,4 +37,4 @@ as Apache-2.0 §4 requires.
 
 ## Questions
 
-Open an issue at <https://github.com/xavient/spectra/issues>.
+Open an issue at <https://github.com/telus-digital/spectra/issues>.

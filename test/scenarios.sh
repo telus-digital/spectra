@@ -245,7 +245,7 @@ bootstrap() {
   # testing Spectra's own version/update surface, not whether Claude Code is on PATH.
   [[ -d .specify ]] || specify init --here --integration "$integration" --force --ignore-agent-tools
   specify extension catalog add \
-    https://raw.githubusercontent.com/xavient/spectra/main/catalog.json \
+    https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json \
     --name spectra --priority 5 --install-allowed >/dev/null 2>&1 || true
   specify extension add spectra --force >/dev/null 2>&1 || specify extension add spectra || true
   echo

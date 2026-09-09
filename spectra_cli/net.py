@@ -27,7 +27,7 @@ import socket
 import urllib.error
 import urllib.request
 
-DEFAULT_RAW_BASE = "https://raw.githubusercontent.com/xavient/spectra/main"
+DEFAULT_RAW_BASE = "https://raw.githubusercontent.com/telus-digital/spectra/main"
 
 # Ten seconds: long enough for a slow proxy handshake, short enough that a user waits for the answer
 # instead of reaching for Ctrl-C.

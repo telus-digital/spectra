@@ -26,7 +26,7 @@ from importlib.metadata import PackageNotFoundError, version as _dist_version
 from pathlib import Path
 
 DIST_NAME = "spectra-cli"
-DEFAULT_REPO = "xavient/spectra"  # owner/name of the GitHub repo for release + version checks
+DEFAULT_REPO = "telus-digital/spectra"  # owner/name of the GitHub repo for release + version checks
 UA = {"User-Agent": "spectra-cli"}
 
 # VERSION lives at the repo root, one level above this package (used only for source-tree runs).
