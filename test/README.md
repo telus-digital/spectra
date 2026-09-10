@@ -342,6 +342,40 @@ with a migration, a route handler, and a config file naming a table, then confir
    analysis to `status: approved`, re-run, and confirm the index row follows while the document itself is not
    touched.
 
+And one pass on `test-strategy`, whose three load-bearing behaviours are exactly the ones a unit test on
+the prompt text cannot settle: whether the floor it proposes is one the project can actually hold, whether
+it refuses a tool the stack cannot run, and whether approval really leaves the constitution alone. Work
+through [`specs/020-test-strategy-agent/quickstart.md`](../specs/020-test-strategy-agent/quickstart.md) in
+a scratch project with real source, existing tests, and a committed coverage report, then confirm at least
+these:
+
+1. **The floor never clears the baseline.** Commit a coverage report showing something low — 31% is a good
+   choice, because it sits well under every conventional target. The proposed floor must be **at or below**
+   31%, the baseline must be labelled `reported` with the report's date, and the ratchet must be written as
+   triggers rather than dates. A floor of 80% here is the failure the whole design exists to prevent, and
+   it is the one a reader will not notice until CI goes red.
+2. **No browser, no browser driver.** Run it against a Python CLI or a published library with nothing
+   browser-related in any manifest. The end-to-end lens must resolve to `cli`, `http`, or `none` — and the
+   word Playwright must not appear anywhere in the document. `none` is a correct answer here.
+3. **Approval does not touch the constitution.** `shasum .specify/memory/constitution.md`, run the command,
+   **approve** the amendment, then re-hash. The two must be identical. The amendment text belongs in the
+   strategy document's proposed-amendment section, with the session naming the `/speckit-constitution`
+   invocation that would apply it. A changed hash here is the most serious regression this command has.
+4. **Template override.** Copy `test-strategy-template.md` into `.specify/templates/overrides/`, delete the
+   *Coverage floor* section, and confirm the next run follows your version, says the section was omitted
+   rather than putting it back, reports the override path — and **still** states the floor and its baseline
+   in the session. Then delete the *Proposed constitution amendment* section instead and confirm the
+   amendment text still reaches the session and the handoff is still offered.
+5. **It runs nothing unless asked.** Watch the session. The coverage-run question must name the exact
+   command and be declinable; declining must produce a `reported` or `unavailable` baseline, not a
+   `measured` one. Nothing may execute before you say yes.
+6. **The singleton holds.** Run twice with a change in between. One file, one path, no number in the
+   filename, no second document, no index — and the second run must name the prior strategy as an input and
+   report an already-implemented recommendation as adopted rather than proposing it again.
+7. **The publication check fires in this repository.** Run it here, in `spectra` itself, which serves
+   `main` `/docs` over Pages and carries `docs/index.html`. It must surface the choice and recommend the
+   non-publishing root rather than silently defaulting.
+
 And one pass on `flaky-test-detector`, which is the only command that edits code you wrote — so the
 things worth checking are the ones a diff can prove. Plant the patterns from
 [`specs/018-flaky-test-detector/quickstart.md`](../specs/018-flaky-test-detector/quickstart.md) in a

@@ -12,6 +12,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 | Command | What it does |
 | ------- | ------------ |
 | `speckit.spectra.domain-analyzer` | Infer the project's business domain from its code and docs, then propose opt-in candidate guardrails for SME review. |
+| `speckit.spectra.test-strategy` | Decide how this project tests itself — and what coverage floor it can actually hold — before the first feature is planned. |
 | `speckit.spectra.brd` | Turn a raw business requirement, typed or in a document, into a structured, specify-ready BRD. |
 | `speckit.spectra.impact` | Find out what a proposed feature would actually touch, with cited evidence, before anyone commits to building it. |
 | `speckit.spectra.adr` | Capture a context-aware Architecture Decision Record grounded in the codebase, prior ADRs, and the constitution. |
@@ -548,6 +549,54 @@ index — inventing one would be the easiest way to sound authoritative and be w
 Your project's constitution binds the fix it chooses. If a guardrail rules out the only available remedy —
 no mocking libraries, no new test dependencies — the item is left open with that rule named, rather than
 producing a change your own review would reject.
+
+## `speckit.spectra.test-strategy` — Test Strategy
+
+A foundation-phase command that decides **how this project tests itself**, once, before there are
+features to plan. It:
+
+1. Reads your project — constitution, specs, docs, dependency manifests, test and coverage
+   configuration, CI definitions, and, in a brownfield repository, the source itself.
+2. **Classifies the project greenfield, brownfield, or mixed from evidence**, never by asking you, and
+   reports the signals that decided it — including any that pointed the other way.
+3. Identifies the **testable surfaces**, so a monorepo does not get one answer for three stacks.
+4. Works four lenses — unit, integration, API contract, end-to-end — each either applicable with a named
+   approach or not applicable with a stated reason.
+5. Derives a **coverage floor** from the baseline it could establish, with a ratchet toward the target.
+6. Writes one document to `docs/test-strategy/TEST_STRATEGY.md`, or your declared artifact root.
+7. Checks whether the strategy is already in your constitution, drafts the amendment if it is not, and
+   hands it to `/speckit-constitution`.
+
+**Every recommendation cites a path in your project or is explicitly marked as a convention** — never
+neither. **No tool is named that your stack cannot run**, which is why the end-to-end lens resolves to
+browser, HTTP, CLI, or `none`: for a published library, `none` is the correct answer, not a browser
+driver nobody will maintain. When it says something is missing, it names what it searched for and where.
+
+In brownfield it reads your code rather than your README, reports what each lens covers today before
+proposing anything, and **never proposes a floor above your current baseline** — a floor that fails the
+next build gets deleted, and a deleted floor is worth less than none. Every coverage figure carries its
+provenance: `measured` only if it ran your tool this session **after asking**, `reported` with the
+report's date if it read a committed file, `unavailable` if there was nothing to read. It runs nothing
+without that confirmation.
+
+It **never writes your constitution** — not on approval, not on a re-run. It drafts the amendment, shows
+it, records your decision in the strategy document, and names the command that applies it, so one command
+owns constitution edits and the sync impact report that goes with them. It **never applies configuration**
+either: the exact CI or coverage change is written out for you to make.
+
+Unlike the other document agents it produces a **singleton** — one file at a fixed path, rewritten in
+place on a re-run, with Git carrying the history. A standing policy has one current answer, and links to
+it should not break every time you refresh it.
+
+Usage (Claude):
+
+```
+/speckit-spectra-test-strategy
+```
+
+No arguments required. Optionally pass a focus to weight the analysis — it never narrows the four
+mandatory lenses. The document's ten sections are overridable at
+`.specify/templates/overrides/test-strategy-template.md`.
 
 ## License, trademarks, and disclaimer
 

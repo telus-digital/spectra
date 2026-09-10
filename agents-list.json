@@ -31,6 +31,16 @@
       "command": "speckit.spectra.domain-analyzer"
     },
     {
+      "id": "test-strategy",
+      "title": "Test Strategy",
+      "description": "Decide how this project tests itself \u2014 and what coverage floor it can actually hold \u2014 before the first feature is planned.",
+      "status": "available",
+      "phase": "foundation",
+      "type": "add-on",
+      "provider": "spectra",
+      "command": "speckit.spectra.test-strategy"
+    },
+    {
       "id": "fda-part-11-iec-62304",
       "title": "FDA 21 CFR Part 11 & IEC 62304",
       "description": "Check electronic-records and e-signature integrity plus medical-device lifecycle rigor, mapped to software safety class.",

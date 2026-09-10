@@ -3,6 +3,48 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.13.0] - 2026-09-10
+
+### Added
+- **`speckit.spectra.test-strategy` — the testing strategy a project inherits, decided once at the start.**
+  Run it in the foundation phase, alongside the constitution, before there are features to plan. It reads
+  the project, decides for itself whether this is a greenfield or a brownfield codebase, and writes one
+  strategy covering unit, integration, API contract, and end-to-end testing plus a coverage floor — to
+  `docs/test-strategy/TEST_STRATEGY.md`, or the project's declared artifact root.
+
+  What separates it from a template fill-in is what it refuses to say. **Every recommendation either cites
+  a path in the project or is explicitly marked as a convention with no project evidence** — never neither.
+  **No tool is named that the stack cannot run**, ranked across three tiers: already in a manifest,
+  ecosystem-standard for a stack the project demonstrably uses, or unverified and flagged as offered from
+  frozen knowledge. That is why the end-to-end lens resolves to browser, HTTP, CLI, or *none* rather than
+  defaulting to a browser driver — a published library gets `none`, which is the honest answer.
+  **A claim that something is missing cites what was searched and where**, and the run always states how
+  much of the repository it actually read.
+
+  Three decisions a reader would otherwise find surprising:
+
+  **The strategy is a singleton, rewritten in place.** Every other Spectra document agent numbers its
+  output because it produces a series; this one produces a standing policy with exactly one current
+  answer, like the constitution. The path is fixed so anything can link to it, and Git carries the
+  history. This is a deliberate, documented departure from the artifact-numbering convention, argued in
+  `specs/020-test-strategy-agent/plan.md`.
+
+  **It never writes the constitution.** Not on approval, not on a re-run, not when the user insists. It
+  detects whether the strategy is already embedded — quoting the governing clause where it is — drafts the
+  exact amendment in the constitution's voice, takes the approval, records the text in the strategy
+  document, and hands off to `speckit.constitution`, which owns the sync impact report, the bump-type
+  judgement, and dependent-artifact propagation. One owner for every constitution edit.
+
+  **It runs nothing unless you say so.** Coverage figures carry their provenance — `measured` only if it
+  ran the tool this session after asking, `reported` (with the report's date) if it read a committed file,
+  `unavailable` if there is nothing to read. That distinction is load-bearing, because in a brownfield
+  project **the proposed floor is never above the baseline**: a floor that fails the next build gets
+  deleted, and a deleted floor is worse than none. Where the floor is below the target, the ratchet is
+  expressed as triggers rather than dates.
+
+  It recommends configuration and never applies it: the exact CI or coverage change is stated for the team
+  to make. Ten sections, overridable at `.specify/templates/overrides/test-strategy-template.md`.
+
 ## [1.12.1] - 2026-09-09
 
 ### Changed
