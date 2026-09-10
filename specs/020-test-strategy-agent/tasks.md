@@ -277,7 +277,19 @@ agrees with the extension folder.
 
 - [X] T066 Verify the two facts CI will check before pushing: `spectra/extension.yml` and `catalog.json` agree on **1.13.0** and **8** commands, and the committed zip matches the `spectra/` folder.
 - [X] T067 Commit the whole set on branch `020-test-strategy-agent`: `spectra/`, `specs/020-test-strategy-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md`, `AGENTS_LIST.md`, `test/README.md`, and `tests/`.
+  > **Done 2026-09-10** as commit `51039e8` on branch `020-test-strategy-agent` — 27 files, 3599
+  > insertions, 11 deletions. Pushed with `-u`; working tree clean.
 - [X] T068 Open the pull request for branch `020-test-strategy-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.13.0 bump, the new `spectra/commands/test-strategy.md` and `spectra/templates/test-strategy-template.md`, the three decisions from T050, and the Principle VII numbering deviation with a pointer to the Complexity Tracking entry that justifies it.
+  > **Done 2026-09-10** — **[PR #28](https://github.com/telus-digital/spectra/pull/28)** opened
+  > against `main` (27 files, +3599/-11). Composed from the resolved `pr-template.md` following
+  > `speckit.spectra.create-pr`'s own steps: gated on `gh` first, repository facts read in one
+  > `gh repo view` call, no duplicate PR for the head, base taken from the constitution's
+  > documented flow (a spec branch merges back to `main`) which agrees with `defaultBranchRef`,
+  > and the Related Issues section deleted rather than filled with a placeholder since no issue
+  > was passed. The body states the 1.12.1 → 1.13.0 bump, both new files, the three decisions
+  > from T050, and the Principle VII numbering deviation with its Complexity Tracking
+  > justification — plus the two deferred validation items and the partial SC-004 measurement,
+  > recorded as deferred rather than as done.
 
 ---
 
