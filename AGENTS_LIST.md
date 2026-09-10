@@ -63,6 +63,49 @@ edits the constitution or source — you choose which guardrails to adopt.
   /speckit-spectra-domain-analyzer this is a banking system
   ```
 
+<!-- SPECTRA:AGENT id=test-strategy -->
+### Test Strategy ✅
+
+**`speckit.spectra.test-strategy`** — Decide how this project tests itself, once, at the start. It reads
+the repository, works out for itself whether this is greenfield or brownfield, and writes one strategy to
+`docs/test-strategy/TEST_STRATEGY.md` — or your declared artifact root — covering unit, integration, API
+contract, and end-to-end testing plus a coverage floor. Then it drafts the constitution amendment that
+would hold every future work session to it, and hands that to `/speckit-constitution`.
+
+It is deliberately hard for it to say something plausible and wrong. Every recommendation either cites a
+path in your project or is marked as a convention with no project evidence — never neither. It will not
+name a tool your stack cannot run, so the end-to-end lens resolves to browser, HTTP, CLI, or **none**
+rather than reaching for a browser driver; for a published library, `none` is the correct answer and it
+says so. When it claims something is missing, it tells you what it searched for and where.
+
+Brownfield is where most of the care went. It reads your source rather than your README, reports what each
+lens covers today before proposing anything, and **never proposes a floor above your current baseline** —
+a floor that fails the next build gets deleted, and a deleted floor is worth less than none. Coverage
+figures carry their provenance: `measured` only if it ran your tool this session after asking permission,
+`reported` with the report's date if it read a committed file, `unavailable` if there is nothing to read.
+Where the floor sits below the target, the ratchet is written as triggers you can check from the
+repository, not as dates it has no way to know.
+
+Two things it will not do. **It never writes your constitution** — not on approval, not on a re-run, not
+if you insist. It drafts the amendment, shows it, records your approval in the strategy document, and
+tells you the command that applies it, because one command should own constitution edits and the sync
+impact report that goes with them. And **it never applies configuration**: the exact CI or coverage change
+is written out for you to make.
+
+Unlike the other document agents, it produces a **singleton** — one file at a fixed path, rewritten in
+place on a re-run, with Git carrying the history. A standing policy has exactly one current answer, and
+anything that links to it should not break every time you refresh it.
+
+- **Arguments** — none required. Optionally pass a focus to weight the analysis; it never narrows the four
+  mandatory lenses.
+- **Use it when** — setting up a new project before the first feature, or landing Spectra on an
+  established codebase and wanting a testing baseline that starts from what is already there.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-test-strategy
+  /speckit-spectra-test-strategy focus on the API contract boundary with the payments service
+  ```
+
 <!-- SPECTRA:AGENT id=create-pr -->
 ### Create PR ✅
 

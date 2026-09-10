@@ -36,6 +36,7 @@ CANONICAL = {
     "adr.md": "docs/adr/",
     "brd.md": "docs/brd/",
     "impact.md": "docs/impact-analysis/",
+    "test-strategy.md": "docs/test-strategy/",
 }
 
 # Output locations shipped before 1.6.0. Still readable by the commands, never writable.
@@ -119,6 +120,35 @@ class CanonicalOutputPaths(unittest.TestCase):
         self.assertTrue(
             "docs/brd/NNN-<kebab-title>.md" in text,
             "brd.md no longer shows the default write target docs/brd/NNN-<kebab-title>.md",
+        )
+
+    def test_the_test_strategy_write_target_is_the_canonical_path(self):
+        text = (COMMANDS_DIR / "test-strategy.md").read_text(encoding="utf-8")
+        self.assertTrue(
+            "docs/test-strategy/TEST_STRATEGY.md" in text,
+            "test-strategy.md no longer shows the default write target "
+            "docs/test-strategy/TEST_STRATEGY.md",
+        )
+
+    def test_the_test_strategy_target_carries_no_sequence_number(self):
+        """Spec 020 FR-042a: the one deliberate deviation from Principle VII, pinned.
+
+        A test strategy is a standing policy with exactly one current version, not a decision log, so
+        its filename is fixed and a re-run rewrites it in place. That is a departure from VII's
+        "filenames MUST carry a zero-padded three-digit sequence number", justified in
+        specs/020-test-strategy-agent/plan.md under Complexity Tracking.
+
+        This asserts it in both directions. Numbering appearing here would mean the deviation was
+        quietly reverted and every inbound link to the strategy now breaks on each run; the write
+        target vanishing would mean it drifted somewhere else entirely. Either way a human should be
+        made to look at the Complexity Tracking entry again.
+        """
+        text = (COMMANDS_DIR / "test-strategy.md").read_text(encoding="utf-8")
+        numbered = re.compile(r"docs/test-strategy/(?:NNN|\d{3})[-_]")
+        self.assertIsNone(
+            numbered.search(text),
+            "test-strategy.md numbers its output; spec 020 FR-042a makes this artifact a singleton "
+            "at a stable path, and the deviation is recorded in the plan's Complexity Tracking",
         )
 
     def test_no_write_instruction_names_a_legacy_folder(self):
