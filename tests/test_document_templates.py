@@ -37,6 +37,7 @@ DOCUMENT_COMMANDS = {
     "defect-rca.md": "defect-rca-template",
     "review-pr.md": "review-template",
     "impact.md": "impact-analysis-template",
+    "kb-vault.md": "kb-document-template",
     "test-strategy.md": "test-strategy-template",
     "test-plan.md": "test-plan-template",
 }

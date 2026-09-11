@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.15.0"
+  version: "1.16.0"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
@@ -66,6 +66,9 @@ provides:
     - name: "speckit.spectra.defect-rca"
       file: "commands/defect-rca.md"
       description: "Guide a hypothesis-driven root cause analysis of a defect from a JIRA ticket, a GitHub issue URL, or a plain description — gathering evidence from the code, surfacing any prior analysis of the same defect, and writing one advisory analysis under the project's artifact root."
+    - name: "speckit.spectra.kb-vault"
+      file: "commands/kb-vault.md"
+      description: "Absorb documents the user supplies — PDFs, Word files, images, or dictated knowledge — classify them, and land them as Markdown under the project's artifact root, planned and approved before anything is written. Updates an existing document rather than duplicating it, and never commits."
 
   templates:
     - name: "adr-template"
@@ -93,6 +96,9 @@ provides:
     - name: "defect-rca-template"
       file: "templates/defect-rca-template.md"
       description: "Section structure for the root cause analyses produced by speckit.spectra.defect-rca. Override at .specify/templates/overrides/defect-rca-template.md. The symptom/root-cause distinction, answer-first ordering, the recording of invalidated hypotheses, evidence-source attribution, the advisory status line, the related-prior-RCA field, and the prohibition on reproducing a secret stay with the command."
+    - name: "kb-document-template"
+      file: "templates/kb-document-template.md"
+      description: "Default shape for a knowledge document ingested by speckit.spectra.kb-vault, used where no category-specific template resolves. Override at .specify/templates/overrides/kb-document-template.md, or shape one category with .specify/templates/overrides/<category>-template.md. The traceability rule, the gap-not-invention rule, provenance, and the prohibition on reproducing a secret stay with the command."
 
 hooks:
   after_implement:
@@ -130,3 +136,6 @@ tags:
   - "root-cause-analysis"
   - "defect-analysis"
   - "rca"
+  - "knowledge-base"
+  - "ingestion"
+  - "onboarding"

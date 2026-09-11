@@ -40,6 +40,20 @@ CANONICAL = {
     "test-strategy.md": "docs/test-strategy/",
 }
 
+# Commands whose output folder is *computed per document* rather than fixed, so `CANONICAL`'s
+# one-command-one-folder shape does not fit them. They are held to every artifact-root rule this module
+# enforces — the declaration, the publication check, the non-publishing fallback, the lowercase and
+# project-relative sweeps — but not to a single write target, because they do not have one.
+#
+# `kb-vault` classifies each supplied document into a category and writes to `<artifact-root>/<category>/`,
+# with the category set deliberately open-ended (spec 023 FR-029). Forcing an entry into `CANONICAL` would
+# mean either inventing a fake canonical folder or weakening
+# `test_each_document_command_names_its_canonical_folder` for the five commands that legitimately have
+# one — and the second is how a guard rots. See specs/023-kb-vault-agent/research.md, R6.
+MULTI_CATEGORY = {
+    "kb-vault.md": "<artifact-root>/<category>/",
+}
+
 # Output locations shipped before 1.6.0. Still readable by the commands, never writable.
 #
 # The ADR pattern is deliberately case-insensitive and then filters out the exact lowercase form:
@@ -79,7 +93,7 @@ PUBLICATION_SIGNALS = (
     "docs/index.html",
     "docs/conf.py",
 )
-DOCUMENT_COMMANDS = tuple(CANONICAL)
+DOCUMENT_COMMANDS = tuple(CANONICAL) + tuple(MULTI_CATEGORY)
 
 
 def command_files() -> list[Path]:
@@ -279,6 +293,107 @@ class TheOutputIsNotAnArtifactRootDocument(unittest.TestCase):
             " ".join(text.split()).lower(),
             f"{self.COMMAND} no longer marks the root resolution read-only; without that, the three "
             "write-time obligations it skips look like omissions rather than non-applicable",
+        )
+
+
+class TheOutputFolderIsComputedPerDocument(unittest.TestCase):
+    """`kb-vault` is the first document command with no single output folder, and that is deliberate.
+
+    Every other command in this module answers "where does it write?" with one path. This one answers it
+    with a rule: classify the supplied document, then write to `<artifact-root>/<category>/`. The category
+    set is open-ended by requirement, so there is no folder to put in `CANONICAL` — and putting one there
+    anyway would assert a write target the command does not have.
+
+    So it lives in `MULTI_CATEGORY` instead, which still enrols it in `DOCUMENT_COMMANDS` and therefore in
+    every artifact-root assertion below. What this class adds is the part specific to a computed
+    destination: that the generic form is actually named, that the reserved-map folders are named so an
+    ingested ADR joins the ADR agent's set rather than starting a second one, and that the omission from
+    `CANONICAL` is deliberate rather than forgotten.
+
+    The reasoning is argued in specs/023-kb-vault-agent/research.md under R6.
+    """
+
+    COMMAND = "kb-vault.md"
+
+    # Folders another Spectra agent owns. `kb-vault` adopts their conventions instead of duplicating them.
+    RESERVED = (
+        "<artifact-root>/adr/",
+        "<artifact-root>/brd/",
+        "<artifact-root>/impact-analysis/",
+        "<artifact-root>/test-strategy/",
+        "<artifact-root>/defect-rca/",
+    )
+
+    def test_the_command_ships(self):
+        """Guard the guard: if the file is gone, the assertions below pass for the wrong reason."""
+        self.assertTrue(
+            (COMMANDS_DIR / self.COMMAND).is_file(),
+            f"{self.COMMAND} no longer ships; this class asserts how it resolves its output folder",
+        )
+
+    def test_it_is_deliberately_absent_from_canonical(self):
+        self.assertNotIn(
+            self.COMMAND,
+            CANONICAL,
+            f"{self.COMMAND} was added to CANONICAL, which asserts it names one fixed output folder. It "
+            "does not: it classifies each supplied document and writes to <artifact-root>/<category>/, "
+            "with the category set open-ended. It belongs in MULTI_CATEGORY, which already enrols it in "
+            "every artifact-root assertion here. See specs/023-kb-vault-agent/research.md, R6",
+        )
+
+    def test_it_is_registered_as_multi_category(self):
+        self.assertIn(
+            self.COMMAND,
+            MULTI_CATEGORY,
+            f"{self.COMMAND} is a document command but is in neither registry, so no artifact-root rule "
+            "is asserted against it",
+        )
+
+    def test_it_names_the_computed_destination(self):
+        text = (COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8")
+        self.assertIn(
+            MULTI_CATEGORY[self.COMMAND],
+            text,
+            f"{self.COMMAND} no longer names {MULTI_CATEGORY[self.COMMAND]} as its write target",
+        )
+
+    def test_it_names_every_reserved_folder(self):
+        """Without the reserved map, an ingested ADR starts a second decision-record set."""
+        text = (COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8")
+        for folder in self.RESERVED:
+            with self.subTest(folder=folder):
+                self.assertIn(
+                    folder,
+                    text,
+                    f"{self.COMMAND} no longer routes a supplied document of that kind to {folder}; it "
+                    "would write a parallel set beside the agent that owns the folder",
+                )
+
+    def test_a_new_file_never_leaves_the_artifact_root(self):
+        """Spec 023 FR-048a. The update carve-out is bounded to updates, and this is the boundary."""
+        text = (COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8")
+        self.assertIn(
+            "and nowhere else",
+            text,
+            f"{self.COMMAND} no longer bounds a created file to <artifact-root>/<category>/; without it "
+            "the update carve-out in FR-048 becomes 'anywhere, if you phrase it as an update'",
+        )
+
+    def test_an_update_is_written_where_the_document_already_lives(self):
+        """Spec 023 FR-048, the one justified deviation from Principle VII. Pinned in both directions.
+
+        Losing this clause would not stop the write — it would turn every update into a duplicate under
+        the artifact root, leaving the original stale and two documents disagreeing with each other. That
+        is the harm Principle VII exists to prevent, arrived at by obeying its letter. The Complexity
+        Tracking entry in specs/023-kb-vault-agent/plan.md is what a maintainer should read before
+        changing this.
+        """
+        text = " ".join((COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8").split()).lower()
+        self.assertIn(
+            "including outside the artifact root",
+            text,
+            f"{self.COMMAND} no longer writes an update where the document already lives; every update "
+            "would become a duplicate under the artifact root",
         )
 
 

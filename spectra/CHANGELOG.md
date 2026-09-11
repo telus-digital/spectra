@@ -3,6 +3,55 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.16.0] - 2026-09-11
+
+### Added
+- **`speckit.spectra.kb-vault` — the knowledge your team has, in the repository where agents can read it.**
+  Attach the documents — a PDF of architecture decisions inherited from a previous team, a Word file
+  describing the engineering workflow, a deck of UX/UI standards, a diagram exported as an image — or
+  just describe what you know. It absorbs all of it, works out what kind of document each source is,
+  learns how your project already keeps documentation, and shows you a table of exactly what it intends
+  to write and where. Then it stops and waits. Only after you approve does anything land, as Markdown,
+  under your artifact root.
+
+  Three decisions a reader would otherwise find surprising:
+
+  **It shows a plan and stops, which no other document agent does.** Every other Spectra command writes
+  as its final act and you see the result. This one is aimed at repositories that already have
+  documentation, where an unwanted *update* is not trivially undone by someone who did not notice it
+  happened — so the plan table is the safety mechanism, and a comment on it is not approval of it. Any
+  change re-presents the whole table. An ambiguous answer writes nothing.
+
+  **It updates rather than duplicates, even outside the artifact root.** Supply a revised standards
+  document and it finds the one you already have — matching on subject and category, never on title
+  similarity — and edits it in place, at its existing path, keeping its name and the hand-written
+  sections your source never mentions. That is a deliberate departure from the usual "one root, one
+  folder" rule: on any project whose documentation predates Spectra, writing the update into the root
+  instead would leave you with two documents disagreeing with each other and no rule for which is
+  current. New files stay bounded to the root; only updates go where the document already lives.
+
+  **It never invents, and it never mines your codebase.** Every substantive sentence traces to
+  something you supplied. A template section with no source says so instead of being filled. A file it
+  cannot read is named and its content requested — never guessed at from the filename. A diagram is
+  transcribed only as far as it is legible, and where the structure will not carry, it says that rather
+  than implying a picture is present. And "document the architecture" with nothing attached gets you a
+  request for material, not documentation reverse-engineered from source code.
+
+  Where a supplied document is a kind Spectra already produces — an ADR, a BRD, an impact analysis, a
+  test strategy, a defect RCA — it adopts that agent's folder, numbering and template, so it joins the
+  existing set rather than starting a second one beside it. Everything else takes its own category
+  folder, with an index maintained beside it. Six sections, overridable at
+  `.specify/templates/overrides/kb-document-template.md`, or per category at
+  `.specify/templates/overrides/<category>-template.md`.
+
+  It commits nothing. When the files are written it tells you they are uncommitted and hands the review
+  back to you.
+
+- `kb-document-template` — the default shape for an ingested knowledge document: purpose and scope with
+  real exclusions, context, the substance in whatever structure the source actually has, the rules and
+  decisions pulled out so they can be cited, the open questions and gaps, and provenance naming the
+  sources it came from.
+
 ## [1.15.0] - 2026-09-11
 
 ### Added
