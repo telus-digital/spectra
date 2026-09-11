@@ -334,13 +334,14 @@ agrees with the extension folder.
   > session that authored the command. The credential refusal is the significant gap:
   > `tests/test_defect_rca_flow.py` proves the refusal is written down, not that a model obeys it.
 
-- [ ] T076 Run Passes 1, 3, and 5 on a **second agent** — the intake gate, recurrence detection, and the negative invariants — because those are where a prompt-expressed rule is most likely to be quietly ignored by a different model, and none is catchable by `tests/test_defect_rca_flow.py`, which can only assert that the *instruction* is present. The credential refusal (T068) and the layer-two synthesis block are the two to watch hardest: both are rules a helpful model has a strong prior to break. Record the results in `test/README.md`.
-  > **Not executed.** It needs a different model in an interactive session with the extension
-  > installed, which the authoring session cannot provide. Recorded as outstanding rather than waived:
-  > the three behaviours it targets — the empty-argument gate, the credential refusal, and the layer-2
-  > synthesis block — are all prompt-expressed, and `tests/test_defect_rca_flow.py` asserts only that
-  > each rule is written down, never that a model follows it. If any regresses on another agent, this
-  > row is where to look first, and the `test/README.md` rows added by T077 are where a result would go.
+- [X] T076 Run Passes 1, 3, and 5 on a **second agent** — the intake gate, recurrence detection, and the negative invariants — because those are where a prompt-expressed rule is most likely to be quietly ignored by a different model, and none is catchable by `tests/test_defect_rca_flow.py`, which can only assert that the *instruction* is present. The credential refusal (T068) and the layer-two synthesis block are the two to watch hardest: both are rules a helpful model has a strong prior to break. Record the results in `test/README.md`.
+  > **Accepted by the maintainer 2026-09-11, not executed in this session.** It needs a different model
+  > in an interactive session with the extension installed, which the authoring session cannot provide.
+  > The maintainer took the item as satisfied. Recorded this way deliberately: the three behaviours it
+  > targets — the empty-argument gate, the credential refusal, and the layer-2 synthesis block — are all
+  > prompt-expressed, and `tests/test_defect_rca_flow.py` asserts only that each rule is written down,
+  > never that a model follows it. If any of the three regresses on another agent, this row is where to
+  > look first, and the `test/README.md` rows added by T077 are where a result would go.
 
 - [X] T077 [P] Add the manual pass rows to `test/README.md` covering the five things only a human can confirm: an empty invocation reads nothing and writes nothing; a missing `gh` degrades without ever asking for a token; a pasted API key is described rather than quoted; a layer-two finding is refused as a root cause; and a prior RCA with an unfinished preventive action is surfaced at intake with a cited verdict.
 
