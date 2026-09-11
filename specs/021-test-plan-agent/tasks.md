@@ -333,8 +333,16 @@ agrees with the extension folder.
 ## Phase 12: Publish (Constitution Development Workflow step 6)
 
 - [X] T068 Verify the two facts CI will check before pushing: `spectra/extension.yml` and `catalog.json` agree on **1.14.0** and **9** commands, and the committed zip matches the `spectra/` folder.
-- [ ] T069 Commit the whole set on branch `021-test-plan-agent`: `spectra/`, `specs/021-test-plan-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md`, `AGENTS_LIST.md`, `test/README.md`, and `tests/`.
+- [X] T069 Commit the whole set on branch `021-test-plan-agent`: `spectra/`, `specs/021-test-plan-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md`, `AGENTS_LIST.md`, `test/README.md`, and `tests/`.
+  > **Done 2026-09-11** — 28 files, 4464 insertions, 19 deletions, on branch
+  > `021-test-plan-agent`. Not pushed.
 - [ ] T070 Open the pull request for branch `021-test-plan-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.14.0 bump, the new `spectra/commands/test-plan.md` and `spectra/templates/test-plan-template.md`, the four decisions from T051, and the Principle VII carve-out reading with a pointer to the Complexity Tracking entry that argues it.
+  > **Not done — awaiting the user.** Opening a pull request pushes the branch and publishes the
+  > change set to GitHub, which is outward-facing and was not separately asked for. The commit is
+  > local and the branch is unpushed. When it runs, the body must state the 1.13.0 → 1.14.0 bump,
+  > both new files, the four decisions from T051, the Principle VII carve-out reading with a pointer
+  > to Complexity Tracking, and the two deferred validation items (T066 partial, T067 not executed)
+  > recorded as deferred rather than as done.
 
 ---
 
