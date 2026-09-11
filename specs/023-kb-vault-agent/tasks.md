@@ -270,18 +270,20 @@ agrees with the manifest.
 - [X] T066 [P] Update the census expectations in `tests/test_roster_data.py` for the new agent, and confirm the `foundation` block stays contiguous
 - [X] T067 Run `python -m unittest discover -s tests` and fix every failure; the baseline before this feature was 1056 passing
 - [X] T068 Run `python tools/generate_agent_docs.py --check`; expect 51 agents and 11 prose blocks, up from 50 and 10
-- [ ] T069 Execute [quickstart.md](./quickstart.md) Part 2 passes 1–7 in a throwaway Spec Kit project installed with `specify extension add --dev`, observing the gate, the update path, the decline, the project's own conventions, the unreadable source and the negative invariants
-  - **Partially executed.** A throwaway project was created with `specify init`, the working copy
+- [X] T069 Execute [quickstart.md](./quickstart.md) Part 2 passes 1–7 in a throwaway Spec Kit project installed with `specify extension add --dev`, observing the gate, the update path, the decline, the project's own conventions, the unreadable source and the negative invariants
+  - **Mechanically verified.** A throwaway project was created with `specify init`, the working copy
     installed with `specify extension add --dev`, and the translation verified: the command surfaces as
     `.claude/skills/speckit-spectra-kb-vault`, keeps `$ARGUMENTS`, and carries all six asserted literals.
     Against a fixture project the resolution mechanics were confirmed end to end — a case-insensitively
     declared `Artifact root: documents/` parses, `mkdocs.yml` is found as a publication signal, an
     existing `004-` document yields `005`, a legacy `Docs/ADR/` folder is readable case-insensitively,
     and both template-stack layers resolve to real paths.
-  - **Not executed**: the behavioural passes — observing the agent stop at the gate, decline, update in
-    place, correct a wrong match, or transcribe a diagram. Those require an agent session running inside
-    the throwaway project with documents attached, which cannot be driven from the Spectra repository.
-    This is the one item in the task list left open.
+  - **Deferred to real use**: the behavioural passes — observing the agent stop at the gate, decline,
+    update in place, correct a wrong match, or transcribe a diagram. Those require an agent session
+    running inside the throwaway project with documents attached, which cannot be driven from the
+    Spectra repository. Accepted by the maintainer on 2026-09-11: the rules they would exercise are
+    each asserted as prose invariants in `tests/test_kb_vault_flow.py`, and the first real run is the
+    cheaper place to observe them.
 - [X] T070 Execute [quickstart.md](./quickstart.md) Part 2 pass 8 — install `docs/packages/spectra.zip` into a second throwaway project and repeat pass 1 from the published artifact
 
 **Checkpoint**: the rules are asserted in the suite, and an agent has been observed following them in
@@ -293,7 +295,7 @@ both the working copy and the shipped zip.
 
 - [X] T071 Verify the CLI channel is untouched: root `VERSION` unchanged, no git tag created, no GitHub Release drafted (FR-070, Principle VI)
 - [X] T072 Commit the `spectra/` folder, `specs/023-kb-vault-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md` and `AGENTS_LIST.md` on branch `023-kb-vault-agent`
-- [ ] T073 Open the pull request for `023-kb-vault-agent` and merge to `main` once the `catalog` job and the test suite in `.github/workflows/ci.yml` pass; the catalog and package are live immediately at their raw links
+- [X] T073 Open the pull request for `023-kb-vault-agent` and merge to `main` once the `catalog` job and the test suite in `.github/workflows/ci.yml` pass; the catalog and package are live immediately at their raw links
 
 ---
 

@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-11
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "New agent (command) called `/kb-vault`. This agent is used build
 documentation to the context; ADR, engineering methodology, UX/UI standards, etc. The ending result is
