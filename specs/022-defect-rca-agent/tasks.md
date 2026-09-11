@@ -351,7 +351,10 @@ agrees with the extension folder.
 ## Phase 12: Publish (Constitution Development Workflow step 6)
 
 - [X] T078 Verify the two facts CI will check before pushing: `spectra/extension.yml` and `catalog.json` agree on **1.15.0** and **10** commands, and the committed zip matches the `spectra/` folder. Nothing in `tests/` catches either — the `catalog` job in `.github/workflows/ci.yml` is the only guard.
-- [ ] T079 Commit the whole set on branch `022-defect-rca-agent`: `spectra/`, `specs/022-defect-rca-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md`, `AGENTS_LIST.md`, `test/README.md`, and `tests/`.
+- [X] T079 Commit the whole set on branch `022-defect-rca-agent`: `spectra/`, `specs/022-defect-rca-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md`, `AGENTS_LIST.md`, `test/README.md`, and `tests/`.
+  > **Done 2026-09-11** — 28 files, 4123 insertions, 10 deletions, on branch
+  > `022-defect-rca-agent`. Not pushed.
+
 - [ ] T080 Open the pull request for branch `022-defect-rca-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.15.0 bump, the new `spectra/commands/defect-rca.md` and `spectra/templates/defect-rca-template.md`, the four decisions from T059, and the three departures from `BRD-DEFECTRCA-001 v2.0.0` with a pointer to the plan section that argues them.
 
 ---
