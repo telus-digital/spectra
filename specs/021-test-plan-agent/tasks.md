@@ -338,7 +338,16 @@ agrees with the extension folder.
   > **Done 2026-09-11** — 28 files, 4464 insertions, 19 deletions, on branch
   > `021-test-plan-agent`. Not pushed.
 - [X] T070 Open the pull request for branch `021-test-plan-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.14.0 bump, the new `spectra/commands/test-plan.md` and `spectra/templates/test-plan-template.md`, the four decisions from T051, and the Principle VII carve-out reading with a pointer to the Complexity Tracking entry that argues it.
-  > **Done 2026-09-11** — see the PR link appended below.
+  > **Done 2026-09-11** — **[PR #29](https://github.com/telus-digital/spectra/pull/29)** opened against
+  > `main` (28 files, +4464/-19 plus two closeout commits). Composed from the resolved
+  > `pr-template.md` following `speckit.spectra.create-pr`'s own steps: gated on `gh` first, repository
+  > facts read in one `gh repo view` call, no duplicate PR for the head, base taken from the
+  > constitution's documented flow (a spec branch merges back to `main`) which agrees with
+  > `defaultBranchRef`, and the Related Issues section **deleted** rather than filled with a placeholder
+  > since no issue was passed. The body states the 1.13.0 → 1.14.0 bump, both new files, the four
+  > decisions from T051, and the Principle VII carve-out reading with a pointer to the Complexity
+  > Tracking entry that argues it — plus the two deferred validation items, recorded as deferred rather
+  > than as done.
 
 ---
 
