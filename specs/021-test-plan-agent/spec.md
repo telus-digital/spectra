@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-11
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Build a new command (agent) called `/test-plan`. It needs an argument; a
 spec file, without it the AI will not continue, it will prompt the user and ask for that spec. The idea

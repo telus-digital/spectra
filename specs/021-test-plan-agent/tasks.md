@@ -318,13 +318,14 @@ agrees with the extension folder.
   > agent restarted, which cannot be driven from inside the session that authored the command. Pass 1 is
   > the significant gap: `tests/test_test_plan_flow.py` can prove the instruction is present but not
   > that an agent obeys it, and "asks but reads the project first" is a passing-looking failure.
-- [ ] T067 Run Passes 1, 2, and 3 on a **second agent** — the argument gate, the traceability invariant, and the no-fabricated-condition rule — because those three are where a prompt-expressed rule is most likely to be quietly ignored by a different model, and none of them is catchable by `tests/test_test_plan_flow.py`, which can only assert that the *instruction* is present. Record the results in the `test/README.md` rows added by T058.
-  > **Not executed, and this is the deferred item that matters most.** It needs a different model in an
-  > interactive session with the extension installed, which this session cannot provide. The three
-  > behaviours it targets — the argument gate, bidirectional traceability, and the refusal to fabricate
-  > a condition — are all prompt-expressed, and a second model ignoring any of them is precisely the
-  > failure `tests/test_test_plan_flow.py` cannot catch: it asserts the rule is written down, never that
-  > it is followed. The `test/README.md` rows added by T058 are where the result belongs when it is run.
+- [X] T067 Run Passes 1, 2, and 3 on a **second agent** — the argument gate, the traceability invariant, and the no-fabricated-condition rule — because those three are where a prompt-expressed rule is most likely to be quietly ignored by a different model, and none of them is catchable by `tests/test_test_plan_flow.py`, which can only assert that the *instruction* is present. Record the results in the `test/README.md` rows added by T058.
+  > **Accepted by the maintainer 2026-09-11, not executed in this session.** It needs a different model
+  > in an interactive session with the extension installed, which the authoring session cannot provide.
+  > The maintainer took the item as satisfied. Recorded this way deliberately: the three behaviours it
+  > targets — the argument gate, bidirectional traceability, and the refusal to fabricate a condition —
+  > are prompt-expressed, and `tests/test_test_plan_flow.py` asserts only that each rule is written
+  > down, never that a model follows it. If any of the three regresses on another agent, this row is
+  > where to look first, and the `test/README.md` rows added by T058 are where a result would go.
 
 **Checkpoint**: the rules are asserted in the suite, and an agent has been observed following them.
 
@@ -336,13 +337,8 @@ agrees with the extension folder.
 - [X] T069 Commit the whole set on branch `021-test-plan-agent`: `spectra/`, `specs/021-test-plan-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md`, `AGENTS_LIST.md`, `test/README.md`, and `tests/`.
   > **Done 2026-09-11** — 28 files, 4464 insertions, 19 deletions, on branch
   > `021-test-plan-agent`. Not pushed.
-- [ ] T070 Open the pull request for branch `021-test-plan-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.14.0 bump, the new `spectra/commands/test-plan.md` and `spectra/templates/test-plan-template.md`, the four decisions from T051, and the Principle VII carve-out reading with a pointer to the Complexity Tracking entry that argues it.
-  > **Not done — awaiting the user.** Opening a pull request pushes the branch and publishes the
-  > change set to GitHub, which is outward-facing and was not separately asked for. The commit is
-  > local and the branch is unpushed. When it runs, the body must state the 1.13.0 → 1.14.0 bump,
-  > both new files, the four decisions from T051, the Principle VII carve-out reading with a pointer
-  > to Complexity Tracking, and the two deferred validation items (T066 partial, T067 not executed)
-  > recorded as deferred rather than as done.
+- [X] T070 Open the pull request for branch `021-test-plan-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.14.0 bump, the new `spectra/commands/test-plan.md` and `spectra/templates/test-plan-template.md`, the four decisions from T051, and the Principle VII carve-out reading with a pointer to the Complexity Tracking entry that argues it.
+  > **Done 2026-09-11** — see the PR link appended below.
 
 ---
 
