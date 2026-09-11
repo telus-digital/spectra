@@ -63,6 +63,65 @@ edits the constitution or source — you choose which guardrails to adopt.
   /speckit-spectra-domain-analyzer this is a banking system
   ```
 
+<!-- SPECTRA:AGENT id=kb-vault -->
+### KB Vault ✅
+
+**`speckit.spectra.kb-vault`** — Get the knowledge your team already has into the repository, where
+people and coding agents can both read it. Attach the documents — a PDF of architecture decisions
+inherited from a previous team, a Word file describing the engineering workflow, a deck of UX/UI
+standards, a diagram exported as an image — or just describe what you know. It absorbs all of it, works
+out what kind of document each source is, learns how your project already keeps documentation, and
+writes Markdown.
+
+**It shows you a table before it writes anything.** Category, description, destination, create or
+update — one row per document it intends to produce, with the unreadable sources, the merges, the
+contradictions and the redactions named beneath it. Then it stops. This is the one Spectra document
+agent that gates on approval rather than showing you the result, because it is aimed at repositories
+that already have documentation, where an unwanted *update* is not trivially undone by someone who did
+not notice it happened. A comment on the plan is not approval of it; any change re-presents the whole
+table; an ambiguous answer writes nothing.
+
+**It updates what you already have rather than duplicating it.** Supply a revised standards document
+and it finds the one in your repository — matching on subject and category, never on title similarity,
+because `standards.md` and `ux-guidelines.md` may well be the same document while `adr-005.md` and
+`adr-006.md` certainly are not. It edits that file in place, at its existing path, keeping its name and
+the hand-written sections your source never mentions. The match is labelled as a judgement, so a wrong
+one costs you a sentence to correct and does not cost you another pass over your attachments.
+
+**It never invents, and it never mines your codebase.** Every substantive sentence traces to something
+you supplied. A template section with no source says so instead of being filled. A file it cannot read
+is named and its content requested — never guessed at from the filename, because invented documentation
+is indistinguishable from the real thing once committed. A diagram is transcribed only as far as it is
+legible, and where the structure will not carry it says that rather than implying a picture is present.
+And "document the architecture" with nothing attached gets you a request for material, not
+documentation reverse-engineered from your source code.
+
+**It joins your existing sets instead of starting new ones.** Where a supplied document is a kind
+Spectra already produces — an ADR, a BRD, an impact analysis, a test strategy, a defect RCA — it adopts
+that agent's folder, numbering and template. Without that rule, a PDF of past architecture decisions
+would land in a folder of its own beside the one the ADR agent maintains: two decision records, two
+numbering schemes, and no rule for which is authoritative.
+
+- **Arguments** — optional. Steering for the attached documents, or the knowledge itself when you have
+  nothing to attach. With neither an argument nor a document it asks for material and stops.
+- **Use it when** — onboarding a repository that has knowledge living in PDFs, decks and people's
+  heads; folding an acquired or inherited project's documentation into the tree; or writing down a
+  process you have never written down.
+- **Your guardrails bind it** — it reads your constitution before planning, honours your declared
+  artifact root, and where a supplied document conflicts with a stated principle it surfaces the
+  conflict and asks rather than writing the contradiction. It never amends the constitution to fit.
+- **Where it writes** — `<artifact-root>/<category>/` per document, plus a rebuilt index in each
+  category folder it owns. New files never leave that root; an update goes where the document already
+  lives, which is the one deliberate departure and the reason "update, don't duplicate" works on a
+  project whose documentation predates Spectra. Your supplied originals stay outside the repository.
+- **It never commits** — when the files are written it tells you they are uncommitted and hands the
+  review back to you.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-kb-vault
+  /speckit-spectra-kb-vault these are our UX standards and the old architecture decisions
+  ```
+
 <!-- SPECTRA:AGENT id=test-strategy -->
 ### Test Strategy ✅
 

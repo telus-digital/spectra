@@ -59,6 +59,16 @@
       "command": "speckit.spectra.domain-analyzer"
     },
     {
+      "id": "kb-vault",
+      "title": "KB Vault",
+      "description": "Absorb documents you supply — ADRs, engineering methodology, UX/UI standards — and land them in the repository as Markdown, planned and approved before anything is written.",
+      "status": "available",
+      "phase": "foundation",
+      "type": "add-on",
+      "provider": "spectra",
+      "command": "speckit.spectra.kb-vault"
+    },
+    {
       "id": "test-strategy",
       "title": "Test Strategy",
       "description": "Decide how this project tests itself — and what coverage floor it can actually hold — before the first feature is planned.",

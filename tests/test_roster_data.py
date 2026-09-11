@@ -104,18 +104,18 @@ class Content(unittest.TestCase):
         cls.parsed = roster.load(ROSTER_PATH)
 
     def test_it_carries_the_full_published_roster(self):
-        self.assertEqual(len(self.parsed.agents), 50)
+        self.assertEqual(len(self.parsed.agents), 51)
 
-    def test_it_splits_into_nineteen_available_and_thirty_one_planned(self):
+    def test_it_splits_into_twenty_available_and_thirty_one_planned(self):
         available = [a for a in self.parsed.agents if a.available]
-        self.assertEqual(len(available), 19)
+        self.assertEqual(len(available), 20)
         self.assertEqual(len(self.parsed.agents) - len(available), 31)
 
-    def test_spectra_ships_exactly_ten_agents_today(self):
+    def test_spectra_ships_exactly_eleven_agents_today(self):
         self.assertEqual(sorted(a.id for a in self.parsed.shipped()),
                          ["adr", "brd", "create-pr", "defect-rca", "domain-analyzer",
-                          "flaky-test-detector", "impact", "review-pr", "test-plan",
-                          "test-strategy"])
+                          "flaky-test-detector", "impact", "kb-vault", "review-pr",
+                          "test-plan", "test-strategy"])
 
     def test_nine_available_agents_come_from_spec_kit(self):
         speckit = [a for a in self.parsed.agents if a.provider == "speckit" and a.available]

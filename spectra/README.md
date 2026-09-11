@@ -12,6 +12,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 | Command | What it does |
 | ------- | ------------ |
 | `speckit.spectra.domain-analyzer` | Infer the project's business domain from its code and docs, then propose opt-in candidate guardrails for SME review. |
+| `speckit.spectra.kb-vault` | Absorb documents you supply — ADRs, engineering methodology, UX/UI standards — and land them in the repository as Markdown, planned and approved before anything is written. |
 | `speckit.spectra.test-strategy` | Decide how this project tests itself — and what coverage floor it can actually hold — before the first feature is planned. |
 | `speckit.spectra.brd` | Turn a raw business requirement, typed or in a document, into a structured, specify-ready BRD. |
 | `speckit.spectra.impact` | Find out what a proposed feature would actually touch, with cited evidence, before anyone commits to building it. |
@@ -149,6 +150,83 @@ Usage (Claude):
 No arguments required — it analyzes the whole project. Optionally pass a focus hint, e.g.
 `/speckit-spectra-domain-analyzer focus on security`. Re-running preserves prior decisions, edits,
 and ordering; only genuinely new candidates are appended under a dated heading.
+
+---
+
+## `speckit.spectra.kb-vault` — KB Vault
+
+A foundation-phase command that takes knowledge living **outside** your repository and lands it inside,
+as Markdown. Attach the documents — a PDF of architecture decisions inherited from a previous team, a
+Word file describing the engineering workflow, a deck of UX/UI standards, a diagram exported as an image
+— or just describe what you know. It:
+
+1. Absorbs every supplied source in full, reporting per file whether it could read it.
+2. Resolves your artifact root, then reads how your project already keeps documentation — folders,
+   numbering, document shapes, templates, indexes.
+3. Classifies each source into a category, from its content rather than its filename.
+4. Looks for a document you already have about the same subject, and plans an **update** to it rather
+   than a second file beside it.
+5. Shows you a table — category, description, destination, create or update — and **stops**.
+6. Writes only after you approve, and only what the approved table says.
+
+Usage (Claude):
+
+```
+/speckit-spectra-kb-vault these are our UX standards and the old architecture decisions
+```
+
+The argument is optional: it steers the attached documents, or carries the knowledge itself when you
+have nothing to attach. With neither an argument nor a document it asks for material and stops.
+
+### The plan is the safety mechanism
+
+This is the only Spectra document command that gates on approval rather than showing you the result,
+and the reason is that it is aimed at repositories that **already** have documentation. An unwanted new
+file is noticeable; an unwanted *update* to a document someone else wrote is not. So a comment on the
+plan is not approval of it, any change re-presents the whole table, and an ambiguous answer writes
+nothing. Declining costs you nothing — `git status` is unchanged.
+
+You can move a row to a different category folder, rename it, drop it, split it, merge it, or convert a
+create into an update. The one thing you cannot do is send a **new** file outside your artifact root;
+ask for that and it offers the two routes that get you there properly — the `Artifact root:` declaration
+line, or a `git mv` you run afterwards.
+
+### It joins your existing sets instead of starting new ones
+
+Where a supplied document is a kind Spectra already produces, it adopts that agent's folder, numbering
+and template:
+
+| If the source is | Folder | Template |
+| --- | --- | --- |
+| an architecture decision | `<artifact-root>/adr/` | `adr-template` |
+| a business requirements document | `<artifact-root>/brd/` | `brd-template` |
+| an impact analysis | `<artifact-root>/impact-analysis/` | `impact-analysis-template` |
+| a test strategy | `<artifact-root>/test-strategy/` | `test-strategy-template` |
+| a defect root cause analysis | `<artifact-root>/defect-rca/` | `defect-rca-template` |
+| anything else | `<artifact-root>/<category>/` | `<category>-template`, else `kb-document-template` |
+
+Without that map, a PDF of past architecture decisions would land in a folder of its own beside the one
+`speckit.spectra.adr` maintains — two decision records, two numbering schemes, and no rule for which is
+authoritative.
+
+### What it will not do
+
+It never invents. Every substantive sentence traces to something you supplied; a template section with
+no source says so instead of being filled; a file it cannot read is named and its content requested
+rather than guessed at from the filename. It never mines your codebase for content — it reads your
+project to decide *where* a document goes and *what shape* it takes, never what it says, so "document
+the architecture" with nothing attached gets you a request for material. Your supplied originals stay
+outside the repository; you get Markdown. And it never stages, commits, branches, pushes, tags or opens
+a pull request — when the files are written it tells you they are uncommitted and hands the review back.
+
+### Change the shape of your knowledge documents
+
+The default structure is a shipped template. To change it for your whole team, permanently, copy it to
+`.specify/templates/overrides/kb-document-template.md` and commit it — or shape a single category with
+`.specify/templates/overrides/<category>-template.md`, which applies even to a category Spectra has
+never heard of. Do **not** edit the installed copy under `.specify/extensions/`: the next extension
+update replaces it. Every run reports which template it resolved, by full path, so an override that
+failed to apply is visible rather than silent.
 
 ---
 
