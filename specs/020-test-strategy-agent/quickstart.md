@@ -18,8 +18,10 @@ After: 48 agents, 17 available, 8 prose blocks, and the new flow module.
 
 Install the working copy into a scratch project to exercise the command:
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
-specify extension add --dev /Users/alibahaloo/Projects/spectra/spectra
+specify extension add --dev "$SPECTRA_REPO/spectra"
 ```
 
 ---

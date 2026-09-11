@@ -8,8 +8,10 @@ outcome and exit code. Details of the structures and per-component mechanics liv
 
 ## Prerequisites
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
-cd /Users/alibahaloo/Projects/spectra
+cd "$SPECTRA_REPO"
 pip install -e .                 # puts `spectra` on PATH from this working tree
 specify --version                # Spec Kit CLI must be installed
 ```

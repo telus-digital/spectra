@@ -31,8 +31,8 @@ paths below are literal.
 later regressions are attributable.
 
 - [X] T001 Record the pre-change test baseline by running `python3 -m unittest discover -s tests` and noting the count (expected: 343 tests, OK)
-- [X] T002 Confirm findings F1/F3/F7 still hold on the installed Spec Kit by running `specify integration upgrade --help` (a positional `key` and `--force` are offered) and `specify integration status --json >/dev/null; echo $?` in `~/Projects/willow` (read-only; expect exit 0 while status is `warning`)
-- [X] T003 Capture the reference states both fixtures must reproduce: `specify integration status --json` in `~/Projects/willow` (two integrations, 23 modified files) and in `/Users/alibahaloo/Projects/spectra` (two integrations, 0 modified) — read-only, no writes to either project
+- [X] T002 Confirm findings F1/F3/F7 still hold on the installed Spec Kit by running `specify integration upgrade --help` (a positional `key` and `--force` are offered) and `specify integration status --json >/dev/null; echo $?` in `$DRIFTED_PROJECT` (read-only; expect exit 0 while status is `warning`)
+- [X] T003 Capture the reference states both fixtures must reproduce: `specify integration status --json` in `$DRIFTED_PROJECT` (two integrations, 23 modified files) and in this repository (two integrations, 0 modified) — read-only, no writes to either project
 
 ---
 
@@ -64,7 +64,7 @@ structures carry per-integration data — user story implementation can begin.
 **Goal**: `spectra version` enumerates every installed integration, reads each one's own recorded version,
 and derives the `Core agents` verdict from all of them — naming the ones that are behind.
 
-**Independent Test**: In `~/Projects/willow` (two integrations, one default, both recorded at 0.15.1
+**Independent Test**: In `$DRIFTED_PROJECT` (two integrations, one default, both recorded at 0.15.1
 against a 0.16.5 CLI), run `spectra version` and confirm `Core agents` reports needs-updating, shows the
 oldest version, and names both integrations. Before this story the same project reports up to date.
 
@@ -203,7 +203,7 @@ named flag.
 **Goal**: An installed integration with no Spectra commands is named, with the exact remedy and its side
 effect — and nothing is changed.
 
-**Independent Test**: In `~/Projects/willow`, where the registry records Spectra commands for `kiro-cli`
+**Independent Test**: In `$DRIFTED_PROJECT`, where the registry records Spectra commands for `kiro-cli`
 only, run `spectra version` and confirm the advisory names `claude`, the remedy, and the consequence.
 
 ### Tests for User Story 5
@@ -230,7 +230,7 @@ only, run `spectra version` and confirm the advisory names `claude`, the remedy,
 - [X] T082 [P] Verify `spectra/extension.yml` and `catalog.json` versions are **unchanged** and `python3 tools/generate_agent_docs.py --check` is green — no agent or roster data moved (plan.md, Principle V)
 - [X] T083 [P] Confirm every new docstring records its decision rather than restating its code, matching the module's existing style: aggregation precedence in `health.py`, authorization gating in `extension.py`, disclosure grouping in `cli.py`
 - [X] T084 Run the full suite on both CI interpreters (`python3.9` and `python3.12` if available locally, otherwise confirm via CI), confirm no pre-existing test was modified to accommodate the change, and assert the Specify CLI, Spectra CLI, and Spectra agents rows are byte-identical in a multi-integration project (FR-042)
-- [X] T085 Execute every scenario in `specs/010-multi-integration-updates/quickstart.md`, including the byte-identical diff against the 6.0.0 release for a single-integration project (SC-005) and the read-only checks in `~/Projects/willow`. Scenario 4 is the evidence for SC-004 (four commands become one) and Scenario 5 on the F3 fixture is the evidence for SC-006, since `~/Projects/willow` itself must not be mutated
+- [X] T085 Execute every scenario in `specs/010-multi-integration-updates/quickstart.md`, including the byte-identical diff against the 6.0.0 release for a single-integration project (SC-005) and the read-only checks in `$DRIFTED_PROJECT`. Scenario 4 is the evidence for SC-004 (four commands become one) and Scenario 5 on the F3 fixture is the evidence for SC-006, since `$DRIFTED_PROJECT` itself must not be mutated
 - [X] T086 Confirm the three explicit exclusions still hold: no fifth report row (FR-011), no new top-level command, and no persisted overwrite setting anywhere on disk (FR-033)
 - [X] T087 Clean up the scratch directories the quickstart creates (`/tmp/spectra-multi`, `/tmp/spectra-solo`, `/tmp/spectra-legacy`, `/tmp/prev`) and confirm `git status` is clean apart from intended changes
 
@@ -322,7 +322,7 @@ Phase 7 (US5)  ->  T080 README copy  ->  T082 catalog/roster verification
 1. Phase 1: Setup — capture the 343-test baseline.
 2. Phase 2: Foundational — fixtures and structures (**blocks everything**).
 3. Phase 3: US1 — detection and reporting.
-4. **STOP and VALIDATE**: run `spectra version` in `~/Projects/willow`; the row that reports up to date
+4. **STOP and VALIDATE**: run `spectra version` in `$DRIFTED_PROJECT`; the row that reports up to date
    today must report needs-updating and name both integrations.
 5. Shippable: the silent drift is over even though updating has not changed.
 

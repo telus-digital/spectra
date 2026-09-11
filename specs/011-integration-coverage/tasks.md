@@ -36,7 +36,7 @@ later regression is attributable to us or to Spec Kit rather than ambiguous.
 - [X] T002 Re-confirm findings F1, F2, F3 in a disposable project: `specify init` with one integration, `specify integration install <second> --force`, `specify extension add --dev ./spectra`, then read `.specify/extensions/.registry` (expect the default only), then `specify integration use <second>` and re-read it (expect both keys), then `specify integration use <default>` and re-read (expect both keys, default restored)
 - [X] T003 Re-confirm finding F4 in the same project by editing `.specify/scripts/bash/check-prerequisites.sh` and running `specify integration use <second>` — expect a "Preserved … customized shared infrastructure file(s)" warning and exit 0, never a failure
 - [X] T004 Capture the byte snapshots the FR-044 gate needs: copy `.specify/integration.json` and `.specify/init-options.json` aside, run a full rotation by hand, and `diff` them afterwards — record the result in the task notes, because it decides whether FR-044's fallback must be built (research R9) — **VERDICT 2026-08-20: both files BYTE-IDENTICAL after a full rotation against Spec Kit 0.16.5, so T071's fallback is NOT required**
-- [X] T005 Delete the disposable project from T002–T004 with `rm -rf` and confirm nothing was written outside it — in particular that `/Users/alibahaloo/Projects/spectra/.specify/` is untouched
+- [X] T005 Delete the disposable project from T002–T004 with `rm -rf` and confirm nothing was written outside it — in particular that this repository's `.specify/` is untouched
 
 **Checkpoint**: The three load-bearing dependency behaviours are re-verified against the installed Spec
 Kit, and the FR-044 question is answered with evidence rather than assumption.

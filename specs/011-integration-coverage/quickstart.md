@@ -9,8 +9,10 @@ expected output and exit code. Structure and mechanics live in [data-model.md](d
 
 ## Prerequisites
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
-cd /Users/alibahaloo/Projects/spectra
+cd "$SPECTRA_REPO"
 pip install -e .                 # puts `spectra` on PATH from this working tree
 specify --version                # Spec Kit CLI must be installed (0.16.5 when this was written)
 ```

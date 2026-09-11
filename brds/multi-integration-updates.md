@@ -67,7 +67,7 @@ command.
 
 ### 2.1 Verified findings
 
-Observed 2026-08-19 against Spec Kit CLI 0.16.5 and two real projects — `willow` (drifted) and this
+Observed 2026-08-19 against Spec Kit CLI 0.16.5 and two real projects — a second project (drifted) and this
 repository (clean). These are behaviours of the dependency and of recorded project state, not of
 Spectra's internals, and they are what the requirements below are built on.
 
@@ -81,9 +81,9 @@ Spectra's internals, and they are what the requirements below are built on.
 | F6 | The overwrite is **not scoped to the files that caused the block** — it also overwrites shared Spec Kit infrastructure, "including customizations". | Dependency source inspection and its own flag documentation. | Any disclosure to the user must include shared templates and scripts, not only the offending integration's files. |
 | F7 | The integration **status report is read-only and always succeeds**, including when it reports a warning. Its machine-readable form lists modified files per integration. | Executed in both projects; exit status 0 in every case. | The warning is not the trigger to act on; per-integration modification lists are, and they are available without guesswork. |
 | F8 | The shared-infrastructure record lives alongside the per-integration records but is **not an integration**. | Compared recorded installed integrations against the set of records present. | The set of integrations must be taken from the recorded installed list, never inferred from the records on disk. |
-| F9 | There is **no way to see what diverged**. The dependency offers no comparison command, and in the measured project the divergence is already committed to version control, so ordinary version-control tooling shows nothing. | Dependency command surface; version-control inspection in `willow`. | "Review the changes first" is not actionable advice and must not be repeated to users as if it were. |
+| F9 | There is **no way to see what diverged**. The dependency offers no comparison command, and in the measured project the divergence is already committed to version control, so ordinary version-control tooling shows nothing. | Dependency command surface; version-control inspection in the drifted project. | "Review the changes first" is not actionable advice and must not be repeated to users as if it were. |
 
-Measured state of the drifted project (`willow`): tool at 0.16.5, project recorded at 0.15.1, two
+Measured state of the drifted project: tool at 0.16.5, project recorded at 0.15.1, two
 integrations installed with `kiro-cli` as default, **23 modified managed files** (10 for `kiro-cli`,
 10 for `claude`, 3 shared templates — the spec, plan, and tasks templates). Spectra commands are
 present for `kiro-cli` and absent for `claude`. The clean project shows the same two-integration

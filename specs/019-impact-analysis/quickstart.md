@@ -17,10 +17,12 @@ specify --version          # Spec Kit on PATH
 
 For the manual passes, a scratch project with something to find:
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
 mkdir /tmp/impact-probe && cd /tmp/impact-probe
 specify init .
-specify extension add --dev /Users/alibahaloo/Projects/spectra/spectra
+specify extension add --dev "$SPECTRA_REPO/spectra"
 # restart the agent so it picks up the new command
 ```
 
@@ -32,7 +34,7 @@ one string-keyed handler registry, and a `.env.example`. Any small service will 
 ## Layer 1 — repository suite
 
 ```bash
-cd /Users/alibahaloo/Projects/spectra
+cd "$SPECTRA_REPO"
 python -m unittest discover -s tests
 python tools/generate_agent_docs.py --check
 ```

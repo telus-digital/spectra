@@ -94,10 +94,12 @@ most likely to be forgotten.
 
 ## Install into a throwaway project
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
 mkdir -p /tmp/flaky-trial && cd /tmp/flaky-trial
 specify init .
-specify extension add --dev /Users/alibahaloo/Projects/spectra/spectra
+specify extension add --dev "$SPECTRA_REPO/spectra"
 specify extension info spectra   # 6 commands, including speckit.spectra.flaky-test-detector
 ```
 

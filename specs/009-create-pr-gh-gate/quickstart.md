@@ -12,11 +12,13 @@ the superseded behaviour.
 
 ## Setup
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
 # 1. A throwaway Spec Kit project with the working copy installed
 specify init /tmp/spectra-gate --integration claude
 cd /tmp/spectra-gate
-specify extension add --dev /Users/alibahaloo/Projects/spectra/spectra
+specify extension add --dev "$SPECTRA_REPO/spectra"
 
 # 2. A spec branch to open a pull request from (one branch per spec)
 mkdir -p specs/001-probe && printf '# Feature Specification: Probe\n' > specs/001-probe/spec.md

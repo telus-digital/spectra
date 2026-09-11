@@ -65,8 +65,10 @@ this command to `CANONICAL` fails a test that explains why the entry does not be
 specify init tp-check --ai claude && cd tp-check
 ```
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
-specify extension add --dev /Users/alibahaloo/Projects/spectra/spectra
+specify extension add --dev "$SPECTRA_REPO/spectra"
 ```
 
 Then create a feature to plan against:

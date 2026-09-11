@@ -76,10 +76,12 @@ two assertions; after implementation all four lines must read `PASS`.
 
 ## Install into a throwaway project
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
 mkdir -p /tmp/review-pr-trial && cd /tmp/review-pr-trial
 specify init .
-specify extension add --dev /Users/alibahaloo/Projects/spectra/spectra
+specify extension add --dev "$SPECTRA_REPO/spectra"
 specify extension info spectra          # should list 5 commands, including speckit.spectra.review-pr
 ```
 

@@ -9,8 +9,10 @@ expected output and exit code. Structure and mechanics live in [data-model.md](d
 
 ## Prerequisites
 
+Set `SPECTRA_REPO` to your checkout of this repository before running these.
+
 ```bash
-cd /Users/alibahaloo/Projects/spectra
+cd "$SPECTRA_REPO"
 pip install -e .                 # puts `spectra` on PATH from this working tree
 specify --version                # Spec Kit CLI must be installed (0.16.5 when this was written)
 ```
@@ -97,9 +99,9 @@ specify integration status >/dev/null 2>&1; echo "exit=$?"    # expect exit=0
 
 ### F4 — a real drifted project, read-only
 
-`~/Projects/willow` is the project the BRD measured: two integrations, recorded at `0.15.1` against a
-`0.16.5` CLI, 23 modified managed files, Spectra commands registered for `kiro-cli` only. Use it for
-**read-only** verification of Scenarios 1 and 9 — never for the mutating ones.
+Set `$DRIFTED_PROJECT` to the project the BRD measured: two integrations, recorded at `0.15.1`
+against a `0.16.5` CLI, 23 modified managed files, Spectra commands registered for `kiro-cli`
+only. Use it for **read-only** verification of Scenarios 1 and 9 — never for the mutating ones.
 
 ---
 
