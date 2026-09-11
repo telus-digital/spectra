@@ -355,7 +355,17 @@ agrees with the extension folder.
   > **Done 2026-09-11** — 28 files, 4123 insertions, 10 deletions, on branch
   > `022-defect-rca-agent`. Not pushed.
 
-- [ ] T080 Open the pull request for branch `022-defect-rca-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.15.0 bump, the new `spectra/commands/defect-rca.md` and `spectra/templates/defect-rca-template.md`, the four decisions from T059, and the three departures from `BRD-DEFECTRCA-001 v2.0.0` with a pointer to the plan section that argues them.
+- [X] T080 Open the pull request for branch `022-defect-rca-agent` with `speckit.spectra.create-pr` — the extension's own `after_implement` hook — and confirm the body states the 1.15.0 bump, the new `spectra/commands/defect-rca.md` and `spectra/templates/defect-rca-template.md`, the four decisions from T059, and the three departures from `BRD-DEFECTRCA-001 v2.0.0` with a pointer to the plan section that argues them.
+  > **Done 2026-09-11** — **[PR #30](https://github.com/telus-digital/spectra/pull/30)** opened against
+  > `main` (28 files, +4126/-10). `speckit.spectra.create-pr` is not registered as a skill in this
+  > repository — it develops Spectra rather than installing it — so the pull request was composed by
+  > following that command's own steps: gated on `gh` first, repository facts read in one
+  > `gh repo view` call, no duplicate PR for the head, base taken from the constitution's documented
+  > flow (a spec branch merges back to `main`) which agrees with `defaultBranchRef`, and the body shaped
+  > by the resolved `pr-template.md` with the **Related Issues section deleted** rather than filled with
+  > a placeholder, since no issue was passed. The body states the 1.14.0 → 1.15.0 bump, both new files,
+  > the four decisions from T059, and the three departures from `BRD-DEFECTRCA-001 v2.0.0` — plus T075
+  > and T076 recorded as deferred rather than as done.
 
 ---
 
