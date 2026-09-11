@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.14.0"
+  version: "1.15.0"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
@@ -63,6 +63,10 @@ provides:
   # committed, team-wide, and outside the extension tree, so an extension update cannot discard it. Editing
   # the installed copy under .specify/extensions/ is NOT the customization path: extension files are
   # replaced wholesale on update.
+    - name: "speckit.spectra.defect-rca"
+      file: "commands/defect-rca.md"
+      description: "Guide a hypothesis-driven root cause analysis of a defect from a JIRA ticket, a GitHub issue URL, or a plain description — gathering evidence from the code, surfacing any prior analysis of the same defect, and writing one advisory analysis under the project's artifact root."
+
   templates:
     - name: "adr-template"
       file: "templates/adr-template.md"
@@ -85,6 +89,10 @@ provides:
     - name: "test-plan-template"
       file: "templates/test-plan-template.md"
       description: "Section structure for the per-feature test plans produced by speckit.spectra.test-plan. Override at .specify/templates/overrides/test-plan-template.md. The traceability invariant, the no-checkbox rule, the cited-absence rule, the priority derivation, the secret prohibition, and the coverage statement stay with the command."
+
+    - name: "defect-rca-template"
+      file: "templates/defect-rca-template.md"
+      description: "Section structure for the root cause analyses produced by speckit.spectra.defect-rca. Override at .specify/templates/overrides/defect-rca-template.md. The symptom/root-cause distinction, answer-first ordering, the recording of invalidated hypotheses, evidence-source attribution, the advisory status line, the related-prior-RCA field, and the prohibition on reproducing a secret stay with the command."
 
 hooks:
   after_implement:
@@ -119,3 +127,6 @@ tags:
   - "coverage"
   - "test-plan"
   - "tdd"
+  - "root-cause-analysis"
+  - "defect-analysis"
+  - "rca"

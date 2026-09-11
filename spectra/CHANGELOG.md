@@ -3,6 +3,55 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.15.0] - 2026-09-11
+
+### Added
+- **`speckit.spectra.defect-rca` — the root cause, not the first plausible code path.**
+  Hand it a defect — a JIRA ticket reference, a GitHub issue URL, or just a description of what went
+  wrong — and it reads the project before it asks you anything: the constitution, the implicated code,
+  the commits that touched it, the configuration, the tests. It builds a MECE hypothesis tree, tests
+  what the repository can settle, asks at most five questions per round about the runtime facts nobody
+  can grep for, and writes one advisory analysis to `docs/defect-rca/NNN-<slug>.md` — or wherever the
+  project's declared artifact root puts it — with the root cause stated first, the evidence that
+  settled it, the impact, and corrective and preventive actions carrying owners and verification
+  criteria.
+
+  It fixes nothing, writes no test, and updates no ticket. The conclusions are yours; it is a coach and
+  a structuring aid.
+
+  Four decisions a reader would otherwise find surprising:
+
+  **It attempts and degrades on `gh` rather than gating on it.** `create-pr` and `review-pr` refuse to
+  run without the GitHub CLI, because their whole purpose is unreachable without it. A GitHub issue is
+  one of three channels here, so a missing or unauthenticated `gh` is named with its specific remedy —
+  install, versus `gh auth login` — and the run continues from a pasted description. What it never does
+  is degrade into asking for a credential: a prompt that requests an API token is a phishing surface,
+  and this one ships in a package.
+
+  **It searches your prior analyses at intake, not at synthesis.** A recurrence surfaced after the
+  document is written is a recurrence surfaced too late to change the analysis. Matches are made on
+  implicated code, symptom, or root cause — never on title similarity — and the firing axis and the
+  concrete overlap are always disclosed, so a spurious match costs one sentence to dismiss. Each of the
+  earlier analysis's preventive actions gets a verdict of apparently completed, apparently not
+  completed, or undeterminable, and **the first two require a citation**. `undeterminable` is the
+  default, because an uncited "completed" against an action nobody finished makes a recurrence read as
+  a fresh defect.
+
+  **It refuses to call a layer-two finding a root cause.** Reading the code produces a specific failure
+  mode a human interviewer does not have: the plausible path you find is genuinely there and genuinely
+  related, which makes stopping feel like finishing. So every probe names its layer on the symptom →
+  immediate cause → contributing factors → process gap → systemic cause ladder, and where the deepest
+  validated finding is still an immediate technical cause, the run says so and names what would go
+  deeper rather than promoting it under a "Root Cause" heading.
+
+  **It writes two files and reads everything else.** The analysis and a rebuilt folder index, both under
+  one directory, both as the run's final act — so an interrupted run consumes no sequence number and
+  leaves nothing behind. The hypothesis tree, the issue trees, and the session notes are rendered in
+  the conversation and never written to disk.
+
+  Registered template: `defect-rca-template`. Override it for your whole team at
+  `.specify/templates/overrides/defect-rca-template.md`.
+
 ## [1.14.0] - 2026-09-11
 
 ### Added

@@ -370,6 +370,16 @@
       "command": "speckit.spectra.flaky-test-detector"
     },
     {
+      "id": "defect-rca",
+      "title": "Defect Root Cause Analysis",
+      "description": "Take a defect from a ticket, an issue, or a description down to its root cause — with evidence read from the code, not asked for.",
+      "status": "available",
+      "phase": "testing-quality",
+      "type": "add-on",
+      "provider": "spectra",
+      "command": "speckit.spectra.defect-rca"
+    },
+    {
       "id": "security-analyst",
       "title": "Security Analyst",
       "description": "Surface threat exposure and OWASP-class issues through static and dynamic analysis of the change.",

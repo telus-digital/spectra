@@ -10,7 +10,7 @@
       "category": "workflow",
       "effect": "read-write",
       "author": "TELUS Digital",
-      "version": "1.14.0",
+      "version": "1.15.0",
       "repository": "https://github.com/telus-digital/spectra",
       "homepage": "https://github.com/telus-digital/spectra/tree/main/spectra",
       "documentation": "https://github.com/telus-digital/spectra/blob/main/spectra/README.md",
@@ -20,7 +20,7 @@
         "speckit_version": ">=0.11.0"
       },
       "provides": {
-        "commands": 9
+        "commands": 10
       },
       "tags": [
         "documentation",
@@ -47,7 +47,10 @@
         "test-strategy",
         "coverage",
         "test-plan",
-        "tdd"
+        "tdd",
+        "root-cause-analysis",
+        "defect-analysis",
+        "rca"
       ],
       "verified": false,
       "downloads": 0,

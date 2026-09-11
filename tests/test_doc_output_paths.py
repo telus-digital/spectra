@@ -35,6 +35,7 @@ CONSTITUTION = h.repo_file(".specify", "memory", "constitution.md")
 CANONICAL = {
     "adr.md": "docs/adr/",
     "brd.md": "docs/brd/",
+    "defect-rca.md": "docs/defect-rca/",
     "impact.md": "docs/impact-analysis/",
     "test-strategy.md": "docs/test-strategy/",
 }

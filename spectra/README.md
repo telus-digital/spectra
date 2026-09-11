@@ -18,6 +18,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 | `speckit.spectra.test-plan` | Turn a specification into a test plan stakeholders can approve — traceable conditions, stated exclusions, and a real exit bar — before the implementation is designed. |
 | `speckit.spectra.adr` | Capture a context-aware Architecture Decision Record grounded in the codebase, prior ADRs, and the constitution. |
 | `speckit.spectra.flaky-test-detector` | Find the tests that pass and fail on the same code, then fix the ones you approve, one at a time. |
+| `speckit.spectra.defect-rca` | Take a defect from a ticket, an issue, or a description down to its root cause — with evidence read from the code, not asked for. |
 | `speckit.spectra.create-pr` | Open a correctly-targeted GitHub PR for the current spec branch and return its URL. |
 | `speckit.spectra.review-pr` | Review a GitHub pull request against the spec, plan, tasks, ADRs, and constitution it carries, then publish a single human-curated review containing only the findings the reviewer selected. |
 <!-- SPECTRA:GENERATED END id=spectra-readme-commands -->
@@ -654,6 +655,71 @@ Usage (Claude):
 The spec path is required. Pass `--non-interactive` in CI: it will create a plan that does not exist, but
 never rewrite one that does. The document's six sections are overridable at
 `.specify/templates/overrides/test-plan-template.md`.
+
+## `speckit.spectra.defect-rca` — Defect Root Cause Analysis
+
+Run it when a defect has been found — by a failing test, by QE, or in production. Hand it the defect and
+it:
+
+1. Resolves the **channel** from what you gave it — a GitHub issue URL, a JIRA ticket reference, or a
+   plain description — and says which one it picked before doing anything else.
+2. Reads your project: the constitution, the implicated code, the commits that touched it, the
+   configuration, the tests. It says what it examined *and what it did not*.
+3. Searches your **existing analyses** for this defect, and surfaces any match while the investigation
+   is still open.
+4. Builds a MECE hypothesis tree, tests what the repository can settle, and asks at most five questions
+   per round about the things it cannot.
+5. Writes one analysis to `docs/defect-rca/NNN-<slug>.md` — or wherever your declared artifact root puts
+   it — plus a rebuilt folder index.
+
+**It reads the code before it asks you anything.** Which function handles the retry, whether the timeout
+is configurable, when the offending line last changed, whether a test covers that path — those are its
+questions to answer, not yours. Your attention is spent on the runtime facts nobody can grep for: the
+logs, the metrics, the environment state, what the team knew at the time. Every claim it makes about the
+code cites the file and line; every claim that something is *absent* states what it searched for and
+where.
+
+**It checks whether you have analyzed this defect before.** Matches are made on implicated code, on
+symptom, or on root cause — never on title similarity — and the axis that fired is always disclosed with
+the concrete overlap, so a spurious match costs one sentence to dismiss. Each preventive action from the
+earlier analysis gets a verdict: apparently completed, apparently not completed, or undeterminable. The
+first two **require a citation**; undeterminable is the default. An uncited "completed" against an action
+nobody finished is what makes a recurrence read as a fresh defect.
+
+**It will not call the first plausible code path a root cause.** Every probe names its layer — symptom,
+immediate technical cause, contributing factors, process gap, systemic cause — and where the deepest
+validated finding is still an immediate technical cause, the run says so and names what would go deeper.
+Reading the code creates a failure mode an interviewer does not have: the path it finds is genuinely
+there and genuinely related, which makes stopping feel like finishing.
+
+**Invalidated hypotheses appear in the document, not just the surviving one.** An evidence table of
+nothing but confirmations is a justification rather than an analysis — a reader cannot tell what was
+ruled out, so they cannot tell how much to trust what was not. Where nothing could be validated, it says
+so and names what evidence would settle it, rather than promoting a guess to fill the section.
+
+**The filename names the symptom, never the cause.** `order-submission-500s`, not `missing-pool-limit`.
+The file is named before the analysis concludes, so a cause-named file is wrong exactly when the analysis
+turns out to be interesting — and the flat directory stays scannable, which is what keeps the recurrence
+search cheap.
+
+**Conclusions stay yours.** It fixes nothing, writes no test, changes no configuration, and never touches
+your ticket. The document carries an advisory status line naming a human owner, and that line is never
+softened or dropped. It also never asks for a credential: where `gh` is missing or JIRA is unreachable,
+it names the failure and its specific remedy, asks you to paste the content, and carries on.
+
+Usage (Claude):
+
+```
+/speckit-spectra-defect-rca https://github.com/acme/orders/issues/412
+```
+
+```
+/speckit-spectra-defect-rca orders intermittently return 500 under concurrent submission
+```
+
+The defect is required — with no argument it asks and stops, inferring nothing from your branch or your
+failing tests. The document's six sections are overridable at
+`.specify/templates/overrides/defect-rca-template.md`.
 
 ## License, trademarks, and disclaimer
 

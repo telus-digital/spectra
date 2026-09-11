@@ -139,6 +139,7 @@ phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception 
 | Test Coverage Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Test Automation Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Flaky Test Detector | Testing & Quality | Construction | Add-on | ✅ available |
+| Defect Root Cause Analysis | Testing & Quality | Construction | Add-on | ✅ available |
 | Security Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Accessibility & WCAG Compliance | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Carbon & Green-Software | Testing & Quality | Construction | Add-on | 🚧 under dev |
