@@ -376,6 +376,42 @@ these:
    `main` `/docs` over Pages and carries `docs/index.html`. It must surface the choice and recommend the
    non-publishing root rather than silently defaulting.
 
+And one pass on `test-plan`, whose four load-bearing behaviours are all invisible to a unit test on the
+prompt text, because each one is about what the agent *does* with a specification rather than what the
+command says. Work through
+[`specs/021-test-plan-agent/quickstart.md`](../specs/021-test-plan-agent/quickstart.md) in a scratch
+project with a real `spec.md` — one that deliberately contains an unresolved clarification marker and one
+requirement phrased too vaguely to test — then confirm at least these:
+
+1. **An empty invocation reads nothing and lists nothing.** Run it with no argument. It must ask for a
+   specification path and stop. It must **not** name the current branch, read `.specify/feature.json`, or
+   print a list of the specs under `specs/` for you to pick from — a picker is the same failure with extra
+   steps. Watch the session: if it read any source file before asking, the gate is decoration.
+2. **No acceptance criterion goes missing.** Extract the criteria from your spec by hand, then check each
+   one appears either in the conditions table or in *Explicitly not covered*. A criterion absent from both
+   is the defect this whole command exists to prevent, and the document will look complete while it is
+   wrong. The run report must state the count — covered out of found.
+3. **The vague requirement gets a gap, not a condition.** This is the one worth planting deliberately. The
+   ambiguous requirement must appear as uncovered and *untestable as written*, naming the missing decision.
+   A plausible-looking condition here is **worse** than the gap, because it launders a guess into something
+   a stakeholder signs — and nobody reviewing the document can tell.
+4. **Checkboxes do not survive an override.** `grep -nE '^\s*[-*] \[[ xX]\]' specs/*/test-plan.md` must
+   find nothing on a default run. Then copy `test-plan-template.md` into `.specify/templates/overrides/`,
+   put a checklist back into *5. Exit Criteria*, and re-run: the criteria must come out as plain statements,
+   the section must still be there, and the report must say how many constructs it converted.
+5. **It speaks your project's vocabulary.** Run `test-strategy` first so `TEST_STRATEGY.md` exists, then
+   re-run this. The `Level` column must use that document's lens names **verbatim** — not normalized, not
+   title-cased — and the report must name the strategy by path. Delete the strategy and confirm it falls
+   back to the default set and says so.
+6. **Write scope.** `git status --porcelain` after a run must show **exactly one** changed path: the
+   `test-plan.md` beside your spec. Not the spec, not the constitution, not CI, nothing under `.specify/`.
+   Then point it at a spec in a sibling repository and confirm it stops rather than writing outside the
+   project — and does not relocate the output inside it either.
+7. **Re-running preserves what a human decided.** Run it, edit the spec, run again. The confirmation must
+   state what would change before you answer; declining must leave the file byte-identical; accepting must
+   carry forward every *explicitly not covered* decision or say it removed one. Then try it
+   `--non-interactive` with a plan already present: it must report what it would change and write nothing.
+
 And one pass on `flaky-test-detector`, which is the only command that edits code you wrote — so the
 things worth checking are the ones a diff can prove. Plant the patterns from
 [`specs/018-flaky-test-detector/quickstart.md`](../specs/018-flaky-test-detector/quickstart.md) in a

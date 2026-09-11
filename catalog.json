@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-09-10T00:00:00Z",
+  "updated_at": "2026-09-11T00:00:00Z",
   "catalog_url": "https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json",
   "extensions": {
     "spectra": {
@@ -10,7 +10,7 @@
       "category": "workflow",
       "effect": "read-write",
       "author": "TELUS Digital",
-      "version": "1.13.0",
+      "version": "1.14.0",
       "repository": "https://github.com/telus-digital/spectra",
       "homepage": "https://github.com/telus-digital/spectra/tree/main/spectra",
       "documentation": "https://github.com/telus-digital/spectra/blob/main/spectra/README.md",
@@ -20,7 +20,7 @@
         "speckit_version": ">=0.11.0"
       },
       "provides": {
-        "commands": 8
+        "commands": 9
       },
       "tags": [
         "documentation",
@@ -45,13 +45,15 @@
         "discovery",
         "risk",
         "test-strategy",
-        "coverage"
+        "coverage",
+        "test-plan",
+        "tdd"
       ],
       "verified": false,
       "downloads": 0,
       "stars": 0,
       "created_at": "2026-07-09T00:00:00Z",
-      "updated_at": "2026-09-10T00:00:00Z",
+      "updated_at": "2026-09-11T00:00:00Z",
       "download_url": "https://raw.githubusercontent.com/telus-digital/spectra/main/docs/packages/spectra.zip"
     }
   }

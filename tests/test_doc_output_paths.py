@@ -214,6 +214,73 @@ class CanonicalOutputPaths(unittest.TestCase):
                         )
 
 
+class TheOutputIsNotAnArtifactRootDocument(unittest.TestCase):
+    """`test-plan` is the first document command that is deliberately NOT in CANONICAL.
+
+    Every assertion `DOCUMENT_COMMANDS` drives below describes a command that *writes* into the artifact
+    root: it must contain the literal `never write it`, name all six publication signals, and recommend
+    `documents/`. `speckit.spectra.test-plan` does none of that, because it writes beside the
+    specification it was handed — `specs/<feature>/test-plan.md` — and resolves the declared root only to
+    *locate* another agent's strategy document. Adding it to `CANONICAL` would demand three clauses that
+    would be false in the shipped command, and would assert a write target it does not have.
+
+    Which leaves a gap this class exists to close: in a dict, "deliberately absent" and "someone forgot"
+    look exactly the same. So the omission is asserted, with its reason, and a future maintainer who adds
+    the entry fails a test that explains why the entry does not belong. The reading of Principle VII's
+    `specs/` carve-out that permits the placement is argued in specs/021-test-plan-agent/plan.md under
+    Complexity Tracking.
+    """
+
+    COMMAND = "test-plan.md"
+
+    def test_the_command_ships(self):
+        """Guard the guard: if the file is gone, the assertions below pass for the wrong reason."""
+        self.assertTrue(
+            (COMMANDS_DIR / self.COMMAND).is_file(),
+            f"{self.COMMAND} no longer ships; this class asserts a deliberate omission about it",
+        )
+
+    def test_it_is_deliberately_absent_from_canonical(self):
+        self.assertNotIn(
+            self.COMMAND,
+            CANONICAL,
+            f"{self.COMMAND} was added to CANONICAL, which puts it into DOCUMENT_COMMANDS and asserts "
+            "it writes into the artifact root. It does not: it writes test-plan.md beside the "
+            "specification it was given, and reads the declared root only to find TEST_STRATEGY.md. "
+            "See specs/021-test-plan-agent/plan.md, Complexity Tracking, before changing this",
+        )
+
+    def test_it_writes_beside_the_specification_instead(self):
+        text = (COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8")
+        self.assertIn(
+            "test-plan.md",
+            text,
+            f"{self.COMMAND} no longer names its output file",
+        )
+        self.assertIn(
+            "no artifact root is resolved for this output",
+            " ".join(text.split()).lower(),
+            f"{self.COMMAND} no longer states that it resolves no artifact root for its output; that "
+            "sentence is what tells a reader the omission above is a decision",
+        )
+
+    def test_it_still_reads_the_declared_root_for_the_lookup(self):
+        """Read-only use of the declaration, which must not silently disappear either."""
+        text = (COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8")
+        self.assertIn(
+            ROOT_DECLARATION,
+            text,
+            f"{self.COMMAND} no longer resolves the project's declared artifact root; a project that "
+            "declares one would have its strategy document looked for in the wrong place",
+        )
+        self.assertIn(
+            "this resolution is read-only",
+            " ".join(text.split()).lower(),
+            f"{self.COMMAND} no longer marks the root resolution read-only; without that, the three "
+            "write-time obligations it skips look like omissions rather than non-applicable",
+        )
+
+
 class TheDeclaredRoot(unittest.TestCase):
     """`docs/` is the default, not a hard-coded path — and defaulting there is checked first."""
 

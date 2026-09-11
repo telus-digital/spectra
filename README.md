@@ -112,6 +112,7 @@ phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception 
 | Requirements Analyst | Requirements & Discovery | Inception | Core | ✅ available |
 | BRD Generator | Requirements & Discovery | Inception | Add-on | ✅ available |
 | Impact Analyzer | Requirements & Discovery | Inception | Add-on | ✅ available |
+| Test Plan | Requirements & Discovery | Inception | Add-on | ✅ available |
 | Clarifier | Requirements & Discovery | Inception | Add-on | ✅ available |
 | Requirements Quality | Requirements & Discovery | Inception | Add-on | ✅ available |
 | GDPR Compliance | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
