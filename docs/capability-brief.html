@@ -319,6 +319,11 @@
   .sdd-legend .dot{width:14px;height:14px;border-radius:50%;flex:none}
   .sdd-legend .dot.human{background:var(--purple)}
   .sdd-legend .dot.worker{background:#19C2A8}
+  /* The Spec Kit loop ships as a raster plate rather than inline SVG like the other
+     diagrams on this page. The source image is drawn on white, so it rides on its own
+     light surface instead of sitting straight on the page's dark ink. */
+  .sdd-figure{margin:34px 0 4px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px}
+  .sdd-figure img{width:100%;height:auto;display:block}
 
   /* capabilities / agents */
   .legend{display:flex;flex-wrap:wrap;gap:22px;margin-top:22px}
@@ -460,6 +465,15 @@
   .dlc-note b{color:var(--text)}
   .dlc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
   .dlc-col{display:flex;flex-direction:column;gap:12px}
+  /* Every phase column holds the same four rows — phase header, team, AI, team — so
+     they ride a shared subgrid and each row lines up across all three columns. Left to
+     themselves the columns size independently and the AI cells, which carry different
+     amounts of copy, end at different heights. The flex rule above stays as the
+     fallback for browsers without subgrid; there the columns just run ragged as before. */
+  @supports (grid-template-rows:subgrid){
+    .dlc-grid{grid-template-rows:repeat(4,auto);gap:12px 16px}
+    .dlc-col{display:grid;grid-row:span 4;grid-template-rows:subgrid;gap:12px}
+  }
   .dlc-ph{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px;border-radius:10px;font-weight:600}
   .dlc-ph.inc{color:#B583F5;background:rgba(181,131,245,.12);border:1px solid rgba(181,131,245,.45)}
   .dlc-ph.con{color:#7E8BFF;background:rgba(126,139,255,.12);border:1px solid rgba(126,139,255,.45)}
@@ -809,6 +823,12 @@
       <b>spec-driven development</b> to AI coding agents. That methodology is a proven discipline for turning intent into working software, and it
       complements AI exceptionally well. </p>
 
+    <figure class="sdd-figure">
+      <img src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/SDD.png"
+           width="2254" height="1841" loading="lazy"
+           alt="The spec-driven development loop. A BRD or raw requirements feed an AI agent that drafts specs; a human reviews them. The AI then produces technical design and architecture, which a human reviews, and from that a task list. After another human review the AI writes source code and tests, which go to a human-reviewed pull request and on into CI/CD. AI does the heavy lifting at every step; a human gates each hand-off." />
+    </figure>
+
       <br>
       
       <div class="sec-head"><h1>What sets SPECTRA apart</h1><span class="rule"></span></div>
@@ -907,8 +927,7 @@
             <span class="agent"><span class="d" style="background:var(--core)"></span>Guardrails</span>
             <span class="agent"><span class="d" style="background:var(--indigo)"></span>Domain Analyzer</span>
             <span class="agent"><span class="d" style="background:var(--core)"></span>Requirements Analyst</span>
-            <span class="agent"><span class="d" style="background:var(--indigo)"></span>Clarifier</span>
-            <span class="agent"><span class="d" style="background:var(--indigo)"></span>Requirements Quality</span>
+            <span class="agent more">and more</span>
           </div>
         </div>
         <div class="dlc-cell"><div class="who">Developers &middot; Architects &middot; QE Leads</div><ul><li>Review technical feasibility</li><li>Validate architecture alignment</li><li>Define QE standards</li></ul></div>
@@ -924,12 +943,7 @@
             <span class="agent"><span class="d" style="background:var(--core)"></span>Architecture Planner</span>
             <span class="agent"><span class="d" style="background:var(--indigo)"></span>Architecture Reviewer</span>
             <span class="agent"><span class="d" style="background:var(--core)"></span>Task Planner</span>
-            <span class="agent"><span class="d" style="background:var(--indigo)"></span>Consistency</span>
-            <span class="agent"><span class="d" style="background:var(--core)"></span>Implementation</span>
-            <span class="agent"><span class="d" style="background:var(--core)"></span>Testing</span>
-            <span class="agent"><span class="d" style="background:var(--indigo)"></span>Test Coverage Analyst</span>
-            <span class="agent"><span class="d" style="background:var(--indigo)"></span>Test Automation Analyst</span>
-            <span class="agent"><span class="d" style="background:var(--indigo)"></span>Security Analyst</span>
+            <span class="agent more">and more</span>
           </div>
         </div>
         <div class="dlc-cell"><div class="who">QE Engineers</div><ul><li>Validate test scenarios</li><li>Approve test executions</li><li>Guide quality improvement</li></ul></div>
@@ -945,14 +959,15 @@
             <span class="agent"><span class="d" style="background:var(--core)"></span>Create PR</span>
             <span class="agent"><span class="d" style="background:var(--indigo)"></span>Operations Monitor</span>
             <span class="agent"><span class="d" style="background:var(--indigo)"></span>Incident Responder</span>
+            <span class="agent more">and more</span>
           </div>
         </div>
         <div class="dlc-cell"><div class="who">Developers</div><ul><li>Approve AI fixes</li><li>Validate optimizations</li><li>Monitor system health</li></ul></div>
       </div>
     </div>
     <div class="mono" style="font-size:11px;letter-spacing:.06em;color:var(--text-faint);display:flex;gap:18px;margin-top:16px">
-      <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:var(--core);display:inline-block"></span>Core delivery</span>
-      <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:var(--indigo);display:inline-block"></span>Quality &amp; assurance</span>
+      <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:var(--core);display:inline-block"></span>Core agent</span>
+      <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:var(--indigo);display:inline-block"></span>Add-on agent</span>
     </div>
   </div>
 </section>
