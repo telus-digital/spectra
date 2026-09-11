@@ -681,6 +681,66 @@
       <rect x="20" y="100" width="990" height="44" rx="9" fill="#19C2A8"/>
       <text x="515" y="127" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="14.5" font-weight="600" fill="#06302B">Shared context &mdash; one thread, end-to-end</text>
     </svg>
+
+    <div style="margin-top:52px">
+      <div class="sec-head"><h1>Runs inside your AI tooling &mdash; and inside its guardrails</h1><span class="rule"></span></div>
+      <p class="lead" style="margin-top:12px">SPECTRA layers on top of the coding agent a team already runs &mdash; Claude Code, as an example &mdash; rather than beside it. Working inside that agent means working through the same harness: the same shell, the same CLIs, the same repositories, build systems, and internal services the developer already has on their machine. That is what lets a SPECTRA agent do the engineering work instead of only describing it &mdash; it operates at exactly the level of access its user has, and no further. Control is inherited the same way: every action passes through the host agent&rsquo;s permission model and whatever policies, approvals, and allow&#8239;/&#8239;deny rules the organization has already configured there. SPECTRA grants itself nothing and asks for no exemptions &mdash; if the coding agent may not do something in your environment, neither may SPECTRA. Adopting SPECTRA changes what the agent produces, not what it is permitted to touch.</p>
+
+      <svg class="ctx-svg" viewBox="0 0 1040 364" role="img" aria-label="SPECTRA runs inside the host coding agent, which itself sits inside the organization's policy and guardrail boundary. Every action SPECTRA takes on the developer's own shell, repositories, build systems and internal services passes down through the host agent's policy and permission gate, so SPECTRA needs no privileges of its own.">
+        <defs>
+          <marker id="hzArr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#7E6F90"/></marker>
+        </defs>
+        <text x="20" y="16" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.5">SAME HARNESS &mdash; SAME GUARDRAILS</text>
+
+        <!-- the org's policy boundary, configured on the AI tooling: it encloses SPECTRA too -->
+        <rect x="20" y="28" width="990" height="200" rx="12" fill="#B583F5" fill-opacity=".05" stroke="#B583F5" stroke-dasharray="6 5"/>
+        <text x="38" y="51" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.3">ORGANIZATION POLICY, STANDARDS &amp; GUARDRAILS</text>
+
+        <rect x="44" y="66" width="942" height="54" rx="9" fill="#241B31" stroke="#8E54DC"/>
+        <text x="64" y="98" fill="#F3EFF8" font-family="Space Grotesk, sans-serif" font-size="14.5" font-weight="600">SPECTRA &mdash; multi-agent orchestration across the SDLC</text>
+        <rect x="760" y="79" width="208" height="28" rx="14" fill="#B583F5" fill-opacity=".12" stroke="#B583F5" stroke-opacity=".45"/>
+        <text x="864" y="97" text-anchor="middle" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.1">NO EXTRA PRIVILEGES</text>
+
+        <line x1="515" y1="122" x2="515" y2="146" stroke="#7E6F90" stroke-width="1.4" marker-end="url(#hzArr)"/>
+        <text x="530" y="140" fill="#7E6F90" font-family="Inter, sans-serif" font-size="10.5" font-style="italic">SPECTRA runs inside the host agent &mdash; not beside it</text>
+
+        <rect x="44" y="150" width="942" height="62" rx="9" fill="#241B31" stroke="#7E8BFF"/>
+        <text x="64" y="176" fill="#F3EFF8" font-family="Space Grotesk, sans-serif" font-size="14.5" font-weight="600">Host AI tooling &mdash; e.g. Claude Code</text>
+        <text x="64" y="196" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11.5">the harness: tool access, allow / deny rules, approval prompts, audit trail</text>
+
+        <!-- the only way out of the boundary is the tooling's own gate -->
+        <rect x="398" y="216" width="234" height="24" rx="12" fill="#0F0A16" stroke="#B583F5"/>
+        <text x="515" y="232" text-anchor="middle" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.1">POLICY + PERMISSION GATE</text>
+        <line x1="515" y1="242" x2="515" y2="256" stroke="#7E6F90" stroke-width="1.4" marker-end="url(#hzArr)"/>
+
+        <rect x="20" y="256" width="990" height="76" rx="12" fill="none" stroke="#3A2E4A"/>
+        <text x="38" y="279" fill="#7E6F90" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.3">THE DEVELOPER&rsquo;S OWN MACHINE &amp; TOOLING</text>
+        <g font-family="Inter, sans-serif" font-size="12" fill="#B4A7C6" text-anchor="middle">
+          <rect x="36"  y="288" width="183" height="34" rx="8" fill="#191222" stroke="#3A2E4A"/><text x="127.5" y="310">Shell &amp; CLIs</text>
+          <rect x="230" y="288" width="183" height="34" rx="8" fill="#191222" stroke="#3A2E4A"/><text x="321.5" y="310">Git &amp; code repos</text>
+          <rect x="424" y="288" width="183" height="34" rx="8" fill="#191222" stroke="#3A2E4A"/><text x="515.5" y="310">Build, test &amp; CI</text>
+          <rect x="618" y="288" width="183" height="34" rx="8" fill="#191222" stroke="#3A2E4A"/><text x="709.5" y="310">Internal services</text>
+          <rect x="812" y="288" width="183" height="34" rx="8" fill="#191222" stroke="#3A2E4A"/><text x="903.5" y="310">MCP &amp; integrations</text>
+        </g>
+        <text x="20" y="352" fill="#7E6F90" font-family="Inter, sans-serif" font-size="12" font-style="italic">Reach is inherited from the host agent &mdash; and so are the limits: same policies, same approvals, same audit trail.</text>
+      </svg>
+
+      <p class="lead" style="margin-top:30px">SPECTRA is compatible with a wide range of AI coding agents, so it runs on whichever one a team already uses:</p>
+
+      <div class="agents" style="margin-top:18px">
+        <span class="agent"><span class="mi">C</span>Claude Code</span>
+        <span class="agent"><span class="mi">Co</span>Copilot</span>
+        <span class="agent"><span class="mi">Cu</span>Cursor</span>
+        <span class="agent"><span class="mi">Ge</span>Gemini CLI</span>
+        <span class="agent"><span class="mi">Cx</span>Codex CLI</span>
+        <span class="agent"><span class="mi">Ki</span>Kiro CLI</span>
+        <span class="agent"><span class="mi">Cl</span>Cline</span>
+        <span class="agent"><span class="mi">Go</span>Goose</span>
+        <span class="agent"><span class="mi">Qw</span>Qwen</span>
+        <span class="agent"><span class="mi">Ro</span>Roo</span>
+        <span class="agent more">+ 20 more</span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -692,7 +752,7 @@
     <!-- Layer 1 -->
     <div class="mono" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:10px;margin-top:4px">
     </div>
-          <div class="sec-head"><h1>How the shared context dissolves each problem</h1><span class="rule"></span></div>
+    <div class="sec-head"><h1>How the shared context dissolves each problem</h1><span class="rule"></span></div>
     <div class="pillars" style="margin-top:22px">
       <div class="pillar">
         <h3 style="margin:8px 0 7px">One source of truth</h3>
@@ -756,23 +816,7 @@
       <p class="lead">On that foundation, SPECTRA adds its
         <b>multi-agent orchestration layer</b> — the layers that make it enterprise-grade.
       </p>
-
-    <div class="subsec-head"><h3>SPECTRA Agents</h3><span class="rule"></span></div>
-    <p class="lead">Instead of one generalist doing everything, SPECTRA comes with a roster of agents &mdash; each optimized for a single job and primed with the project's (or organization's) standards. Every SPECTRA agent runs on the coding agent the team already uses.</p>
-    
-      <div class="agents">
-        <span class="agent"><span class="mi">C</span>Claude Code</span>
-        <span class="agent"><span class="mi">Co</span>Copilot</span>
-        <span class="agent"><span class="mi">Cu</span>Cursor</span>
-        <span class="agent"><span class="mi">Ge</span>Gemini CLI</span>
-        <span class="agent"><span class="mi">Cx</span>Codex CLI</span>
-        <span class="agent"><span class="mi">Ki</span>Kiro CLI</span>
-        <span class="agent"><span class="mi">Cl</span>Cline</span>
-        <span class="agent"><span class="mi">Go</span>Goose</span>
-        <span class="agent"><span class="mi">Qw</span>Qwen</span>
-        <span class="agent"><span class="mi">Ro</span>Roo</span>
-        <span class="agent more">+ 20 more</span>
-      </div>
+      <p class="lead" style="margin-top:14px">Instead of one generalist doing everything, SPECTRA comes with a roster of agents &mdash; each optimized for a single job and primed with the project&rsquo;s standards.</p>
 
     <div class="subsec-head"><h3>Two types of agents</h3><span class="rule"></span></div>
     <p class="lead">Every SPECTRA roster is built from two kinds of agents &mdash; a required <b>core</b> that runs the SDLC end-to-end, plus optional <b>add-ons</b> you switch on as the domain demands.</p>
