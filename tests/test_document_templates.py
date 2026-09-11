@@ -34,6 +34,7 @@ DOCUMENT_COMMANDS = {
     "adr.md": "adr-template",
     "brd.md": "brd-template",
     "create-pr.md": "pr-template",
+    "defect-rca.md": "defect-rca-template",
     "review-pr.md": "review-template",
     "impact.md": "impact-analysis-template",
     "test-strategy.md": "test-strategy-template",
