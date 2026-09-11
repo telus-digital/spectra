@@ -291,8 +291,8 @@ both the working copy and the shipped zip.
 
 ## Phase 12: Publish (Constitution Development Workflow step 6)
 
-- [ ] T071 Verify the CLI channel is untouched: root `VERSION` unchanged, no git tag created, no GitHub Release drafted (FR-070, Principle VI)
-- [ ] T072 Commit the `spectra/` folder, `specs/023-kb-vault-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md` and `AGENTS_LIST.md` on branch `023-kb-vault-agent`
+- [X] T071 Verify the CLI channel is untouched: root `VERSION` unchanged, no git tag created, no GitHub Release drafted (FR-070, Principle VI)
+- [X] T072 Commit the `spectra/` folder, `specs/023-kb-vault-agent/`, `agents-list.json`, `catalog.json`, `docs/`, `README.md` and `AGENTS_LIST.md` on branch `023-kb-vault-agent`
 - [ ] T073 Open the pull request for `023-kb-vault-agent` and merge to `main` once the `catalog` job and the test suite in `.github/workflows/ci.yml` pass; the catalog and package are live immediately at their raw links
 
 ---
