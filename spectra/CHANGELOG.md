@@ -3,6 +3,70 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.14.0] - 2026-09-11
+
+### Added
+- **`speckit.spectra.test-plan` — the tests, agreed before anyone writes them.**
+  Run it after `speckit.specify` and before the planning command, on one feature at a time. Hand it the
+  path to a `spec.md` and it reads that specification, the constitution, the project's test strategy, the
+  existing suite, and the source the feature touches, then writes one `test-plan.md` **beside the
+  specification**: scope, risks, traceable test conditions, environment and data, and exit criteria. The
+  document is circulated and approved; the planning command then designs around it.
+
+  It is for teams that want the test set settled before the implementation is designed. It produces no
+  tasks, writes no test code, and tracks nothing.
+
+  What separates it from a template fill-in is the traceability, enforced in both directions. **Every
+  acceptance criterion in the specification reaches at least one test condition, or is reported as
+  uncovered with a reason** — never absent from both. **Every condition names what it verifies**, using
+  the specification's own identifier (`FR-014`, `SC-003`, or the composed `US2-AC1` for an acceptance
+  scenario), so a reviewer can check coverage in either direction without reading the code. The run states
+  the count: criteria covered out of criteria found.
+
+  Four decisions a reader would otherwise find surprising:
+
+  **The specification path is required, and it is never inferred.** Not from the current branch, not from
+  `.specify/feature.json`, not from modification times, not by scanning `specs/` — and it does not offer a
+  picker either. With no argument it asks and stops, having read nothing. This is deliberately less
+  helpful than the rest of the workflow, because the output is a document that gets circulated and signed:
+  a plan generated against the wrong specification reads as authoritative and is undetectably wrong to
+  whoever approves it. A picker is the same failure with extra steps.
+
+  **The plan is written beside the specification, not under the artifact root.** No sequence number, no
+  artifact subfolder. A test plan is *about one feature* and is consumed by the planning command, so its
+  identity is the feature's directory — exactly as the specification and plan next to it carry no number,
+  because the directory already supplies one. This is a documented reading of the convention's carve-out
+  for Spec Kit's own locations, argued in `specs/021-test-plan-agent/plan.md`.
+
+  **It carries no checkbox, in any section — exit criteria included.** It is approved, not tracked. An
+  approved, circulated document with live checkboxes creates a second apparent source of truth about
+  progress, and it will disagree with `tasks.md`. A checkbox reintroduced by a template override is
+  rendered as a plain statement instead: the team's section is kept, only the construct goes.
+
+  **The planning handoff is printed text, not a hook.** The run ends with a ready-to-copy invocation
+  naming the written path. No `before_plan` hook is registered and no core command is edited, so the
+  planning command works exactly as it does today for anyone who never installs this agent — which is
+  what makes it genuinely optional.
+
+  It inherits rather than invents. Level names come from `docs/test-strategy/TEST_STRATEGY.md` **verbatim**
+  where one exists, so the two documents read against each other; otherwise from the constitution, else
+  from convention — with `manual` always available, because a plan must be able to place a condition no
+  automated lens will ever cover. A declared coverage floor is carried into the exit criteria and
+  attributed, never adjusted. No level or tool is assigned that the project's manifests cannot support, so
+  a command-line tool never gets a browser driver. Existing coverage is established by **reading test
+  source, never running it**: a coverage claim cites the test file, and an absence claim cites the search.
+  Where a requirement is too ambiguous to test, it says so and writes no condition — a fabricated
+  condition would launder a guess into something a stakeholder approves.
+
+  Risk ratings are derived from stated triggers rather than judged, capped at two to five rows, with
+  `accept` a first-class response. Condition priority is inherited from the specification's own story
+  priorities, with prohibitions and data-integrity properties promoted to P1 regardless. Re-running asks
+  before rewriting, states what would change, and carries forward every explicitly-not-covered decision.
+  One file per run. Nothing executed. No network request.
+
+  Shaped by the new registered `test-plan-template`, overridable at
+  `.specify/templates/overrides/test-plan-template.md`.
+
 ## [1.13.0] - 2026-09-10
 
 ### Added

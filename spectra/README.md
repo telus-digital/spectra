@@ -15,6 +15,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 | `speckit.spectra.test-strategy` | Decide how this project tests itself — and what coverage floor it can actually hold — before the first feature is planned. |
 | `speckit.spectra.brd` | Turn a raw business requirement, typed or in a document, into a structured, specify-ready BRD. |
 | `speckit.spectra.impact` | Find out what a proposed feature would actually touch, with cited evidence, before anyone commits to building it. |
+| `speckit.spectra.test-plan` | Turn a specification into a test plan stakeholders can approve — traceable conditions, stated exclusions, and a real exit bar — before the implementation is designed. |
 | `speckit.spectra.adr` | Capture a context-aware Architecture Decision Record grounded in the codebase, prior ADRs, and the constitution. |
 | `speckit.spectra.flaky-test-detector` | Find the tests that pass and fail on the same code, then fix the ones you approve, one at a time. |
 | `speckit.spectra.create-pr` | Open a correctly-targeted GitHub PR for the current spec branch and return its URL. |
@@ -597,6 +598,62 @@ Usage (Claude):
 No arguments required. Optionally pass a focus to weight the analysis — it never narrows the four
 mandatory lenses. The document's ten sections are overridable at
 `.specify/templates/overrides/test-strategy-template.md`.
+
+## `speckit.spectra.test-plan` — Test Plan
+
+An optional command that runs **between `specify` and `plan`**, for teams who want the test set agreed
+before the implementation is designed. Hand it a specification and it:
+
+1. Resolves the spec you named — a `spec.md` path, or the feature directory containing one. **It never
+   guesses.** With no argument it asks and stops, having read nothing.
+2. Reads your project — the spec in full, the constitution, your test strategy, existing tests and
+   runner configuration, dependency manifests, CI definitions, and the source the feature touches.
+3. Resolves the **level vocabulary** from your own `TEST_STRATEGY.md` where you have one, taking its lens
+   names verbatim so the two documents read against each other.
+4. Turns every acceptance criterion into a **test condition** — or reports it as uncovered, with a reason.
+5. Derives the risk table from stated triggers, and condition priority from your spec's own story
+   priorities.
+6. Writes one `test-plan.md` **beside the spec**, then prints the planning invocation that consumes it.
+
+**Traceability runs both ways, and that is the product.** Every acceptance criterion reaches at least one
+condition or the *explicitly not covered* list — never neither. Every condition names what it verifies
+using your spec's own identifiers, so a reviewer can check coverage in either direction without reading
+code. The run reports the count: criteria covered out of criteria found.
+
+**It will not guess which spec you meant.** No branch-name inference, no `.specify/feature.json`, no
+most-recent-file heuristic, and no picker. This is deliberately less helpful than the rest of the
+workflow, because the output gets circulated and signed: a plan built against the wrong spec reads as
+authoritative and is undetectably wrong to whoever approves it.
+
+**It never invents a decision your spec does not contain.** A requirement too ambiguous to test is
+reported as a gap naming what is missing — not given a plausible condition. A fabricated condition is
+worse than the gap, because it launders a guess into something a stakeholder approves.
+
+**The document carries no checkboxes — exit criteria included.** It is approved, not tracked; `tasks.md`
+is what records whether the bar was met. A checkbox reintroduced by a template override is rendered as a
+plain statement: your section is kept, only the construct goes.
+
+**It runs nothing.** Existing coverage is read from your test source, never executed. A coverage claim
+cites the test file; an absence claim cites the search. And no level or tool is assigned that your
+manifests cannot support, so a command-line tool never gets a browser driver.
+
+Unlike the other document agents it writes **beside the specification** rather than under your artifact
+root — no number, no subfolder. A test plan is about one feature, so its identity is that feature's
+directory, exactly as the `spec.md` and `plan.md` next to it carry no number either. Your declared
+`Artifact root:` is read for one purpose only: finding `TEST_STRATEGY.md`.
+
+A re-run — usually after `clarify` changes the spec — reads the existing plan, states what would change
+before you answer, and carries forward every explicitly-not-covered decision or says it removed one.
+
+Usage (Claude):
+
+```
+/speckit-spectra-test-plan specs/021-signed-webhooks/spec.md
+```
+
+The spec path is required. Pass `--non-interactive` in CI: it will create a plan that does not exist, but
+never rewrite one that does. The document's six sections are overridable at
+`.specify/templates/overrides/test-plan-template.md`.
 
 ## License, trademarks, and disclaimer
 

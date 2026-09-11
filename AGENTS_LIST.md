@@ -314,6 +314,84 @@ What it refuses to do is as important as what it does:
   /speckit-spectra-impact --non-interactive Retire the v1 pricing endpoint
   ```
 
+<!-- SPECTRA:AGENT id=test-plan -->
+### Test Plan ✅
+
+**`speckit.spectra.test-plan`** — Get the tests **agreed before anyone writes them**. Hand it the path to
+a `spec.md` and it reads that specification, your constitution, your test strategy, your existing suite,
+and the source the feature touches, then writes one `test-plan.md` **beside the spec**: scope with real
+exclusions, a risk table that is a decision rather than an inventory, traceable test conditions,
+environment and data, and an exit bar someone can make a go/no-go call from. It runs between `specify`
+and `plan`, and it is built for teams who want the test set settled before the implementation is designed.
+
+The document has two audiences and that shapes everything. A stakeholder reads it and approves it; the
+planning command reads it and designs around it. So it states intent, not progress — and it produces no
+tasks, writes no test code, and tracks nothing.
+
+What makes it worth more than an hour with a whiteboard is **traceability that runs both ways**. Every
+acceptance criterion in your spec reaches at least one test condition, or is reported as uncovered with a
+reason — never absent from both. Every condition names what it verifies using your spec's own identifiers
+(`FR-014`, `SC-003`, or the composed `US2-AC1` for an acceptance scenario), so a reviewer can check
+coverage in either direction without opening the code. The run tells you the count.
+
+What it refuses to do is as important as what it does:
+
+- **It will not guess which spec you meant.** No branch-name inference, no `.specify/feature.json`, no
+  most-recently-modified heuristic — and no picker either. With no argument it asks and stops, having read
+  nothing. This is deliberately less helpful than the rest of the workflow: the output is a document that
+  gets circulated and signed, and a plan built against the wrong spec reads as authoritative and is
+  undetectably wrong to whoever approves it. A picker is the same failure with extra steps.
+- **It never invents the missing decision.** Where a requirement is too ambiguous to test, it says so and
+  writes no condition for it. A plausible-looking condition would be worse than the gap, because it
+  launders a guess into something a stakeholder approves — and the guess becomes a requirement nobody
+  agreed to.
+- **It carries no checkboxes — exit criteria included.** It is approved, not tracked. A circulated document
+  with live checkboxes creates a second apparent source of truth about progress, and it will disagree with
+  `tasks.md`. If a template override puts checkboxes back, they are rendered as plain statements: your
+  section is kept, only the construct goes.
+- **It runs nothing.** Existing coverage is established by reading test source, never by executing the
+  suite or a coverage tool. A coverage claim cites the test file; an absence claim cites the search — "no
+  test referencing `SignatureVerifier` found under `tests/`" is allowed, "there is no coverage for
+  signature verification" is not.
+- **It inherits rather than invents.** Level names come from your `TEST_STRATEGY.md` **verbatim** where you
+  have one — not normalized, not mapped — so the two documents read against each other. A declared coverage
+  floor is carried into the exit criteria and attributed, never adjusted. And no level or tool is assigned
+  that your dependency manifests cannot support, so a command-line tool never gets handed a browser driver.
+
+- **Arguments** — the path to a `spec.md`, or to the feature directory containing it (**required**, and
+  never inferred). `--non-interactive` for CI.
+- **Use it when** — a spec is finished, your team works test-first, and you want the test set reviewed and
+  agreed before the implementation is planned. Skip it when nobody outside the implementing team needs to
+  see the test set; it is an add-on, and nothing in the workflow prompts for it.
+- **Where it writes** — `test-plan.md` in the directory of the spec you gave it. No sequence number, no
+  artifact subfolder, no `Artifact root:` resolution for the output. A test plan is *about one feature*, so
+  its identity is that feature's directory, exactly as `spec.md` and `plan.md` beside it carry no number.
+  It reads your declared artifact root for one purpose only — finding `TEST_STRATEGY.md`.
+- **Feeding it to the planner is one copy-paste.** The run ends with a ready-to-copy planning invocation
+  naming the written path. No hook is registered and no core command is modified, so `plan` behaves exactly
+  as it does today for anyone who never installs this agent. That is what keeps it genuinely optional.
+- **Re-runs ask first.** The usual trigger is a `clarify` session changing the spec. It reads the existing
+  plan, tells you what would change before you answer, and carries forward every *explicitly not covered*
+  decision — or says it removed one. Declining leaves the file byte-identical. One file, rewritten in
+  place; Git carries the history.
+- **Priorities come from your spec.** A condition inherits the priority of the story it verifies, and only
+  P1 conditions gate the exit criteria. The one override: a prohibition, safety, or data-integrity property
+  is promoted to P1 whatever the story says, because a "MUST NOT" requirement rarely has a user story and
+  is exactly the one whose violation is unrecoverable.
+- **Template** — `test-plan-template.md`, a six-section structure. Override it at
+  `.specify/templates/overrides/test-plan-template.md` to reshape or drop sections; the override is
+  committed, team-wide, and survives extension updates. Each run reports which template it used. The
+  traceability invariant, the no-checkbox rule, the cited-absence rule, the priority derivation, and the
+  coverage statement stay with the command — a template shapes the document, not the standards.
+- **It does not** write tests, generate tasks, modify your spec, touch test or CI configuration, edit the
+  constitution, commit, or make a network request. It writes exactly one file.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-test-plan specs/021-signed-webhooks/spec.md
+  /speckit-spectra-test-plan specs/021-signed-webhooks
+  /speckit-spectra-test-plan --non-interactive specs/021-signed-webhooks/spec.md
+  ```
+
 <!-- SPECTRA:AGENT id=flaky-test-detector -->
 ### Flaky Test Detector ✅
 

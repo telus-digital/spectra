@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.13.0"
+  version: "1.14.0"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
@@ -54,6 +54,9 @@ provides:
     - name: "speckit.spectra.impact"
       file: "commands/impact.md"
       description: "Produce a codebase-grounded feature impact analysis for a stakeholder go / no-go decision before any specification work begins — cited findings, a defined impact rating, at most five clarifying questions, and a stated coverage boundary — written under docs/impact-analysis/ (or the project's declared artifact root). Makes no network request and accepts no repository URL: other systems are declared as text, a document, or a local directory read in place."
+    - name: "speckit.spectra.test-plan"
+      file: "commands/test-plan.md"
+      description: "Turn one specification into a stakeholder-facing test plan written beside it as test-plan.md — scope, risks, traceable test conditions, environment, and exit criteria — grounded in the project's own testing policy and its existing suite. The spec path is required and never inferred: no branch name, no feature record, no most-recent-file guess, because a plan generated against the wrong spec is undetectably wrong to whoever approves it. Every acceptance criterion reaches a condition or is reported as uncovered, and an ambiguous requirement gets a stated gap rather than an invented condition. Carries no checkbox in any section — it is approved, not tracked — and hands the approved plan to the planning command as printed text rather than a hook. Writes one file, runs nothing, and makes no network request."
 
   # The section structure of every document Spectra produces. Both are resolved through Spec Kit's template
   # stack, so a project overrides one by dropping its own copy at .specify/templates/overrides/<name>.md —
@@ -79,6 +82,9 @@ provides:
     - name: "test-strategy-template"
       file: "templates/test-strategy-template.md"
       description: "Section structure for the testing strategy produced by speckit.spectra.test-strategy. Override at .specify/templates/overrides/test-strategy-template.md. The evidence-or-convention marker, the floor-never-exceeds-baseline rule, the baseline provenance labels, the tool tiers, and the coverage statement stay with the command."
+    - name: "test-plan-template"
+      file: "templates/test-plan-template.md"
+      description: "Section structure for the per-feature test plans produced by speckit.spectra.test-plan. Override at .specify/templates/overrides/test-plan-template.md. The traceability invariant, the no-checkbox rule, the cited-absence rule, the priority derivation, the secret prohibition, and the coverage statement stay with the command."
 
 hooks:
   after_implement:
@@ -111,3 +117,5 @@ tags:
   - "risk"
   - "test-strategy"
   - "coverage"
+  - "test-plan"
+  - "tdd"

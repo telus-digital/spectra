@@ -1,13 +1,41 @@
 {
   "schema_version": "1.0",
   "phases": [
-    { "id": "foundation", "title": "Foundation", "aidlc": "Inception" },
-    { "id": "requirements-discovery", "title": "Requirements & Discovery", "aidlc": "Inception" },
-    { "id": "architecture-design", "title": "Architecture & Design", "aidlc": "Construction" },
-    { "id": "planning", "title": "Planning", "aidlc": "Construction" },
-    { "id": "implementation", "title": "Implementation", "aidlc": "Construction" },
-    { "id": "testing-quality", "title": "Testing & Quality", "aidlc": "Construction" },
-    { "id": "deployment-operations", "title": "Deployment & Operations", "aidlc": "Operation" }
+    {
+      "id": "foundation",
+      "title": "Foundation",
+      "aidlc": "Inception"
+    },
+    {
+      "id": "requirements-discovery",
+      "title": "Requirements & Discovery",
+      "aidlc": "Inception"
+    },
+    {
+      "id": "architecture-design",
+      "title": "Architecture & Design",
+      "aidlc": "Construction"
+    },
+    {
+      "id": "planning",
+      "title": "Planning",
+      "aidlc": "Construction"
+    },
+    {
+      "id": "implementation",
+      "title": "Implementation",
+      "aidlc": "Construction"
+    },
+    {
+      "id": "testing-quality",
+      "title": "Testing & Quality",
+      "aidlc": "Construction"
+    },
+    {
+      "id": "deployment-operations",
+      "title": "Deployment & Operations",
+      "aidlc": "Operation"
+    }
   ],
   "agents": [
     {
@@ -33,7 +61,7 @@
     {
       "id": "test-strategy",
       "title": "Test Strategy",
-      "description": "Decide how this project tests itself \u2014 and what coverage floor it can actually hold \u2014 before the first feature is planned.",
+      "description": "Decide how this project tests itself — and what coverage floor it can actually hold — before the first feature is planned.",
       "status": "available",
       "phase": "foundation",
       "type": "add-on",
@@ -87,6 +115,16 @@
       "type": "add-on",
       "provider": "spectra",
       "command": "speckit.spectra.impact"
+    },
+    {
+      "id": "test-plan",
+      "title": "Test Plan",
+      "description": "Turn a specification into a test plan stakeholders can approve — traceable conditions, stated exclusions, and a real exit bar — before the implementation is designed.",
+      "status": "available",
+      "phase": "requirements-discovery",
+      "type": "add-on",
+      "provider": "spectra",
+      "command": "speckit.spectra.test-plan"
     },
     {
       "id": "clarify",
