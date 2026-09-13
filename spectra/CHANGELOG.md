@@ -3,6 +3,42 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.17.2] - 2026-09-12
+
+### Fixed
+- **The strategy document's front matter now parses.** A generated `TEST_STRATEGY.md` failed to render —
+  *"Nested mappings are not allowed in compact mappings at line 10"* — and a reader that cannot parse
+  the header shows an error instead of the document, so a correct strategy was lost to a stray
+  character.
+
+  Two violations, not one. `amendment_state` was emitted as a sentence — *"PARTIAL - drafted and
+  APPROVED by the user in this session. Not written to the constitution: this command never writes that
+  file."* — and the colon in the middle of it reads as a nested mapping. Four lines later
+  `clarification_round` carried a sentence *and* an indented sequence beneath the same key, which is
+  invalid no matter how the first one is quoted.
+
+  The cause was not the fields; it was describing them in prose. Step 10 named the contents in
+  sentences — "the coverage-of-analysis statement", "the amendment state", five questions with four
+  fields each — showed no shape, and closed by asking for the header to be kept terse. That hint lost
+  to the surrounding instruction to record everything, which is what hints do. `speckit.spectra.impact`
+  has emitted front matter since it shipped without ever doing this, and the only structural difference
+  is that it **shows** a literal block instead of describing one.
+
+  So this one does too. Step 10 now carries a worked YAML example and four rules: it has to parse;
+  every free-text value is quoted — all of them, not just the ones you spot a colon in; a key takes a
+  scalar or a collection and never both; and anything that would run to a paragraph goes in the body.
+  `amendment_state` becomes one word from a fixed set, because the proposed-amendment section already
+  carries the state, the governing clause, the conflict, and the approval in full — a header repeating
+  a paragraph is what broke the document. `disposition` is likewise enumerated.
+
+  **The clarification answers stay in the front matter.** They are there because a project's template
+  override may delete the body section that holds them, and the header is the only part of the document
+  the command owns — so the fix reshapes the header rather than relocating the record, and the command
+  now says outright not to resolve a future rendering problem by deleting the block.
+
+  `speckit.spectra.test-plan` was checked and has no exposure: it emits a Markdown identifying block,
+  not YAML. No other document command emits front matter at all.
+
 ## [1.17.1] - 2026-09-12
 
 ### Fixed

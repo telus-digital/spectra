@@ -14,6 +14,8 @@
     a baseline is always labelled measured / reported / unavailable; no tool is named that this stack
     cannot run; and coverage of the analysis is always stated. Those rules live in the command, not
     here.
+  - The document's YAML front matter is written by the command, not by this template, and it has to
+    parse. Overriding the body is supported; reshaping the header is not.
   - HTML comments like this one are guidance and are stripped from the output.
 -->
 
