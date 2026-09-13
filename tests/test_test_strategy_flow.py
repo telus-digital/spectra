@@ -213,6 +213,162 @@ class EveryRecommendationIsTraceable(unittest.TestCase):
         text = command_text().lower()
         self.assertIn("cite what you searched for and where", text)
 
+    def test_an_answer_is_a_third_provenance_not_a_citation(self):
+        """An answer written up as evidence is the one failure a reader cannot detect."""
+        text = command_text()
+        self.assertIn("`stated`", text)
+        self.assertIn("`convention`", text)
+
+
+class TheClarificationRoundAsksOnlyWhatItCannotMeasure(unittest.TestCase):
+    """The round earns its place by what it refuses to ask.
+
+    An agent that asks the user what it is about to measure gets a wrong answer that outranks a right
+    one, and the whole document then rests on it. Spec 020 settled that for the mode (FR-006); this
+    generalises the same rule to everything Steps 1-3 and Step 8 establish. The never-ask list is the
+    load-bearing half of the feature — the questions themselves are the easy part.
+    """
+
+    def test_the_round_is_its_own_step(self):
+        self.assertIn("## Step 5 — The clarification round", command_text())
+
+    def test_it_states_what_may_be_asked(self):
+        text = command_text()
+        self.assertIn("Ask about judgment, intent, and constraint", text)
+        self.assertIn("Never ask about anything you are about to measure", text)
+
+    def test_the_never_ask_list_names_what_the_run_measures(self):
+        text = command_text()
+        self.assertIn("What you may never ask", text)
+        for measured in (
+            "greenfield, brownfield, or mixed",
+            "which test framework is in use",
+            "How many surfaces there are",
+            "Whether tests exist",
+            "What the coverage figure is",
+        ):
+            with self.subTest(measured=measured):
+                self.assertIn(measured, text)
+
+    def test_the_round_follows_the_reading_it_depends_on(self):
+        """Questions asked before Steps 1-4 cannot name a path, which makes them generic."""
+        text = command_text()
+        root = text.find("## Step 4 — Resolve where the strategy will live")
+        round_ = text.find("## Step 5 — The clarification round")
+        template = text.find("## Step 6 — Resolve the document's template")
+        self.assertNotEqual(-1, round_)
+        self.assertLess(root, round_)
+        self.assertLess(round_, template)
+
+    def test_the_count_is_fixed_and_announced(self):
+        text = command_text()
+        self.assertIn("Announce the round, once", text)
+        self.assertIn("Always five", text)
+
+    def test_questions_are_asked_one_at_a_time(self):
+        text = command_text()
+        self.assertIn("One question per turn", text)
+        self.assertIn("End the turn and wait", text)
+
+    def test_each_question_carries_a_recommendation_and_its_evidence(self):
+        text = command_text()
+        self.assertIn("mark exactly one as recommended", text)
+        self.assertIn("Give the evidence behind the mark", text)
+
+    def test_the_options_are_not_a_closed_menu(self):
+        text = command_text()
+        self.assertIn("Free text is always valid", text)
+
+    def test_a_settled_question_is_confirmed_rather_than_dropped(self):
+        """Dropping one would make the announced count a lie."""
+        text = command_text()
+        self.assertIn("Never skip a question, and never renumber the remainder", text)
+
+    def test_the_coverage_run_is_asked_first_and_only_once(self):
+        text = command_text()
+        self.assertIn("Ask about the coverage run first", text)
+        self.assertIn("warn that it executes the project's", text)
+        self.assertIn("nothing here reopens it", text)
+
+
+class DecliningTheRoundIsFree(unittest.TestCase):
+    """FR-015 to FR-020 — the property that makes an interactive agent safe to ship.
+
+    If declining costs anything, every user who was happy with the non-interactive command is worse
+    off. So every way out is written down, and all of them land on the answer the command would have
+    chosen by itself.
+    """
+
+    def test_defaults_end_the_round_immediately(self):
+        text = command_text()
+        self.assertIn('"Use your defaults"', text)
+        self.assertIn("end the round immediately", text)
+
+    def test_an_unanswered_question_records_its_disposition(self):
+        text = command_text()
+        self.assertIn("record it as not asked", text)
+        self.assertIn("Never block on an answer", text)
+
+    def test_a_reply_that_is_not_an_answer_re_asks(self):
+        text = command_text()
+        self.assertIn("ask the same question again", text)
+        self.assertIn("it does not advance the", text)
+
+    def test_declining_everything_reproduces_the_previous_document(self):
+        text = command_text()
+        self.assertIn("without the round at all", text)
+
+    def test_the_flag_is_documented_where_a_reader_looks_for_it(self):
+        text = command_text()
+        self.assertIn("`--non-interactive`", text)
+        self.assertIn("never silently becomes part of the hint", text)
+        non_interactive = text.split("## Non-interactive mode")[1]
+        self.assertIn("`--non-interactive`", non_interactive)
+        self.assertIn("ask **none** of the five", non_interactive)
+
+    def test_a_silent_run_and_a_declined_run_agree(self):
+        text = command_text()
+        self.assertIn("the same document an interactive run produces when the user declines", text)
+
+
+class AnAnswerNeverMovesAMeasurement(unittest.TestCase):
+    """R7 — the obvious way this feature could corrupt the document.
+
+    R3 already forbids a floor above the baseline. What is new is a user who asks for one, which is a
+    pressure the rule did not previously face. Stating it separately makes it findable; folding it into
+    R1 would not.
+    """
+
+    def test_the_rule_exists_and_is_named(self):
+        text = command_text()
+        self.assertIn("R7 — An answer is an input, not a measurement", text)
+
+    def test_the_floor_holds_against_an_answer(self):
+        text = command_text()
+        self.assertIn("R3 holds against any answer", text)
+
+    def test_a_contradicting_answer_is_recorded_not_argued(self):
+        text = command_text()
+        self.assertIn("record the disagreement in the document", text)
+
+    def test_the_ban_is_in_the_never_table(self):
+        text = command_text()
+        self.assertIn("Let an answer override a measured or reported figure", text)
+
+    def test_the_answers_survive_a_template_that_drops_them(self):
+        """Principle VIII lets an override delete the section holding the record."""
+        text = command_text()
+        self.assertIn("Front matter is yours, so the record survives", text)
+
+    def test_the_round_precedes_the_write_which_precedes_the_report(self):
+        text = command_text()
+        round_ = text.find("## Step 5 — The clarification round")
+        write = text.find("## Step 10 — Write the document")
+        report = text.find("## Step 11 — Report")
+        self.assertNotEqual(-1, write)
+        self.assertLess(round_, write)
+        self.assertLess(write, report)
+
 
 class TheRunIsHonestAboutItself(unittest.TestCase):
     """FR-006, FR-013, FR-045 — what a reader needs to judge the document."""
@@ -289,9 +445,9 @@ class TheReportPrecedesTheGate(unittest.TestCase):
 
     def test_the_report_step_precedes_the_constitution_step(self):
         text = command_text()
-        report = text.find("## Step 10 — Report")
-        check = text.find("## Step 11 — Check the constitution")
-        gate = text.find("## Step 12 — The amendment gate")
+        report = text.find("## Step 11 — Report")
+        check = text.find("## Step 12 — Check the constitution")
+        gate = text.find("## Step 13 — The amendment gate")
         self.assertNotEqual(-1, report)
         self.assertLess(report, check)
         self.assertLess(check, gate)
