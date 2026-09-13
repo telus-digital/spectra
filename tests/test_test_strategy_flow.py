@@ -55,6 +55,45 @@ def command_text() -> str:
     return COMMAND.read_text(encoding="utf-8")
 
 
+def front_matter_example() -> str:
+    """The ```yaml block in Step 10 — the shape a run is told to copy."""
+    blocks = re.findall(r"```yaml\n(.*?)```", command_text(), re.S)
+    return blocks[0] if blocks else ""
+
+
+def yaml_defects(block: str) -> list:
+    """The two ways this document's front matter has actually broken. Not a YAML parser.
+
+    Writing one would be a far larger thing than this check deserves, and the suite is standard-library
+    only besides. What is worth catching is what happened: a 1.17.1 run emitted `amendment_state` as a
+    sentence containing `: ` — read as a nested mapping, so the reader showed an error instead of the
+    document — and `clarification_round` as a sentence with an indented sequence beneath it, which is
+    invalid whatever the quoting. Both are cheap to detect over a known block, and the block is the one
+    a reader copies.
+    """
+    defects = []
+    lines = block.split("\n")
+    for i, line in enumerate(lines):
+        entry = re.match(r"^(\s*)(- )?([a-z_]+): (.+)$", line)
+        if not entry:
+            continue
+        # A sequence entry's key starts after the "- ", so its real indent includes that marker.
+        indent = entry.group(1) + (entry.group(2) or "")
+        key, value = entry.group(3), entry.group(4).strip()
+        quoted = value.startswith('"') or value.startswith("'")
+        if not quoted and ": " in value:
+            defects.append(f"{key}: unquoted value contains ': ' and reads as a nested mapping")
+        if value:
+            for following in lines[i + 1:]:
+                if not following.strip():
+                    continue
+                deeper = len(following) - len(following.lstrip())
+                if deeper > len(indent):
+                    defects.append(f"{key}: carries a scalar and a nested block")
+                break
+    return defects
+
+
 class TheCommandIsRegistered(unittest.TestCase):
     """Identity, before anything about behaviour."""
 
@@ -329,6 +368,69 @@ class DecliningTheRoundIsFree(unittest.TestCase):
     def test_a_silent_run_and_a_declined_run_agree(self):
         text = command_text()
         self.assertIn("the same document an interactive run produces when the user declines", text)
+
+
+class FrontMatterParses(unittest.TestCase):
+    """A document a reader cannot open is worth less than one nobody wrote.
+
+    Step 10 used to describe the front matter in prose — "the coverage-of-analysis statement", "the
+    amendment state", five questions with four fields each — and ended by asking for it to be kept
+    terse. A 1.17.1 run recorded exactly what it was asked for and produced two YAML violations, and
+    the previewer showed an error where the strategy should have been.
+
+    `impact` has never done this, and the only structural difference is that it *shows* its front
+    matter instead of describing it. So this one does too, and these assertions hold the example to the
+    rules it demonstrates.
+    """
+
+    def test_the_requirement_is_stated(self):
+        text = command_text()
+        self.assertIn("Front matter is YAML, and it has to parse", text)
+
+    def test_the_quoting_rule_is_unconditional(self):
+        """"Quote the ones with colons" asks the reader to scan; "quote them all" does not."""
+        text = command_text()
+        self.assertIn("Quote every free-text value", text)
+        self.assertIn("all of them", text)
+
+    def test_a_key_is_a_scalar_or_a_collection(self):
+        text = command_text()
+        self.assertIn("A key takes a scalar or a collection, never both", text)
+
+    def test_prose_is_kept_out_of_the_header(self):
+        text = command_text()
+        self.assertIn("would run to a paragraph belongs in the body", text)
+
+    def test_an_example_block_is_shown(self):
+        self.assertNotEqual("", front_matter_example(), "Step 10 shows no front-matter example")
+
+    def test_the_example_has_neither_known_defect(self):
+        defects = yaml_defects(front_matter_example())
+        self.assertEqual([], defects, f"the shape a run is told to copy is invalid: {defects}")
+
+    def test_the_checker_catches_an_unquoted_colon(self):
+        """The bug that prompted this, verbatim from the reported document."""
+        bad = "amendment_state: PARTIAL - approved. Not written to the constitution: never that file.\n"
+        self.assertTrue(any("nested mapping" in d for d in yaml_defects(bad)))
+
+    def test_the_checker_catches_a_scalar_beside_a_block(self):
+        """The second violation, four lines below the first and fatal on its own."""
+        bad = "clarification_round: all five answered\n  - q: 0\n"
+        self.assertTrue(any("scalar and a nested block" in d for d in yaml_defects(bad)))
+
+    def test_the_long_fields_are_enumerated(self):
+        text = command_text()
+        self.assertIn("`embedded`, `partial`, `absent`, `none`, or `not_asked`", text)
+        self.assertIn("`answered`, `default_taken`, or `not_asked`", text)
+
+    def test_every_question_is_carried_including_the_unasked(self):
+        text = command_text()
+        self.assertIn("an absent entry and a `not_asked` entry are", text)
+
+    def test_the_record_is_not_deleted_to_fix_a_render(self):
+        """Principle VIII is why it is in the header; a future parse problem must not undo that."""
+        text = command_text()
+        self.assertIn("Do not resolve a rendering problem by deleting", text)
 
 
 class NonInteractiveIsDeclaredNeverDetected(unittest.TestCase):

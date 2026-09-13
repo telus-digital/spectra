@@ -462,15 +462,60 @@ value. State it; do not apply it.
 Write **exactly one file**, to the target resolved in Step 4, as the final act of the run. Everything
 before this point is reading, analysing, and asking.
 
-Front matter carries: the mode; a generation timestamp including the time of day; the surfaces; the
-resolved template path; the coverage-of-analysis statement; the amendment state from Step 13; and the
-answers from Step 5 — each question with the answer you recommended, the answer taken, and whether it
-was **answered**, **default taken**, or **not asked**.
+**Front matter is YAML, and it has to parse.** A reader that cannot parse it shows an error instead of
+the document, so the whole strategy is lost to a stray character. Four rules keep that from happening:
+
+1. **Quote every free-text value.** Not only the ones you notice a colon in — all of them. A value
+   containing `: ` is read as a nested mapping and the document stops rendering.
+2. **A key takes a scalar or a collection, never both.** A sentence followed by an indented list under
+   the same key is not valid YAML, whatever it looks like.
+3. **Anything that would run to a paragraph belongs in the body.** The header carries the short form and
+   the section carries the detail. A machine-readable header is not the place to explain yourself.
+4. **Use the enumerated values below**, exactly as spelled.
+
+Emit this shape:
+
+```yaml
+---
+mode: mixed
+generated: 2026-09-12T22:45:17-07:00
+template: .specify/extensions/spectra/templates/test-strategy-template.md
+surfaces: 1
+run: 4
+coverage_of_analysis: "12 of 81 files opened; the rest are tooling"
+baseline: unavailable
+amendment_state: partial
+clarification:
+  asked: 5
+  answered: 5
+  questions:
+    - n: 1
+      ask: "where the testing weight should sit"
+      recommended: "integration-heavy, with unit tests on the pure logic"
+      answer: "integration-heavy; confirmed"
+      disposition: answered
+    - n: 2
+      ask: "whether anything outside this repository depends on an interface here"
+      recommended: "no external consumer"
+      answer: "only the user's own saved data"
+      disposition: answered
+---
+```
+
+`mode` is `greenfield`, `brownfield`, or `mixed`. `baseline` is a figure or `unavailable`.
+`amendment_state` is `embedded`, `partial`, `absent`, `none`, or `not_asked` — one word, because the
+proposed-amendment section already carries the state, the governing clause, the conflict, and the
+approval in full, and a header that repeats a paragraph is what breaks the document. `disposition` is
+`answered`, `default_taken`, or `not_asked`.
+
+Carry **every** question, including any you did not ask — an absent entry and a `not_asked` entry are
+different claims. Where there was no coverage tooling and therefore no coverage question, say so in the
+counts rather than inventing an entry for it.
 
 **The answers go in the front matter as well as the body on purpose.** The body's copy lives inside the
 sources-and-coverage section, and a project that overrides the template may reshape or delete that
-section. Front matter is yours, so the record survives. Put the readable version in the body; keep the
-front matter terse.
+section. Front matter is yours, so the record survives. Do not resolve a rendering problem by deleting
+this block — fix the quoting.
 
 The body follows the resolved template's sections, in its order. The mode and its deciding signals
 always appear — a reader must be able to tell a strategy proposed for code that does not exist yet from
