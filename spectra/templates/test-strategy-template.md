@@ -8,10 +8,12 @@
   - Fill every [PLACEHOLDER]. Delete any section that genuinely does not apply — remove it entirely
     rather than leaving "N/A". The command honours what this template says: a section you delete stays
     deleted, and the command notes the omission instead of putting it back.
-  - What this template CANNOT change: every recommendation carries a citation or an explicit convention
-    marker, a brownfield floor never exceeds the measured baseline, a baseline is always labelled
-    measured / reported / unavailable, no tool is named that this stack cannot run, and coverage of the
-    analysis is always stated. Those rules live in the command, not here.
+  - What this template CANNOT change: every recommendation carries a citation, a convention marker, or
+    a stated marker naming the question it came from; an answer the user gave is never written up as
+    evidence and never moves a measured figure; a brownfield floor never exceeds the measured baseline;
+    a baseline is always labelled measured / reported / unavailable; no tool is named that this stack
+    cannot run; and coverage of the analysis is always stated. Those rules live in the command, not
+    here.
   - HTML comments like this one are guidance and are stripped from the output.
 -->
 
@@ -143,12 +145,13 @@
 
 <!--
   Every actionable statement in one table, so a reader can see the whole plan without re-reading the
-  lenses. Each carries its evidence or is marked as a convention.
+  lenses. Each carries its evidence, is marked as a convention, or is marked as stated by the team —
+  one of the three, never none.
 -->
 
 | # | Lens | Surface | Recommendation | Evidence | Scope |
 |---|---|---|---|---|---|
-| 1 | [lens] | [surface] | [statement] | [path, or "convention"] | [surface-specific / repository-wide] |
+| 1 | [lens] | [surface] | [statement] | [path, or "convention", or "stated: Q<n>"] | [surface-specific / repository-wide] |
 
 ## Proposed constitution amendment
 
@@ -191,6 +194,19 @@
 | Input | Read? | Note |
 |---|---|---|
 | [path] | read / unreadable / missing | [reason where not read] |
+
+**Inputs from the user**:
+
+<!--
+  What was asked, what was recommended, and what came back. The user's answers are a source consulted,
+  which is why they are recorded here rather than in a section of their own. A reader must be able to
+  tell an answer the team gave from a figure this analysis measured — so does every row that a
+  recommendation elsewhere cites as "stated".
+-->
+
+| # | Question | Recommended | Answer | Disposition |
+|---|---|---|---|---|
+| [n] | [what was asked] | [the answer proposed] | [the answer taken] | answered / default taken / not asked |
 
 **Tool verification**: no recommendation in this document was checked against a package registry; this
 analysis made no network request.

@@ -131,11 +131,25 @@ the repository, works out for itself whether this is greenfield or brownfield, a
 contract, and end-to-end testing plus a coverage floor. Then it drafts the constitution amendment that
 would hold every future work session to it, and hands that to `/speckit-constitution`.
 
+Before it writes, it asks you five things — one at a time, each arriving with the answer it would have
+chosen and the evidence behind it. Where the testing weight should sit, whether anything outside the
+repository depends on an interface here, which journeys justify an end-to-end test, what has broken that
+your tests did not catch, and what constraints the repository does not show: no container runtime in CI,
+a freeze on new dependencies, a compliance rule. That last one is the gap worth closing — it already
+refused to name a tool your stack cannot run, but had nothing to say about one your stack can run and
+your team may not adopt. **It will not ask you anything it can measure.** Not the mode, not the stack,
+not the surfaces, not your coverage figure; those it reads, because a wrong answer would outrank a right
+one. And declining is free: say "use your defaults" and you get the document it would have written on its
+own, for the cost of one reply. `--non-interactive` skips the round entirely.
+
 It is deliberately hard for it to say something plausible and wrong. Every recommendation either cites a
-path in your project or is marked as a convention with no project evidence — never neither. It will not
-name a tool your stack cannot run, so the end-to-end lens resolves to browser, HTTP, CLI, or **none**
-rather than reaching for a browser driver; for a published library, `none` is the correct answer and it
-says so. When it claims something is missing, it tells you what it searched for and where.
+path in your project, is marked as a convention with no project evidence, or is marked `stated` and names
+the question you answered — never neither, and never an answer dressed up as evidence. **An answer never
+moves a number**: ask for a 90% floor in a repository measuring 31% and the floor stays at 31%, with the
+disagreement recorded in the document rather than argued at you. It will not name a tool your stack
+cannot run, so the end-to-end lens resolves to browser, HTTP, CLI, or **none** rather than reaching for a
+browser driver; for a published library, `none` is the correct answer and it says so. When it claims
+something is missing, it tells you what it searched for and where.
 
 Brownfield is where most of the care went. It reads your source rather than your README, reports what each
 lens covers today before proposing anything, and **never proposes a floor above your current baseline** —

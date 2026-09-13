@@ -342,9 +342,11 @@ with a migration, a route handler, and a config file naming a table, then confir
    analysis to `status: approved`, re-run, and confirm the index row follows while the document itself is not
    touched.
 
-And one pass on `test-strategy`, whose three load-bearing behaviours are exactly the ones a unit test on
-the prompt text cannot settle: whether the floor it proposes is one the project can actually hold, whether
-it refuses a tool the stack cannot run, and whether approval really leaves the constitution alone. Work
+And one pass on `test-strategy`, whose load-bearing behaviours are exactly the ones a unit test on the
+prompt text cannot settle: whether the floor it proposes is one the project can actually hold, whether it
+refuses a tool the stack cannot run, whether approval really leaves the constitution alone, and — since
+1.17.0 — whether the clarification round actually asks one question at a time and actually costs nothing
+to decline. Work
 through [`specs/020-test-strategy-agent/quickstart.md`](../specs/020-test-strategy-agent/quickstart.md) in
 a scratch project with real source, existing tests, and a committed coverage report, then confirm at least
 these:
@@ -368,7 +370,26 @@ these:
    amendment text still reaches the session and the handoff is still offered.
 5. **It runs nothing unless asked.** Watch the session. The coverage-run question must name the exact
    command and be declinable; declining must produce a `reported` or `unavailable` baseline, not a
-   `measured` one. Nothing may execute before you say yes.
+   `measured` one. Nothing may execute before you say yes. It must be asked **before** the five, not after.
+5a. **The round is five questions, one at a time.** Count them. Each must arrive on its own, numbered
+   within the total, with two to four options, exactly one marked recommended, and a path in your project
+   behind the mark — or an explicit admission that it is a convention. A batch of five in one message is a
+   regression, and so is a sixth question.
+5b. **It never asks what it can measure.** Watch for any question about whether the project is greenfield
+   or brownfield, what the stack is, how many surfaces there are, or what your coverage is. Every one of
+   those is a defect: the answer is in the repository and a wrong answer would outrank it.
+5c. **Declining is free.** Run it twice on the same project: once answering nothing — say "use your
+   defaults" at the first question — and once with `--non-interactive`. Diff the two documents. They must
+   differ in nothing but the recorded dispositions, and both must carry the same recommendations a 1.16.0
+   run produced. If declining changes a recommendation, the questions were not carrying real defaults.
+5d. **An answer cannot move a number.** With a 31% baseline committed, answer the round asking for a 90%
+   floor in whatever question gives you the opening. The floor must stay at or below 31% and the document
+   must record the disagreement. This is the single way this feature could corrupt the document.
+5e. **The answer record is truthful.** Read the *Inputs from the user* table against what you actually
+   answered: every question present, the recommendation as offered, the answer as given, and the
+   disposition right. Then answer a question in free text that fits none of the options and confirm it is
+   taken rather than coerced into the nearest option. Finally, re-run and confirm the round offers your
+   previous answers back rather than interrogating you a second time.
 6. **The singleton holds.** Run twice with a change in between. One file, one path, no number in the
    filename, no second document, no index — and the second run must name the prior strategy as an input and
    report an already-implemented recommendation as adopted rather than proposing it again.

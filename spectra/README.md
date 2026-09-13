@@ -640,15 +640,27 @@ features to plan. It:
 2. **Classifies the project greenfield, brownfield, or mixed from evidence**, never by asking you, and
    reports the signals that decided it — including any that pointed the other way.
 3. Identifies the **testable surfaces**, so a monorepo does not get one answer for three stacks.
-4. Works four lenses — unit, integration, API contract, end-to-end — each either applicable with a named
+4. **Asks you five things it cannot measure** — one question at a time, each carrying the answer it
+   would have chosen and the evidence behind it.
+5. Works four lenses — unit, integration, API contract, end-to-end — each either applicable with a named
    approach or not applicable with a stated reason.
-5. Derives a **coverage floor** from the baseline it could establish, with a ratchet toward the target.
-6. Writes one document to `docs/test-strategy/TEST_STRATEGY.md`, or your declared artifact root.
-7. Checks whether the strategy is already in your constitution, drafts the amendment if it is not, and
+6. Derives a **coverage floor** from the baseline it could establish, with a ratchet toward the target.
+7. Writes one document to `docs/test-strategy/TEST_STRATEGY.md`, or your declared artifact root.
+8. Checks whether the strategy is already in your constitution, drafts the amendment if it is not, and
    hands it to `/speckit-constitution`.
 
-**Every recommendation cites a path in your project or is explicitly marked as a convention** — never
-neither. **No tool is named that your stack cannot run**, which is why the end-to-end lens resolves to
+The five questions are where the testing weight should sit, whether anything outside the repository
+depends on an interface here, which journeys justify an end-to-end test, what has broken that your tests
+did not catch, and what constraints the repository does not show — no container runtime in CI, a freeze on
+new dependencies, a compliance rule. **It never asks you anything it can measure**: not the mode, not the
+stack, not the surfaces, not your coverage figure, because a wrong answer would outrank a right one.
+Declining is free — say "use your defaults" and you get the document it would have written on its own, for
+one reply — and `--non-interactive` skips the round outright.
+
+**Every recommendation cites a path in your project, is explicitly marked as a convention, or is marked
+`stated` and names the question you answered** — never neither, and never an answer written up as
+evidence. **An answer never moves a measured figure**: ask for a 90% floor against a 31% baseline and the
+floor stays at 31%, with the disagreement recorded in the document. **No tool is named that your stack cannot run**, which is why the end-to-end lens resolves to
 browser, HTTP, CLI, or `none`: for a published library, `none` is the correct answer, not a browser
 driver nobody will maintain. When it says something is missing, it names what it searched for and where.
 
@@ -675,8 +687,8 @@ Usage (Claude):
 ```
 
 No arguments required. Optionally pass a focus to weight the analysis — it never narrows the four
-mandatory lenses. The document's ten sections are overridable at
-`.specify/templates/overrides/test-strategy-template.md`.
+mandatory lenses — or `--non-interactive` to declare that no answer can be taken in this session. The
+document's ten sections are overridable at `.specify/templates/overrides/test-strategy-template.md`.
 
 ## `speckit.spectra.test-plan` — Test Plan
 

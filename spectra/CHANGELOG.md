@@ -3,6 +3,62 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.17.0] - 2026-09-12
+
+### Changed
+- **`speckit.spectra.test-strategy` now asks before it writes.** Five judgment calls, one at a time,
+  each carrying the answer the agent would have chosen and the evidence behind it: where the testing
+  weight should sit, whether anything outside the repository depends on an interface here, which
+  journeys justify an end-to-end test, what has broken that the tests did not catch, and what
+  constraints the repository does not show. Then it writes the same single document to the same place.
+
+  Three decisions a reader would otherwise find surprising:
+
+  **It refuses to ask most of what you might expect.** Not whether the project is greenfield or
+  brownfield, not what the stack is, not how many surfaces there are, not what the coverage figure is.
+  Those are measured in Steps 1 to 3 and Step 8, and a question whose answer the agent is about to
+  measure invites a wrong answer to outrank a right one — the document then rests on it. That rule was
+  already settled for the mode when this agent shipped; 1.17.0 generalises it and writes the never-ask
+  list into the command, where a well-meaning edit cannot quietly drop it. What remains is what no
+  repository states: intent, priority, and the constraints an organisation imposes on a stack that
+  could technically run anything.
+
+  The fifth question is the one that earns the feature. The agent already refused to name a tool whose
+  prerequisites a surface lacks. It had nothing to say about a tool the surface *can* run and the team
+  may not adopt — no container runtime in CI, a freeze on new dependencies, no network in the test
+  environment, a compliance rule. A strategy built on one of those is a document nobody can act on,
+  which is exactly the plausible-but-useless output the agent exists to avoid.
+
+  **Declining costs nothing, and that is load-bearing rather than polite.** Every question arrives with
+  a recommendation already made, so "use your defaults" ends the round immediately and produces the
+  document 1.16.0 would have produced. An unanswered question takes its recommendation and is recorded
+  as not asked; a reply that is not an answer is answered and the same question asked again, rather
+  than being read as a refusal. A new `--non-interactive` flag declares up front that no answer can be
+  taken — matching `speckit.spectra.test-plan`, which already accepts one — and a piped or terminal-less
+  run behaves identically without it. A non-interactive run and a fully-declined run produce the same
+  document by construction, not by coincidence.
+
+  **An answer can never move a number.** Recommendations have always carried either a citation or a
+  `convention` marker. An answer is neither, and without somewhere honest to put it an answer either
+  launders itself into a fake citation or is mislabelled a convention — at which point the rule that
+  makes the whole document trustworthy quietly stops meaning anything. So there is now a third
+  provenance, `stated`, naming the question it came from, and a new rule R7: answers shape judgment,
+  never measurement. Ask for a 90% floor in a repository measuring 31% and the floor stays at 31%,
+  because a floor that fails the next build gets deleted regardless of who asked for it. Where an
+  answer contradicts the evidence, the change is made where it is legitimately yours to make and the
+  disagreement is recorded in the document rather than argued in the session.
+
+  Every question, its recommendation, the answer taken, and whether it was answered, defaulted, or
+  never asked is recorded in the document's sources-and-coverage section — and again in its front
+  matter, because a project override may reshape that section and the provenance record has to survive
+  it. On a re-run the recorded answers pre-fill the round, so it confirms rather than interrogating a
+  second time.
+
+  The coverage-run confirmation moved into the round and is now asked first, before the five, because
+  its answer produces the baseline and "where should the weight sit" is a different question at 31%
+  than at 78%. That also collapses two separate interruptions into one. The document, its location, its
+  ten sections, and the rule that this agent never writes your constitution are all unchanged.
+
 ## [1.16.0] - 2026-09-11
 
 ### Added

@@ -1,5 +1,5 @@
 ---
-description: "Read the project, classify it greenfield or brownfield from evidence, and write one testing strategy — unit, integration, API contract, end-to-end, and a coverage floor the project can actually hold — to <artifact-root>/test-strategy/TEST_STRATEGY.md, then draft the constitution amendment that would bake it into every work session and hand it to /speckit-constitution. Never edits the constitution, never edits source, tests, or CI, and makes no network request."
+description: "Read the project, classify it greenfield or brownfield from evidence, ask five judgment calls the repository cannot settle — one at a time, each with a recommendation and the evidence behind it — and write one testing strategy covering unit, integration, API contract, end-to-end, and a coverage floor the project can actually hold, to <artifact-root>/test-strategy/TEST_STRATEGY.md. Then draft the constitution amendment that would bake it into every work session and hand it to /speckit-constitution. Never asks what it can measure, never lets an answer move a measured figure, never edits the constitution, never edits source, tests, or CI, and makes no network request."
 ---
 
 # Propose a testing strategy this project can actually hold
@@ -25,13 +25,18 @@ Every rule that follows narrows that sentence. None widens it.
 
 ## User Input
 
-An optional focus or hint from the user — a lens, a surface, a concern they already have:
+An optional focus or hint from the user — a lens, a surface, a concern they already have — plus
+optionally one flag:
 
 $ARGUMENTS
 
 **This command requires no arguments.** With empty input, analyze the whole project. If the user
 supplied a focus, weight your analysis toward it — but still cover all four mandatory lenses. A hint
 narrows nothing.
+
+**The one flag** is `--non-interactive`: a declaration that no answer can be taken in this session.
+Remove it before reading what remains as the focus hint. An unrecognized flag is reported and ignored;
+it never silently becomes part of the hint.
 
 ## What this command never does
 
@@ -45,7 +50,9 @@ No argument, approval, or instruction in the session enables any of these.
 | Write more than one file | One strategy document per run, and nothing else |
 | Make a network request, or accept a repository URL, credential, or token | You read only the project in front of you |
 | Report per-test findings, diagnose a failing or flaky test, or open a test file to repair it | That is `speckit.spectra.flaky-test-detector`'s job, not yours |
-| Run anything | Not the suite, not a build — with one exception, gated on an explicit confirmation in Step 7 |
+| Let an answer override a measured or reported figure | An answer is a claim by the team, not a fact about the repository. R7 |
+| Ask the user anything the repository answers | You are about to measure it, and a wrong answer would outrank a right one. Step 5 |
+| Run anything | Not the suite, not a build — with one exception, gated on an explicit confirmation in Step 5 |
 
 ## The rules that never bend
 
@@ -53,10 +60,17 @@ These are the product. A strategy that reads well and cannot be trusted is worse
 team will act on it. These rules live here, in the command — **not** in the template. A project that
 overrides the template can drop a section; it cannot make you stop obeying these.
 
-- **R1 — Evidence or a marker, never neither.** Every recommendation either cites the project evidence
-  it rests on — a project-relative path, optionally with a line — or is explicitly marked as a
-  convention-based default with no project evidence. `convention` is the honest state for most
-  greenfield recommendations. A recommendation with neither is a defect.
+- **R1 — Evidence or a marker, never neither.** Every recommendation carries exactly one of three
+  provenances, and a recommendation with neither is a defect:
+  - a **citation** — the project evidence it rests on, as a project-relative path, optionally with a
+    line;
+  - **`convention`** — a convention-based default with no project evidence, which is the honest state
+    for most greenfield recommendations;
+  - **`stated`** — an answer the user gave in Step 5, naming the question it came from.
+
+  Keep them distinct. A reader must be able to tell what you measured in this repository from what you
+  brought with you from convention, and both from what the team told you. An answer written up as a
+  citation is the worst of the three failures, because it is the one nobody can detect.
 - **R2 — An absence is cited too.** When you say something is missing — no contract tests, no coverage
   tooling, no journey coverage — cite what you searched for and where. A claim of absence with no
   search behind it is a guess.
@@ -67,10 +81,17 @@ overrides the template can drop a section; it cannot make you stop obeying these
   `reported` if you read it from a committed report, and then always with the report's date.
   `unavailable` if there is nothing to read. Never an unlabelled number.
 - **R5 — No tool the stack cannot run.** If the project has no browser anywhere in its manifests, a
-  browser driver is not a recommendation you are allowed to make. See Step 6.
+  browser driver is not a recommendation you are allowed to make. See Step 7.
 - **R6 — State your own coverage.** Say what portion of the repository you read out of what is
   present, and what you could not see. A reader must be able to tell "checked and found nothing" from
   "did not check".
+- **R7 — An answer is an input, not a measurement.** The answers you collect in Step 5 shape judgment:
+  which lens carries the weight, which journeys matter, which tools the team may adopt. They never move
+  a number you measured or read. **R3 holds against any answer** — asked for a 90% floor in a
+  repository measuring 31%, the floor stays at or below 31%, because a floor that fails the next build
+  gets deleted no matter who asked for it. Where an answer contradicts the evidence, make the change
+  where it is legitimately the user's to make, and record the disagreement in the document. Do not
+  argue it in the session, and do not silently keep your own version.
 
 ## The four lenses, defined
 
@@ -93,7 +114,7 @@ Read and internalize the real project. Everything you recommend has to be tracea
 Inspect, where present:
 
 1. **Constitution** — `.specify/memory/constitution.md`. Read it in full. It carries any existing
-   testing obligation (Step 11), any declared artifact root (Step 4), and the project's own view of
+   testing obligation (Step 12), any declared artifact root (Step 4), and the project's own view of
    quality.
 2. **Specifications** — `specs/`. Declared intent, entities, and boundaries.
 3. **Documentation** — `README*`, `CONTRIBUTING*`, and documentation directories. Often the only place
@@ -201,7 +222,118 @@ produce a series. A test strategy is a standing policy with exactly one current 
 constitution — so the filename is fixed, the path is stable enough to link to, and a re-run rewrites it
 in place. Git carries the history.
 
-## Step 5 — Resolve the document's template
+## Step 5 — The clarification round
+
+Five things shape a testing strategy that no repository states. Ask them here — and ask nothing else.
+
+> **Ask about judgment, intent, and constraint. Never ask about anything you are about to measure.**
+
+The round sits here, and not earlier, because Steps 1 to 4 are what make the questions specific. By now
+you know the mode, the surfaces, the stack, and where the document will go, so every question can name
+a real path in this project. A question asked before that is a questionnaire.
+
+### What you may never ask
+
+Each of these is something you measure. Asking invites a wrong answer to override a right one, and the
+whole document then rests on it.
+
+| Never ask | Because |
+|---|---|
+| Whether the project is greenfield, brownfield, or mixed | Step 2 classifies it from five signals, and a wrong answer silently mis-shapes every section |
+| What the stack is, or which test framework is in use | The manifests say, and they are the strongest evidence you have |
+| How many surfaces there are | Step 3 resolves them from the project's own workspace declaration, or from its manifests |
+| Whether tests exist, or what they cover | You read them |
+| What the coverage figure is | Step 8 measures it, reads it, or reports it unavailable — it is never something you are told |
+
+If the answer is in the repository, read it. The round is for what the repository cannot say.
+
+### Ask about the coverage run first
+
+If the project has coverage tooling you could run, ask about it before the five. Its answer produces
+the baseline, and the baseline changes what the five mean — *where should the weight sit* is a different
+question at 31% than at 78%.
+
+Ask exactly one question: name the precise command you would run, warn that it executes the project's
+test suite, and make it declinable. If it is declined, unanswered, or the session cannot answer,
+continue on `reported` or `unavailable` and say which. Running a stranger's test suite unasked can take
+twenty minutes, hit the network, or touch a database — none of which the user asked for when they asked
+for a strategy.
+
+Where there is no coverage tooling to run, there is no question to ask. Go straight to the five.
+
+### Announce the round, once
+
+Before the first question, in one line: how many questions there are, and every way out of them. A user
+who knows the length of the commitment answers differently from one who does not.
+
+> Five judgment calls the repository cannot settle, one at a time. Answer several at once if you
+> already know them, say **use your defaults** to take every recommendation and skip the rest, or skip
+> any single question.
+
+### The five questions
+
+Always five. They are fixed so the count can be announced honestly, and because each is underdetermined
+by any repository.
+
+| # | What you ask | What it settles | What it changes |
+|---|---|---|---|
+| 1 | Where the weight should sit — unit-heavy, integration-heavy, or thin and broad | The strategy's shape. The same repository honestly supports more than one | All four lens sections, and how the floor is derived |
+| 2 | Whether anything outside this repository depends on an interface here | Whether an external consumer exists. An internal handler and a published interface look identical in a source tree | Whether the API contract lens is a section or one line |
+| 3 | Which journeys are worth an end-to-end test | Business priority. Step 7 resolves the *surface* from evidence; which journeys justify the most expensive lens is not in any manifest | The end-to-end approach, and how many of them there are |
+| 4 | What has broken that the tests did not catch — in greenfield, what they are most afraid of getting wrong | Where the real risk is, as against uniform coverage | Which recommendations lead, and what the ratchet targets first |
+| 5 | What constraints the repository does not show — no container runtime in CI, a freeze on new dependencies, no network in the test environment, a compliance rule | What the team may adopt, as against what the stack can run | Tool tiers: a tool the organisation forbids is not a lower-confidence recommendation, it is not a recommendation |
+
+Question 5 is the one that is easiest to skip and costs the most. R5 stops you naming a tool whose
+prerequisites this surface lacks. It says nothing about a tool this surface could run and this team may
+not adopt, and a strategy built on one of those is a document nobody can act on.
+
+### How to ask
+
+- **One question per turn.** End the turn and wait. The questions are conditional on each other —
+  whether an external consumer exists determines whether question 3 has a contract to protect — and a
+  batch forces each to be written as though the others do not exist.
+- **Number each one within the fixed total**, so the user can see how much is left.
+- **Offer two to four labelled options**, and mark exactly one as recommended.
+- **Give the evidence behind the mark**, as a project-relative path, or say plainly that it is a
+  convention with nothing in this project behind it. A recommendation you cannot justify is a guess
+  with a label on it.
+- **Say that the options are not the whole answer.** They are scaffolding. Free text is always valid,
+  and an answer that fits none of the options is the most useful kind.
+
+### Where the evidence settles a question, confirm it rather than dropping it
+
+Never skip a question, and never renumber the remainder. Turn it into a confirmation and keep its
+number, so the count you announced stays true.
+
+The forcing case is question 3 on a project whose end-to-end surface resolves to `none`. *"Which
+journeys are worth an end-to-end test"* is incoherent for a library with no entry point, so ask instead:
+
+> Question 3 of 5 — the end-to-end surface resolved to `none`: this project exposes no browser, HTTP,
+> or command-line entry point. Confirm, or name a journey you want covered anyway.
+
+Question 2 gets the same treatment where a published manifest already answers it.
+
+### Three ways the round ends early, and what each records
+
+- **"Use your defaults", or anything meaning it.** Take the recommended answer for every remaining
+  question and end the round immediately. Do not confirm, do not ask again.
+- **A question goes unanswered.** Take its recommended answer, record it as not asked, and continue.
+  Never block on an answer.
+- **A reply that is not an answer** — a question back, a comment, a request to explain the options.
+  Answer it, then ask the same question again. It is not a declination and it does not advance the
+  round.
+
+**A run in which nothing is answered produces the recommendations this command would have produced
+without the round at all.** That is the point of proposing an answer with every question: declining is
+free, and costs the user one reply.
+
+### Record every question
+
+Carry all five — plus the coverage-run question — into the document: the question, the answer you
+recommended, the answer taken, and whether it was **answered**, **default taken**, or **not asked**.
+Step 10 says where that record goes.
+
+## Step 6 — Resolve the document's template
 
 The document's structure comes from a template, resolved through the stack below. **Take the first
 readable, non-empty layer** and use nothing else. Do not assume any single path exists.
@@ -221,7 +353,7 @@ than reinstating it — anything else turns a team's override into a suggestion.
 **Strip guidance comments and `[PLACEHOLDER]` tokens** from your output, whichever layer supplied the
 template.
 
-**Report which template you used**, naming the resolved path, when you report in Step 10. Without that,
+**Report which template you used**, naming the resolved path, when you report in Step 11. Without that,
 an override that failed to apply is indistinguishable from one that applied.
 
 > Editing the installed copy under `.specify/extensions/` is **not** the way to customize this.
@@ -229,7 +361,7 @@ an override that failed to apply is indistinguishable from one that applied.
 > `.specify/templates/overrides/test-strategy-template.md`, where it is committed, applies to the whole
 > team, and survives an extension update.
 
-## Step 6 — Work the four lenses
+## Step 7 — Work the four lenses
 
 For each of **unit**, **integration**, **API contract**, and **end-to-end**, produce either:
 
@@ -273,29 +405,26 @@ Resolve the lens to the surface this project actually has: **browser**, **http**
 published library or a command-line tool the honest answer is `cli` or `none`, and `none` is a valid
 outcome — better than an end-to-end suite the project cannot run and will not maintain.
 
-## Step 7 — Establish the coverage baseline
+## Step 8 — Establish the coverage baseline
 
 Three provenances, and only one of them lets you use the word *measured*:
 
 | Provenance | How you got it | What you may claim |
 |---|---|---|
-| `measured` | you ran the project's coverage tool, **after the confirmation below** | the current figure |
+| `measured` | you ran the project's coverage tool, **after the confirmation in Step 5** | the current figure |
 | `reported` | read from a committed report or badge, **with its date** | the figure as of that date |
 | `unavailable` | no tooling configured, no report present | no figure at all |
 
 **A figure read from a file is `reported`. Always.** Never `measured`.
 
-**You run nothing by default.** If the project has coverage tooling you could run, ask exactly one
-question: name the precise command you would run, warn that it executes the project's test suite, and
-make it declinable. If it is declined, unanswered, or the session is non-interactive, continue on
-`reported` or `unavailable` and say which. Running a stranger's test suite unasked can take twenty
-minutes, hit the network, or touch a database — none of which the user asked for when they asked for a
-strategy.
+**You run nothing by default.** The one confirmation that can change that was asked in Step 5, before
+the five questions, and nothing here reopens it. If it was declined, unanswered, or never asked because
+the session could not answer, this step works from `reported` or `unavailable` and says which.
 
 **Never infer a figure** from the ratio of test files to source files. That is a plausible-looking
 number with no relationship to what a CI gate would enforce.
 
-## Step 8 — Derive the floor and the ratchet
+## Step 9 — Derive the floor and the ratchet
 
 State the metric and how it would be measured on this project. Then derive the floor — do not pick one
 from a table.
@@ -328,25 +457,39 @@ State plainly what the floor does and does not prove, so nobody reads it as a qu
 give **the exact configuration change** the team would make to enforce it — the file, the key, the
 value. State it; do not apply it.
 
-## Step 9 — Write the document
+## Step 10 — Write the document
 
 Write **exactly one file**, to the target resolved in Step 4, as the final act of the run. Everything
 before this point is reading, analysing, and asking.
 
 Front matter carries: the mode; a generation timestamp including the time of day; the surfaces; the
-resolved template path; the coverage-of-analysis statement; and the amendment state from Step 12.
+resolved template path; the coverage-of-analysis statement; the amendment state from Step 13; and the
+answers from Step 5 — each question with the answer you recommended, the answer taken, and whether it
+was **answered**, **default taken**, or **not asked**.
+
+**The answers go in the front matter as well as the body on purpose.** The body's copy lives inside the
+sources-and-coverage section, and a project that overrides the template may reshape or delete that
+section. Front matter is yours, so the record survives. Put the readable version in the body; keep the
+front matter terse.
 
 The body follows the resolved template's sections, in its order. The mode and its deciding signals
 always appear — a reader must be able to tell a strategy proposed for code that does not exist yet from
-one measured against code that does.
+one measured against code that does. Every recommendation resting on an answer is marked `stated` and
+names its question, per R1.
 
 **If the file cannot be written** — the path is not writable, or the folder cannot be created — report
 the failure, output the strategy in the session, and write nowhere else. Do not proceed to an approval
 gate about a document that does not exist.
 
-## Step 10 — Report
+## Step 11 — Report
 
-Before you ask the user anything, tell them what happened:
+Before you ask the user anything about the amendment, tell them what happened. The clarification round
+in Step 5 is the other interaction in this run, and it is already behind you — it asked its questions
+before there were any recommendations to summarise, which is exactly why it could not wait until here.
+This gate is different: nothing may be put to the user until the recommendations it concerns are in
+front of them.
+
+Report, in this order:
 
 1. **Where the document was written.**
 2. **Which template you used**, by resolved path.
@@ -359,7 +502,7 @@ Before you ask the user anything, tell them what happened:
 
 The session gets the summary. The document gets the detail. Do not paste the document into the session.
 
-## Step 11 — Check the constitution
+## Step 12 — Check the constitution
 
 Determine whether this strategy is already embedded in the project's constitution, and report the
 result. Read it **semantically** — a section heading, plus normative keywords such as MUST or SHOULD,
@@ -377,7 +520,7 @@ mentions testing in passing and misses a "Quality Standards" section that never 
 measuring 31% — surface the contradiction as a finding in its own right. Do not draft an amendment that
 silently overrides an existing principle, and do not quietly lower your recommendation to match one.
 
-## Step 12 — The amendment gate and handoff
+## Step 13 — The amendment gate and handoff
 
 ### The draft
 
@@ -429,6 +572,10 @@ looking at it.
 - **Rewrite the same file in place.** Never create a second strategy file. No sequence number, no
   supersede marker, no index. Git carries the history.
 - **Read the prior strategy first** and record it as an input.
+- **Pre-fill the clarification round from the answers it recorded.** Offer each as that question's
+  proposed answer — *"last run you said this; still true?"* — so a re-run confirms rather than
+  interrogating a second time. Where the prior document recorded a question as not asked, ask it
+  normally.
 - **Mark each recommendation** `new`, `adopted` — the project has since implemented it, so report it as
   adopted rather than re-proposing it as new — or `carried`, still outstanding.
 - **Where the baseline has moved**, state both figures and whether the ratchet advanced.
@@ -441,21 +588,30 @@ version.
 
 ## Non-interactive mode
 
-Detect a session that cannot answer — piped input, no terminal, an automated runner.
+Detect a session that cannot answer — piped input, no terminal, an automated runner, or an explicit
+`--non-interactive`.
 
 **Announce it once, up front.** Then:
 
-- attempt **no** coverage run (Step 7);
+- ask **none** of the five clarification questions (Step 5). Take the answer you would have recommended
+  for each, and record every one as **not asked** — the same disposition a declined question gets, for
+  the same reason: silence is not an answer;
+- attempt **no** coverage run (Step 5);
 - take the non-publishing option on any root question (Step 4);
 - write the document as normal;
 - draft the amendment and record it as **not asked** — infer no approval from silence;
 - report the amendment text so a human can act on it later.
+
+A non-interactive run is therefore the same document an interactive run produces when the user declines
+everything. That is the intended relationship, not a coincidence.
 
 ## Known limitations, stated in every document
 
 - **No tool recommendation was verified against a package registry.** This command makes no network
   request, so an `unverified`-tier tool is offered from frozen knowledge.
 - **A `reported` baseline is exactly as old as its report**, and the document says so.
+- **A `stated` recommendation is a claim by the team, not a finding about the repository.** It was not
+  verified against anything here, and it is marked that way so nobody mistakes it for one.
 - **The classification is a reported judgement with its evidence**, not a guarantee.
 - **This agent decides policy, not tactics.** Per-file coverage gaps and automation backlogs belong to
   other agents; flaky tests belong to `speckit.spectra.flaky-test-detector`. Nothing here diagnoses an
@@ -463,7 +619,7 @@ Detect a session that cannot answer — piped input, no terminal, an automated r
 
 ## Inline template skeleton
 
-Last resort only — used when no template resolves at any layer in Step 5.
+Last resort only — used when no template resolves at any layer in Step 6.
 
 ```markdown
 # Test Strategy: <Project>
@@ -477,5 +633,5 @@ Last resort only — used when no template resolves at any layer in Step 5.
 ## Coverage floor                  <!-- metric, baseline + provenance, floor, rounding, ratchet, enforcement -->
 ## Recommendations summary         <!-- table: # | lens | surface | recommendation | evidence | scope -->
 ## Proposed constitution amendment <!-- embedded state, clause, conflict, approval, text, how to apply -->
-## Sources consulted and coverage of analysis   <!-- read/present, could not see, inputs, no-network note -->
+## Sources consulted and coverage of analysis   <!-- read/present, could not see, inputs, the five answers, no-network note -->
 ```
