@@ -555,5 +555,45 @@ class ItMakesNoNetworkRequest(unittest.TestCase):
         )
 
 
+class NonInteractiveIsDeclaredNeverDetected(unittest.TestCase):
+    """The same trigger `test-strategy` carried, fixed in both places at once.
+
+    "Piped input, no terminal, an automated runner" are process facts, and a command file is a prompt:
+    no file descriptors, no parent process, nothing to inspect. So the reader guessed, and the guess
+    that cannot leave it blocked is *assume nobody is there*. Here a false positive is the quieter of
+    the two failures — an existing plan is reported rather than rewritten, which is conservative and
+    recoverable — but it is wrong for the same reason, so it moves in the same change rather than
+    waiting for someone to hit it.
+    """
+
+    def test_interactive_is_the_default(self):
+        text = command_text()
+        self.assertIn("A session is interactive unless someone declares otherwise", text)
+
+    def test_the_declarations_are_a_closed_set(self):
+        text = command_text()
+        self.assertIn("exactly two declarations", text)
+        self.assertIn("`--non-interactive` in the arguments", text)
+        self.assertIn("no answer can be given", text)
+
+    def test_inference_is_forbidden_with_its_reason(self):
+        text = command_text()
+        self.assertIn("**Never infer it.**", text)
+        self.assertIn("you are reading a prompt, not inspecting", text)
+
+    def test_the_cost_of_a_wrong_guess_is_named(self):
+        text = command_text()
+        self.assertIn("instead of the rewrite they asked for", text)
+
+    def test_the_removed_criteria_never_return_as_instructions(self):
+        self.assertNotIn("Detect a session that cannot answer", command_text())
+
+    def test_the_rewrite_asymmetry_survives_alongside_it(self):
+        """Two different asymmetries live in this section; neither may displace the other."""
+        text = command_text()
+        self.assertIn("Creating is additive and recoverable", text)
+        self.assertIn("silence is not approval", text)
+
+
 if __name__ == "__main__":
     unittest.main()

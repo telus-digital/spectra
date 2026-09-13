@@ -588,8 +588,22 @@ version.
 
 ## Non-interactive mode
 
-Detect a session that cannot answer — piped input, no terminal, an automated runner, or an explicit
-`--non-interactive`.
+**A session is interactive unless someone declares otherwise.** There are exactly two declarations:
+
+- `--non-interactive` in the arguments;
+- the user or the runner saying, in the session, that no answer can be given.
+
+**Never infer it.** Not from the input looking piped, not from there being no terminal, not from a guess
+about what launched this run. You cannot observe any of those — you are reading a prompt, not inspecting
+a process — so an inference here is a guess dressed as a finding, and it has a direction: asked whether
+anyone will answer, the tempting choice is the one that cannot leave you blocked, which is to assume
+nobody is there.
+
+**When in doubt, ask.** The two mistakes are not the same size. Ask in a session nobody is watching and
+you have wasted one question — the round already takes the recommended answer for anything unanswered
+and moves on, with no need to classify the session at all. Skip the round in a session someone *is*
+watching and you have thrown away every question, then written a document that explains the omission as
+though it were a considered judgement. That is the more expensive error and the harder one to notice.
 
 **Announce it once, up front.** Then:
 

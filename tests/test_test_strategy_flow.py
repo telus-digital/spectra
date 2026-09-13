@@ -331,6 +331,61 @@ class DecliningTheRoundIsFree(unittest.TestCase):
         self.assertIn("the same document an interactive run produces when the user declines", text)
 
 
+class NonInteractiveIsDeclaredNeverDetected(unittest.TestCase):
+    """The 1.17.0 regression, and the reason the round has to default the other way.
+
+    1.16.0 asked the reader to detect "piped input, no terminal, an automated runner". None of those is
+    observable from a prompt — they are process facts — so the reader guessed, and the guess that cannot
+    leave it blocked is *assume nobody is there*. While the switch only gated the coverage run and the
+    amendment, a false positive was nearly invisible. 1.17.0 hung the whole clarification round on it,
+    and a live interactive run duly announced itself non-interactive and skipped all six questions.
+
+    So the trigger is now a declaration. The consequences are untouched: this is about how the condition
+    is recognised, never about what it does once recognised.
+    """
+
+    REMOVED_CRITERIA = ("piped input", "no terminal", "an automated runner")
+
+    def test_interactive_is_the_default(self):
+        text = command_text()
+        self.assertIn("A session is interactive unless someone declares otherwise", text)
+
+    def test_the_declarations_are_a_closed_set(self):
+        text = command_text()
+        self.assertIn("exactly two declarations", text)
+        self.assertIn("`--non-interactive` in the arguments", text)
+        self.assertIn("no answer can be given", text)
+
+    def test_inference_is_forbidden_with_its_reason(self):
+        """Without the reason, the next editor restores the criteria as a convenience."""
+        text = command_text()
+        self.assertIn("**Never infer it.**", text)
+        self.assertIn("you are reading a prompt, not inspecting", text)
+
+    def test_the_asymmetry_that_justifies_the_default_is_stated(self):
+        text = command_text()
+        self.assertIn("When in doubt, ask", text)
+        self.assertIn("wasted one question", text)
+
+    def test_the_graceful_path_does_not_need_the_classification(self):
+        """If it did, removing the detection would risk a hang, and it does not."""
+        text = command_text()
+        self.assertIn("no need to classify the session at all", text)
+
+    def test_the_removed_criteria_never_return_as_instructions(self):
+        text = command_text()
+        for criterion in self.REMOVED_CRITERIA:
+            with self.subTest(criterion=criterion):
+                self.assertNotIn(
+                    f"Detect a session that cannot answer — {criterion}",
+                    text,
+                    f"test-strategy.md instructs the reader to detect {criterion!r}; that is a "
+                    "process fact a prompt cannot observe, and guessing at it skipped the entire "
+                    "clarification round on a live session in 1.17.0",
+                )
+        self.assertNotIn("Detect a session that cannot answer", text)
+
+
 class AnAnswerNeverMovesAMeasurement(unittest.TestCase):
     """R7 — the obvious way this feature could corrupt the document.
 

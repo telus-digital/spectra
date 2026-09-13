@@ -605,8 +605,17 @@ own version.
 
 ## Non-interactive mode
 
-Detect a session that cannot answer — piped input, no terminal, an automated runner, or an explicit
-`--non-interactive`.
+**A session is interactive unless someone declares otherwise.** There are exactly two declarations:
+
+- `--non-interactive` in the arguments;
+- the user or the runner saying, in the session, that no answer can be given.
+
+**Never infer it.** Not from the input looking piped, not from there being no terminal, not from a guess
+about what launched this run. You cannot observe any of those — you are reading a prompt, not inspecting
+a process — so an inference here is a guess dressed as a finding, and it has a direction: asked whether
+anyone will answer, the tempting choice is the one that cannot leave you blocked, which is to assume
+nobody is there. Guess wrong and a maintainer who was sitting there watching gets a report of what you
+would have changed instead of the rewrite they asked for.
 
 **Announce it once, up front.** Then:
 
