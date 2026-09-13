@@ -10,7 +10,7 @@
       "category": "workflow",
       "effect": "read-write",
       "author": "TELUS Digital",
-      "version": "1.17.0",
+      "version": "1.17.1",
       "repository": "https://github.com/telus-digital/spectra",
       "homepage": "https://github.com/telus-digital/spectra/tree/main/spectra",
       "documentation": "https://github.com/telus-digital/spectra/blob/main/spectra/README.md",

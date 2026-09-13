@@ -3,6 +3,43 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.17.1] - 2026-09-12
+
+### Fixed
+- **A session is non-interactive only when you say so.** `speckit.spectra.test-strategy` and
+  `speckit.spectra.test-plan` both opened their non-interactive section by asking the agent to *detect*
+  a session that cannot answer, from "piped input, no terminal, an automated runner". Those are process
+  facts — `isatty()`, the state of a file descriptor, the identity of a parent process — and a command
+  file is a prompt. The thing reading it has none of those to look at, so it guessed.
+
+  The guess was not random, which is what made this worth a release of its own. Asked to decide whether
+  anyone is going to answer, the tempting choice is the one that cannot leave you stuck waiting, and
+  that choice is to assume nobody is there. The sentence biased toward exactly the outcome it should
+  have made rarest.
+
+  While the switch only suppressed the coverage-run confirmation and the amendment approval, a wrong
+  guess was nearly invisible — both were already declinable and both had graceful defaults. 1.17.0 hung
+  the entire clarification round on the same switch, and the failure stopped being invisible: a live
+  interactive run, with a maintainer watching, announced itself non-interactive, skipped all six
+  questions, recorded each as not asked, and then explained the omission in the document as though it
+  were a considered judgement. A silent failure that argues for itself is the worst shape a defect can
+  take.
+
+  So the trigger is now a declaration rather than a deduction. A session is interactive unless
+  `--non-interactive` is in the arguments, or the user or runner says in the session that no answer can
+  be given. Those two are the complete set, the three unobservable criteria are gone rather than
+  reworded, and both commands now carry the reason — so the next editor does not restore them for
+  tidiness — along with the asymmetry that justifies the default. Ask in an empty room and you have
+  wasted one question, which both commands already handle by taking the recommended answer and moving
+  on, without classifying anything. Stay silent in a room with someone in it and you have thrown away
+  the whole interaction.
+
+  **Nothing about a declared non-interactive run changed.** `test-strategy` still asks nothing, runs no
+  coverage tool, takes the non-publishing root, writes the document, and records the amendment as not
+  asked — it still never infers approval from silence. `test-plan` still refuses to rewrite a plan that
+  already exists and reports what it would have changed instead. The guarantee was always about what
+  happens once the condition holds; only how the condition is recognised has moved.
+
 ## [1.17.0] - 2026-09-12
 
 ### Changed
