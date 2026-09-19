@@ -299,19 +299,27 @@ Clean up the probe PR and branch afterwards.
 
 And one pass on `review-pr`, whose new surface is the hardest to verify by reading. On a PR you own:
 
-1. **Issue as context, spec-less.** Open a PR from a non-spec branch whose body says `Closes #<n>` and
+1. **The narrow default.** On a PR yielding a mix of severities, confirm the proposal lists only blockers and
+   majors under "Will publish", names the verdict, and lists everything else by **number** under "Will NOT
+   publish". Answer `yes` and confirm it goes straight to the preview — no separate verdict prompt — and that
+   the published review contains no minor, nit, or question, in the body or on a line.
+2. **The escapes still work.** Re-run and answer `all`; confirm everything is published. Re-run and answer
+   with a selection of your own; confirm it still asks for the verdict. Re-run and answer **nothing at all**;
+   confirm it publishes nothing and reports that as a success — this is the one that matters, because a
+   default that can be reached by silence is a default that publishes without consent.
+3. **Issue as context, spec-less.** Open a PR from a non-spec branch whose body says `Closes #<n>` and
    target a **non-default** branch. Confirm the command finds the issue anyway — the structured link is empty
    there, so this exercises the text fallback — and that traceability is reported as run *against the issue*.
-2. **Declining.** Remove the reference, run again, and confirm it asks once, accepts a skip, and reports the
+4. **Declining.** Remove the reference, run again, and confirm it asks once, accepts a skip, and reports the
    absence rather than asking twice.
-3. **Inline placement.** Accept a finding anchored on a changed line and confirm it arrives as a line comment;
+5. **Inline placement.** Accept a finding anchored on a changed line and confirm it arrives as a line comment;
    accept one anchored outside the diff and confirm it lands in the body with the reason in coverage.
-4. **A suggestion.** Confirm a mechanical fix arrives as a ` ```suggestion ` block, that it appeared verbatim
+6. **A suggestion.** Confirm a mechanical fix arrives as a ` ```suggestion ` block, that it appeared verbatim
    in the preview first, and that GitHub's **Commit suggestion** button applies cleanly.
-5. **Template override.** Copy `review-template.md` into `.specify/templates/overrides/`, delete a section,
+7. **Template override.** Copy `review-template.md` into `.specify/templates/overrides/`, delete a section,
    and confirm the next review follows your version, says what it moved, and **still** carries the revision
    anchor, the AI-assisted disclosure, and Coverage and limits.
-6. **Atomicity.** Nothing to force here, but confirm the report names the template path, the inline/body
+8. **Atomicity.** Nothing to force here, but confirm the report names the template path, the inline/body
    counts, and the authorizing context it used.
 
 And one pass on `impact`, whose most important behaviours are the three a unit test on the prompt text

@@ -3,6 +3,61 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.18.0] - 2026-09-18
+
+### Changed
+- **`speckit.spectra.review-pr` now proposes blockers and majors instead of pre-selecting nothing.** A
+  reviewer reported that published reviews carried too much noise, and believed the command already
+  proposed the narrow set and published it on a "yes". It did not. Step 8 read *"Nothing is
+  pre-selected"*, `yes` was not in the grammar at all, and `blockers+major` existed only as one row in a
+  ten-row table the reviewer had to know and type unprompted.
+
+  A blank prompt is not a neutral choice. Facing sixteen findings and an unfamiliar syntax, the option
+  needing least interpretation is `all` — and `all` is the outcome the command's own opening calls worse
+  than no review, because *"the author learns to skim"*. The interaction was producing the exact failure
+  the design was written to prevent.
+
+  So Step 8 now renders a proposal: the blockers and majors it will publish, with severity, class and
+  anchor; the findings it will not, **enumerated by number** and grouped by severity; the verdict that
+  follows; and `all` offered plainly on its own line. `yes` accepts all of it and goes straight to the
+  preview. The dropped findings are named rather than counted, because the proposal narrows what is
+  *published* and must never narrow what is *shown* — a reviewer who cannot see the numbers cannot answer
+  `1,4,11`.
+
+  **`yes` carries the verdict, and that is safe by construction rather than by care.** The verdict is
+  already derived mechanically — any blocker or major means request changes — so a proposal containing
+  one can never *propose* approval. The collapsed answer therefore cannot reach the approve-over-blocker
+  path; that path is entered only by a reviewer who types `approve`, and it keeps its typed confirmation
+  in full. The argument is written into Step 9 beside the skip, so a later editor meets it before
+  removing the collapse as unsafe.
+
+  With no blockers or majors the default becomes publish-nothing, stated as such, with `approve` offered
+  explicitly — approving a clean PR carrying six nits should not require inventing a syntax.
+
+  **Silence still publishes nothing, and it is now said twice rather than once.** Two guarantees had been
+  sharing one sentence: that an unanswered prompt posts nothing, and that no set is proposed. Only the
+  second moved. The first is restated more explicitly than before — a reviewer who says nothing has not
+  said `yes`, and an unanswered prompt is not a default accepted. **The preview gate is untouched**: the
+  complete body and every inline comment, including every suggestion block, are still shown verbatim
+  before anything is posted. Every existing selection form — `none`, `all`, ranges, severity groups,
+  `except`, `<n>:major`, `<n>:body` — works unchanged, and any selection other than `yes` still goes to
+  Step 9 for the verdict.
+
+  **The published disclosure line changed with it.** It claimed *"every finding below was individually
+  selected by the reviewer"*, which a one-word `yes` makes false — a reviewer accepts a set rather than
+  picking its members one at a time. It now reads *"every finding below was shown to the reviewer and
+  accepted before posting"*, which is true on every path, and the command says why so it does not drift
+  back.
+
+  The default threshold joins the severity rubric, the confidence cap, the anchor rule and the verdict
+  derivation as command-owned and not template-overridable, for the same stated reason: a project that
+  could lower it would break the guarantee that two reviews of the same diff agree.
+
+  Nothing about what reaches the pull request when a finding is dropped has changed — dropped findings
+  never appear there, in the body or on a line, exactly as before. `brds/review-pr.md` BR-18 still reads
+  "nothing pre-selected"; it is a historical input, not a live requirement, and records what was asked
+  for in August rather than what ships now.
+
 ## [1.17.2] - 2026-09-12
 
 ### Fixed

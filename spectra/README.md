@@ -344,13 +344,15 @@ reviews one — judging it against **the intent and standards the PR carries**, 
 8. Presents the findings numbered and ranked, with a severity tally, its own reading of the change, a
    recommended verdict, and a mandatory **coverage-and-limits** statement — which now also says how much
    of the constitution actually applied to this diff, rather than only that guardrails ran.
-9. Hands control back: **nothing is pre-selected.** You choose which findings are published and which
-   verdict to submit, you see the exact review first — body *and* every inline comment — and only then is a
-   **single review event** posted under your own `gh` authentication.
+9. Hands control back from a **narrow default**: only blockers and majors are proposed, with everything
+   else listed by number but left out. `yes` publishes exactly those and takes the verdict that follows
+   from them; `all` takes everything; any selection of your own still works. You see the exact review
+   first — body *and* every inline comment — and only then is a **single review event** posted under your
+   own `gh` authentication.
 
 **Every finding cites a file, a line, and the clause, requirement, or principle it rests on** — a
-finding that cannot be anchored and sourced is not reported at all. An **empty selection posts nothing**,
-which is a normal outcome, not a failure. Approving over a blocker you accepted requires a typed
+finding that cannot be anchored and sourced is not reported at all. The default is proposed, never
+assumed: an **empty or absent answer posts nothing**, which is a normal outcome, not a failure. Approving over a blocker you accepted requires a typed
 confirmation and is recorded in the published review, so an override is never silent. The published body
 declares that it was AI-assisted and human-curated.
 

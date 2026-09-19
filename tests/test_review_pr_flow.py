@@ -22,6 +22,7 @@ Standard library only, like the rest of the suite.
 
 from __future__ import annotations
 
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -335,6 +336,119 @@ class ConstitutionApplicability(States, unittest.TestCase):
         self.assertStates("Which context authorized the review")
 
 
+class TheNarrowDefault(States, unittest.TestCase):
+    """Step 8 proposes blockers and majors rather than pre-selecting nothing.
+
+    The predecessor pre-selected nothing and handed the reviewer a ten-row grammar. That is not a neutral
+    choice: facing sixteen findings and an unfamiliar syntax, the option needing least interpretation is
+    `all` — the outcome the command's own framing calls worse than no review. A narrow default makes the
+    quiet answer the correct one.
+
+    Two guarantees were sharing one sentence in the old text, and only one of them moved. Silence still
+    publishes nothing; what changed is that a set is now *proposed*. `test_silence_is_still_not_consent`
+    is the one to look at first if this class ever goes red.
+    """
+
+    def test_the_default_is_blockers_and_majors_only(self):
+        self.assertStates("**propose the narrow set**: blockers and majors only")
+
+    def test_the_lesser_severities_are_not_in_the_proposal(self):
+        self.assertStates("Minors, nits and questions are reported in the transcript and are **not** in the proposal")
+
+    def test_yes_accepts_the_proposal(self):
+        self.assertStates("`yes`, `confirm`, `confirmed`, `ok`")
+        self.assertStates("Accept the proposal exactly as shown — findings *and* verdict")
+
+    def test_yes_carries_the_verdict_and_skips_step_9(self):
+        self.assertStates("**Skip this step when the reviewer answered `yes`.**")
+        self.assertStates("`yes` is the only input that carries a verdict with it")
+
+    def test_a_typed_approve_still_meets_the_contradiction_check(self):
+        """`approve` gives a verdict, so Step 9 stops asking — but it must not stop checking."""
+        self.assertStates("has already given the verdict, so do not ask again")
+        self.assertStates("Take them straight to the contradiction check below")
+
+    def test_the_collapse_cannot_reach_approve_over_blocker(self):
+        """The one place the two-prompt flow could have cost a safeguard. It does not, by construction."""
+        self.assertStates("can never *propose* approval, and the collapsed answer cannot reach the")
+        self.assertStates("and it keeps its typed confirmation in full")
+
+    def test_silence_is_still_not_consent(self):
+        self.assertStates("a reviewer who says nothing **has not said `yes`**")
+        self.assertStates("an unanswered prompt is not a default accepted")
+        self.assertStates("The default is what you *propose*, never what you assume")
+
+    def test_all_is_offered_inside_the_proposal(self):
+        """Not merely present in the grammar table — visible in the rendered prompt itself."""
+        self.assertStates("all publish all 16, including minors, nits and questions")
+        self.assertStates("**`all` is offered plainly**, on its own line, in the reviewer's own words")
+
+    def test_the_dropped_findings_are_enumerated_not_counted(self):
+        self.assertStates("**Both lists are enumerated by number.**")
+        self.assertStates("must never narrow what is *shown*, and a bare count hides them")
+
+    def test_no_blockers_or_majors_defaults_to_publishing_nothing(self):
+        self.assertStates("### When there are no blockers or majors")
+        self.assertStates("The default is then **publish nothing**, and the proposal says so")
+        self.assertStates("Offer `approve` explicitly")
+
+    def test_an_empty_dropped_list_is_still_stated(self):
+        self.assertStates('State "Will NOT publish (0)" explicitly when every finding is a blocker or major')
+
+    def test_every_existing_selection_form_survives(self):
+        for form in ("`1,2,4`", "`1-4`", "`blockers`, `blockers+major`", "`all except 10-15`",
+                     "`1,2,5-7 except 6`", "`3:major`", "`3:body`"):
+            self.assertStates(form)
+
+    def test_a_non_yes_selection_still_reaches_the_verdict_step(self):
+        self.assertStates("Every other selection returns to Step 9 for the verdict, unchanged")
+
+    def test_the_threshold_is_not_overridable_by_a_template(self):
+        self.assertStates("**the default threshold**, and the verdict derivation stay in this command")
+
+    def test_dropped_findings_still_never_reach_the_pull_request(self):
+        self.assertStates("Dropped findings never reach the pull request")
+
+    def test_the_rendered_proposals_add_up(self):
+        """Both sample shapes must partition 1..N exactly.
+
+        A prompt whose own arithmetic is wrong teaches a reviewer to distrust the numbers, and these two
+        blocks are what the command copies. Counts, per-severity groups, and the union of both lists are
+        all checked against the stated total.
+        """
+        blocks = re.findall(r"```text\n(16 findings.*?)\n```", text(), re.S)
+        self.assertEqual(2, len(blocks), "expected the two proposal shapes in Step 8")
+
+        def expand(s):
+            out = []
+            for lo, hi in re.findall(r"\[(\d+)\](?:-\[(\d+)\])?", s):
+                out += list(range(int(lo), int(hi or lo) + 1))
+            return out
+
+        for block in blocks:
+            total = int(re.search(r"^(\d+) findings", block).group(1))
+            published = re.search(r"Will publish \((\d+)\)(.*?)(?=\n\n)", block, re.S)
+            pub_n = int(published.group(1)) if published else 0
+            pub = expand(published.group(2)) if published else []
+
+            dropped = re.search(r"Will NOT publish \((\d+)\)\n(.*?)(?=\n\n)", block, re.S)
+            drop_n, drop_body = int(dropped.group(1)), dropped.group(2)
+            drop = expand(drop_body)
+
+            self.assertEqual(pub_n, len(pub), "publish count disagrees with its own list")
+            self.assertEqual(drop_n, len(drop), "drop count disagrees with its own list")
+            self.assertEqual(total, pub_n + drop_n, "the two lists do not sum to the stated total")
+            for group, count, nums in re.findall(r"(\w+) \((\d+)\)\s+(.*)", drop_body):
+                self.assertEqual(int(count), len(expand(nums)), group + " count is wrong")
+            self.assertEqual(list(range(1, total + 1)), sorted(pub + drop),
+                             "the proposal does not partition 1.." + str(total))
+
+    def test_the_disclosure_no_longer_overclaims(self):
+        """A one-word yes accepts a set; claiming each finding was picked individually would be false."""
+        self.assertStates("every finding below was shown to the reviewer and accepted before posting")
+        self.refuteStates("every finding below was individually selected by the reviewer")
+
+
 class SurvivingGuarantees(States, unittest.TestCase):
     """Everything earlier releases established must still hold."""
 
@@ -347,9 +461,6 @@ class SurvivingGuarantees(States, unittest.TestCase):
 
     def test_the_confidence_cap_is_intact(self):
         self.assertStates("A low-confidence finding MUST NOT be a Blocker")
-
-    def test_nothing_is_preselected(self):
-        self.assertStates("Nothing is pre-selected")
 
     def test_an_empty_selection_publishes_nothing(self):
         self.assertStates("publishes nothing, and that is a successful run")

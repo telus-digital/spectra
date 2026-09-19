@@ -242,12 +242,17 @@ requirement authorized, a pattern an ADR forbids. Every finding cites a file, a 
 requirement, or principle it rests on — anything that cannot be anchored and sourced is not reported at
 all.
 
-Then the reviewer takes over. **Nothing is pre-selected.** You choose which findings get published, you
-choose the verdict, and you see the exact text before anything is posted. One review event goes to the
-pull request under your own `gh` credentials, containing only what you selected — and the published body
-declares that it was AI-assisted and human-curated. An empty selection posts nothing, which is a normal
-outcome rather than a failure: a short, correct, human-endorsed review beats thirty findings that bury
-the two that matter.
+Then the reviewer takes over, starting from a deliberately narrow default. **Only blockers and majors are
+proposed** — minors, nits and questions are shown to you, enumerated by number, but are not in the
+proposal. Answering `yes` publishes exactly those and submits the verdict that follows from them; `all`
+takes everything, and any selection of your own still works. You see the exact text before anything is
+posted. One review event goes to the pull request under your own `gh` credentials, containing only what
+you accepted — and the published body declares that it was AI-assisted and human-curated.
+
+The default is a proposal, never an assumption: an empty or absent answer posts nothing, which is a
+normal outcome rather than a failure. That is the whole point of the narrow default — a short, correct,
+human-endorsed review beats thirty findings that bury the two that matter, and a blank prompt in front of
+sixteen findings is answered `all` far more often than it is answered carefully.
 
 Like `create-pr`, this command **hard-stops** when `gh` is missing or unauthenticated, naming which of
 the two failed — neither command can deliver its product without reading GitHub through `gh`. What

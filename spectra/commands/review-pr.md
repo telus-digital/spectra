@@ -1,5 +1,5 @@
 ---
-description: "Review a GitHub pull request against the spec, plan, tasks, ADRs, and constitution it carries, then publish a single human-curated review — severity-ranked, evidence-anchored, and containing only the findings the reviewer individually selected."
+description: "Review a GitHub pull request against the spec, plan, tasks, ADRs, and constitution it carries, then publish a single human-curated review — severity-ranked, evidence-anchored, and containing only the findings the reviewer accepted."
 ---
 
 # Review a Pull Request Against the Intent and Standards It Carries
@@ -18,8 +18,9 @@ Two things separate this from a generic AI code review:
 - **Conformance.** A diff-only reviewer can flag a missing null check. It cannot know that a task was
   marked complete without being implemented, that a change no requirement authorized has crept in, or
   that an ADR forbids the pattern just introduced. That context is sitting in the repository.
-- **The human is the filter.** Nothing is pre-selected. A review that posts thirty findings to bury the
-  two that matter is worse than no review, because the author learns to skim. Volume is not the product.
+- **The human is the filter, and the default is narrow.** What you propose is always blockers and majors
+  — never everything. A review that posts thirty findings to bury the two that matter is worse than no
+  review, because the author learns to skim. Volume is not the product.
 
 Work through the steps in order. Never skip the pre-flight gate, and never take an outward action
 without an explicit go-ahead.
@@ -488,8 +489,8 @@ Fixed order, so a reviewer learns the shape once:
    misunderstanding before it colours the findings
 9. Severity tally, by class × severity
 10. The findings — numbered, grouped by severity, with minors and nits collapsed
-10. **Coverage & limits**
-11. The selection prompt
+11. **Coverage & limits**
+12. **The proposal** — what publishing the default would raise, and what it would not (Step 8)
 
 ### Finding shape
 
@@ -527,16 +528,84 @@ This section is what stops a review from implying assurance it did not earn. It 
 
 ---
 
-## Step 8 — Selection: the reviewer decides what gets raised
+## Step 8 — Selection: the reviewer decides, from a narrow default
 
-Present the findings and ask which to publish. **Nothing is pre-selected.**
+Present the findings, then **propose the narrow set**: blockers and majors only. Minors, nits and questions
+are reported in the transcript and are **not** in the proposal.
 
-Accept all of these:
+This is the one place where volume is decided, and the default has to be right. A blank prompt in front of
+sixteen findings and a grammar the reviewer has not seen before is answered `all` far more often than it is
+answered thoughtfully — and `all` is the outcome this command exists to prevent. Proposing the narrow set
+makes the quiet answer the correct one, and leaves everything else exactly one word away.
+
+### The proposal
+
+Render it in this shape. The numbers in both lists are the numbers you assigned in Step 7:
+
+```text
+16 findings. The default raises only what blocks or should block the merge.
+
+  Will publish (3) — verdict: request changes
+    [1]  S1 Blocker · Security  · src/auth/session.ts:84
+    [2]  S2 Major   · Intent    · src/api/users.ts:210
+    [4]  S2 Major   · Data      · migrations/0042_add_col.sql:17
+
+  Will NOT publish (13)
+    Minor (5)     [3] [5]-[8]
+    Nit (6)       [9]-[14]
+    Question (2)  [15] [16]
+
+Reply:
+  yes            publish the 3 above and request changes   ← default
+  all            publish all 16, including minors, nits and questions
+  1,4  ·  blockers  ·  all except 9-14        a selection of your own
+  none           publish nothing
+
+Nothing is persisted — this transcript is the only record of the 13 findings above.
+```
+
+Four things in that shape are required, not decorative:
+
+- **Both lists are enumerated by number.** The dropped findings are named so the reviewer can pull one back
+  with `1,4,11`. The proposal narrows what is *published*; it must never narrow what is *shown*, and a bare
+  count hides them.
+- **`all` is offered plainly**, on its own line, in the reviewer's own words. A default that is hard to
+  escape is a decision taken on their behalf.
+- **The verdict rides with the selection**, so accepting the default costs one word rather than two.
+- **The persistence warning stays**, because the dropped findings exist nowhere else.
+
+State "Will NOT publish (0)" explicitly when every finding is a blocker or major. An omitted section reads
+as a section forgotten.
+
+### When there are no blockers or majors
+
+The default is then **publish nothing**, and the proposal says so. Offer `approve` explicitly — a clean PR
+carrying six nits is the ordinary case in a healthy repository, and approving it should not require the
+reviewer to invent a syntax.
+
+```text
+16 findings — none are blockers or majors. The default publishes nothing.
+
+  Will NOT publish (16)
+    Minor (8)     [1]-[8]
+    Nit (6)       [9]-[14]
+    Question (2)  [15] [16]
+
+Reply:
+  yes            publish nothing            ← default, and a successful run
+  approve        approve, raising nothing
+  all            publish all 16, comment only
+  1,4            a selection of your own
+```
+
+### The grammar
 
 | Input | Meaning |
 | ----- | ------- |
+| `yes`, `confirm`, `confirmed`, `ok` | Accept the proposal exactly as shown — findings *and* verdict |
 | *(empty)* or `none` | Publish nothing |
-| `all` | Publish everything |
+| `all` | Publish everything, at every severity |
+| `approve` | Approve, publishing whatever the proposal listed — nothing, when it was empty |
 | `3` | Finding 3 |
 | `1,2,4` | Findings 1, 2 and 4 |
 | `1-4` | Findings 1 through 4 |
@@ -546,13 +615,19 @@ Accept all of these:
 | `3:major` | Accept 3, overriding its severity to major |
 | `3:body` | Accept 3, but publish it in the summary body rather than as an inline comment |
 
-**An empty or absent selection publishes nothing, and that is a successful run** — the filter worked.
-Never read silence as consent, and never treat empty as "post everything".
+**`yes` is the only input that carries a verdict with it.** Every other selection returns to Step 9 for the
+verdict, unchanged.
 
-If a selection cannot be parsed, re-prompt. Do not advance. If a number is out of range, say so rather
-than ignoring it.
+**An empty or absent selection publishes nothing, and that is a successful run** — the filter worked. Never
+read silence as consent: a reviewer who says nothing **has not said `yes`**, and an unanswered prompt is not
+a default accepted. The default is what you *propose*, never what you assume.
+
+If a selection cannot be parsed, re-prompt. Do not advance. If a number is out of range, say so rather than
+ignoring it.
 
 ### Confirm both lists before going further
+
+A selection other than `yes` changes the proposal, so read the result back:
 
 ```text
 Publishing 3 findings:  [1] S1 Security · [2] S2 Intent · [4] S2 Data
@@ -560,15 +635,35 @@ Dropping 13 findings:   [3] · [5]-[9] · [10]-[15] · [16]
 Nothing is persisted — this transcript is the only record.
 ```
 
-State the dropped findings too. You are storing nothing, so the transcript is the complete record of
-what was raised and what the reviewer set aside.
+State the dropped findings too. You are storing nothing, so the transcript is the complete record of what
+was raised and what the reviewer set aside.
+
+A bare `yes` needs no read-back — the proposal *was* the read-back, and repeating it verbatim is the kind
+of ceremony that teaches a reviewer to stop reading prompts.
 
 ---
 
 ## Step 9 — The reviewer chooses the verdict
 
+**Skip this step when the reviewer answered `yes`.** That answer already carried the verdict named in the
+proposal. Every other selection arrives here.
+
 Ask. Recommend, but **do not choose on their behalf**. Three options only: approve, request changes,
 comment only.
+
+A reviewer who answered `approve` has already given the verdict, so do not ask again — but they have
+**not** skipped this step. Take them straight to the contradiction check below, which is the whole reason
+`approve` is a verdict the reviewer types rather than one the proposal offers.
+
+### Why `yes` may carry a verdict at all
+
+The proposed verdict is derived mechanically (Step 7): any blocker or major means request changes. So a
+proposal containing one can never *propose* approval, and the collapsed answer cannot reach the
+approve-over-blocker path below. That path is entered only by a reviewer who typed `approve` themselves,
+and it keeps its typed confirmation in full.
+
+This is a property of the derivation, not of your care in applying it. Do not weaken the derivation to make
+the collapse more convenient; the collapse is only safe because the derivation holds.
 
 ### If the reviewer is the author
 
@@ -628,9 +723,10 @@ The second is a disclosure obligation. The third is what stops a review implying
 earn. A template cannot remove them because it never held them.
 
 **Judgment is not overridable either.** The severity rubric and its floors, the confidence cap, the anchor
-rule, the selection grammar, and the verdict derivation stay in this command. If a project could redefine
-Blocker, or make approval recommendable over an open one, two reviews of the same diff would stop
-agreeing — which is the single thing this command exists to prevent.
+rule, the selection grammar, **the default threshold**, and the verdict derivation stay in this command. If
+a project could redefine Blocker, lower the threshold that decides what is proposed, or make approval
+recommendable over an open one, two reviews of the same diff would stop agreeing — which is the single
+thing this command exists to prevent.
 
 ### Decide where each accepted finding goes
 
@@ -689,7 +785,7 @@ them, so the format is fixed:
 <!-- spectra:review-pr revision=<full 40-character sha> -->
 
 Reviewed at revision `<short-sha>` by Spectra `review-pr` — AI-assisted, human-curated:
-every finding below was individually selected by the reviewer.
+every finding below was shown to the reviewer and accepted before posting.
 
 [the resolved template's summary shape, filled — its sections in its order]
 
@@ -701,6 +797,11 @@ every finding below was individually selected by the reviewer.
 **Do not change the HTML comment or the disclosure line casually.** The comment is the machine anchor
 for re-review; the disclosure satisfies the requirement that a published review declare it was
 AI-assisted and human-curated.
+
+The disclosure says *shown and accepted*, not *individually selected*, because a reviewer who answers
+`yes` accepts a set rather than picking its members one by one. Both lists were on screen and every
+published finding was in the preview, so the claim as written is true on every path — which the stronger
+wording would not have been.
 
 **Only accepted findings appear.** Dropped findings never reach the pull request — in the body or on a
 line. Nothing appears that was not in the preview.
@@ -855,6 +956,10 @@ Selection, verdict, and publication proceed exactly as in Steps 8 through 11.
 | Override omits a findings section | Follow it; say once where those findings went instead (Step 10) |
 | Finding anchored outside the diff | Publish in the body; say in coverage that it could not be inline (Step 10) |
 | `<n>:body` selected | Body, even though the anchor was inline-able (Step 8) |
+| No blockers or majors | The default publishes nothing; say so and offer `approve` explicitly (Step 8) |
+| Every finding is a blocker or major | Still state "Will NOT publish (0)" — an omitted section reads as a forgotten one (Step 8) |
+| Reviewer replies `yes` | The proposal is accepted entire, findings and verdict; skip Step 9 and go to the preview |
+| Reviewer replies nothing | Publish nothing. Silence is not `yes`, and an unanswered prompt is not a default accepted (Step 8) |
 | Fix is architectural or multi-file | Prose only — no suggestion block (Step 10) |
 | Anchor is a removed line | Comment on `side: LEFT`; never suggest a replacement for it |
 | Nothing is inline-able | Body-only review; omit `comments` entirely (Step 11) |
