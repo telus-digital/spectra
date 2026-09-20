@@ -1,0 +1,699 @@
+"""The `test-strategy` flow, asserted against the command text that ships.
+
+A command file is a prompt: its text *is* the implementation, so the enforceable surface is what it
+says. These assertions cannot prove an agent behaves correctly at run time — that is the manual pass in
+`test/README.md`. What they prove is that the rules it is supposed to follow have not been quietly
+deleted, which is the regression that actually happens to prompt files.
+
+This agent is the fourth Spectra document producer, so Principles VII and VIII are already enforced for
+it by `test_doc_output_paths.py` and `test_document_templates.py`; nothing here duplicates those. What
+is left is the part that makes a testing strategy trustworthy rather than merely plausible, and every
+one of these rules is the kind a well-meaning edit removes without anyone noticing:
+
+- **It never writes the constitution.** This is the one an agent will violate with good intentions: the
+  user just approved the amendment, the file is right there, and applying it is *helpful*. Spec 020
+  settled the applier as `/speckit-constitution` so one command owns the sync impact report, the
+  bump-type judgement, and dependent-artifact propagation. Losing this rule puts a second, partial
+  implementation of the amendment procedure in a command that is not about governance — and its failure
+  mode is a subtly malformed constitution, not an obviously broken one.
+- **A brownfield floor never exceeds the baseline.** Remove this and the command ships a document whose
+  adoption breaks the project's next build. A floor that fails immediately gets deleted, which leaves
+  the project worse off than if none had been proposed.
+- **A baseline always carries its provenance.** `measured` means the tool ran this session; `reported`
+  means a file was read, and then the date is mandatory. Collapse the distinction and the floor rests on
+  a number nobody can date.
+- **No tool is named that the stack cannot run.** This is what stops a browser driver being recommended
+  to a command-line tool — the single most visible way a generated strategy loses a reader's trust.
+- **Every recommendation cites evidence or is marked a convention.** Never neither. Unmarked, unevidenced
+  advice is indistinguishable from a template fill-in.
+- **It runs nothing without an explicit confirmation.** An unbidden coverage run is the largest side
+  effect a foundation agent could have.
+
+Standard library only, like the rest of the suite.
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+import helpers as h  # noqa: E402
+
+COMMAND = h.repo_file("spectra", "commands", "test-strategy.md")
+TEMPLATE = h.repo_file("spectra", "templates", "test-strategy-template.md")
+MANIFEST = h.repo_file("spectra", "extension.yml")
+
+COMMAND_NAME = "speckit.spectra.test-strategy"
+CONSTITUTION_PATH = ".specify/memory/constitution.md"
+
+
+def command_text() -> str:
+    return COMMAND.read_text(encoding="utf-8")
+
+
+def front_matter_example() -> str:
+    """The ```yaml block in Step 10 — the shape a run is told to copy."""
+    blocks = re.findall(r"```yaml\n(.*?)```", command_text(), re.S)
+    return blocks[0] if blocks else ""
+
+
+def yaml_defects(block: str) -> list:
+    """The two ways this document's front matter has actually broken. Not a YAML parser.
+
+    Writing one would be a far larger thing than this check deserves, and the suite is standard-library
+    only besides. What is worth catching is what happened: a 1.17.1 run emitted `amendment_state` as a
+    sentence containing `: ` — read as a nested mapping, so the reader showed an error instead of the
+    document — and `clarification_round` as a sentence with an indented sequence beneath it, which is
+    invalid whatever the quoting. Both are cheap to detect over a known block, and the block is the one
+    a reader copies.
+    """
+    defects = []
+    lines = block.split("\n")
+    for i, line in enumerate(lines):
+        entry = re.match(r"^(\s*)(- )?([a-z_]+): (.+)$", line)
+        if not entry:
+            continue
+        # A sequence entry's key starts after the "- ", so its real indent includes that marker.
+        indent = entry.group(1) + (entry.group(2) or "")
+        key, value = entry.group(3), entry.group(4).strip()
+        quoted = value.startswith('"') or value.startswith("'")
+        if not quoted and ": " in value:
+            defects.append(f"{key}: unquoted value contains ': ' and reads as a nested mapping")
+        if value:
+            for following in lines[i + 1:]:
+                if not following.strip():
+                    continue
+                deeper = len(following) - len(following.lstrip())
+                if deeper > len(indent):
+                    defects.append(f"{key}: carries a scalar and a nested block")
+                break
+    return defects
+
+
+class TheCommandIsRegistered(unittest.TestCase):
+    """Identity, before anything about behaviour."""
+
+    def test_the_command_file_exists(self):
+        self.assertTrue(COMMAND.is_file(), f"{COMMAND} does not exist")
+
+    def test_the_manifest_registers_it(self):
+        text = MANIFEST.read_text(encoding="utf-8")
+        self.assertIn(f'- name: "{COMMAND_NAME}"', text)
+        self.assertIn('file: "commands/test-strategy.md"', text)
+
+    def test_it_has_front_matter_with_a_description(self):
+        text = command_text()
+        self.assertTrue(text.startswith("---\n"), "no YAML front matter")
+        front = text.split("---\n", 2)[1]
+        self.assertIn("description:", front)
+
+    def test_it_takes_input_through_the_generic_placeholder(self):
+        """Principle III: no agent's invocation syntax in the command's own input surface."""
+        self.assertIn("$ARGUMENTS", command_text())
+
+    def test_it_runs_with_no_arguments(self):
+        text = command_text().lower()
+        self.assertIn("requires no arguments", text)
+
+
+class TheConstitutionIsNeverWritten(unittest.TestCase):
+    """Spec 020 FR-032 — the invariant the whole approval design rests on."""
+
+    def test_it_states_that_it_never_writes_the_constitution(self):
+        text = command_text().lower()
+        self.assertIn(CONSTITUTION_PATH.lower(), text)
+        self.assertTrue(
+            "never write" in text or "never writes" in text,
+            "test-strategy.md no longer states that it never writes the constitution",
+        )
+
+    def test_the_ban_is_unconditional(self):
+        """Approval is the case that tempts an agent, so the text has to name it explicitly."""
+        text = command_text().lower()
+        self.assertIn("approved or not", text)
+        self.assertIn("not on approval", text)
+
+    def test_it_hands_off_rather_than_applying(self):
+        text = command_text()
+        self.assertIn("/speckit-constitution", text)
+        self.assertIn("Do not invoke it", text)
+
+    def test_it_does_not_create_a_constitution_either(self):
+        text = command_text().lower()
+        self.assertIn("create a constitution", text)
+
+    def test_the_manifest_advertises_the_ban(self):
+        """A consumer reading only the catalog must be able to see it."""
+        text = MANIFEST.read_text(encoding="utf-8")
+        entry = text.split(f'- name: "{COMMAND_NAME}"', 1)[1].split("- name:", 1)[0]
+        self.assertIn("never writes the constitution", entry)
+
+
+class TheCoverageFloorIsHoldable(unittest.TestCase):
+    """FR-022, FR-023, FR-024, FR-026 — the numbers a team will actually enforce."""
+
+    def test_the_floor_never_exceeds_the_baseline(self):
+        text = command_text().lower()
+        self.assertIn("at or below the baseline", text)
+
+    def test_it_says_why_an_unholdable_floor_is_worse_than_none(self):
+        text = command_text().lower()
+        self.assertIn("gets deleted", text)
+
+    def test_all_three_provenances_are_named(self):
+        text = command_text()
+        for provenance in ("measured", "reported", "unavailable"):
+            with self.subTest(provenance=provenance):
+                self.assertIn(f"`{provenance}`", text)
+
+    def test_a_figure_read_from_a_file_is_never_called_measured(self):
+        text = command_text()
+        self.assertIn("A figure read from a file is `reported`", text)
+
+    def test_a_reported_figure_carries_its_date(self):
+        text = command_text().lower()
+        self.assertIn("with its date", text)
+
+    def test_an_unavailable_baseline_makes_the_floor_conditional(self):
+        text = command_text().lower()
+        self.assertIn("conditional", text)
+
+    def test_it_forbids_inferring_a_figure(self):
+        """A test-file-to-source-file ratio is the plausible-looking number to refuse."""
+        text = command_text().lower()
+        self.assertIn("never infer a figure", text)
+
+    def test_the_ratchet_uses_triggers_not_dates(self):
+        text = command_text()
+        self.assertIn("Never as dates", text)
+        self.assertIn("Do not state a schedule", text)
+
+    def test_surfaces_with_different_baselines_get_their_own_floors(self):
+        text = command_text().lower()
+        self.assertIn("its own floor", text)
+
+
+class ToolsAreGroundedInTheProject(unittest.TestCase):
+    """FR-016, FR-017 — the rules that stop a browser driver reaching a CLI."""
+
+    def test_the_three_tiers_are_named(self):
+        text = command_text()
+        for tier in ("present", "ecosystem-standard", "unverified"):
+            with self.subTest(tier=tier):
+                self.assertIn(f"**{tier}**", text)
+
+    def test_an_unrunnable_tool_appears_at_no_tier(self):
+        text = command_text()
+        self.assertIn("appears at no tier", text)
+
+    def test_the_end_to_end_surface_set_is_closed(self):
+        text = command_text().lower()
+        for surface in ("browser", "http", "cli", "none"):
+            with self.subTest(surface=surface):
+                self.assertIn(surface, text)
+
+    def test_it_never_defaults_to_a_browser_driver(self):
+        text = command_text()
+        self.assertIn("Never default to a browser driver", text)
+
+    def test_no_named_browser_driver_is_hard_coded_as_the_answer(self):
+        """FR-017, enforced as a blanket ban on naming one in the prompt at all.
+
+        The tier rule in Step 6 already derives the right driver for a project that has a browser: it
+        will be sitting in a manifest (tier `present`) or be the conventional choice for a stack the
+        project demonstrably uses (tier `ecosystem-standard`). Naming one *here* adds nothing to that
+        and costs a great deal — a tool named in the prompt is the one an agent reaches for, which is
+        exactly how a browser driver ends up recommended to a command-line tool.
+        """
+        text = command_text()
+        for tool in ("Playwright", "Cypress", "Selenium", "Puppeteer"):
+            with self.subTest(tool=tool):
+                self.assertNotIn(
+                    tool,
+                    text,
+                    f"test-strategy.md names {tool}; the end-to-end approach must be derived from "
+                    "the project's own surface, not hard-coded into the prompt",
+                )
+
+
+class EveryRecommendationIsTraceable(unittest.TestCase):
+    """FR-043, FR-044 — the difference between a strategy and a template fill-in."""
+
+    def test_evidence_or_a_convention_marker_never_neither(self):
+        text = command_text().lower()
+        self.assertIn("convention-based default with no project evidence", text)
+        self.assertIn("neither is a defect", text)
+
+    def test_an_absence_claim_cites_what_was_searched(self):
+        text = command_text().lower()
+        self.assertIn("cite what you searched for and where", text)
+
+    def test_an_answer_is_a_third_provenance_not_a_citation(self):
+        """An answer written up as evidence is the one failure a reader cannot detect."""
+        text = command_text()
+        self.assertIn("`stated`", text)
+        self.assertIn("`convention`", text)
+
+
+class TheClarificationRoundAsksOnlyWhatItCannotMeasure(unittest.TestCase):
+    """The round earns its place by what it refuses to ask.
+
+    An agent that asks the user what it is about to measure gets a wrong answer that outranks a right
+    one, and the whole document then rests on it. Spec 020 settled that for the mode (FR-006); this
+    generalises the same rule to everything Steps 1-3 and Step 8 establish. The never-ask list is the
+    load-bearing half of the feature — the questions themselves are the easy part.
+    """
+
+    def test_the_round_is_its_own_step(self):
+        self.assertIn("## Step 5 — The clarification round", command_text())
+
+    def test_it_states_what_may_be_asked(self):
+        text = command_text()
+        self.assertIn("Ask about judgment, intent, and constraint", text)
+        self.assertIn("Never ask about anything you are about to measure", text)
+
+    def test_the_never_ask_list_names_what_the_run_measures(self):
+        text = command_text()
+        self.assertIn("What you may never ask", text)
+        for measured in (
+            "greenfield, brownfield, or mixed",
+            "which test framework is in use",
+            "How many surfaces there are",
+            "Whether tests exist",
+            "What the coverage figure is",
+        ):
+            with self.subTest(measured=measured):
+                self.assertIn(measured, text)
+
+    def test_the_round_follows_the_reading_it_depends_on(self):
+        """Questions asked before Steps 1-4 cannot name a path, which makes them generic."""
+        text = command_text()
+        root = text.find("## Step 4 — Resolve where the strategy will live")
+        round_ = text.find("## Step 5 — The clarification round")
+        template = text.find("## Step 6 — Resolve the document's template")
+        self.assertNotEqual(-1, round_)
+        self.assertLess(root, round_)
+        self.assertLess(round_, template)
+
+    def test_the_count_is_fixed_and_announced(self):
+        text = command_text()
+        self.assertIn("Announce the round, once", text)
+        self.assertIn("Always five", text)
+
+    def test_questions_are_asked_one_at_a_time(self):
+        text = command_text()
+        self.assertIn("One question per turn", text)
+        self.assertIn("End the turn and wait", text)
+
+    def test_each_question_carries_a_recommendation_and_its_evidence(self):
+        text = command_text()
+        self.assertIn("mark exactly one as recommended", text)
+        self.assertIn("Give the evidence behind the mark", text)
+
+    def test_the_options_are_not_a_closed_menu(self):
+        text = command_text()
+        self.assertIn("Free text is always valid", text)
+
+    def test_a_settled_question_is_confirmed_rather_than_dropped(self):
+        """Dropping one would make the announced count a lie."""
+        text = command_text()
+        self.assertIn("Never skip a question, and never renumber the remainder", text)
+
+    def test_the_coverage_run_is_asked_first_and_only_once(self):
+        text = command_text()
+        self.assertIn("Ask about the coverage run first", text)
+        self.assertIn("warn that it executes the project's", text)
+        self.assertIn("nothing here reopens it", text)
+
+
+class DecliningTheRoundIsFree(unittest.TestCase):
+    """FR-015 to FR-020 — the property that makes an interactive agent safe to ship.
+
+    If declining costs anything, every user who was happy with the non-interactive command is worse
+    off. So every way out is written down, and all of them land on the answer the command would have
+    chosen by itself.
+    """
+
+    def test_defaults_end_the_round_immediately(self):
+        text = command_text()
+        self.assertIn('"Use your defaults"', text)
+        self.assertIn("end the round immediately", text)
+
+    def test_an_unanswered_question_records_its_disposition(self):
+        text = command_text()
+        self.assertIn("record it as not asked", text)
+        self.assertIn("Never block on an answer", text)
+
+    def test_a_reply_that_is_not_an_answer_re_asks(self):
+        text = command_text()
+        self.assertIn("ask the same question again", text)
+        self.assertIn("it does not advance the", text)
+
+    def test_declining_everything_reproduces_the_previous_document(self):
+        text = command_text()
+        self.assertIn("without the round at all", text)
+
+    def test_the_flag_is_documented_where_a_reader_looks_for_it(self):
+        text = command_text()
+        self.assertIn("`--non-interactive`", text)
+        self.assertIn("never silently becomes part of the hint", text)
+        non_interactive = text.split("## Non-interactive mode")[1]
+        self.assertIn("`--non-interactive`", non_interactive)
+        self.assertIn("ask **none** of the five", non_interactive)
+
+    def test_a_silent_run_and_a_declined_run_agree(self):
+        text = command_text()
+        self.assertIn("the same document an interactive run produces when the user declines", text)
+
+
+class FrontMatterParses(unittest.TestCase):
+    """A document a reader cannot open is worth less than one nobody wrote.
+
+    Step 10 used to describe the front matter in prose — "the coverage-of-analysis statement", "the
+    amendment state", five questions with four fields each — and ended by asking for it to be kept
+    terse. A 1.17.1 run recorded exactly what it was asked for and produced two YAML violations, and
+    the previewer showed an error where the strategy should have been.
+
+    `impact` has never done this, and the only structural difference is that it *shows* its front
+    matter instead of describing it. So this one does too, and these assertions hold the example to the
+    rules it demonstrates.
+    """
+
+    def test_the_requirement_is_stated(self):
+        text = command_text()
+        self.assertIn("Front matter is YAML, and it has to parse", text)
+
+    def test_the_quoting_rule_is_unconditional(self):
+        """"Quote the ones with colons" asks the reader to scan; "quote them all" does not."""
+        text = command_text()
+        self.assertIn("Quote every free-text value", text)
+        self.assertIn("all of them", text)
+
+    def test_a_key_is_a_scalar_or_a_collection(self):
+        text = command_text()
+        self.assertIn("A key takes a scalar or a collection, never both", text)
+
+    def test_prose_is_kept_out_of_the_header(self):
+        text = command_text()
+        self.assertIn("would run to a paragraph belongs in the body", text)
+
+    def test_an_example_block_is_shown(self):
+        self.assertNotEqual("", front_matter_example(), "Step 10 shows no front-matter example")
+
+    def test_the_example_has_neither_known_defect(self):
+        defects = yaml_defects(front_matter_example())
+        self.assertEqual([], defects, f"the shape a run is told to copy is invalid: {defects}")
+
+    def test_the_checker_catches_an_unquoted_colon(self):
+        """The bug that prompted this, verbatim from the reported document."""
+        bad = "amendment_state: PARTIAL - approved. Not written to the constitution: never that file.\n"
+        self.assertTrue(any("nested mapping" in d for d in yaml_defects(bad)))
+
+    def test_the_checker_catches_a_scalar_beside_a_block(self):
+        """The second violation, four lines below the first and fatal on its own."""
+        bad = "clarification_round: all five answered\n  - q: 0\n"
+        self.assertTrue(any("scalar and a nested block" in d for d in yaml_defects(bad)))
+
+    def test_the_long_fields_are_enumerated(self):
+        text = command_text()
+        self.assertIn("`embedded`, `partial`, `absent`, `none`, or `not_asked`", text)
+        self.assertIn("`answered`, `default_taken`, or `not_asked`", text)
+
+    def test_every_question_is_carried_including_the_unasked(self):
+        text = command_text()
+        self.assertIn("an absent entry and a `not_asked` entry are", text)
+
+    def test_the_record_is_not_deleted_to_fix_a_render(self):
+        """Principle VIII is why it is in the header; a future parse problem must not undo that."""
+        text = command_text()
+        self.assertIn("Do not resolve a rendering problem by deleting", text)
+
+
+class NonInteractiveIsDeclaredNeverDetected(unittest.TestCase):
+    """The 1.17.0 regression, and the reason the round has to default the other way.
+
+    1.16.0 asked the reader to detect "piped input, no terminal, an automated runner". None of those is
+    observable from a prompt — they are process facts — so the reader guessed, and the guess that cannot
+    leave it blocked is *assume nobody is there*. While the switch only gated the coverage run and the
+    amendment, a false positive was nearly invisible. 1.17.0 hung the whole clarification round on it,
+    and a live interactive run duly announced itself non-interactive and skipped all six questions.
+
+    So the trigger is now a declaration. The consequences are untouched: this is about how the condition
+    is recognised, never about what it does once recognised.
+    """
+
+    REMOVED_CRITERIA = ("piped input", "no terminal", "an automated runner")
+
+    def test_interactive_is_the_default(self):
+        text = command_text()
+        self.assertIn("A session is interactive unless someone declares otherwise", text)
+
+    def test_the_declarations_are_a_closed_set(self):
+        text = command_text()
+        self.assertIn("exactly two declarations", text)
+        self.assertIn("`--non-interactive` in the arguments", text)
+        self.assertIn("no answer can be given", text)
+
+    def test_inference_is_forbidden_with_its_reason(self):
+        """Without the reason, the next editor restores the criteria as a convenience."""
+        text = command_text()
+        self.assertIn("**Never infer it.**", text)
+        self.assertIn("you are reading a prompt, not inspecting", text)
+
+    def test_the_asymmetry_that_justifies_the_default_is_stated(self):
+        text = command_text()
+        self.assertIn("When in doubt, ask", text)
+        self.assertIn("wasted one question", text)
+
+    def test_the_graceful_path_does_not_need_the_classification(self):
+        """If it did, removing the detection would risk a hang, and it does not."""
+        text = command_text()
+        self.assertIn("no need to classify the session at all", text)
+
+    def test_the_removed_criteria_never_return_as_instructions(self):
+        text = command_text()
+        for criterion in self.REMOVED_CRITERIA:
+            with self.subTest(criterion=criterion):
+                self.assertNotIn(
+                    f"Detect a session that cannot answer — {criterion}",
+                    text,
+                    f"test-strategy.md instructs the reader to detect {criterion!r}; that is a "
+                    "process fact a prompt cannot observe, and guessing at it skipped the entire "
+                    "clarification round on a live session in 1.17.0",
+                )
+        self.assertNotIn("Detect a session that cannot answer", text)
+
+
+class AnAnswerNeverMovesAMeasurement(unittest.TestCase):
+    """R7 — the obvious way this feature could corrupt the document.
+
+    R3 already forbids a floor above the baseline. What is new is a user who asks for one, which is a
+    pressure the rule did not previously face. Stating it separately makes it findable; folding it into
+    R1 would not.
+    """
+
+    def test_the_rule_exists_and_is_named(self):
+        text = command_text()
+        self.assertIn("R7 — An answer is an input, not a measurement", text)
+
+    def test_the_floor_holds_against_an_answer(self):
+        text = command_text()
+        self.assertIn("R3 holds against any answer", text)
+
+    def test_a_contradicting_answer_is_recorded_not_argued(self):
+        text = command_text()
+        self.assertIn("record the disagreement in the document", text)
+
+    def test_the_ban_is_in_the_never_table(self):
+        text = command_text()
+        self.assertIn("Let an answer override a measured or reported figure", text)
+
+    def test_the_answers_survive_a_template_that_drops_them(self):
+        """Principle VIII lets an override delete the section holding the record."""
+        text = command_text()
+        self.assertIn("Front matter is yours, so the record survives", text)
+
+    def test_the_round_precedes_the_write_which_precedes_the_report(self):
+        text = command_text()
+        round_ = text.find("## Step 5 — The clarification round")
+        write = text.find("## Step 10 — Write the document")
+        report = text.find("## Step 11 — Report")
+        self.assertNotEqual(-1, write)
+        self.assertLess(round_, write)
+        self.assertLess(write, report)
+
+
+class TheRunIsHonestAboutItself(unittest.TestCase):
+    """FR-006, FR-013, FR-045 — what a reader needs to judge the document."""
+
+    def test_the_mode_is_classified_from_signals(self):
+        text = command_text().lower()
+        for mode in ("greenfield", "brownfield", "mixed"):
+            with self.subTest(mode=mode):
+                self.assertIn(mode, text)
+
+    def test_the_mode_is_never_asked_of_the_user(self):
+        text = command_text()
+        self.assertIn("Never ask the user", text)
+
+    def test_classification_ignores_age_and_commit_count(self):
+        text = command_text().lower()
+        self.assertIn("repository age", text)
+        self.assertIn("commit count", text)
+
+    def test_it_states_its_own_coverage(self):
+        text = command_text().lower()
+        self.assertIn("checked and found nothing", text)
+        self.assertIn("did not check", text)
+
+    def test_reduced_search_capability_degrades_loudly(self):
+        text = command_text()
+        self.assertIn("Do not silently narrow", text)
+
+
+class TheWriteScopeIsNarrow(unittest.TestCase):
+    """FR-037, FR-047, FR-048, FR-049, FR-050 — one file, and nothing else."""
+
+    def test_exactly_one_file_is_written(self):
+        text = command_text()
+        self.assertIn("exactly one file", text)
+
+    def test_a_rerun_rewrites_in_place(self):
+        text = command_text()
+        self.assertIn("Rewrite the same file in place", text)
+        self.assertIn("Never create a second strategy file", text)
+
+    def test_it_never_edits_configuration_or_ci(self):
+        text = command_text().lower()
+        self.assertIn("coverage configuration", text)
+        self.assertIn("ci workflow definitions", text)
+
+    def test_it_states_the_change_instead_of_applying_it(self):
+        text = command_text()
+        self.assertIn("State it; do not apply it", text)
+
+    def test_it_makes_no_network_request(self):
+        text = command_text().lower()
+        self.assertIn("no network request", text)
+
+    def test_it_accepts_no_url_or_credential(self):
+        text = command_text().lower()
+        self.assertIn("repository url, credential, or token", text)
+
+    def test_it_defers_flaky_tests_to_the_agent_that_owns_them(self):
+        text = command_text()
+        self.assertIn("speckit.spectra.flaky-test-detector", text)
+
+    def test_it_runs_nothing_by_default(self):
+        text = command_text()
+        self.assertIn("You run nothing by default", text)
+
+
+class TheReportPrecedesTheGate(unittest.TestCase):
+    """FR-028, FR-031, FR-034 — a gate offered before the summary is not a gate."""
+
+    def test_the_summary_comes_before_any_question(self):
+        text = command_text()
+        self.assertIn("Before you ask the user anything", text)
+
+    def test_the_report_step_precedes_the_constitution_step(self):
+        text = command_text()
+        report = text.find("## Step 11 — Report")
+        check = text.find("## Step 12 — Check the constitution")
+        gate = text.find("## Step 13 — The amendment gate")
+        self.assertNotEqual(-1, report)
+        self.assertLess(report, check)
+        self.assertLess(check, gate)
+
+    def test_the_amendment_text_is_shown_before_the_choice(self):
+        text = command_text()
+        self.assertIn("Show the exact amendment text first", text)
+
+    def test_all_three_paths_are_offered(self):
+        text = command_text()
+        for path in ("Approve it", "Modify the strategy first", "Talk it through"):
+            with self.subTest(path=path):
+                self.assertIn(path, text)
+
+    def test_the_three_embedded_states_are_named(self):
+        text = command_text()
+        for state in ("**embedded**", "**partial**", "**absent**"):
+            with self.subTest(state=state):
+                self.assertIn(state, text)
+
+    def test_the_embedded_check_is_semantic_not_a_string_match(self):
+        text = command_text().lower()
+        self.assertIn("never** match on the string", text)
+
+    def test_a_conflicting_principle_is_surfaced_not_overridden(self):
+        text = command_text().lower()
+        self.assertIn("silently overrides an existing principle", text)
+
+    def test_non_interactive_infers_no_approval(self):
+        text = command_text().lower()
+        self.assertIn("infer no approval from silence", text)
+
+
+class TheFourLensesAreMandatory(unittest.TestCase):
+    """FR-014, FR-020 — a lens that does not apply says so."""
+
+    def test_all_four_lenses_are_named(self):
+        text = command_text()
+        for lens in ("Unit", "Integration", "API contract", "End-to-end"):
+            with self.subTest(lens=lens):
+                self.assertIn(lens, text)
+
+    def test_a_lens_is_applicable_or_carries_a_reason(self):
+        text = command_text()
+        self.assertIn("Never omit a lens", text)
+
+    def test_each_lens_states_what_it_proves_and_its_boundary(self):
+        text = command_text()
+        self.assertIn("Proves", text)
+        self.assertIn("boundary", text.lower())
+
+    def test_brownfield_reports_before_it_proposes(self):
+        text = command_text()
+        self.assertIn("report what exists before proposing anything", text)
+
+
+class TheShippedTemplateMatchesTheDocumentedSections(unittest.TestCase):
+    """The template ships structure only; the rules above stay in the command."""
+
+    SECTION = re.compile(r"^## +(.+?)\s*$", re.M)
+
+    def test_the_template_declares_the_ten_sections(self):
+        names = self.SECTION.findall(TEMPLATE.read_text(encoding="utf-8"))
+        self.assertEqual(
+            names,
+            [
+                "Classification and evidence",
+                "Testable surfaces",
+                "Unit testing",
+                "Integration testing",
+                "API contract testing",
+                "End-to-end testing",
+                "Coverage floor",
+                "Recommendations summary",
+                "Proposed constitution amendment",
+                "Sources consulted and coverage of analysis",
+            ],
+        )
+
+    def test_the_template_carries_no_honesty_rule(self):
+        """Principle VIII: an override may drop a section, never a rule."""
+        text = TEMPLATE.read_text(encoding="utf-8")
+        self.assertNotIn("at or below the baseline", text)
+        self.assertNotIn("appears at no tier", text)
+
+    def test_the_template_says_which_rules_it_cannot_change(self):
+        text = TEMPLATE.read_text(encoding="utf-8").lower()
+        self.assertIn("cannot change", text)
+
+
+if __name__ == "__main__":
+    unittest.main()

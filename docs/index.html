@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spectra — Spec Kit extensions by TELUS Digital</title>
+<meta name="description" content="A curated catalog of Spec Kit extensions that enable full agentic development across the entire software development lifecycle. One uv command installs it." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23a78bfa' d='M12 2 2 7l10 5 10-5-10-5Z'/%3E%3Cpath fill='%23a78bfa' opacity='.55' d='m2 12 10 5 10-5M2 17l10 5 10-5'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg: #0c0a16;
+    --bg-2: #120f22;
+    --panel: rgba(255,255,255,0.035);
+    --panel-2: rgba(255,255,255,0.05);
+    --border: rgba(167,139,250,0.20);
+    --text: #e9e7f2;
+    --muted: #a3a0b5;
+    --accent: #a78bfa;
+    --accent-2: #c4b5fd;
+    --green: #34d399;
+    --code-bg: #0d0b17;
+    --radius: 14px;
+    --maxw: 960px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 520px at 78% -10%, rgba(167,139,250,0.18), transparent 60%),
+      radial-gradient(900px 480px at 10% 6%, rgba(124,92,222,0.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-2), var(--bg));
+    background-attachment: fixed;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* faint grid overlay */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(167,139,250,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167,139,250,0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+  }
+  .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Site bar. Sticky and full-bleed, mirroring the capability brief's topbar so the
+     navigation sits in the same place and behaves the same way on both pages. */
+  .sitebar {
+    position: sticky; top: 0; z-index: 60;
+    background: rgba(12,10,22,0.82);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  header.site {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 12px 0;
+  }
+  header.site .brand { display: inline-flex; align-items: center; }
+  header.site .brand:hover { text-decoration: none; }
+  header.site img.logo { height: 26px; width: auto; opacity: .95; display: block; }
+  header.site .nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  /* Cross-page destinations. The same links, in the same order, with the same
+     "you are here" pill, appear on the capability brief — that is what makes moving
+     between the two pages feel like one site. */
+  header.site .nav a.nav-page {
+    color: var(--muted); font-size: 14px;
+    padding: 5px 13px; border: 1px solid transparent; border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  header.site .nav a.nav-page:hover { color: var(--text); text-decoration: none; }
+  header.site .nav a.nav-page[aria-current="page"] {
+    color: var(--accent-2); border-color: var(--border);
+    background: rgba(167,139,250,0.10);
+  }
+  header.site .nav a:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+  /* In-page jumps. Only meaningful on this page, so they stay visually secondary
+     and sit behind a divider rather than competing with the page links. */
+  header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+  header.site .nav a.nav-jump { color: var(--muted); font-size: 13px; padding: 5px 5px; }
+  header.site .nav a.nav-jump:hover { color: var(--text); }
+
+  .hero { padding: 56px 0 34px; text-align: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid var(--border);
+    background: var(--panel); padding: 6px 12px; border-radius: 999px;
+  }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+  h1 {
+    font-size: clamp(46px, 11vw, 86px); line-height: .98; margin: 22px 0 10px;
+    letter-spacing: -0.03em; font-weight: 800;
+    background: linear-gradient(180deg, #ffffff, #a78bfa);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline { font-size: clamp(17px, 2.4vw, 21px); color: var(--text); margin: 0 auto 14px; max-width: 720px; }
+  .lede { color: var(--muted); max-width: 680px; margin: 0 auto 30px; }
+
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 16px; padding: 13px 22px; border-radius: 12px;
+    border: 1px solid transparent; cursor: pointer;
+  }
+  .btn-primary {
+    color: #150f28;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 10px 30px rgba(167,139,250,0.30);
+  }
+  .btn-primary:hover { text-decoration: none; filter: brightness(1.06); transform: translateY(-1px); }
+  .btn-ghost { color: var(--text); border-color: var(--border); background: var(--panel); }
+  .btn-ghost:hover { text-decoration: none; border-color: rgba(167,139,250,0.45); }
+  .btn small { font-weight: 500; opacity: .8; }
+
+  .subnote { color: var(--muted); font-size: 13px; margin-top: 14px; }
+
+  /* Version pills. Both are populated at load time (see the script at the bottom) and stay
+     hidden until their source responds — nothing here is a hand-typed version number. */
+  .pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 18px 0 0; }
+  .release {
+    display: none; align-items: center; gap: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px; color: var(--accent);
+    border: 1px solid var(--border); background: var(--panel);
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .release.show { display: inline-flex; }
+  .release .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+
+  section.block { padding: 30px 0; }
+  h2 { font-size: 24px; letter-spacing: -0.01em; margin: 8px 0 18px; }
+  h2 .num { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 18px; margin-right: 10px; }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .card h3 { margin: 6px 0 6px; font-size: 16px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  .card .ico { width: 30px; height: 30px; color: var(--accent); }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px 24px;
+  }
+  ul.check { list-style: none; padding: 0; margin: 0; }
+  ul.check li { padding: 8px 0 8px 30px; position: relative; color: var(--text); }
+  ul.check li::before {
+    content: ""; position: absolute; left: 0; top: 13px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 10px rgba(167,139,250,0.7);
+  }
+  ul.check li span { color: var(--muted); }
+
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+  ol.steps > li { position: relative; padding: 4px 0 22px 46px; margin: 0; }
+  ol.steps > li::before {
+    counter-increment: s; content: counter(s);
+    position: absolute; left: 0; top: 0;
+    width: 30px; height: 30px; border-radius: 9px;
+    display: grid; place-items: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; font-size: 14px;
+    color: var(--accent); background: rgba(167,139,250,0.10); border: 1px solid var(--border);
+  }
+  ol.steps > li::after {
+    content: ""; position: absolute; left: 15px; top: 34px; bottom: 6px; width: 1px;
+    background: var(--border);
+  }
+  ol.steps > li:last-child::after { display: none; }
+  ol.steps b { color: var(--text); }
+  ol.steps .os { color: var(--muted); font-size: 13px; }
+
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; overflow-x: auto; margin: 12px 0 0;
+  }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; }
+  pre code { color: #ded7f5; }
+  /* Copy-to-clipboard button on command blocks (button injected by script below). */
+  .codewrap { position: relative; margin: 12px 0 0; }
+  .codewrap pre { margin: 0; }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--muted); background: var(--code-bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 9px; cursor: pointer;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent-2); }
+  .copy-btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); cursor: default; }
+  .copy-btn svg { width: 14px; height: 14px; flex: none; }
+  p code, li code, span code {
+    background: var(--panel-2); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 6px; font-size: 13px; color: #ded7f5;
+  }
+  .muted { color: var(--muted); }
+
+  .callout {
+    border-left: 3px solid var(--accent); background: rgba(167,139,250,0.06);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0 0; color: var(--text); font-size: 14.5px;
+  }
+
+  /* OS tabs for the "check & install uv/Git" instructions in "Before you start". */
+  .osnote { color: var(--muted); font-size: 14.5px; margin: 22px 0 12px; }
+  .osnote b { color: var(--text); }
+  .tabs { margin-top: 6px; }
+  .tablist {
+    display: inline-flex; gap: 4px; padding: 4px; flex-wrap: wrap;
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .tab {
+    appearance: none; cursor: pointer;
+    font: 600 14px/1 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--muted); background: transparent;
+    border: 1px solid transparent; border-radius: 9px; padding: 9px 18px;
+    transition: color .15s ease, background .15s ease;
+  }
+  .tab:hover { color: var(--text); }
+  .tab[aria-selected="true"] {
+    color: #150f28; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  }
+  .tab:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+  .tabpanel { margin-top: 4px; }
+  .tabpanel[hidden] { display: none; }
+  .step-label { display: block; margin: 20px 0 0; font-size: 14.5px; color: var(--text); }
+  .step-label .n {
+    color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-weight: 700; margin-right: 8px;
+  }
+  .step-label small { display: block; color: var(--muted); font-weight: 400; font-size: 13px; margin-top: 3px; }
+  .tabpanel .more { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
+  .tool-group { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .tool-group:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  .tool-group > .tool-label { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
+
+  /* Agents */
+  .ext header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ext header h3 { font-size: 20px; margin: 0; }
+  .ext .badges { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .ext .desc { color: var(--muted); font-size: 14.5px; }
+  ul.cmds { list-style: none; margin: 16px 0 0; padding: 16px 0 0; border-top: 1px solid var(--border); }
+  ul.cmds > li { margin: 0 0 18px; }
+  ul.cmds > li:last-child { margin-bottom: 0; }
+  ul.cmds .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; color: var(--accent); font-weight: 700; }
+  ul.cmds .cdesc { display: block; margin-top: 6px; color: var(--muted); font-size: 14.5px; }
+  ul.cmds .args { display: block; margin-top: 7px; font-size: 13.5px; color: var(--muted); }
+  ul.cmds .args b { color: var(--text); }
+  ul.cmds .lbl { display: block; text-transform: uppercase; letter-spacing: .06em; font-size: 11.5px; color: var(--muted); margin: 10px 0 0; }
+
+  footer.site {
+    border-top: 1px solid var(--border); margin-top: 30px; padding: 26px 0 46px;
+    color: var(--muted); font-size: 13.5px; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  }
+  footer.site .legal {
+    flex: 0 0 100%; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+    font-size: 12px; line-height: 1.6;
+  }
+
+  @media (max-width: 720px) {
+    .grid3 { grid-template-columns: 1fr; }
+    header.site { flex-wrap: wrap; gap: 10px; }
+    header.site .nav { gap: 4px; }
+    header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
+    header.site .nav .nav-sep { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sitebar">
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="index.html" aria-label="SPECTRA — home">
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-page" href="index.html" aria-current="page">Home</a>
+        <a class="nav-page" href="capability-brief.html">Capability Brief</a>
+        <a class="nav-page" href="agents.html">Agents</a>
+        <a class="nav-page" href="e-learning/index.html">E-Learning</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a class="nav-jump" href="#install">Install</a>
+      </nav>
+    </header>
+  </div>
+</div>
+<div class="wrap">
+
+  <section class="hero">
+    <span class="eyebrow"><span class="dot"></span> TELUS Digital · Agentic SDLC</span>
+    <h1>SPECTRA</h1>
+    <p class="tagline">Agentic software engineering across the entire SDLC.</p>
+    <p class="lede">
+      A curated catalog of <a href="https://github.com/github/spec-kit">Spec Kit</a> extensions that
+      take spec-driven development beyond code: structured BRD authoring, context-aware architecture
+      decision records, business-domain guardrail analysis, and correctly-targeted PR delivery. One
+      command installs the <code>spectra</code> tool; it handles the rest.
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#install">Install with uv &nbsp;<small>one command</small></a>
+      <a class="btn btn-ghost" href="https://github.com/telus-digital/spectra">View on GitHub</a>
+    </div>
+    <div class="pills">
+      <span class="release" id="release"><span class="dot"></span><span id="release-version"></span></span>
+      <span class="release" id="ext-release"><span class="dot"></span><span id="ext-version"></span></span>
+    </div>
+    <p class="subnote">Runs on macOS, Windows &amp; Linux · installed as a uv tool · public catalog, no token needed</p>
+  </section>
+
+  <section class="block">
+    <div class="grid3">
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 12 10 5 10-5M2 17l10 5 10-5"/></svg>
+        <h3>One command, fully set up</h3>
+        <p>Installs the Spec Kit CLI if it's missing, offers to initialize your project, registers the public catalog, and installs every extension in it.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v14H4z"/><path d="M4 9h16"/><path d="M9 13h7"/></svg>
+        <h3>Grounded in your project</h3>
+        <p>Every command reads real context — your constitution, specs, existing artifacts, and source — before it writes anything. A command that ignores the project it runs in is a defect.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M7 21h10"/><circle cx="12" cy="5" r="2"/></svg>
+        <h3>Agent-agnostic</h3>
+        <p>Commands are written in Spec Kit's generic format, so Spec Kit translates them into whatever your agent speaks — Claude, kiro-cli, and the rest.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="prereqs">
+    <h2><span class="num">01</span>Before you start</h2>
+    <div class="panel">
+      <ul class="check">
+        <li><b>uv</b> — <span>Astral's Python tool installer; it manages Python for you. Not sure if you have it? <a href="#get-uv">Check &amp; install it below</a>.</span></li>
+        <li><b>Git</b> — <span>uv uses it to fetch Spectra from GitHub. Not sure if you have it? <a href="#get-uv">Check &amp; install it below</a>.</span></li>
+        <li><b>A Spec Kit project</b> — <span>Spectra installs <b>into</b> one: a folder containing <code>.specify/</code>. Don't have one? <code>spectra</code> offers to create it for you, and installs the <code>specify</code> CLI first if it's missing.</span></li>
+        <li><b>Internet access</b> — <span>to <code>github.com</code> and <code>raw.githubusercontent.com</code>. The catalog is public, so there's no login, token, or <code>gh</code> setup.</span></li>
+      </ul>
+
+      <p class="osnote" id="get-uv"><b>Get uv &amp; Git</b> — both are needed before you install Spectra. First check whether each is already installed, and install only what's missing. Pick your operating system:</p>
+
+      <div class="tabs" data-tabs>
+        <div class="tablist" role="tablist" aria-label="Operating system">
+          <button class="tab" type="button" role="tab" id="tab-macos" aria-controls="panel-macos" aria-selected="true">macOS</button>
+          <button class="tab" type="button" role="tab" id="tab-windows" aria-controls="panel-windows" aria-selected="false" tabindex="-1">Windows</button>
+          <button class="tab" type="button" role="tab" id="tab-linux" aria-controls="panel-linux" aria-selected="false" tabindex="-1">Linux</button>
+        </div>
+
+        <!-- macOS -->
+        <div class="tabpanel" role="tabpanel" id="panel-macos" aria-labelledby="tab-macos">
+          <div class="tool-group">
+            <span class="tool-label">uv</span>
+            <span class="step-label"><span class="n">1</span>Check if uv is already installed
+              <small>In the Terminal app. Prints a version number if it’s there; says “command not found” if it isn’t.</small></span>
+            <pre><code>uv --version</code></pre>
+            <span class="step-label"><span class="n">2</span>Not installed? Install it
+              <small>Official standalone installer — no admin rights needed.</small></span>
+            <pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+            <p class="more">Alternatives: <code>brew install uv</code> (Homebrew) · <code>sudo port install uv</code> (MacPorts) · <code>pipx install uv</code> (PyPI). Afterwards, open a new terminal and re-run <code>uv --version</code> to confirm. See the <a href="https://docs.astral.sh/uv/getting-started/installation/">full uv install guide</a> for more options.</p>
+          </div>
+          <div class="tool-group">
+            <span class="tool-label">Git</span>
+            <span class="step-label"><span class="n">1</span>Check if Git is already installed
+              <small>In the Terminal app. If Git isn’t there, macOS itself prompts you to install the Xcode Command Line Tools (which include Git) — accept that prompt and you’re done.</small></span>
+            <pre><code>git --version</code></pre>
+            <span class="step-label"><span class="n">2</span>Not installed and didn’t get the Xcode prompt?
+              <small>Install the Command Line Tools explicitly.</small></span>
+            <pre><code>xcode-select --install</code></pre>
+            <p class="more">Alternatives: <code>brew install git</code> (Homebrew) · download the macOS installer from <a href="https://git-scm.com/download/mac">git-scm.com</a>. Afterwards, open a new terminal and re-run <code>git --version</code> to confirm. See the <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">official Git install guide</a> for details.</p>
+          </div>
+        </div>
+
+        <!-- Windows -->
+        <div class="tabpanel" role="tabpanel" id="panel-windows" aria-labelledby="tab-windows" hidden>
+          <div class="tool-group">
+            <span class="tool-label">uv</span>
+            <span class="step-label"><span class="n">1</span>Check if uv is already installed
+              <small>In PowerShell. Prints a version number if it’s there; errors if it isn’t.</small></span>
+            <pre><code>uv --version</code></pre>
+            <span class="step-label"><span class="n">2</span>Not installed? Install it
+              <small>Official standalone installer, run in PowerShell.</small></span>
+            <pre><code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre>
+            <p class="more">Alternatives: <code>winget install --id=astral-sh.uv -e</code> (WinGet) · <code>scoop install main/uv</code> (Scoop) · <code>pipx install uv</code> (PyPI). Afterwards, open a new terminal and re-run <code>uv --version</code> to confirm. See the <a href="https://docs.astral.sh/uv/getting-started/installation/">full uv install guide</a> for more options.</p>
+          </div>
+          <div class="tool-group">
+            <span class="tool-label">Git</span>
+            <span class="step-label"><span class="n">1</span>Check if Git is already installed
+              <small>In PowerShell. Prints a version number if it’s there; errors if it isn’t.</small></span>
+            <pre><code>git --version</code></pre>
+            <span class="step-label"><span class="n">2</span>Not installed? Install it
+              <small>Use one of the following options:</small></span>
+            <pre><code>winget install --id Git.Git -e</code></pre>
+            <p class="more">Alternatives: download the official installer from <a href="https://git-scm.com/download/win">git-scm.com</a> (starts automatically) · <code>choco install git</code> (Chocolatey). Afterwards, open a new terminal and re-run <code>git --version</code> to confirm. See the <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">official Git install guide</a> for details.</p>
+          </div>
+        </div>
+
+        <!-- Linux -->
+        <div class="tabpanel" role="tabpanel" id="panel-linux" aria-labelledby="tab-linux" hidden>
+          <div class="tool-group">
+            <span class="tool-label">uv</span>
+            <span class="step-label"><span class="n">1</span>Check if uv is already installed
+              <small>Prints a version number if it’s there; says “command not found” if it isn’t.</small></span>
+            <pre><code>uv --version</code></pre>
+            <span class="step-label"><span class="n">2</span>Not installed? Install it
+              <small>Official standalone installer — installs to <code>~/.local/bin</code>, no root needed.</small></span>
+            <pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+            <p class="more">No <code>curl</code>? Use <code>wget -qO- https://astral.sh/uv/install.sh | sh</code>. Alternative: <code>pipx install uv</code> (PyPI). Afterwards, open a new terminal and re-run <code>uv --version</code> to confirm. See the <a href="https://docs.astral.sh/uv/getting-started/installation/">full uv install guide</a> for more options.</p>
+          </div>
+          <div class="tool-group">
+            <span class="tool-label">Git</span>
+            <span class="step-label"><span class="n">1</span>Check if Git is already installed
+              <small>Prints a version number if it’s there; says “command not found” if it isn’t.</small></span>
+            <pre><code>git --version</code></pre>
+            <span class="step-label"><span class="n">2</span>Not installed? Install it with your package manager
+              <small>Pick the command for your distribution:</small></span>
+            <pre><code>sudo apt install git-all</code></pre>
+            <p class="more">Fedora / RHEL / CentOS: <code>sudo dnf install git-all</code> · Arch: <code>sudo pacman -S git</code> · openSUSE: <code>sudo zypper install git</code>. Afterwards, open a new terminal and re-run <code>git --version</code> to confirm. See the <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">official Git install guide</a> for details.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <h2><span class="num">02</span>Install &amp; use</h2>
+    <div class="tabs" data-tabs>
+      <div class="tablist" role="tablist" aria-label="Installation method">
+        <button class="tab" type="button" role="tab" id="tab-installer" aria-controls="panel-installer" aria-selected="true">Installer (recommended)</button>
+        <button class="tab" type="button" role="tab" id="tab-manual" aria-controls="panel-manual" aria-selected="false" tabindex="-1">Manual</button>
+      </div>
+
+      <!-- Installer (recommended) -->
+      <div class="tabpanel" role="tabpanel" id="panel-installer" aria-labelledby="tab-installer">
+        <div class="panel">
+          <ol class="steps" style="counter-reset:s -1">
+            <li>
+              <b>Prerequisites.</b> <span class="os">Make sure you have <b>uv</b> and <b>Git</b> installed. Not sure? <a href="#prereqs">Check the Before you start section</a>.</span>
+            </li>
+            <li>
+              <b>Install Spectra.</b> <span class="os">Run once, from anywhere — this installs the <code>spectra</code> command itself.</span>
+              <pre><code>uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra</code></pre>
+            </li>
+            <li>
+              <b>Run the install inside your project.</b> <span class="os"><code>cd</code> into the project you want Spectra in, then:</span>
+              <pre><code>spectra install</code></pre>
+              <p class="more">It checks for the Spec Kit CLI (installing it if missing), confirms you’re in a Spec Kit project (offering <code>specify init</code> if not), registers the public Spectra catalog, and installs every extension the catalog advertises. Bare <code>spectra</code> just prints the banner and points at <code>--help</code> — <code>install</code> is the verb that changes anything.</p>
+              <div class="callout">When it finishes, <b>restart your AI agent</b> so it picks up the new commands. Then see <a href="#agents">Agents</a> below.</div>
+            </li>
+            <li>
+                      <b>Work with your agents.</b> <span class="os">Top-level commands act on the project you're standing in.</span>
+                      <pre><code>spectra agent-list   # every agent Spectra offers, from anywhere</code></pre>
+                      <pre><code>spectra check        # is Spectra installed here?</code></pre>
+                      <pre><code>spectra version      # are my agents current?</code></pre>
+                      <pre><code>spectra update       # bring them up to the published version</code></pre>
+                      <pre><code>spectra uninstall    # remove them from this project</code></pre>
+                      <p class="more"><code>spectra agent-list</code> reads the published roster at run time, so a newly published agent shows up without you updating anything.</p>
+                    </li>
+                    <li>
+                      <b>Keep the whole stack current.</b> <span class="os">One command reports all four components — Spec Kit&rsquo;s CLI, the core agents, the <code>spectra</code> command, and your agents — and one brings them current.</span>
+                      <pre><code>spectra version         # is every part of my stack current?</code></pre>
+                      <pre><code>spectra update          # bring every out-of-date part current</code></pre>
+                      <pre><code>spectra cli uninstall   # remove the command from this machine</code></pre>
+                      <p class="more">The <b>command</b> and the <b>extensions</b> still release separately and on their own schedule — you do not need a new <code>spectra</code> version to get new agents. <span class="os">Changed in 6.2.0: <code>spectra install</code> now registers Spectra's commands for <b>every</b> integration installed in the project, not just the default one — each uncovered agent is briefly made the default, and your original default is restored as the run's last act, disclosed before it happens. <code>spectra update</code> keeps that coverage instead of silently dropping it, asking once (or authorized by <code>--yes</code>). Re-running <code>spectra install</code> in a project that already has Spectra now repairs a half-covered project instead of failing. Changed in 6.1.0: <code>Core agents</code> now covers <b>every</b> integration installed in the project, not just the default one, and <code>spectra update</code> upgrades all of them in one run — disclosing any locally modified files and asking once before overwriting them (<code>--force</code> authorizes that without being asked; <code>--yes</code> does not). Changed in 6.0.0: <code>spectra cli version</code> and <code>spectra cli update</code> were retired into the two commands above. Changed in 5.0.0: <code>--version</code>, <code>--update</code> and <code>--uninstall</code> were removed; run any of them and it names its replacement.</span></p>
+                    </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Manual -->
+      <div class="tabpanel" role="tabpanel" id="panel-manual" aria-labelledby="tab-manual" hidden>
+        <div class="panel">
+          <p class="muted" style="margin:0 0 18px">Prefer copy-paste, or can’t install a tool? Register the public catalog once per project (this marks it install-allowed, so installs resolve by name with no “untrusted source” prompt), then install the extension and restart your agent.</p>
+          <ol class="steps" style="counter-reset:s -1">
+            <li>
+              <b>Prerequisites.</b> <span class="os">Make sure you have <b>uv</b> and <b>Git</b> installed. Not sure? <a href="#prereqs">Check the Before you start section</a>.</span>
+            </li>
+            <li>
+              <b>Install the Spec Kit CLI.</b> <span class="os">Spectra installs into a Spec Kit project, so you need Spec Kit first.</span>
+              <pre><code>uv tool install specify-cli --from git+https://github.com/github/spec-kit.git</code></pre>
+            </li>
+            <li>
+              <b>Register the Spectra catalog.</b> <span class="os">Run inside a Spec Kit project.</span>
+              <pre><code>specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed</code></pre>
+              <p class="more"><code>--install-allowed</code> is required — catalogs are discovery-only by default. Commit the resulting <code>.specify/extension-catalogs.yml</code> so everyone who clones the project inherits the catalog.</p>
+            </li>
+            <li>
+              <b>Install the extension, then restart your agent.</b>
+              <pre><code>specify extension add spectra</code></pre>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <div class="panel" style="text-align:center;padding:30px 24px;margin-top:24px;background:rgba(167,139,250,0.06);border-color:rgba(167,139,250,0.30)">
+    <p style="color:var(--text);font-size:17px;margin:0 0 12px;font-weight:600">New to spec-driven development?</p>
+    <p style="color:var(--muted);font-size:15px;margin:0 0 20px;max-width:540px;display:inline-block">No worries — we built a hands-on course that takes you from zero to shipping specs with confidence. Seven modules, real labs, self-paced.</p>
+    <a class="btn btn-primary" href="e-learning/index.html">Start the E-Learning course &nbsp;&rarr;</a>
+  </div>
+
+  <section class="block" id="agents">
+    <h2><span class="num">03</span>Agents</h2>
+    <p class="muted">Spectra ships as a <b>single extension</b> under the unified <code>speckit.spectra.*</code> namespace — install once and get every command. <b>Examples use Claude's trigger form</b> — a leading slash with dashes, like <code>/speckit-spectra-adr</code>. Other agents differ (kiro-cli uses <code>/speckit.spectra.adr</code>); your agent's own command list shows the exact trigger.</p>
+    <div class="panel ext">
+      <header>
+        <h3>Spectra</h3>
+        <span class="badges"><code>spectra</code> <span id="ext-version-inline">—</span></span>
+      </header>
+      <p class="desc" id="ext-description">—</p>
+      <ul class="cmds">
+        <li>
+          <span class="name">speckit.spectra.brd</span>
+          <span class="cdesc">Turn a raw business requirement — typed text or a <code>.docx</code>/<code>.pdf</code>/<code>.md</code>/<code>.txt</code> document — into a structured, specify-ready BRD written under <code>docs/brd/</code>, or wherever your constitution declares its <code>Artifact root:</code>. Reads project context, asks a few clarifying questions only when the requirement has gaps, and never invents requirements — then hands the result to the specify command. The 14-section structure is a template you can override per project at <code>.specify/templates/overrides/brd-template.md</code>.</span>
+          <span class="args"><b>Arguments:</b> the requirement as text, or a path to a requirement document. With no input it asks for one.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-brd Support agents need to merge duplicate customer tickets while preserving history</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.test-strategy</span>
+          <span class="cdesc">Decide how a project tests itself — <b>once, at the start</b>, alongside the constitution. It reads the repository, works out for itself whether this is greenfield or brownfield, then asks you <b>five things it cannot measure</b> — one question at a time, each carrying the answer it would have chosen and the evidence behind it — and writes one strategy to <code>docs/test-strategy/TEST_STRATEGY.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, covering unit, integration, API contract, and end-to-end testing plus a coverage floor. Every recommendation cites a path in your project, is explicitly marked as a convention, or is marked <code>stated</code> and names the question you answered — never neither, and <b>no answer ever moves a measured figure</b> — and it will not name a tool your stack cannot run, so the end-to-end lens resolves to browser, HTTP, CLI, or <b>none</b> rather than reaching for a browser driver a library will never use. In brownfield it reads your source rather than your README and <b>never proposes a floor above your current baseline</b>: coverage figures carry their provenance, and it runs nothing unless you confirm it. It <b>never writes your constitution</b> — it drafts the amendment, takes your approval, records it in the document, and hands off to the constitution command. Recommends CI and coverage configuration; never applies it. A singleton, rewritten in place, with Git carrying the history. Ten sections, overridable at <code>.specify/templates/overrides/test-strategy-template.md</code>.</span>
+          <span class="args"><b>Arguments:</b> none required. Optionally a focus to weight the analysis — it never narrows the four mandatory lenses, or <code>--non-interactive</code> to skip the questions.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-test-strategy</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.impact</span>
+          <span class="cdesc">Find out what a proposed feature would actually touch — <b>before</b> anyone commits to building it. Give it one paragraph of intent and it scans the project, asks at most five questions about what the code cannot answer, and writes a numbered analysis under <code>docs/impact-analysis/</code>, or wherever your constitution declares its <code>Artifact root:</code>. Every finding carries a <code>path:line</code> citation and a confidence level; the impact rating comes from a defined trigger set rather than a judgement; and the output states how much of the repository it read, so a reviewer can tell &ldquo;checked and found nothing&rdquo; from &ldquo;did not check&rdquo;. It never claims there is no impact, never reproduces a secret it finds, and routes security and compliance questions to the agents that own them instead of answering them. Multi-repository systems are declared as text, a document, or a local directory read in place — it accepts no URL and makes no network request. Ten sections, overridable at <code>.specify/templates/overrides/impact-analysis-template.md</code>.</span>
+          <span class="args"><b>Arguments:</b> the feature intent as one paragraph (required), optional document paths (<code>.md</code>/<code>.txt</code>/<code>.pdf</code>/<code>.docx</code>), <code>--non-interactive</code> for CI, and five cap overrides for large repositories.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-impact We want to email customers who leave items in their cart for more than 24 hours</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.test-plan</span>
+          <span class="cdesc">Get the tests <b>agreed before anyone writes them</b>. Hand it a <code>spec.md</code> and it writes one <code>test-plan.md</code> beside it — scope with real exclusions, a risk table capped at five rows, traceable test conditions, environment and data, and an exit bar someone can make a go/no-go call from. Built for teams that work test-first: the plan is circulated and approved, then fed to the planning command so the tasks include the tests it names. <b>Traceability runs both ways</b> — every acceptance criterion reaches a condition or is reported as uncovered with a reason, and every condition names what it verifies using your spec&rsquo;s own identifiers, so a reviewer can check coverage without reading code. It <b>will not guess which spec you meant</b>: no branch-name inference, no feature record, no picker — with no argument it asks and stops, because a plan built against the wrong spec is undetectably wrong to whoever signs it. Where a requirement is too vague to test it says so rather than inventing a condition. Level names come from your <code>TEST_STRATEGY.md</code> verbatim where you have one, a declared coverage floor is carried in and attributed, and no tool is named that your manifests cannot run. Existing coverage is read from your test source, <b>never executed</b>. <b>No checkboxes anywhere</b>, exit criteria included — it is approved, not tracked. Six sections, overridable at <code>.specify/templates/overrides/test-plan-template.md</code>.</span>
+          <span class="args"><b>Arguments:</b> the path to a <code>spec.md</code>, or to the feature directory containing it (<b>required</b> — never inferred), plus <code>--non-interactive</code> for CI.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-test-plan specs/021-signed-webhooks/spec.md</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.defect-rca</span>
+          <span class="cdesc">Take a defect down to its <b>root cause</b>, with the evidence read from your code rather than asked for. Give it a GitHub issue URL, a JIRA ticket reference, or a sentence describing what went wrong, and it reads the implicated code, the commits that touched it, the configuration and the tests before it asks you anything &mdash; then writes one advisory analysis under <code>docs/defect-rca/</code>, or wherever your constitution declares its <code>Artifact root:</code>. Every claim about the code cites a file and line; every claim that something is <i>absent</i> states what was searched for and where. It <b>checks whether you have analyzed this defect before</b>, at intake rather than after the fact &mdash; matching on implicated code, symptom, or root cause, never on title similarity &mdash; and gives each earlier preventive action a verdict of completed, not completed, or undeterminable, with a citation required for the first two. It <b>will not call the first plausible code path a root cause</b>: every probe names its layer on the symptom-to-systemic ladder, and a conclusion still sitting at &ldquo;immediate technical cause&rdquo; is reported as exactly that. Invalidated hypotheses appear in the document alongside the surviving one, because a table of nothing but confirmations is a justification rather than an analysis. It fixes nothing, writes no test, never touches your ticket, and <b>never asks you for a credential</b> &mdash; a missing GitHub CLI costs you a copy-paste, not the analysis. Six sections, overridable at <code>.specify/templates/overrides/defect-rca-template.md</code>.</span>
+          <span class="args"><b>Arguments:</b> the defect &mdash; a GitHub issue URL, a JIRA ticket reference, or a plain description (<b>required</b> &mdash; never inferred from your branch or your failing tests). Supplementary logs, configuration, and timelines can be pasted at any point.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-defect-rca https://github.com/acme/orders/issues/412</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.kb-vault</span>
+          <span class="cdesc">Get the knowledge your team already has <b>into the repository</b>, where people and coding agents can both read it. Attach the documents &mdash; a PDF of architecture decisions inherited from a previous team, a Word file describing the engineering workflow, a deck of UX/UI standards, a diagram exported as an image &mdash; or just describe what you know. It absorbs all of it, works out what kind of document each source is, learns how your project already keeps documentation, and <b>shows you a table before it writes anything</b>: category, description, destination, create or update. Then it stops and waits. An ambiguous answer writes nothing; any change re-presents the whole table. It <b>updates what you already have rather than duplicating it</b> &mdash; matching on subject and category, never on title similarity &mdash; editing the existing file in place, keeping its name and the hand-written sections your source never mentions. Where a supplied document is a kind Spectra already produces &mdash; an ADR, a BRD, an impact analysis, a test strategy, a defect RCA &mdash; it adopts that agent&rsquo;s folder, numbering and template, so it joins the existing set instead of starting a second one beside it. Everything else takes its own category folder under <code>docs/</code>, or wherever your constitution declares its <code>Artifact root:</code>, with an index maintained beside it. It <b>never invents and never mines your codebase</b>: every sentence traces to something you supplied, a template section with no source says so, a file it cannot read is named rather than guessed at, and &ldquo;document the architecture&rdquo; with nothing attached gets you a request for material. Originals stay outside the repository; you get Markdown. And it <b>never commits</b> &mdash; when the files are written it tells you they are uncommitted and hands the review back. Six sections, overridable at <code>.specify/templates/overrides/kb-document-template.md</code>, or per category at <code>.specify/templates/overrides/&lt;category&gt;-template.md</code>.</span>
+          <span class="args"><b>Arguments:</b> optional &mdash; steering for the attached documents, or knowledge dictated directly when you have nothing to attach. Documents are supplied as session attachments or readable paths. With neither, it asks for material and stops.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-kb-vault these are our UX standards and the old architecture decisions</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.adr</span>
+          <span class="cdesc">Create a context-aware Architecture Decision Record grounded in your codebase, prior ADRs, and constitution — it asks a few clarifying questions, then writes the ADR under <code>docs/adr/</code> (or your declared <code>Artifact root:</code>). Its section structure is a template you can override per project at <code>.specify/templates/overrides/adr-template.md</code>. Use it when making a significant architecture or technology choice.</span>
+          <span class="args"><b>Arguments:</b> a short description of the decision. If omitted, you'll be asked for one before drafting.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-adr We should standardize on PostgreSQL for all primary data stores</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.domain-analyzer</span>
+          <span class="cdesc">Scan the existing codebase, docs, and ADRs to infer the project's domain, then write an opt-in proposal of candidate guardrails for SME review and handoff to the constitution. It never edits the constitution or source — you choose what to adopt.</span>
+          <span class="args"><b>Arguments:</b> none required — runs on the whole project (ideal for brownfield). Optionally pass a domain hint to steer it.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-domain-analyzer this is a banking system</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.create-pr</span>
+          <span class="cdesc">Open a correctly-targeted GitHub PR for the branch you're on — optionally linked to an issue, with the body built from an overridable <code>pr-template</code>. Offers to commit and push uncommitted work, asks once with everything on the table before creating anything, and returns the PR URL. Also offered automatically after <code>implement</code>.</span>
+          <span class="args"><b>Arguments:</b> none opens a <b>ready-for-review</b> PR (default); <code>--issue &lt;url-or-number&gt;</code> links an issue (you're asked once if omitted); <code>--draft</code> opens a draft; <code>--base &lt;branch&gt;</code> sets the base branch.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-create-pr --issue 42</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.review-pr</span>
+          <span class="cdesc">Review a GitHub pull request against the spec, ADRs, and constitution it <b>carries</b> — reading them at the PR's own revision, and the constitution in force on the base branch — plus the linked issue as optional extra context, which becomes the traceability baseline when there is no spec. Surfaces what a diff-only review cannot: a task marked complete but missing from the change, scope no requirement authorized, a pattern an ADR forbids. Every finding cites a file, a line, and its source, and lands <b>on the line it is about</b>, with an applicable <code>suggestion</code> where the fix is mechanical. <b>Only blockers and majors are proposed</b> — minors, nits and questions are listed by number but left out, so a one-word <code>yes</code> publishes just what should block the merge and takes the verdict that follows from it. <code>all</code> takes everything, any selection of your own still works, and an empty answer posts nothing. You see the exact review first, then one atomic review is published under your own credentials. The body's shape is a template you can override per project.</span>
+          <span class="args"><b>Arguments:</b> none offers the current branch's PR then lists open PRs to pick from; <code>&lt;url&gt;</code> or <code>&lt;number&gt;</code> reviews that PR; <code>--issue &lt;url-or-number&gt;</code> supplies the linked issue; <code>--since &lt;revision&gt;</code> re-reviews only the delta since a revision you reviewed before.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-review-pr https://github.com/acme/api/pull/142</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.flaky-test-detector</span>
+          <span class="cdesc">Find the tests that pass and fail on the same code — by <b>reading your test source</b>, with no CI integration, no results store, and no waiting for run history. Reports each candidate with a confidence rating and a specific fix, then stops. On your go-ahead it writes a task list to <code>.specify/memory/flaky-test-analysis.md</code> that you prune; on a second go-ahead it fixes what's left, ticking each item off on disk as it lands, so an interrupted session resumes exactly where it stopped. <b>It never runs anything</b> — not your suite, not a build, not even to check a fix worked — and a fix must remove the cause: deleting assertions, skipping tests, and adding retries are forbidden as remedies. Edits stay in test code, nothing is committed, and your constitution decides which fixes are allowed.</span>
+          <span class="args"><b>Arguments:</b> none analyzes the whole working tree; a path or suite name narrows the run — and before a narrowed run replaces a broader plan, it names the pending items that would be dropped.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-flaky-test-detector</code></pre>
+        </li>
+      </ul>
+    </div>
+
+    <div class="panel" style="text-align:center;padding:30px 24px;margin-top:24px">
+      <p style="color:var(--text);font-size:16px;margin:0 0 18px">Want to see every agent SPECTRA offers?</p>
+      <a class="btn btn-primary" href="agents.html">Click here to see the full list of agents &nbsp;&rarr;</a>
+    </div>
+  </section>
+
+  <footer class="site">
+    <span>SPECTRA · a curated catalog of Spec Kit extensions · by TELUS Digital</span>
+    <span><a href="https://github.com/telus-digital/spectra">github.com/telus-digital/spectra</a></span>
+  <span class="legal">Copyright 2026 TELUS Digital. Licensed under the <a href="https://github.com/telus-digital/spectra/blob/main/LICENSE">Apache License 2.0</a>; see <a href="https://github.com/telus-digital/spectra/blob/main/NOTICE">NOTICE</a>. The licence grants no trademark rights &mdash; "TELUS", "TELUS Digital", "Spectra", and the TELUS Digital logo are excluded, and forks must rebrand (<a href="https://github.com/telus-digital/spectra/blob/main/TRADEMARK.md">TRADEMARK.md</a>). Spectra agents produce drafts for human review; their output is not legal, regulatory, medical, financial, or compliance advice and does not constitute certification or audit.</span>
+  </footer>
+
+</div>
+<script>
+  // Two independently-versioned channels, both read live so neither is ever hand-typed here:
+  //   * the CLI  -> the newest published GitHub Release (tags/Releases are CLI-only)
+  //   * the extension -> the version field in the catalog itself
+  // See the constitution, Principle VI.
+  (function () {
+    var pill = document.getElementById("release");
+    var label = document.getElementById("release-version");
+    if (!pill || !label) return;
+    fetch("https://api.github.com/repos/telus-digital/spectra/releases/latest", {
+      headers: { Accept: "application/vnd.github+json" }
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.tag_name) return;
+        var v = String(data.tag_name).replace(/^v/, "");
+        label.textContent = "CLI v" + v;
+        pill.classList.add("show");
+      })
+      .catch(function () { /* leave the pill hidden */ });
+  })();
+
+  (function () {
+    var pill = document.getElementById("ext-release");
+    var label = document.getElementById("ext-version");
+    var inline = document.getElementById("ext-version-inline");
+    if (!pill || !label) return;
+    fetch("https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        var ext = data && data.extensions && data.extensions.spectra;
+        if (!ext || !ext.version) return;
+        label.textContent = "Agents v" + ext.version;
+        pill.classList.add("show");
+        if (inline) inline.textContent = "v" + ext.version;
+      })
+      .catch(function () { /* leave the pill hidden */ });
+  })();
+
+  // Add a "Copy" button to every command block. Each <pre> is wrapped so the button stays
+  // anchored to the top-right even when a long command scrolls horizontally.
+  (function () {
+    var COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    var TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      // Fallback for non-secure contexts (e.g. opening the file locally over file://).
+      return new Promise(function (resolve, reject) {
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text; ta.setAttribute("readonly", "");
+          ta.style.position = "absolute"; ta.style.left = "-9999px";
+          document.body.appendChild(ta); ta.select();
+          var ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+          ok ? resolve() : reject();
+        } catch (e) { reject(e); }
+      });
+    }
+
+    document.querySelectorAll("pre").forEach(function (pre) {
+      var codeEl = pre.querySelector("code") || pre;
+      var text = codeEl.textContent;
+
+      // Strip trailing shell comments (everything from " #" or leading "# " onward on each line)
+      // so the user copies only the runnable command.
+      var copyable = text.split("\n").map(function (line) {
+        // Match a " #" that is preceded by a non-comment token (i.e. not the first char).
+        // This preserves lines that ARE a comment (like "# heading"), but for command blocks
+        // those don't exist here.
+        var idx = line.indexOf("  #");
+        if (idx > 0) return line.substring(0, idx).trimEnd();
+        // Also handle single-space " #" at end
+        var idx2 = line.indexOf(" #");
+        if (idx2 > 0) return line.substring(0, idx2).trimEnd();
+        return line;
+      }).join("\n").trim();
+
+      var wrap = document.createElement("div");
+      wrap.className = "codewrap";
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "copy-btn";
+      btn.setAttribute("aria-label", "Copy command to clipboard");
+      btn.innerHTML = COPY + "<span>Copy</span>";
+      wrap.appendChild(btn);
+
+      var timer;
+      btn.addEventListener("click", function () {
+        copyText(copyable).then(function () {
+          clearTimeout(timer);
+          btn.classList.add("copied");
+          btn.innerHTML = TICK + "<span>Copied</span>";
+          timer = setTimeout(function () {
+            btn.classList.remove("copied");
+            btn.innerHTML = COPY + "<span>Copy</span>";
+          }, 1600);
+        }).catch(function () {
+          btn.innerHTML = COPY + "<span>Press ⌘/Ctrl+C</span>";
+        });
+      });
+    });
+  })();
+
+  // OS tab switcher for the "Get uv & Git" instructions. Clicking a tab reveals its panel
+  // and hides the rest; ArrowLeft/ArrowRight move between tabs for keyboard users.
+  (function () {
+    document.querySelectorAll("[data-tabs]").forEach(function (group) {
+      var tabs = Array.prototype.slice.call(group.querySelectorAll('[role="tab"]'));
+      if (!tabs.length) return;
+
+      function select(tab, focus) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute("aria-selected", on ? "true" : "false");
+          t.setAttribute("tabindex", on ? "0" : "-1");
+          var panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (panel) panel.hidden = !on;
+        });
+        if (focus) tab.focus();
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener("click", function () { select(tab); });
+        tab.addEventListener("keydown", function (e) {
+          var dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+          if (!dir) return;
+          e.preventDefault();
+          select(tabs[(i + dir + tabs.length) % tabs.length], true);
+        });
+      });
+    });
+  })();
+
+  // The extension description and the agent roster are read at page load for the same reason the two
+  // version numbers are (see Principle VI): a value typed into HTML is drift waiting to happen, while
+  // a value fetched from the artifact that defines it cannot drift. The description comes from
+  // catalog.json; the agents come from agents-list.json, the same file `spectra agent-list` reads.
+  (function () {
+    var target = document.getElementById("ext-description");
+    if (!target) return;
+    fetch("https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        var ext = data && data.extensions && data.extensions.spectra;
+        if (ext && ext.description) target.textContent = ext.description;
+      })
+      .catch(function () { /* leave the placeholder */ });
+  })();
+
+
+</script>
+</body>
+</html>

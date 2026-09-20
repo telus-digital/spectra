@@ -1,0 +1,215 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  cli:
+    name: CLI installs and runs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The floor declared in pyproject (locked-down machines) and a current release.
+        python-version: ['3.9', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install the package
+        run: python -m pip install .
+      - name: The test suite passes
+        # Standard-library `unittest`, not pytest: the zero-dependency constraint applies to the
+        # whole repository, so CI installs nothing beyond the package itself.
+        run: python -m unittest discover -s tests -v
+      - name: The command runs and reports the committed version
+        # Asserts the installed distribution reports the committed VERSION. This used to read
+        # `spectra cli version | head -1`, but that command was retired in 6.0.0 — and its replacement,
+        # `spectra version`, requires a Spec Kit project with Spectra installed, which this job has no
+        # reason to build. Reading importlib.metadata tests the same parity closer to the source: it is
+        # exactly what `version.read_installed_version()` reads.
+        env:
+          SPECTRA_NO_UPDATE_CHECK: '1'
+        run: |
+          set -euo pipefail
+          spectra --help > /dev/null
+          REPORTED="$(python -c 'import importlib.metadata as m; print(m.version("spectra-cli"))')"
+          FILE_VERSION="$(tr -d '[:space:]' < VERSION)"
+          if [ "$REPORTED" != "$FILE_VERSION" ]; then
+            echo "::error::spectra-cli metadata reported '$REPORTED' but VERSION says '$FILE_VERSION'." >&2
+            exit 1
+          fi
+          echo "spectra-cli reports $REPORTED."
+          # Bare `spectra` prints `cli vX.Y.Z` and works from any directory, so it is what the release
+          # smoke test and the clean-room matrix use now that `cli version` is gone. Constitution
+          # Principle VI makes that line a MUST; this is what enforces it.
+          # Captured to a file first: `grep | head` under `set -o pipefail` can fail on SIGPIPE when
+          # head closes the pipe early, which would be a flake rather than a real failure.
+          ( cd "$(mktemp -d)" && spectra > /tmp/banner.txt 2>&1 ) || true
+          BANNER="$(grep -o 'cli v[0-9][^ ]*' /tmp/banner.txt | head -1 || true)"
+          if [ "$BANNER" != "cli v$FILE_VERSION" ]; then
+            echo "::error::bare spectra reported '$BANNER', expected 'cli v$FILE_VERSION'." >&2
+            exit 1
+          fi
+          echo "bare spectra reports $BANNER from an unrelated directory."
+
+      - name: The removed flags name their replacements
+        # Removing them is the breaking change in 5.0.0; leaving a user with "unrecognized arguments"
+        # would tell them what is wrong but not what to do instead.
+        env:
+          SPECTRA_NO_UPDATE_CHECK: '1'
+        run: |
+          set -euo pipefail
+          for flag in --version --update --uninstall; do
+            if spectra "$flag" > /tmp/removed.txt 2>&1; then
+              echo "::error::spectra $flag still succeeds; it was supposed to be removed." >&2
+              exit 1
+            fi
+            grep -q 'was removed in' /tmp/removed.txt \
+              || { echo "::error::spectra $flag did not explain that it was removed." >&2; exit 1; }
+            # A replacement is always named. Since 6.0.0 that is a top-level command for --version and
+            # --update, so match the verb rather than the retired `spectra cli` form.
+            verb="${flag#--}"
+            grep -q "spectra $verb" /tmp/removed.txt \
+              || { echo "::error::spectra $flag did not name its replacement." >&2; exit 1; }
+          done
+          echo "All three removed flags name their replacements."
+
+      - name: The retired cli subcommands name their replacements
+        # Retired in 6.0.0: `spectra version` and `spectra update` absorbed them. Same contract as the
+        # removed flags — the action is gone, and the message says what to run instead.
+        env:
+          SPECTRA_NO_UPDATE_CHECK: '1'
+        run: |
+          set -euo pipefail
+          for verb in version update; do
+            if spectra cli "$verb" > /tmp/retired.txt 2>&1; then
+              echo "::error::spectra cli $verb still succeeds; it was supposed to be retired." >&2
+              exit 1
+            fi
+            grep -q 'retired' /tmp/retired.txt \
+              || { echo "::error::spectra cli $verb did not say it was retired." >&2; exit 1; }
+            grep -q "spectra $verb" /tmp/retired.txt \
+              || { echo "::error::spectra cli $verb did not name its replacement." >&2; exit 1; }
+          done
+          # The one that stays must stay. `spectra cli` with no subcommand prints its group help and
+          # exits 2 by design, so its output is captured first — piping it under `set -o pipefail`
+          # would fail the step on that intentional exit code even when the grep matches.
+          spectra cli > /tmp/cli-group.txt 2>&1 || true
+          grep -q 'uninstall' /tmp/cli-group.txt \
+            || { echo "::error::spectra cli no longer advertises uninstall." >&2; exit 1; }
+          for gone in 'cli version' 'cli update'; do
+            if grep -q "$gone" /tmp/cli-group.txt; then
+              echo "::error::spectra cli still advertises '$gone'." >&2
+              exit 1
+            fi
+          done
+          echo "Both retired cli subcommands name their replacements; uninstall survives."
+
+      - name: Neither tools/ nor tests/ ships in the wheel
+        # FR-023: the generator is maintainer tooling and must never reach a user's machine. Today
+        # that holds because pyproject lists `packages = ["spectra_cli"]` explicitly rather than
+        # auto-discovering — a property a future edit could quietly break, so assert it rather than
+        # trusting it.
+        run: |
+          set -euo pipefail
+          python -m pip wheel . --no-deps -w /tmp/wheel
+          CONTENTS="$(python -c "
+          import pathlib, zipfile
+          wheel = next(pathlib.Path('/tmp/wheel').glob('*.whl'))
+          print('\\n'.join(sorted(zipfile.ZipFile(wheel).namelist())))
+          ")"
+          echo "$CONTENTS"
+          for forbidden in tools/ tests/ agents-list.json; do
+            if echo "$CONTENTS" | grep -q "^$forbidden"; then
+              echo "::error::$forbidden was packaged into the wheel; it is maintainer-only." >&2
+              exit 1
+            fi
+          done
+          echo "$CONTENTS" | grep -q '^spectra_cli/cli.py$' \
+            || { echo "::error::the wheel does not contain spectra_cli." >&2; exit 1; }
+          echo "The wheel ships spectra_cli only."
+
+      - name: Bare `spectra` is informational and changes nothing
+        # The install flow lives behind `spectra install`. Running bare must stay a no-op that
+        # exits 0 — if it ever starts installing again, it would mutate whatever folder a user
+        # happened to be standing in. Asserting on an empty dir catches exactly that.
+        env:
+          SPECTRA_NO_UPDATE_CHECK: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/bare && cd /tmp/bare
+          spectra > /tmp/bare-output.txt
+          grep -q "spectra --help" /tmp/bare-output.txt \
+            || { echo "::error::bare \`spectra\` did not point at --help." >&2; exit 1; }
+          if [ -n "$(ls -A /tmp/bare)" ]; then
+            echo "::error::bare \`spectra\` wrote into the current directory: $(ls -A /tmp/bare)" >&2
+            exit 1
+          fi
+          echo "Bare \`spectra\` printed the overview and touched nothing."
+
+  catalog:
+    name: Catalog and package stay in sync
+    # Constitution Principle V: catalog.json, extension.yml and the published zip must never drift.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: The generated agent listings match agents-list.json
+        # The roster is the single source of truth (Principle V). This fails when a generated region
+        # was hand-edited, when a shipped agent has no prose block, when a prose block exists for an
+        # agent that is not shipped, when a hand-written heading has drifted from the canonical title,
+        # or when the roster and the manifest disagree about the shipped set.
+        run: python3 tools/generate_agent_docs.py --check
+      - name: extension.yml, catalog.json and the zip agree
+        run: |
+          set -euo pipefail
+          EXT_VERSION="$(sed -n 's/^  version: "\(.*\)"$/\1/p' spectra/extension.yml | head -1)"
+          CAT_VERSION="$(python3 -c 'import json;print(json.load(open("catalog.json"))["extensions"]["spectra"]["version"])')"
+          if [ "$EXT_VERSION" != "$CAT_VERSION" ]; then
+            echo "::error::extension.yml is $EXT_VERSION but catalog.json says $CAT_VERSION." >&2
+            exit 1
+          fi
+          CAT_COMMANDS="$(python3 -c 'import json;print(json.load(open("catalog.json"))["extensions"]["spectra"]["provides"]["commands"])')"
+          EXT_COMMANDS="$(grep -c '^    - name: "speckit\.' spectra/extension.yml)"
+          if [ "$EXT_COMMANDS" != "$CAT_COMMANDS" ]; then
+            echo "::error::extension.yml declares $EXT_COMMANDS commands but catalog.json says $CAT_COMMANDS." >&2
+            exit 1
+          fi
+          echo "Extension $EXT_VERSION with $EXT_COMMANDS commands; catalog agrees."
+      - name: Every published copy of the description agrees
+        # FR-051/SC-010: the extension description is published in three places and must read
+        # identically in all of them. The landing page is deliberately absent from this check — it
+        # fetches the value from catalog.json rather than carrying a copy, which is the only way
+        # "every copy agrees" stays true without anyone having to remember it.
+        run: |
+          set -euo pipefail
+          LINE='TELUS Digital - Agentic software engineering across the entire SDLC.'
+          EXT_DESC="$(python3 -c 'import re,sys;t=open("spectra/extension.yml").read();print(re.search(r"^  description: \"(.*)\"$",t,re.M).group(1))')"
+          CAT_DESC="$(python3 -c 'import json;print(json.load(open("catalog.json"))["extensions"]["spectra"]["description"])')"
+          ZIP_DESC="$(unzip -p docs/packages/spectra.zip spectra/extension.yml | python3 -c 'import re,sys;t=sys.stdin.read();print(re.search(r"^  description: \"(.*)\"$",t,re.M).group(1))')"
+          for name in EXT CAT ZIP; do
+            eval "value=\$${name}_DESC"
+            if [ "$value" != "$LINE" ]; then
+              echo "::error::$name description is '$value' but should be '$LINE'." >&2
+              exit 1
+            fi
+          done
+          if grep -qF "$LINE" docs/index.html; then
+            echo "::error::docs/index.html hard-codes the description; it must fetch it from catalog.json." >&2
+            exit 1
+          fi
+          echo "extension.yml, catalog.json and the packaged manifest all carry the agreed line."
+      - name: The published zip matches the spectra/ folder
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/unzipped
+          unzip -q docs/packages/spectra.zip -d /tmp/unzipped
+          if ! diff -r spectra /tmp/unzipped/spectra; then
+            echo "::error::docs/packages/spectra.zip has drifted from the spectra/ folder. Rebuild it." >&2
+            exit 1
+          fi
+          echo "docs/packages/spectra.zip matches spectra/."

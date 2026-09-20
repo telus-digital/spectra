@@ -1,0 +1,524 @@
+# Testing Spectra
+
+There are **two** independent things to test — the repo's two release channels — and they use
+different tools:
+
+1. **The CLI (`spectra_cli/` → the `spectra` command)** — end-to-end onboarding. Tested in a throwaway
+   **container** (this folder's `run.sh`) because it must run against a *bare machine* and fetch
+   everything from GitHub. This is the real "brand-new user's first five minutes" path. See
+   [Section 1](#1-end-to-end-the-cli-container).
+2. **The extension package (`docs/packages/spectra.zip`)** — the actual artifact users download from
+   the catalog. Tested **locally**: install the zip into a Spec Kit project and exercise every
+   command. This is the fast loop for verifying the extension itself — especially after changing its
+   structure. See [Section 2](#2-the-extension-package-local-zip).
+
+Rule of thumb: use the **CLI/container** track to prove onboarding works end to end; use the
+**zip/local** track to prove the extension and its commands actually install and run.
+
+---
+
+# 1. End-to-end: the CLI (container)
+
+A throwaway container for testing the `spectra` command the way a brand-new user experiences it: a
+**bare machine** with `uv` and nothing else Spectra-related — no `specify` CLI, no `.specify/`
+project, no registered catalog.
+
+`uv` is the one thing pre-installed, and only because it is *how the CLI arrives* — a user about to
+run `uv tool install` has already installed uv. Everything downstream of it the CLI is supposed to
+bootstrap itself (install Spec Kit at the latest release → `specify init` → register the public
+catalog → install the extensions), so the clean room sets up none of it.
+
+Your laptop can't test this honestly — it passed setup long ago and stays "dirty". Each `docker run`
+here is a fresh user's first five minutes; exit the shell and the machine is gone.
+
+## Use it
+
+```bash
+test/run.sh                  # interactive shell, tests your LOCAL working copy
+test/run.sh install          # installs the CLI, runs `spectra install`, then drops you in to look
+test/run.sh run              # runs `spectra install` once, exits with its code
+
+test/run.sh --published      # installs from git+https://github.com/telus-digital/spectra (main)
+test/run.sh --published 3.0.0 run   # …or from that tag
+```
+
+The local mode mounts your repo read-only and runs `uv tool install spectra-cli --from /work/repo`,
+so uv builds your working tree exactly as it would build the published source.
+
+- **Before tagging:** run the default (local working copy) and walk the scenarios below.
+- **After publishing:** run `--published <tag>` so you exercise exactly what users get — not the tree
+  in your editor.
+
+## No authentication needed
+
+The Spectra catalog is **public**, so the CLI authenticates nothing — no `gh` login, no token, no SSO.
+It bootstraps Spec Kit, offers `specify init`, registers the catalog, and installs the extensions the
+catalog advertises.
+
+## Scenario checklist
+
+The logic that actually breaks between releases lives in a few spots. The container starts bare, so
+the **full bootstrap is the default happy path** — no setup needed. Walk these in a `test/run.sh`
+shell (`spectra install`, inspect, `exit`, re-launch for a fresh machine):
+
+| # | Scenario | How to set it up | Expected |
+|---|----------|------------------|----------|
+| 1 | **Full bootstrap (happy path)** | bare container, run `spectra install`, answer `y` to install Spec Kit / `specify init` | Spec Kit installs at the latest release; `specify init` creates `.specify/`; catalog registered; the extension downloads anonymously (no token, no 404) and its commands are listed |
+| 1b | **Version marker** | bare `spectra` (works anywhere, touches nothing) | the banner's `cli vX.Y.Z` line matches the repo's `VERSION` file (confirms `--published <tag>` pulled the right source) |
+| 1c | **Catalog drives the install** | run `spectra install` and read step 3 | it installs the extensions **the catalog advertises**, not a hardcoded name — this is what lets a new agent ship without a CLI release |
+| 2 | **Spec Kit bootstrap declined** | at step 1 answer `n` | dies at step 1 with manual install guidance |
+| 2b | **`specify` already present (regression guard)** | pre-install `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git`; re-run | step 1 finds `specify`, no prompt |
+| 3 | **Project init declined** | at step 2 answer `n` | dies at step 2 with `specify init` guidance |
+| 3b | **Already a Spec Kit project** | after step 1 installs `specify`, run `specify init --here --force`, then re-run | step 2 detects the project, no prompt |
+| 4 | **Re-run idempotency** | complete a run, then run `spectra install` again | 2nd run: "already registered" for the catalog, no duplicate catalog entry |
+| 5 | **Self-management** | `spectra update` inside an installed project, then `spectra cli uninstall` | the Spectra CLI row reports up to date/ahead against the latest Release; uninstall prompts, then `uv tool list` no longer shows `spectra-cli` |
+| 6 | **Removed flags name their replacements** | `spectra --version`, `--update`, `--uninstall` | each exits 2 and names a live replacement — never a bare "unrecognized arguments" |
+| 6b | **Retired subcommands name their replacements** | `spectra cli version`, `spectra cli update` | each exits 2 and points at `spectra version` / `spectra update`; neither performs the old action |
+| 7 | **The roster is data** | `spectra agent-list` from `/tmp` (not a Spec Kit project) | lists every agent grouped by SDLC phase, exit 0; no planned agent shows a command |
+| 8 | **Project state is distinguishable** | `spectra check` in `/tmp`, then in a fresh `specify init` project, then after `spectra install` | three different sentences: not a Spec Kit project (exit 5), not installed + offer, installed (exit 0) |
+| 9 | **The whole stack is reported** | `spectra version` after a successful install | four rows — Specify CLI, Core agents, Spectra CLI, Spectra agents; hand-edit `.specify/extensions/spectra/extension.yml` to an older version and that row reports both versions and the output names `spectra update`. Then hand-edit `.specify/integration.json` to an older version and the Core agents row flags it too |
+| 10 | **Project uninstall leaves the tool** | `spectra uninstall`, then bare `spectra` | the extension is gone from the project; the command still runs and still reports its version. (`spectra version` cannot be used here: with the project's extension removed it correctly exits 5, which is the state being set up) |
+
+## What this track does NOT cover
+
+- Real cross-platform behavior (the Windows branches of `find_uv`, and the Windows file-lock path in
+  `spectra update` / `cli uninstall`). The container is Linux; Windows and macOS still need a human on those
+  OSes.
+- The extension and its commands **installing and working** — this track tests onboarding only, up to
+  the extension being installed. That is exactly what
+  [Section 2](#2-the-extension-package-local-zip) covers.
+
+---
+
+## 1a. The stack: `spectra version` / `spectra update` against stale components
+
+`test/run.sh stack` is a different starting point from the bootstrap track above. Instead of a bare
+machine, it hands you a **working project** — Spec Kit installed, `specify init` run, Spectra agents
+installed — and a set of helpers for putting each component genuinely out of date.
+
+```bash
+test/run.sh stack              # ready project + helpers, then a shell
+test/run.sh stack --as 4.0.0   # same, but the CLI starts out reporting itself behind
+```
+
+Type `scenarios` in the container for the menu.
+
+**Nothing here is mocked.** Each helper creates a real out-of-date state, so the same detection paths
+run as would in front of a user:
+
+| Helper | What it really does | Expected report |
+|---|---|---|
+| `stale_specify [tag]` | installs an older `specify-cli` (default `v0.16.0`) | **two** rows stale — the integration version tracks the CLI, so a behind CLI drags Core agents with it |
+| `stale_integration [ver]` | rewrites `version` in `.specify/integration.json` | Core agents stale; other three unchanged |
+| `stale_agents [ver]` | rewrites the version in **both** the extension manifest and Spec Kit's `.registry` | Spectra agents stale, and `spectra update` genuinely repairs it |
+| `stale_cli [ver]` | rebuilds your working copy carrying a lower `VERSION` | Spectra CLI stale against the live release feed |
+| `stack_reset` | restores all four to current | everything up to date |
+| `stack_show` | `spectra version` plus its exit code | — |
+| `stack_truth` | reads each version from source, bypassing the CLI | lets you check the CLI's verdict against ground truth |
+
+### Two things worth understanding before you start
+
+**Why `stale_cli` rebuilds instead of installing an old release.** You cannot test "my CLI is behind" by
+installing an old Spectra CLI, because an old CLI has no four-component report to test. So the helper
+installs *your* code with a lower version number; the comparison it then makes against the real GitHub
+release feed is genuine.
+
+Related: on an unreleased working copy, the baseline reads
+`Spectra CLI: ✓ ahead of published (6.0.0 -> 5.0.0)`. That is correct — your tree is ahead of the newest
+published release — and it is why `stale_cli` exists.
+
+**Why `stale_agents` edits two files.** Spec Kit records an extension's installed version in
+`.specify/extensions/.registry`; Spectra scans the manifest. Editing only the manifest creates a state
+Spectra calls stale and Spec Kit calls current, so its updater exits 0 having changed nothing. Both are
+rewritten by default so the state is one `spectra update` can repair.
+
+Pass `--manifest-only` to reproduce that disagreement deliberately:
+
+```bash
+stale_agents --manifest-only 1.0.0
+spectra update --yes     # must NOT claim success
+```
+
+Expected: `! reported success, but the version is unchanged (1.0.0)` and **exit 4**. `spectra update`
+re-reads every component after the walk rather than trusting exit codes, so a delegate that reports a
+win without moving anything is caught rather than echoed.
+
+### Degraded environments
+
+| Command | Expected |
+|---|---|
+| `no_specify spectra version` | first two rows `unknown`, other two normal, **exit 0** |
+| `no_specify spectra update` | those two skipped, never attempted; exit reflects only what was tried |
+| `no_network spectra version` | four `unknown` rows, installed versions still shown, **exit 0** |
+| `no_network spectra update` | "Nothing could be checked, so nothing was updated" — never a currency claim |
+| `spectra version --no-update-check` | suppresses **only** the Spectra CLI release lookup |
+| `rm .specify/integration.json` then `spectra version` | one row `unknown`, rest fine |
+
+`no_specify` moves the `specify` shim aside rather than editing `PATH`, because uv installs `specify`
+and `spectra` into the same directory — dropping it from `PATH` would take the command under test with
+it.
+
+### The surface, after 6.0.0
+
+| Command | Expected |
+|---|---|
+| `spectra cli version` | exit 2, names `spectra version` |
+| `spectra cli update` | exit 2, names `spectra update` |
+| `spectra cli uninstall` | unchanged |
+| `spectra --help` | Tool commands panel has **one** row |
+| `cd /tmp && spectra version` | exit 5 — it needs a project, by design |
+| `cd /tmp && spectra` | the banner's `cli vX.Y.Z`, from anywhere, touching nothing |
+
+That last row is a constitutional requirement (Principle VI), not a nicety: CI's `VERSION` parity check,
+the release smoke test, and clean-room row 10 all read it.
+
+---
+
+# 2. The extension package (local zip)
+
+This track tests the **built package** — `docs/packages/spectra.zip`, the exact artifact the catalog
+serves — without needing the container or the catalog. You unzip the package into a local folder and
+install it into a throwaway Spec Kit project, then run every command. Use this whenever you change the
+extension's structure, add or rename a command, or edit a command's prompt.
+
+Spectra ships as a **single** extension (`id: spectra`); installing it registers all of its commands
+at once under the `speckit.spectra.*` namespace:
+
+- `speckit.spectra.adr`
+- `speckit.spectra.domain-analyzer`
+- `speckit.spectra.create-pr`
+- `speckit.spectra.brd`
+
+## Prerequisites
+
+- The `specify` CLI on your PATH (`specify --version`).
+- A coding agent to invoke the commands (examples below use Claude).
+- No GitHub token or catalog needed — you install straight from the local zip.
+
+## Steps
+
+**1. (Re)build the package** if you've changed anything under `spectra/`. Run from the repo root so
+the zip has a single top-level `spectra/` folder (the layout Spec Kit expects):
+
+```bash
+rm -f docs/packages/spectra.zip
+zip -r -X docs/packages/spectra.zip spectra -x '*.DS_Store'
+```
+
+Sanity-check the layout — you should see `spectra/extension.yml`, `spectra/commands/*.md`, etc.:
+
+```bash
+unzip -l docs/packages/spectra.zip
+```
+
+**2. Create a throwaway Spec Kit project** to install into (keeps your real projects clean):
+
+```bash
+specify init /tmp/spectra-pkg-test --integration claude
+cd /tmp/spectra-pkg-test
+```
+
+**3. Unzip the package to a local folder and install it** with `--dev` (point it at the unzipped
+`spectra/` folder — the one containing `extension.yml`):
+
+```bash
+unzip -o /path/to/repo/docs/packages/spectra.zip -d /tmp/spectra-pkg
+specify extension add --dev /tmp/spectra-pkg/spectra
+```
+
+You should see `✓ Extension installed successfully!` listing every provided command. (This
+proves the *zip* is valid and complete — you're installing exactly what it unpacked to.)
+
+**4. Verify registration:**
+
+```bash
+specify extension list          # spectra → Status: Enabled
+specify extension info spectra  # shows every command and the exact triggers
+```
+
+**5. Run each command in your agent.** Restart the agent first so it picks up the new skills/commands.
+On Claude the triggers are dash-form skills:
+
+```
+/speckit-spectra-adr We should standardize on PostgreSQL for all primary data stores
+/speckit-spectra-domain-analyzer
+/speckit-spectra-create-pr --draft
+```
+
+(Other agents keep the dots, e.g. kiro-cli: `/speckit.spectra.adr`.) Confirm each command runs, reads
+real project context, and writes to the expected place — `docs/adr/` for `adr`, `docs/brd/` for `brd`,
+`.specify/memory/domain-analysis.md` for `domain-analyzer`, and a PR/branch action for `create-pr`.
+
+Worth one extra pass on the artifact root, since it is the part that varies per project: add
+`Artifact root: documents/` to the throwaway project's constitution and confirm `adr` and `brd` write to
+`documents/adr/` and `documents/brd/` instead. Then remove the line, `touch mkdocs.yml`, and confirm both
+commands raise the publication risk and ask before defaulting into `docs/`.
+
+Then one pass on the templates, which is the other per-project variable:
+
+```bash
+mkdir -p .specify/templates/overrides
+# add a section the shipped default does not have
+sed 's/^## Context/## Alternatives Considered\n\n[alts]\n\n## Context/' \
+  .specify/extensions/spectra/templates/adr-template.md \
+  > .specify/templates/overrides/adr-template.md
+```
+
+Run `adr` and confirm three things: the ADR carries **Alternatives Considered**, the run **names the override
+path** it used, and nothing under `.specify/extensions/` was touched. Then delete a section from the override
+and confirm the command follows it and *says* what it omitted rather than adding it back. Repeat for
+`brd-template.md`.
+
+Finally, confirm the override survives an update — this is the property the whole feature rests on:
+
+```bash
+specify extension add spectra --force   # same tree-replace a version bump performs
+ls .specify/templates/overrides/        # both files still there, unchanged
+```
+
+And one pass on `create-pr`, which has the most moving parts. On a throwaway branch with a commit:
+
+```bash
+git checkout -b fix/probe-timeout       # deliberately NOT a spec branch
+echo "probe" >> README.md               # leave something uncommitted
+```
+
+Run `create-pr` and check five things:
+
+1. It **proceeds from a non-spec branch** rather than refusing.
+2. It lists the uncommitted file and asks whether to **commit and push first**. Answer no once and confirm
+   it says the change is excluded; run again, answer yes, and confirm the commit exists on the remote.
+3. With no promotion flow documented, the final summary **asks whether the proposed base is right**. Answer
+   "no, use dev" and confirm the PR targets `dev` and that the target's existence was re-checked.
+4. Pass `--issue <n>` and confirm the body carries `Closes #<n>` when the base is the default branch, and a
+   plain `#<n>` plus an auto-close warning when it is not.
+5. The report names the **resolved template path**. Override `pr-template.md` and confirm the next PR follows
+   it.
+
+Clean up the probe PR and branch afterwards.
+
+And one pass on `review-pr`, whose new surface is the hardest to verify by reading. On a PR you own:
+
+1. **The narrow default.** On a PR yielding a mix of severities, confirm the proposal lists only blockers and
+   majors under "Will publish", names the verdict, and lists everything else by **number** under "Will NOT
+   publish". Answer `yes` and confirm it goes straight to the preview — no separate verdict prompt — and that
+   the published review contains no minor, nit, or question, in the body or on a line.
+2. **The escapes still work.** Re-run and answer `all`; confirm everything is published. Re-run and answer
+   with a selection of your own; confirm it still asks for the verdict. Re-run and answer **nothing at all**;
+   confirm it publishes nothing and reports that as a success — this is the one that matters, because a
+   default that can be reached by silence is a default that publishes without consent.
+3. **Issue as context, spec-less.** Open a PR from a non-spec branch whose body says `Closes #<n>` and
+   target a **non-default** branch. Confirm the command finds the issue anyway — the structured link is empty
+   there, so this exercises the text fallback — and that traceability is reported as run *against the issue*.
+4. **Declining.** Remove the reference, run again, and confirm it asks once, accepts a skip, and reports the
+   absence rather than asking twice.
+5. **Inline placement.** Accept a finding anchored on a changed line and confirm it arrives as a line comment;
+   accept one anchored outside the diff and confirm it lands in the body with the reason in coverage.
+6. **A suggestion.** Confirm a mechanical fix arrives as a ` ```suggestion ` block, that it appeared verbatim
+   in the preview first, and that GitHub's **Commit suggestion** button applies cleanly.
+7. **Template override.** Copy `review-template.md` into `.specify/templates/overrides/`, delete a section,
+   and confirm the next review follows your version, says what it moved, and **still** carries the revision
+   anchor, the AI-assisted disclosure, and Coverage and limits.
+8. **Atomicity.** Nothing to force here, but confirm the report names the template path, the inline/body
+   counts, and the authorizing context it used.
+
+And one pass on `impact`, whose most important behaviours are the three a unit test on the prompt text
+cannot prove: that an abandoned run leaves nothing behind, that a secret stays out of the document, and that
+a template override is honoured rather than repaired. Work through
+[`specs/019-impact-analysis/quickstart.md`](../specs/019-impact-analysis/quickstart.md) in a scratch project
+with a migration, a route handler, and a config file naming a table, then confirm at least these:
+
+1. **Interrupt it.** Start a run and Ctrl-C during the scan. `docs/impact-analysis/` must be byte-identical
+   to before — no partial document, no half-written index — and the next successful run must take the number
+   the interrupted one would have. A consumed number is the regression.
+2. **A secret in the blast radius.** Plant something like
+   `const STRIPE_KEY = "sk_live_EXAMPLE_NOT_A_REAL_KEY";` where the scan will reach it. The finding must
+   give the location and the kind and say the value was withheld;
+   `grep -r "sk_live_EXAMPLE" docs/impact-analysis/` must find nothing. This is the check that cannot be
+   replaced by a unit test.
+3. **Template override.** Copy `impact-analysis-template.md` into `.specify/templates/overrides/`, delete
+   the *Effort & sequencing* section, and confirm the next analysis follows your version, says the section
+   was omitted rather than putting it back, reports the override path — and **still** carries citations,
+   confidence levels, the rating with its trigger, and the coverage statement.
+4. **No network, offered a URL.** Answer "no" to the scope question and hand it a GitHub URL. It must
+   explain that it reads only local directories, record the system as described, and fetch nothing — with
+   `gh` authenticated, which is exactly when the temptation exists.
+5. **Read in place.** Declare a sibling checkout as a local path. Afterwards `git -C <path> status` must be
+   clean and no file's mtime may have changed.
+6. **Re-run and the manual gate.** Run twice with the same paragraph. Two documents, the second numbered one
+   higher, the first unchanged apart from `status: superseded` and `superseded_by`. Then hand-edit an earlier
+   analysis to `status: approved`, re-run, and confirm the index row follows while the document itself is not
+   touched.
+
+And one pass on `test-strategy`, whose load-bearing behaviours are exactly the ones a unit test on the
+prompt text cannot settle: whether the floor it proposes is one the project can actually hold, whether it
+refuses a tool the stack cannot run, whether approval really leaves the constitution alone, and — since
+1.17.0 — whether the clarification round actually asks one question at a time and actually costs nothing
+to decline. Work
+through [`specs/020-test-strategy-agent/quickstart.md`](../specs/020-test-strategy-agent/quickstart.md) in
+a scratch project with real source, existing tests, and a committed coverage report, then confirm at least
+these:
+
+1. **The floor never clears the baseline.** Commit a coverage report showing something low — 31% is a good
+   choice, because it sits well under every conventional target. The proposed floor must be **at or below**
+   31%, the baseline must be labelled `reported` with the report's date, and the ratchet must be written as
+   triggers rather than dates. A floor of 80% here is the failure the whole design exists to prevent, and
+   it is the one a reader will not notice until CI goes red.
+2. **No browser, no browser driver.** Run it against a Python CLI or a published library with nothing
+   browser-related in any manifest. The end-to-end lens must resolve to `cli`, `http`, or `none` — and the
+   word Playwright must not appear anywhere in the document. `none` is a correct answer here.
+3. **Approval does not touch the constitution.** `shasum .specify/memory/constitution.md`, run the command,
+   **approve** the amendment, then re-hash. The two must be identical. The amendment text belongs in the
+   strategy document's proposed-amendment section, with the session naming the `/speckit-constitution`
+   invocation that would apply it. A changed hash here is the most serious regression this command has.
+4. **Template override.** Copy `test-strategy-template.md` into `.specify/templates/overrides/`, delete the
+   *Coverage floor* section, and confirm the next run follows your version, says the section was omitted
+   rather than putting it back, reports the override path — and **still** states the floor and its baseline
+   in the session. Then delete the *Proposed constitution amendment* section instead and confirm the
+   amendment text still reaches the session and the handoff is still offered.
+5. **It runs nothing unless asked.** Watch the session. The coverage-run question must name the exact
+   command and be declinable; declining must produce a `reported` or `unavailable` baseline, not a
+   `measured` one. Nothing may execute before you say yes. It must be asked **before** the five, not after.
+5a. **The round is five questions, one at a time.** Count them. Each must arrive on its own, numbered
+   within the total, with two to four options, exactly one marked recommended, and a path in your project
+   behind the mark — or an explicit admission that it is a convention. A batch of five in one message is a
+   regression, and so is a sixth question.
+5b. **It never asks what it can measure.** Watch for any question about whether the project is greenfield
+   or brownfield, what the stack is, how many surfaces there are, or what your coverage is. Every one of
+   those is a defect: the answer is in the repository and a wrong answer would outrank it.
+5c. **Declining is free.** Run it twice on the same project: once answering nothing — say "use your
+   defaults" at the first question — and once with `--non-interactive`. Diff the two documents. They must
+   differ in nothing but the recorded dispositions, and both must carry the same recommendations a 1.16.0
+   run produced. If declining changes a recommendation, the questions were not carrying real defaults.
+5d. **An answer cannot move a number.** With a 31% baseline committed, answer the round asking for a 90%
+   floor in whatever question gives you the opening. The floor must stay at or below 31% and the document
+   must record the disagreement. This is the single way this feature could corrupt the document.
+5e. **The answer record is truthful.** Read the *Inputs from the user* table against what you actually
+   answered: every question present, the recommendation as offered, the answer as given, and the
+   disposition right. Then answer a question in free text that fits none of the options and confirm it is
+   taken rather than coerced into the nearest option. Finally, re-run and confirm the round offers your
+   previous answers back rather than interrogating you a second time.
+6. **The singleton holds.** Run twice with a change in between. One file, one path, no number in the
+   filename, no second document, no index — and the second run must name the prior strategy as an input and
+   report an already-implemented recommendation as adopted rather than proposing it again.
+7. **The publication check fires in this repository.** Run it here, in `spectra` itself, which serves
+   `main` `/docs` over Pages and carries `docs/index.html`. It must surface the choice and recommend the
+   non-publishing root rather than silently defaulting.
+
+And one pass on `test-plan`, whose four load-bearing behaviours are all invisible to a unit test on the
+prompt text, because each one is about what the agent *does* with a specification rather than what the
+command says. Work through
+[`specs/021-test-plan-agent/quickstart.md`](../specs/021-test-plan-agent/quickstart.md) in a scratch
+project with a real `spec.md` — one that deliberately contains an unresolved clarification marker and one
+requirement phrased too vaguely to test — then confirm at least these:
+
+1. **An empty invocation reads nothing and lists nothing.** Run it with no argument. It must ask for a
+   specification path and stop. It must **not** name the current branch, read `.specify/feature.json`, or
+   print a list of the specs under `specs/` for you to pick from — a picker is the same failure with extra
+   steps. Watch the session: if it read any source file before asking, the gate is decoration.
+2. **No acceptance criterion goes missing.** Extract the criteria from your spec by hand, then check each
+   one appears either in the conditions table or in *Explicitly not covered*. A criterion absent from both
+   is the defect this whole command exists to prevent, and the document will look complete while it is
+   wrong. The run report must state the count — covered out of found.
+3. **The vague requirement gets a gap, not a condition.** This is the one worth planting deliberately. The
+   ambiguous requirement must appear as uncovered and *untestable as written*, naming the missing decision.
+   A plausible-looking condition here is **worse** than the gap, because it launders a guess into something
+   a stakeholder signs — and nobody reviewing the document can tell.
+4. **Checkboxes do not survive an override.** `grep -nE '^\s*[-*] \[[ xX]\]' specs/*/test-plan.md` must
+   find nothing on a default run. Then copy `test-plan-template.md` into `.specify/templates/overrides/`,
+   put a checklist back into *5. Exit Criteria*, and re-run: the criteria must come out as plain statements,
+   the section must still be there, and the report must say how many constructs it converted.
+5. **It speaks your project's vocabulary.** Run `test-strategy` first so `TEST_STRATEGY.md` exists, then
+   re-run this. The `Level` column must use that document's lens names **verbatim** — not normalized, not
+   title-cased — and the report must name the strategy by path. Delete the strategy and confirm it falls
+   back to the default set and says so.
+6. **Write scope.** `git status --porcelain` after a run must show **exactly one** changed path: the
+   `test-plan.md` beside your spec. Not the spec, not the constitution, not CI, nothing under `.specify/`.
+   Then point it at a spec in a sibling repository and confirm it stops rather than writing outside the
+   project — and does not relocate the output inside it either.
+7. **Re-running preserves what a human decided.** Run it, edit the spec, run again. The confirmation must
+   state what would change before you answer; declining must leave the file byte-identical; accepting must
+   carry forward every *explicitly not covered* decision or say it removed one. Then try it
+   `--non-interactive` with a plan already present: it must report what it would change and write nothing.
+
+And one pass on `defect-rca`, whose five load-bearing behaviours are all invisible to a unit test on the
+prompt text, because each one is about what the agent *does* with a defect rather than what the command
+says. Work through
+[`specs/022-defect-rca-agent/quickstart.md`](../specs/022-defect-rca-agent/quickstart.md) in a scratch
+project with a real defect and a real commit history — then confirm at least these:
+
+1. **An empty invocation reads nothing and writes nothing.** Run it with no argument. It must ask what
+   defect to analyze and stop. It must **not** name the current branch, read recent commits, list open
+   issues, or offer you a failing test to analyze. Watch the session: if it read any source file before
+   asking, the gate is decoration.
+2. **A missing `gh` degrades without ever asking for a token.** Hand it a GitHub issue URL with `gh`
+   uninstalled, then again with `gh` installed but logged out. Each must name the failure, give the right
+   remedy — install, versus `gh auth login` — ask you to paste the content, and carry on. Then offer it a
+   JIRA API token unprompted: it must decline and continue without it. This is the one to watch hardest.
+   A prompt that asks a user for a credential is a phishing surface, and this one ships in a zip.
+3. **A pasted secret is described, never quoted.** Paste a log containing an API key. The written document
+   must name what kind of credential it was and where it lives, the session must say the value was
+   substituted, and `grep` for the key across the artifact folder must find nothing. Over-withholding is
+   the correct error here; a value copied into a committed file costs a rotation.
+4. **A layer-two finding is refused as a root cause.** Drive it to a plausible code path and then ask it to
+   synthesize. It must say the deepest validated finding is an immediate technical cause and name what
+   would go deeper — not put that finding under a *Root Cause* heading. This is the failure mode that comes
+   with being able to read the code: the path it found is genuinely there, which makes stopping feel like
+   finishing.
+5. **A recurrence surfaces at intake with a cited verdict.** Seed the folder with a prior analysis whose
+   preventive actions were never completed, then run on a defect touching the same code. The prior must
+   appear *before* the first question — not at synthesis — with the axis that fired and the concrete
+   overlap, and each preventive action must carry a citation or a stated reason. A bare "done" is the
+   regression: it makes a recurrence read as a fresh defect, which is the failure the corpus exists to
+   catch.
+6. **Write scope.** `git status --porcelain` after a run must show **exactly two** changed paths: the
+   numbered analysis and the folder index. Not source, not tests, not the constitution, nothing under
+   `.specify/`. Run it twice and confirm the second analysis takes the next number and leaves the first
+   byte-identical.
+
+And one pass on `flaky-test-detector`, which is the only command that edits code you wrote — so the
+things worth checking are the ones a diff can prove. Plant the patterns from
+[`specs/018-flaky-test-detector/quickstart.md`](../specs/018-flaky-test-detector/quickstart.md) in a
+scratch suite under version control, then:
+
+1. **It writes nothing before you say so.** Run it, read the table, decline at the first gate. Confirm
+   `git status --porcelain` is empty — no analysis file, no touched test.
+2. **The plan, and pruning.** Accept, then check `.specify/memory/flaky-test-analysis.md` has all six
+   header fields, one `[ ]` row per candidate, and an `## Evidence` entry per id. Delete two rows before
+   approving the fix run, and afterwards confirm those two tests are untouched in the diff.
+3. **No weakened tests.** After the fix run, read the whole diff. Every changed file must be a test or
+   test-support file, and nothing may add `.skip`, `xfail`, a retry, or a longer sleep, or delete an
+   assertion. This is the check that cannot be replaced by a unit test.
+4. **Checkpointing.** Interrupt a fix run midway. Every fix already in the diff must be `[x]` and the
+   `Progress` line must agree; a file claiming `0 of 7` with three fixes on disk is the regression.
+5. **Resuming.** Restart your agent and run again. It must report the date and the done/pending counts,
+   offer three choices, and analyse nothing until asked.
+6. **The stale-plan guard.** With rows still pending, remove one target test's flakiness by hand, then
+   resume. That row must be left `[ ]` with a note that the code moved on — not "fixed" against evidence
+   that no longer exists.
+7. **The refusals.** Confirm no test-runner or build command is ever invoked, including after a fix.
+   Add a rule to the project's `.specify/memory/constitution.md` forbidding the obvious remedy and
+   confirm the item is left open with that rule named. Corrupt the `## Tasks` table and confirm the file
+   is **not** overwritten.
+
+**6. Iterate and clean up.** After editing files under `spectra/`, rebuild the zip (step 1),
+re-unzip, and reinstall with `--force`, then restart your agent:
+
+```bash
+specify extension add --dev /tmp/spectra-pkg/spectra --force
+```
+
+Remove it when done, or just delete the throwaway project:
+
+```bash
+specify extension remove spectra
+rm -rf /tmp/spectra-pkg-test /tmp/spectra-pkg
+```
+
+## What this track does NOT cover
+
+- The catalog/download path (`specify extension add spectra` from the registered catalog over
+  `raw.githubusercontent.com`) — it's exercised by the [CLI track](#1-end-to-end-the-cli-container).
+- Publishing/versioning correctness (catalog entry vs. `extension.yml` vs. zip). CI checks this on
+  every push — see the `catalog` job in `.github/workflows/ci.yml` — and
+  [CONTRIBUTING.md](../CONTRIBUTING.md#publish-the-catalog-and-package) documents the manual steps.

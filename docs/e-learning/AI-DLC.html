@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7 &mdash; AI-DLC &middot; SDD with SPECTRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Mona+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Palette shared with the SPECTRA landing page (docs/index.html). */
+    --bg: #0c0a16;
+    --bg-2: #120f22;
+    --bg-elev: rgba(255, 255, 255, 0.04);
+    --surface: rgba(8, 6, 18, 0.55);
+    --text: #e9e7f2;
+    --text-muted: #a3a0b5;
+    --text-subtle: #8b879e;
+    --accent: #a78bfa;
+    --accent-2: #c4b5fd;
+    --accent-soft: rgba(167, 139, 250, 0.10);
+    --accent-line: rgba(167, 139, 250, 0.35);
+    --border: rgba(167, 139, 250, 0.20);
+    --border-strong: rgba(167, 139, 250, 0.34);
+    --code-bg: #0d0b17;
+    --code-text: #ded7f5;
+    --code-comment: #8d88a8;
+    --code-accent: #c4b5fd;
+    --success: #34d399;
+    --success-soft: rgba(52, 211, 153, 0.10);
+    --error: #fb7185;
+    --error-soft: rgba(251, 113, 133, 0.10);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --max-w: 720px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Mona Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 520px at 78% -10%, rgba(167,139,250,0.18), transparent 60%),
+      radial-gradient(900px 480px at 10% 6%, rgba(124,92,222,0.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-2), var(--bg));
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  /* Faint grid overlay, matching the SPECTRA landing page. */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(167,139,250,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167,139,250,0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+  }
+  main {
+    position: relative; z-index: 1;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 64px 28px 120px;
+  }
+  /* Hero */
+  .hero { margin-bottom: 56px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+  .hero-eyebrow {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-weight: 400;
+    font-size: 17px; color: var(--accent); letter-spacing: 0.01em;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 44px; line-height: 1.1;
+    letter-spacing: -0.025em; margin-bottom: 22px; color: var(--text);
+  }
+  .hero-lede {
+    font-size: 19px; line-height: 1.55; color: var(--text-muted); max-width: 600px;
+  }
+  /* Meta block */
+  .meta {
+    display: flex; flex-wrap: wrap;
+    margin-top: 32px; padding: 18px 22px;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 6px; font-size: 14px;
+  }
+  .meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+    padding-right: 32px; margin-right: 32px;
+    border-right: 1px solid var(--border-strong);
+  }
+  .meta-item:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+  .meta-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-subtle); font-weight: 500;
+  }
+  .meta-value { color: var(--text); font-weight: 500; }
+  /* Article typography */
+  article h2 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 28px; line-height: 1.25;
+    letter-spacing: -0.018em; margin-top: 56px; margin-bottom: 18px; color: var(--text);
+  }
+  article h2 .h2-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 400; color: var(--accent); margin-right: 14px;
+  }
+  article h3 {
+    font-weight: 600; font-size: 20px; line-height: 1.3;
+    letter-spacing: -0.012em; margin-top: 36px; margin-bottom: 12px; color: var(--text);
+  }
+  article h4 {
+    font-weight: 600; font-size: 16px;
+    margin-top: 28px; margin-bottom: 8px; color: var(--text);
+  }
+  article p { margin-bottom: 18px; }
+  article ul, article ol { margin: 0 0 22px 0; padding-left: 22px; }
+  article li { margin-bottom: 8px; padding-left: 4px; }
+  article li::marker { color: var(--text-subtle); }
+  article ul ul, article ol ol, article ul ol, article ol ul { margin: 8px 0 4px 0; }
+  article a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-line);
+    transition: border-color 0.15s ease;
+  }
+  article a:hover { border-bottom-color: var(--accent); }
+  article strong { font-weight: 600; color: var(--text); }
+  article em { font-style: italic; }
+  /* Inline code */
+  article code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86em; background: var(--bg-elev);
+    border: 1px solid var(--border); padding: 1px 6px;
+    border-radius: 4px; color: var(--code-text); font-weight: 500;
+  }
+  /* Code blocks */
+  .code-block { position: relative; margin: 22px 0 26px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    border: 1px solid var(--border);
+    padding: 18px 20px; border-radius: 8px; overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px; line-height: 1.6; box-shadow: var(--shadow-sm);
+  }
+  pre code {
+    background: none; border: none; padding: 0;
+    color: inherit; font-size: inherit; font-weight: 400;
+  }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(167, 139, 250, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.26);
+    color: var(--code-text); font-family: 'Mona Sans', sans-serif;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 5px 10px;
+    border-radius: 4px; cursor: pointer; opacity: 0;
+    transition: all 0.15s ease;
+  }
+  .code-block:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: rgba(167, 139, 250, 0.24); }
+  .copy-btn.copied { background: rgba(52, 211, 153, 0.20); border-color: rgba(52, 211, 153, 0.45); }
+  /* Blockquotes & callouts */
+  blockquote {
+    margin: 24px 0; padding: 16px 22px;
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0; color: var(--text); font-size: 16px;
+  }
+  blockquote p { margin-bottom: 12px; }
+  blockquote p:last-child { margin-bottom: 0; }
+  blockquote strong { color: var(--text); }
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto; margin: 22px 0 26px;
+    border: 1px solid var(--border); border-radius: 6px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td {
+    text-align: left; padding: 12px 16px;
+    border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  th {
+    background: var(--bg-elev); font-weight: 600;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+  tr:last-child td { border-bottom: none; }
+  td code, th code { font-size: 13px; }
+  /* HR */
+  hr { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+  /* Module list (README) */
+  .module-list {
+    display: flex; flex-direction: column; gap: 0;
+    margin: 28px 0 32px;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; background: var(--bg-elev);
+  }
+  .module-row {
+    display: grid; grid-template-columns: 48px 1fr auto auto;
+    gap: 18px; align-items: center;
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .module-row:last-child { border-bottom: none; }
+  .module-row.featured {
+    background: linear-gradient(to right, var(--accent-soft), transparent 60%);
+  }
+  .module-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 22px; font-weight: 500; color: var(--accent);
+  }
+  .module-title { font-weight: 600; font-size: 16px; color: var(--text); line-height: 1.35; }
+  .module-title-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+  .module-format { font-size: 13px; color: var(--text-subtle); font-style: italic; }
+  .module-time { font-size: 13px; color: var(--text-muted); font-weight: 500;
+    font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .star { color: var(--accent); margin-left: 4px; }
+  .path-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 22px 0 28px; }
+  .path-card { padding: 18px 22px; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 6px; }
+  .path-card-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; color: var(--text); }
+  .path-card-body { font-size: 14px; color: var(--text-muted); line-height: 1.55; }
+  .footer-note {
+    margin-top: 80px; padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 14px; color: var(--text-subtle); text-align: center;
+  }
+  /* Quiz (Module 1) */
+  .quiz {
+    margin: 28px 0 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .quiz-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .quiz-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 14px; color: var(--accent); letter-spacing: 0.02em;
+  }
+  .quiz-progress { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .quiz-question { padding: 20px 22px; border-bottom: 1px solid var(--border); }
+  .quiz-question:last-child { border-bottom: none; }
+  .quiz-q-prompt { font-weight: 600; margin-bottom: 14px; font-size: 16px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); cursor: pointer;
+    font-size: 15px; line-height: 1.45;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent-line); background: var(--accent-soft); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt-letter {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    width: 18px;
+  }
+  .quiz-opt.correct {
+    background: var(--success-soft);
+    border-color: var(--success);
+  }
+  .quiz-opt.correct .quiz-opt-letter { color: var(--success); }
+  .quiz-opt.incorrect {
+    background: var(--error-soft);
+    border-color: var(--error);
+  }
+  .quiz-opt.incorrect .quiz-opt-letter { color: var(--error); }
+  .quiz-opt.dim { opacity: 0.55; }
+  .quiz-feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--success-soft); border: 1px solid rgba(52, 211, 153, 0.30); }
+  .quiz-feedback.incorrect { background: var(--error-soft); border: 1px solid rgba(251, 113, 133, 0.30); }
+  .quiz-feedback-title { font-weight: 600; margin-bottom: 4px; }
+  .quiz-feedback.correct .quiz-feedback-title { color: var(--success); }
+  .quiz-feedback.incorrect .quiz-feedback-title { color: var(--error); }
+  /* Open-ended quiz answer (no options) */
+  .quiz-open-toggle {
+    margin-top: 8px;
+    padding: 9px 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+  }
+  .quiz-open-toggle:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
+  .quiz-open-answer {
+    margin-top: 12px; padding: 14px 16px;
+    background: var(--accent-soft); border: 1px solid var(--accent-line);
+    border-radius: 6px; font-size: 14px; line-height: 1.6;
+    display: none;
+  }
+  .quiz-open-answer.show { display: block; }
+  /* Reveal block (sample solutions) */
+  .reveal {
+    margin: 24px 0 28px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .reveal-trigger {
+    width: 100%;
+    padding: 16px 22px;
+    background: none; border: none;
+    cursor: pointer;
+    font-family: inherit; font-size: 15px; font-weight: 500;
+    color: var(--text); text-align: left;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    transition: background 0.15s ease;
+  }
+  .reveal-trigger:hover { background: var(--accent-soft); }
+  .reveal-trigger-label {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-right: 8px;
+  }
+  .reveal-trigger-icon {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted); font-size: 14px;
+    transition: transform 0.2s ease;
+  }
+  .reveal.open .reveal-trigger-icon { transform: rotate(45deg); }
+  .reveal-content {
+    display: none;
+    padding: 4px 22px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .reveal.open .reveal-content { display: block; }
+  .reveal-content > *:first-child { margin-top: 18px; }
+  /* Lab placeholder card (Module 4) */
+  .lab-card {
+    margin: 28px 0;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, var(--accent-soft), transparent 80%);
+    border: 1px solid var(--accent-line);
+    border-radius: 10px;
+    display: flex; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+  }
+  .lab-card-icon {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 36px; color: var(--accent); line-height: 1;
+  }
+  .lab-card-body { flex: 1; min-width: 240px; }
+  .lab-card-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .lab-card-meta { font-size: 13px; color: var(--text-muted); }
+  .lab-card-link {
+    display: inline-block;
+    padding: 9px 18px;
+    background: var(--accent); color: var(--bg);
+    font-weight: 500; font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none; border: none;
+    transition: background 0.15s ease;
+  }
+  .lab-card-link:hover { background: var(--accent-2); border-bottom: none; }
+  .lab-card-link.placeholder {
+    background: var(--bg-elev); color: var(--text-muted);
+    border: 1px dashed var(--border-strong); cursor: not-allowed;
+    pointer-events: none; font-style: italic;
+  }
+  /* Note callout (distinct from blockquote) */
+  .note {
+    margin: 22px 0;
+    padding: 14px 18px 14px 18px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  .note-label {
+    display: inline-block;
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); margin-right: 6px;
+    font-size: 14px;
+  }
+  /* Checklist (visual only) */
+  .checklist { list-style: none; padding-left: 0; margin: 14px 0 22px; }
+  .checklist li {
+    padding-left: 28px; position: relative; margin-bottom: 8px;
+  }
+  .checklist li::before {
+    content: ""; position: absolute; left: 0; top: 0.45em;
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--border-strong); border-radius: 3px;
+    background: var(--surface);
+  }
+  /* TOC at top of module pages (within-page only — no cross-page links) */
+  .toc {
+    margin: 28px 0 40px;
+    padding: 18px 22px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .toc-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-bottom: 10px;
+  }
+  .toc ol { padding-left: 22px; margin: 0; font-size: 14px; }
+  .toc ol li { margin-bottom: 4px; }
+  .toc a { border-bottom: none; color: var(--text-muted); }
+  .toc a:hover { color: var(--accent); border-bottom: 1px solid var(--accent-line); }
+  /* Diagram (ASCII flow) */
+  .diagram {
+    margin: 24px 0;
+    padding: 22px;
+    background: var(--code-bg); color: var(--code-text);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  /* Figure (diagram image + caption) */
+  figure.fig { margin: 26px 0; }
+  figure.fig > a { display: block; border-bottom: none; }
+  figure.fig img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; box-shadow: var(--shadow-md);
+  }
+  figure.fig figcaption {
+    margin-top: 10px; font-size: 13px; color: var(--text-subtle);
+    font-style: italic; text-align: center;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    main { padding: 40px 20px 80px; }
+    .hero h1 { font-size: 32px; }
+    .hero-lede { font-size: 17px; }
+    article h2 { font-size: 24px; margin-top: 44px; }
+    article h3 { font-size: 18px; }
+    .meta { flex-direction: column; gap: 12px; padding: 14px 18px; }
+    .meta-item { border-right: none; padding-right: 0; margin-right: 0;
+      border-bottom: 1px solid var(--border-strong); padding-bottom: 12px;
+      margin-bottom: 0; }
+    .meta-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .module-row { grid-template-columns: 36px 1fr; gap: 14px; padding: 14px 18px; }
+    .module-format, .module-time { grid-column: 2; font-size: 12px; }
+    .quiz-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .lab-card { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<style>
+  /* Course navigation bar (shared) */
+  .course-nav {
+    z-index: 50;
+    background: rgba(12, 10, 22, 0.82);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .course-nav-inner {
+    max-width: 820px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 11px 28px;
+  }
+  .course-nav-brand {
+    display: flex; align-items: baseline; gap: 10px;
+    text-decoration: none; border-bottom: none; white-space: nowrap;
+  }
+  .course-nav-brand-mark {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 500; font-size: 18px; color: var(--accent);
+  }
+  .course-nav-brand-text {
+    font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.01em;
+  }
+  .course-nav-brand:hover .course-nav-brand-text { color: var(--accent); }
+  .course-nav-brand.is-active .course-nav-brand-text { color: var(--text); }
+  .course-nav-modules {
+    display: flex; align-items: center; gap: 6px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .course-nav-modules::-webkit-scrollbar { display: none; }
+  .course-nav-modules a {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 30px; height: 30px; padding: 0 9px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface);
+    transition: all 0.15s ease;
+  }
+  .course-nav-modules a:hover {
+    border-color: var(--accent-line); color: var(--accent); background: var(--accent-soft);
+  }
+  .course-nav-modules a.is-active {
+    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  }
+  .course-nav-home {
+    font-family: 'Mona Sans', sans-serif; font-weight: 600;
+    padding: 0 13px; margin-right: 8px;
+  }
+  /* Module footer navigation (prev / next) */
+  .module-footer-nav {
+    margin-top: 56px; padding-top: 28px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: stretch; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .mod-nav-prev, .mod-nav-next {
+    display: inline-flex; flex-direction: column; gap: 3px;
+    text-decoration: none; border-bottom: none; border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+  .mod-nav-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
+  }
+  .mod-nav-prev {
+    align-items: flex-start; padding: 10px 4px; color: var(--text-muted);
+  }
+  .mod-nav-prev .mod-nav-label { color: var(--text-subtle); }
+  .mod-nav-prev .mod-nav-title { font-weight: 500; font-size: 15px; color: var(--text); }
+  .mod-nav-prev:hover .mod-nav-title { color: var(--accent); }
+  .mod-nav-next {
+    margin-left: auto; align-items: flex-end; text-align: right;
+    padding: 12px 20px; background: var(--accent); color: var(--bg);
+  }
+  .mod-nav-next .mod-nav-label { color: var(--bg); opacity: 0.82; }
+  .mod-nav-next .mod-nav-title { font-weight: 600; font-size: 15px; color: var(--bg); }
+  .mod-nav-next:hover { background: var(--accent-2); }
+  @media (max-width: 600px) {
+    .course-nav-inner { padding: 10px 16px; }
+    .course-nav-brand-text { display: none; }
+    .module-footer-nav { gap: 12px; }
+    .mod-nav-next { padding: 10px 16px; }
+  }
+
+  /* ---------- Site-wide top bar (matches docs/index.html) ---------- */
+  .topstack { position: sticky; top: 0; z-index: 60; }
+  .sitebar {
+    background: rgba(12,10,22,0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .sitebar .sitebar-inner {
+    max-width: 960px; margin: 0 auto; padding: 0 22px;
+  }
+  header.site {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 12px 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header.site .brand { display: inline-flex; align-items: center; text-decoration: none; border-bottom: none; }
+  header.site .brand:hover { text-decoration: none; }
+  header.site img.logo { height: 26px; width: auto; opacity: .95; display: block; }
+  header.site .nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  header.site .nav a.nav-page {
+    color: var(--text-muted, #a3a0b5); font-size: 14px; text-decoration: none;
+    padding: 5px 13px; border: 1px solid transparent; border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+    border-bottom: none;
+  }
+  header.site .nav a.nav-page:hover { color: var(--text, #e9e7f2); text-decoration: none; }
+  header.site .nav a.nav-page[aria-current="page"] {
+    color: var(--accent-2, #c4b5fd); border-color: var(--border, rgba(167,139,250,0.20));
+    background: rgba(167,139,250,0.10);
+  }
+  header.site .nav a:focus-visible { outline: 2px solid var(--accent-2, #c4b5fd); outline-offset: 2px; }
+  header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border, rgba(167,139,250,0.20)); margin: 0 4px; }
+  header.site .nav a.nav-jump { color: var(--text-muted, #a3a0b5); font-size: 13px; padding: 5px 5px; text-decoration: none; border-bottom: none; }
+  header.site .nav a.nav-jump:hover { color: var(--text, #e9e7f2); }
+  @media (max-width: 720px) {
+    header.site { flex-wrap: wrap; gap: 10px; }
+    header.site .nav { gap: 4px; }
+    header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
+    header.site .nav .nav-sep { display: none; }
+  }
+</style>
+<div class="topstack">
+<div class="sitebar">
+  <div class="sitebar-inner">
+    <header class="site">
+      <a class="brand" href="../index.html" aria-label="SPECTRA — home">
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-page" href="../index.html">Home</a>
+        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
+        <a class="nav-page" href="../agents.html">Agents</a>
+        <a class="nav-page" href="index.html" aria-current="page">E-Learning</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a class="nav-jump" href="../index.html#install">Install</a>
+      </nav>
+    </header>
+  </div>
+</div>
+<nav class="course-nav">
+  <div class="course-nav-inner">
+    <a class="course-nav-brand" href="index.html">
+      <span class="course-nav-brand-mark">SPECTRA</span>
+      <span class="course-nav-brand-text">SDD Learning</span>
+    </a>
+    <div class="course-nav-modules">
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA — Learning">Home</a>
+      <a href="module-1.html" title="Module 1 — SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 — Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 — Greenfield Lab — SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 — Brownfield Lab — Add “Due Date” ★">4</a>
+      <a href="module-5.html" title="Module 5 — Best Practices &amp; Pitfalls">5</a>
+      <a href="module-6.html" title="Module 6 — Quality, Testing &amp; Team Collaboration">6</a>
+      <a href="AI-DLC.html" title="AI-DLC — From SDLC to AI-Driven Development" class="is-active">AI-DLC</a>
+    </div>
+  </div>
+</nav>
+</div>
+<main>
+  <header class="hero">
+    <div class="hero-eyebrow">Module 7 &middot; final module</div>
+    <h1>AI-DLC</h1>
+    <p class="hero-lede">The lifecycle itself is the next thing to change. AI-DLC collapses the SDLC into Inception &rarr; Construction &rarr; Operation, turns sprints into bolts, and puts humans and AI in the room together at every phase. This module maps that shift onto the Spec Kit commands you already know.</p>
+    <div class="meta">
+      <div class="meta-item">
+        <span class="meta-label">Time</span>
+        <span class="meta-value">60 min</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Format</span>
+        <span class="meta-value">Reading + knowledge check</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Prerequisites</span>
+        <span class="meta-value">Modules 1&ndash;6</span>
+      </div>
+    </div>
+  </header>
+
+  <article>
+
+    <h3>Learning objectives</h3>
+    <p>By the end of this module, you will be able to:</p>
+    <ol>
+      <li>Explain why accelerating individual SDLC phases with AI hits a ceiling, and what AI-DLC changes structurally.</li>
+      <li>Name the three AI-DLC phases and describe what each one produces.</li>
+      <li>Run the <strong>Plan &rarr; Clarify &rarr; Approve &rarr; Execute</strong> loop that repeats inside every phase.</li>
+      <li>Map the six traditional SDLC phases onto the three AI-DLC phases, and say what actually changes at each boundary.</li>
+      <li>Use the AI-DLC vocabulary correctly &mdash; bolt, unit of work, mob elaboration, mob construction.</li>
+      <li>Say who is in the room at each phase, what those people own, and what AI does alongside them.</li>
+      <li>Translate all of it into concrete Spec Kit and SPECTRA commands, and run your first bolt.</li>
+    </ol>
+
+    <div class="note"><span class="note-label">Where this comes from.</span><strong>AI-DLC</strong> is AWS's <a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/">AI-Driven Development Life Cycle</a>. This module teaches the AI-DLC <em>process</em> and runs it with the tooling this course has used throughout &mdash; <strong>Spec Kit and SPECTRA</strong>. Every definition below comes from the AWS post; the practical framing draws on two community write-ups linked at the end.</div>
+
+    <h2><span class="h2-num">1.</span>Why the lifecycle itself has to change</h2>
+    <p>Everything in this course so far has made one phase of your work better. Module 1 sharpened what a spec is. Modules 3 and 4 put the four-phase loop into your hands. Module 5 covered what breaks. Module 6 covered how the team splits the work.</p>
+    <p>But the lifecycle those improvements sit inside has not moved. The traditional SDLC &mdash; plan, design, implement, test, deploy, maintain &mdash; was designed to coordinate <em>human</em> execution at scale. Its phases, hand-offs, and documentation all exist to solve one problem: humans are the only engine that can turn intent into working software, and humans need to pass work to each other.</p>
+    <p>That assumption is the thing AI broke. When an agent can draft the requirements, the design, the code, and the tests, the question stops being &ldquo;how do we organize human effort?&rdquo; and becomes something much less comfortable:</p>
+    <blockquote>How do we keep speed from turning into chaos?</blockquote>
+    <p>Teams answering that question tend to land in one of two ditches.</p>
+    <h3>Ditch one: AI-assisted SDLC</h3>
+    <p>AI helps with isolated tasks. Generate this function. Summarize that ticket. Draft some tests. The lifecycle is untouched &mdash; same phases, same hand-offs, same documents. You get faster locally and the overall cadence barely moves, because the waiting was never in the typing. Drift and late discovery survive completely intact. This is the &ldquo;faster typist&rdquo; problem, and it is exactly what Module 1 warned about when it said the bottleneck moved upstream.</p>
+    <h3>Ditch two: AI-autonomous &ldquo;build it all&rdquo;</h3>
+    <p>The opposite move: hand the agent a paragraph and expect a system. Output arrives fast. Alignment, traceability, and safety do not. You end up with something that runs and nobody can explain, which is worse than slow.</p>
+    <p><strong>AI-DLC sits between these two.</strong> It uses AI broadly &mdash; across the whole lifecycle, not one phase &mdash; but channels it through a structured workflow with explicit human approval points. Not vibe coding. Not a rubber stamp. Velocity with governance.</p>
+
+    <h2><span class="h2-num">2.</span>What AI-DLC is</h2>
+    <p>AI-DLC is a lifecycle in which AI does not merely help you write software &mdash; it helps you <em>build</em> software end to end: clarifying requirements, proposing a staged plan, generating and refining artifacts, and supporting operational readiness. AWS states the operating principle directly:</p>
+    <blockquote>AI creates plans, seeks clarification, and implements plans, while humans make critical decisions.</blockquote>
+    <p>Read that twice, because both halves are load-bearing. AI is not waiting to be told what to do next &mdash; it proposes. And AI does not decide &mdash; it defers, to the people who hold the business context.</p>
+    <h3>The four principles</h3>
+    <ol>
+      <li><strong>AI-powered execution with human oversight.</strong> AI systematically creates detailed work plans, actively seeks clarification, and defers critical decisions to humans.</li>
+      <li><strong>Dynamic team collaboration.</strong> Because AI absorbs the routine work, the team's time goes into real-time problem solving and rapid decision-making &mdash; together, not in a queue of hand-offs.</li>
+      <li><strong>Persistent context.</strong> Plans, requirements, and design artifacts are written into the project repository and carried across every phase, so nothing has to be re-explained.</li>
+      <li><strong>Quality through alignment.</strong> The team builds precisely what it has in mind, rather than an abstract AI interpretation of the intent.</li>
+    </ol>
+    <p>If you keep one sentence from this module, keep this one: <strong>AI executes, humans govern.</strong></p>
+    <div class="note"><span class="note-label">Already familiar?</span>Principle 3 is the argument this whole course is built on. A spec that lives in the repo and is read by every phase <em>is</em> persistent context. AI-DLC did not invent that idea &mdash; it made it the organizing principle of the lifecycle.</div>
+
+    <h2><span class="h2-num">3.</span>The three phases</h2>
+    <p>AI-DLC collapses the six familiar SDLC phases into three, executed in order.</p>
+    <h3>Inception &mdash; what are we building, and why?</h3>
+    <p>Turns business intent into validated direction: requirements, user stories, constraints, success criteria, and a decomposition into <em>units of work</em>. The goal is not more documentation. The goal is <strong>less ambiguity</strong>, established while changing your mind is still cheap.</p>
+    <h3>Construction &mdash; how are we building it?</h3>
+    <p>Uses that validated context to produce logical architecture, domain models, working code, and tests. AI moves very fast here, which is exactly why the humans stay responsible for correctness of intent and for quality boundaries.</p>
+    <h3>Operation &mdash; how do we run and ship it safely?</h3>
+    <p>Deployment, infrastructure-as-code, monitoring, and the feedback that informs the next cycle. AI applies the context accumulated in the two earlier phases rather than meeting the system cold. This is the phase that turns &ldquo;coding faster&rdquo; into &ldquo;delivering faster.&rdquo;</p>
+    <div class="note"><span class="note-label">Which agents run in which phase?</span>Every agent in the SPECTRA roster is published with the AI-DLC phase it belongs to. The <a href="../agents.html">full agent roster</a> groups agents by SDLC phase and tags each group with its AI-DLC phase &mdash; so you can see at a glance what is available to you in Inception, Construction, and Operation. The roster updates automatically as new agents ship; section 8 maps the core commands onto the same three phases.</div>
+
+    <h2><span class="h2-num">4.</span>The loop inside every phase</h2>
+    <p>Here is the part that makes AI-DLC feel different in practice. The traditional SDLC is a <em>sequence</em>: finish a phase, hand it on. AI-DLC is a <em>loop</em>, and the same four beats repeat inside every phase and every stage.</p>
+    <div class="diagram">   ┌────────────────────────────────────────────────────────────┐
+   │                                                            │
+   ▼                                                            │
+┌─────────┐    ┌──────────┐    ┌──────────┐    ┌─────────┐      │
+│  PLAN   │ ─► │ CLARIFY  │ ─► │ APPROVE  │ ─► │ EXECUTE │ ─────┘
+└─────────┘    └──────────┘    └──────────┘    └─────────┘
+   AI            AI asks          HUMANS          AI
+ proposes        targeted         confirm      generates
+  what's       questions to       intent,      artifacts
+    next         remove         constraints,      and
+                ambiguity          risk        work products
+
+           └──── AI executes ────┘  └─ humans govern ─┘</div>
+    <p>Four beats, in order, every time:</p>
+    <ol>
+      <li><strong>Plan.</strong> AI proposes what to do next &mdash; the stages, the outputs, the checks.</li>
+      <li><strong>Clarify.</strong> AI asks targeted questions to remove ambiguity <em>before</em> generating anything.</li>
+      <li><strong>Approve.</strong> Humans confirm intent, constraints, and risk decisions.</li>
+      <li><strong>Execute.</strong> AI generates the artifacts and work products.</li>
+    </ol>
+    <p>Then the loop runs again with more accumulated context than it had last time. That is the whole shift, and it is smaller than it sounds: <strong>you are not asking AI for an answer, you are running a lifecycle.</strong></p>
+    <p>You have already run this loop, by the way. It is what Modules 3 and 4 had you do. Section 8 puts the command names on each beat.</p>
+
+    <h2><span class="h2-num">5.</span>Mapping AI-DLC onto the SDLC you already run</h2>
+    <p>This is the picture worth holding in your head. Traditional phases on the left, AI-DLC phases in the middle, and &mdash; the part most summaries leave out &mdash; who is actually in the room for each phase on the right.</p>
+    <figure class="fig">
+      <a href="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/SDLC-to-AIDLC.png" target="_blank" rel="noopener"><img src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/SDLC-to-AIDLC.png" alt="Diagram mapping the six traditional SDLC phases (Plan, Design, Implement, Test, Deploy, Maintain) onto the three AI-DLC phases (Inception, Construction, Operation), alongside the personas working in each AI-DLC phase: Product Owner and Developers plus Architects plus QE Leads with AI in Inception; Developers and QE Engineers with AI in Construction; DevOps Engineers and Developers with AI in Operation." /></a>
+      <figcaption>Six SDLC phases collapse into three AI-DLC phases &mdash; and every one of them has humans and AI working the phase together. <a href="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/SDLC-to-AIDLC.png" target="_blank" rel="noopener">Open full size</a> to read the persona detail, or see the tables below.</figcaption>
+    </figure>
+    <h3>The phase collapse</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Traditional SDLC</th><th>AI-DLC</th><th>What actually changes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Plan</strong></td><td><strong>Inception</strong></td><td>Requirements stop being a document handed downstream. They are elaborated with the whole team present, with AI drafting and the room correcting, until ambiguity is gone.</td></tr>
+          <tr><td><strong>Design</strong> + <strong>Implement</strong> + <strong>Test</strong></td><td><strong>Construction</strong></td><td>The three hand-offs that cost the most time disappear. Design, code, and tests are produced from the same validated context in one continuous loop instead of three sequential ones.</td></tr>
+          <tr><td><strong>Deploy</strong> + <strong>Maintain</strong></td><td><strong>Operation</strong></td><td>Deployment is not a separate project with its own discovery. AI carries the context from the earlier phases into infrastructure, release, and monitoring.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Notice what the middle row is really saying. <strong>The point is not that the phases got renamed. The point is that the hand-offs between them were deleted.</strong> Every hand-off in the traditional SDLC is a place where context is dropped, re-derived, and slightly changed. AI-DLC removes the hand-off by keeping one shared context and one continuous loop.</p>
+    <h3>What changes, dimension by dimension</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Dimension</th><th>Traditional SDLC</th><th>AI-DLC</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Core assumption</td><td>Humans create most artifacts</td><td>AI can create many artifacts quickly</td></tr>
+          <tr><td><strong>Main risk</strong></td><td>Miscommunication across hand-offs</td><td>Moving fast in the wrong direction</td></tr>
+          <tr><td>Main bottleneck</td><td>Coordination and lead time</td><td>Alignment, traceability, and quality gates</td></tr>
+          <tr><td>Docs and designs</td><td>Created manually, and they drift</td><td>Continuously regenerated as context evolves</td></tr>
+          <tr><td>Quality control</td><td>Concentrated late, in QA</td><td>Recurring gates plus continuous refinement</td></tr>
+          <tr><td>Definition of done</td><td>Code, and maybe tests</td><td>Validated intent, artifacts, and evidence at each gate</td></tr>
+          <tr><td>How work is organized</td><td>Epics, sprints, hand-offs</td><td>Phases and stages, with depth adapted to risk</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The <strong>main risk</strong> row is the one to internalize, because it tells you where to spend your attention. Under the SDLC you defended against misunderstanding. Under AI-DLC you defend against building the wrong thing beautifully and at speed. Those need different countermeasures &mdash; which is what sections 7 and 8 are about.</p>
+    <p>One line summarizes the whole table: <strong>the SDLC manages humans; AI-DLC manages change.</strong></p>
+
+    <h2><span class="h2-num">6.</span>Sprints become bolts</h2>
+    <p>The vocabulary changes too, and the new words are not cosmetic &mdash; each one marks something that genuinely has no equivalent in the old model.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Traditional term</th><th>AI-DLC term</th><th>What it means</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sprint</td><td><strong>Bolt</strong></td><td>A work cycle measured in <strong>hours or days rather than weeks</strong>. Shorter, and considerably more intense.</td></tr>
+          <tr><td>Epic</td><td><strong>Unit of work</strong></td><td>How scope is decomposed during Inception &mdash; a coherent slice the team can elaborate, build, and validate as a whole.</td></tr>
+          <tr><td>&mdash;</td><td><strong>Mob elaboration</strong></td><td>The whole team, together, validating the questions and proposals AI raises during Inception. No SDLC equivalent.</td></tr>
+          <tr><td>&mdash;</td><td><strong>Mob construction</strong></td><td>The team giving real-time clarification on technical and architectural decisions while Construction is running. No SDLC equivalent.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>What a bolt actually feels like</h3>
+    <p>A sprint is a container for coordinating work that people do separately: you plan on Monday, disperse, and reconvene. A bolt is the opposite shape. The team is <em>together</em>, AI is producing artifacts inside the session, and the questions that would normally have become Slack threads get answered in the room while the work is still warm.</p>
+    <p>Activities that previously took weeks land in hours or days. Not because anyone is typing faster, but because the waiting is gone &mdash; the waiting for a review slot, for a clarification, for the next ceremony, for someone to have the context you needed.</p>
+    <div class="note"><span class="note-label">The misread to avoid.</span>A bolt is <strong>not</strong> &ldquo;a sprint, but rushed.&rdquo; It is short <em>because</em> the elaboration was done properly and collectively up front. Compressing a sprint without doing mob elaboration first does not give you a bolt &mdash; it gives you the same work with less thinking in it.</div>
+    <h3>The demand this places on you</h3>
+    <p>Bolts have a real cost, and it is worth naming honestly: <strong>the team has to be available inside the bolt.</strong> Mob elaboration assumes the mob turns up. A bolt that stalls for six hours waiting on an absent approver is not a bolt &mdash; it is a slower sprint with worse ergonomics.</p>
+    <p>This is a scheduling problem before it is a tooling problem. If your product owner is in back-to-back meetings all week, AI-DLC will not work for your team yet, and no command will fix that.</p>
+
+    <div class="reveal">
+      <button class="reveal-trigger" type="button">
+        <span><span class="reveal-trigger-label">Exercise</span>Re-cut a real feature as bolts and units of work</span>
+        <span class="reveal-trigger-icon">+</span>
+      </button>
+      <div class="reveal-content">
+        <p>Take a feature your team actually shipped last quarter &mdash; one you remember the shape of. Then answer, on paper:</p>
+        <ol>
+          <li>What were its <strong>units of work</strong>? Not tickets &mdash; coherent slices that could each be elaborated, built, and validated as a whole.</li>
+          <li>How many <strong>bolts</strong> would it have taken, and who needed to be in the room for each?</li>
+          <li>Where did the original timeline actually go? Add up the <em>waiting</em>: review queues, clarification round-trips, the gap between &ldquo;design done&rdquo; and &ldquo;implementation started.&rdquo;</li>
+        </ol>
+        <p><strong>Sample answer &mdash; a &ldquo;saved search&rdquo; feature that took six weeks:</strong></p>
+        <ul>
+          <li><strong>Units of work:</strong> (1) persistence and data model for saved searches, (2) the save/apply/delete API surface, (3) the UI for managing saved searches, (4) sharing a saved search with a teammate.</li>
+          <li><strong>Bolts:</strong> four, roughly one per unit, one to two days each &mdash; but only after a single half-day Inception bolt covering all four, with the PO, two engineers, and the QE lead in the room together.</li>
+          <li><strong>Where the six weeks went:</strong> nine calendar days of actual building. The rest was a week waiting on a design review, two rounds of &ldquo;what should happen if the underlying filter is deleted?&rdquo; over Slack across four days, and eleven days of PR review latency spread across the whole thing.</li>
+        </ul>
+        <p>That last bullet is the point of the exercise. When you total the waiting, the case for AI-DLC stops being about typing speed. <strong>Most of your lead time is not spent building.</strong> Notice also that the two rounds of &ldquo;what happens if the filter is deleted?&rdquo; are precisely the questions mob elaboration is designed to surface on day one &mdash; and that a real Inception run would have asked.</p>
+      </div>
+    </div>
+
+    <h2><span class="h2-num">7.</span>Who is in the room &mdash; personas at every phase</h2>
+    <p>This is the most misunderstood part of AI-DLC, so it is worth stating flatly before anything else:</p>
+    <blockquote><strong>At every phase it is humans <em>and</em> AI, working the phase together.</strong> Not a hand-off to AI. Not a hand-back from AI. The same room, the whole way through.</blockquote>
+    <p>The diagram in section 5 shows this on the right-hand side, and it is the reason that diagram has three columns instead of one. Every AI-DLC phase has named human roles with real responsibilities <em>and</em> a defined AI contribution running alongside them. Here it is in full.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Phase</th><th>Humans in the room</th><th>What the humans own</th><th>What AI does alongside them</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2"><strong>Inception</strong></td>
+            <td><strong>Product Owner</strong></td>
+            <td>Validates intent &middot; refines requirements &middot; approves business alignment</td>
+            <td rowspan="2">Generates the requirements document &mdash; user stories, scenarios, acceptance criteria, and the in-scope vs. out-of-scope split</td>
+          </tr>
+          <tr>
+            <td><strong>Developers + Architects + QE Leads</strong></td>
+            <td>Review technical feasibility &middot; validate architecture alignment</td>
+          </tr>
+          <tr>
+            <td rowspan="2"><strong>Construction</strong></td>
+            <td><strong>Developers</strong></td>
+            <td>Validate domain models &middot; approve logical design &middot; review generated code</td>
+            <td rowspan="2">Creates the technical design document and architecture &middot; generates code and tests &middot; executes automated testing</td>
+          </tr>
+          <tr>
+            <td><strong>QE Engineers</strong></td>
+            <td>Validate test scenarios &middot; approve test executions &middot; guide quality improvement</td>
+          </tr>
+          <tr>
+            <td rowspan="2"><strong>Operation</strong></td>
+            <td><strong>DevOps Engineers</strong></td>
+            <td>Validate deployment &middot; approve scaling decisions &middot; monitor system health</td>
+            <td rowspan="2">Analyzes logs &middot; predicts SLA violations &middot; recommends resolutions</td>
+          </tr>
+          <tr>
+            <td><strong>Developers</strong></td>
+            <td>Approve AI fixes &middot; validate optimizations &middot; monitor system health</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Read down the third column and you will notice every single entry is a verb of judgment: <em>validates, approves, reviews, guides</em>. Read down the fourth and they are all verbs of production: <em>generates, creates, executes, analyzes</em>. That split is the entire operating model, and it holds in all three phases.</p>
+    <h3>The anti-pattern</h3>
+    <p>The most common way AI-DLC quietly degrades is this: <strong>the product owner writes a ticket and leaves.</strong> The developers and AI then do Inception without the person who holds the intent, which means the requirements document is a guess that looks authoritative. Everything downstream inherits the guess, and it surfaces in Operation.</p>
+    <p>If the PO is not in the room during Inception, you are not running AI-DLC. You are running the SDLC with a chatbot attached &mdash; ditch one from section 1, with extra steps.</p>
+    <h3>Where humans decide: three gates</h3>
+    <p>&ldquo;Humans govern&rdquo; only means something if you can say <em>where</em>. In practice the decisions cluster at three points, one per phase boundary:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Gate</th><th>Question it answers</th><th>What must be approved</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Gate A</strong> &mdash; end of Inception</td><td>Is the intent correct?</td><td>Scope, success criteria, key constraints, and the in-scope/out-of-scope split</td></tr>
+          <tr><td><strong>Gate B</strong> &mdash; within Construction</td><td>Is the approach correct?</td><td>Architecture direction, definition of done, test strategy &mdash; approved <em>before</em> bulk code generation starts</td></tr>
+          <tr><td><strong>Gate C</strong> &mdash; before Operation</td><td>Is this release responsible?</td><td>Deployment and readiness checklist, rollback plan, what you are monitoring</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Gates are not bureaucracy, and they are not a return to stage-gate waterfall. AI-DLC does not remove engineering discipline &mdash; <strong>it relocates the discipline to a small number of high-value checkpoints</strong> and then lets execution run fast between them. Fast execution between gates; clear accountability at gates.</p>
+    <p>The reason they are non-negotiable is the uncomfortable fact from section 5: AI can move fast enough to produce the wrong thing, beautifully and with excellent test coverage. A gate is the difference between &ldquo;the AI generated some stuff&rdquo; and &ldquo;we delivered something we can stand behind.&rdquo;</p>
+
+    <h2><span class="h2-num">8.</span>Doing it with Spec Kit and SPECTRA</h2>
+    <p>Everything above is methodology. Here is the part that makes it something you can run on Monday &mdash; because you already know these commands. The four-phase loop from Module 1 <em>is</em> AI-DLC; it just did not have these phase names attached to it.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>AI-DLC phase</th><th>Commands</th><th>Who is at the keyboard</th><th>Loop</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Inception</strong></td>
+            <td><code>/speckit.constitution</code><br><code>/speckit.specify</code><br><code>/speckit.clarify</code></td>
+            <td>PO + tech leads + architects + QE leads + AI<br><em>(mob elaboration)</em></td>
+            <td>Plan &rarr; Clarify &rarr; <strong>Gate A</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Construction</strong></td>
+            <td><code>/speckit.plan</code><br><code>/speckit.tasks</code><br><code>/speckit.implement</code><br><code>/speckit.analyze</code> &middot; <code>/speckit.checklist</code></td>
+            <td>Developers + QE + AI<br><em>(mob construction)</em></td>
+            <td><strong>Gate B</strong> &rarr; Execute</td>
+          </tr>
+          <tr>
+            <td><strong>Operation</strong></td>
+            <td><code>/speckit.spectra.create-pr</code><br><code>/speckit.spectra.review-pr</code></td>
+            <td>Developers + DevOps + AI</td>
+            <td><strong>Gate C</strong> &rarr; Execute</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Three things about that table deserve to be said out loud, because they are what turn it from a lookup into a practice.</p>
+    <h3><code>/speckit.clarify</code> <em>is</em> mob elaboration</h3>
+    <p>This is the single most important mapping on the page. That command exists for exactly one reason: to make the AI ask its questions <strong>while the room is still assembled</strong>. Run it alone at your desk and you have converted mob elaboration back into an individual guessing exercise.</p>
+    <p>Expect volume. A real Inception run on a modestly sized feature produces well over a dozen verification questions spanning functional behavior, non-functional requirements, and UX &mdash; all of them <em>before</em> any requirements document is written. Answering them together, in one sitting, is not overhead. That <em>is</em> the work of Inception, and it is where the rework you never had to do gets prevented.</p>
+    <h3>Durable rules beat chat history &mdash; and <code>/speckit.constitution</code> is where they live</h3>
+    <p>AI-DLC only holds together if the agent's understanding survives between sessions. Conventions, non-negotiables, security and testing rules, and product constraints have to live somewhere versioned and reviewable &mdash; treated as an artifact, not as chat history that evaporates when the window closes.</p>
+    <p>In this course that place already exists: <code>.specify/memory/constitution.md</code>, written by <code>/speckit.constitution</code> and enforced across every phase by SPECTRA's Guardrails agent. It is the first thing to write and the thing to keep current. No additional tooling required &mdash; if you completed Module 3, it is already in your project.</p>
+    <h3>The artifacts are your audit trail</h3>
+    <p>AI-DLC insists on keeping a visible record of where the lifecycle is and why each decision was made. Speed without receipts is how teams end up unable to explain their own system six months later.</p>
+    <p>Spec Kit gives you that for free: the <code>specs/&lt;NNN&gt;-&lt;name&gt;/</code> directory &mdash; spec, plan, tasks, and design artifacts, versioned alongside the code. When someone asks &ldquo;why did we do it this way?&rdquo;, the answer is a file, not an archaeology project. This is the same point Module 6 made about specs as a review surface, now doing double duty as the lifecycle's memory.</p>
+    <h3>One bolt, end to end</h3>
+    <p>A single bolt on a small feature, with the gates marked:</p>
+<pre><code># ── Inception ─────────────────────────────────────────────
+# Whole room: PO, tech lead, an architect, QE lead.
+/speckit.constitution     # once per project, not per bolt
+/speckit.specify          # AI drafts the spec from stated intent
+/speckit.clarify          # AI interrogates it — answer together, out loud
+# ▸ GATE A — the room approves scope, success criteria, constraints.
+#   Do not proceed on "looks fine, ship it." Say what is out of scope.
+
+# ── Construction ──────────────────────────────────────────
+# Developers + QE. PO reachable for questions.
+/speckit.plan             # architecture direction and technical approach
+/speckit.tasks            # decomposition into ordered, checkable work
+# ▸ GATE B — approve the approach, the definition of done, the test
+#   strategy. This is the last cheap moment to change your mind.
+/speckit.implement        # AI builds; the team reviews as it lands
+/speckit.analyze          # cross-artifact consistency: spec vs plan vs tasks
+/speckit.checklist        # targeted quality checks where risk is highest
+
+# ── Operation ─────────────────────────────────────────────
+# Developers + DevOps.
+# ▸ GATE C — readiness: what breaks, how you would know, how you roll back.
+/speckit.spectra.create-pr    # PR with the spec as its own justification
+/speckit.spectra.review-pr    # AI-assisted review against spec and constitution</code></pre>
+    <p>Compare that against the diagram in section 5 one more time. Same three phases, same personas, same gates &mdash; expressed as commands you have already run in Modules 3 and 4.</p>
+    <div class="note"><span class="note-label">SPECTRA's optional agents fit the same map.</span>Add-ons slot into the phase where their work belongs: <code>/speckit.spectra.brd</code> and <code>/speckit.spectra.domain-analyzer</code> in Inception, <code>/speckit.spectra.adr</code> in Construction alongside <code>/speckit.plan</code>, <code>/speckit.spectra.flaky-test-detector</code> in Construction's quality loop. The <a href="../agents.html">full agent roster</a> shows which phase every one of them belongs to.</div>
+
+    <div class="reveal">
+      <button class="reveal-trigger" type="button">
+        <span><span class="reveal-trigger-label">Exercise</span>Who has to be in the room for your <code>/speckit.clarify</code>?</span>
+        <span class="reveal-trigger-icon">+</span>
+      </button>
+      <div class="reveal-content">
+        <p>For a feature your team is picking up <em>next</em>, write down:</p>
+        <ol>
+          <li>Who must be present when <code>/speckit.clarify</code> runs &mdash; by name, not by role.</li>
+          <li>For each person: what class of question can <strong>only</strong> they answer?</li>
+          <li>What happens today when that person is not available? Be specific about the mechanism.</li>
+        </ol>
+        <p><strong>Sample answer:</strong></p>
+        <ul>
+          <li><strong>PO:</strong> the only one who can answer &ldquo;should this apply retroactively to existing records?&rdquo; and &ldquo;is this in scope for the launch?&rdquo;</li>
+          <li><strong>Tech lead:</strong> the only one who knows the migration will collide with the partitioning work in flight.</li>
+          <li><strong>QE lead:</strong> the only one who knows which of these paths has no automated coverage today, so &ldquo;we'll catch it in test&rdquo; is untrue for exactly this feature.</li>
+          <li><strong>What happens today when they are absent:</strong> the developer picks the interpretation that is easiest to build, writes it into the spec as though it were decided, and nobody notices until review &mdash; where it is now expensive, socially awkward to reopen, and usually shipped anyway.</li>
+        </ul>
+        <p>That last line is the honest cost of skipping mob elaboration. The decision still gets made &mdash; it just gets made silently, by whoever is closest to the keyboard, at the worst possible moment.</p>
+      </div>
+    </div>
+
+    <h2><span class="h2-num">9.</span>What a real run looks like</h2>
+    <p>The three phases are tidy at a distance. Up close a real run has more structure than &ldquo;Inception, then Construction&rdquo; &mdash; and the structure is reassuringly familiar.</p>
+    <h3>It starts by working out what kind of codebase it is</h3>
+    <p>AI-DLC's first move is <strong>workspace detection</strong>: is this greenfield, or is there an existing system to retrofit? Everything downstream adapts to the answer &mdash; a greenfield run generates from intent, a brownfield run has to reverse-engineer the current behavior before it can safely add to it.</p>
+    <p>You have already run both halves of that split. <strong>Module 3 was the greenfield path. Module 4 was the retrofit path</strong>, and the incremental-spec pattern it taught is exactly what AI-DLC does when detection comes back &ldquo;existing code: yes.&rdquo;</p>
+    <h3>Inception runs in stages, not in one shot</h3>
+    <p>Requirements &rarr; user stories &rarr; workflow planning &rarr; application design &rarr; decomposition into units of work. In Spec Kit terms that is <code>/speckit.specify</code> and <code>/speckit.clarify</code> doing the first two, and <code>/speckit.plan</code> beginning where design starts. The staging matters because it gives you somewhere to stop: you can approve requirements without having committed to a design.</p>
+    <h3>Construction runs a repeatable loop per unit of work</h3>
+    <p>For each unit: functional design &rarr; non-functional requirements &rarr; NFR design &rarr; infrastructure design &rarr; code generation. Note where NFRs and infrastructure sit in that list &mdash; <strong>before</strong> code generation, not after the demo. That ordering is deliberate, and it is why AI-DLC trends toward deployment readiness rather than toward an impressive prototype that nobody can operate.</p>
+    <p>In Spec Kit terms this is the <code>/speckit.plan</code> &rarr; <code>/speckit.tasks</code> &rarr; <code>/speckit.implement</code> cycle, run once per unit of work rather than once per feature.</p>
+    <div class="note"><span class="note-label">Structured is not the same as rigid.</span>In a real run the plan gets revised mid-flight &mdash; a framework choice changes, an assumption breaks, a library turns out to be wrong for the job. That is normal and AI-DLC accommodates it. What makes it survivable is that the change goes <em>through</em> the artifacts rather than around them: the plan is updated, the reason is recorded, and traceability holds. A change that bypasses the spec is how you get back to code as the only source of truth.</div>
+
+    <h2><span class="h2-num">10.</span>What this does not fix</h2>
+    <p>Every module in this course ends with the honest limits, and AI-DLC has several worth knowing before you propose it to anyone.</p>
+    <ul>
+      <li><strong>It does not rescue a vague spec.</strong> A bolt run on a woolly <code>/speckit.specify</code> does not fail less than a sprint would &mdash; it fails <em>faster</em>, and with more code already written. Compression amplifies whatever quality of thinking you put in. Everything Module 2 taught about spec anatomy matters more here, not less.</li>
+      <li><strong>Team availability becomes the binding constraint.</strong> Mob elaboration assumes the mob shows up. In an organization where the PO is fully booked and the QE lead is split across four teams, AI-DLC will stall at Gate A regardless of tooling. This is a calendar problem, and it is usually the real blocker.</li>
+      <li><strong>Review capacity is still finite.</strong> Module 6's bottleneck argument applies harder, not less. Generating more, faster, means more to review &mdash; and if review is already your constraint, AI-DLC will find that constraint immediately. The gates help by moving judgment upstream where it is cheap, but they do not create reviewer hours.</li>
+      <li><strong>Depth has to be adaptive or it becomes ceremony.</strong> Not every stage deserves equal rigor. Go deep where risk is high &mdash; a payments path, a migration, anything touching auth &mdash; and stay deliberately light where it is not. AI makes it very easy to overproduce artifacts, and a lifecycle drowning in generated documents nobody reads is its own failure mode.</li>
+      <li><strong>It is a change to how people work together, not a tool install.</strong> The commands take an afternoon to learn. Getting four people into a room at the same time to elaborate a feature is the actual adoption problem, and it is organizational.</li>
+    </ul>
+
+    <h2><span class="h2-num">11.</span>Run your first bolt this week</h2>
+    <p>You do not need to rewrite your process to start. The shift is smaller than it looks: <strong>you keep the lifecycle, you change the engine.</strong> Pick one small, real change &mdash; not a demo &mdash; and run it end to end.</p>
+    <ul class="checklist">
+      <li><strong>Name your three gates and who holds each.</strong> Write it down before you start. Gate A: who approves intent? Gate B: who approves the approach? Gate C: who approves the release? If any answer is &ldquo;whoever's around,&rdquo; fix that first.</li>
+      <li><strong>Get the constitution written.</strong> Run <code>/speckit.constitution</code> before anything else. Conventions, non-negotiables, security and testing rules. This is the durable context every later step reads.</li>
+      <li><strong>Book the Inception session and get the room.</strong> PO, a tech lead, an architect if the change warrants one, the QE lead. Ninety minutes, calendars cleared. This booking is the hard part &mdash; do it first.</li>
+      <li><strong>Force plan-then-clarify before any generation.</strong> Run <code>/speckit.specify</code>, then <code>/speckit.clarify</code>, and answer every question in the room. Resist the urge to skip ahead to code &mdash; this is where the value is.</li>
+      <li><strong>Stop at Gate A and say it out loud.</strong> State what is in scope, what is explicitly out, and what &ldquo;done&rdquo; means. Approving in silence is not approving.</li>
+      <li><strong>Run Construction in one sitting.</strong> <code>/speckit.plan</code> &rarr; <code>/speckit.tasks</code> &rarr; Gate B &rarr; <code>/speckit.implement</code>, with QE present rather than queued behind you.</li>
+      <li><strong>Close the loop through the artifacts.</strong> <code>/speckit.analyze</code> for consistency, then <code>/speckit.spectra.create-pr</code> so the spec ships as the PR's own justification.</li>
+      <li><strong>Debrief for fifteen minutes.</strong> Where did you wait? Which question should have been asked at Inception and was not? That answer is your next improvement.</li>
+    </ul>
+    <p>Do it once and the comparison makes itself. The gain is rarely &ldquo;the AI wrote code quickly&rdquo; &mdash; it is finishing with a change whose reasoning is recorded, whose scope held, and whose process you can run again next week.</p>
+
+    <h3>Where to go from here</h3>
+    <ul>
+      <li><a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/">AWS &mdash; AI-Driven Development Life Cycle</a> &mdash; the canonical description of AI-DLC, and the source of every definition in this module.</li>
+      <li><a href="https://builder.aws.com/content/376vNVPtBqlCvqIjHPub8iPBSxa/sdlc-who-meet-ai-dlc-the-new-build-loop">SDLC Who? Meet AI-DLC: The New Build Loop</a> and <a href="https://builder.aws.com/content/37A3lwV9pkYlYVN8teXLWfIO3Vv/sdlc-who-meet-ai-dlc-ai-dlc-in-action-with-kiro-part-2">AI-DLC in Action</a> &mdash; two community write-ups of the AI-DLC <em>process</em>, and the source of the loop, the gates, and the shape of a real run described above. They demonstrate the process with their own tooling; this course runs the same process with Spec Kit and SPECTRA.</li>
+      <li><a href="../agents.html">The full SPECTRA agent roster</a> &mdash; every agent grouped by SDLC phase and tagged with its AI-DLC phase, so you can see what is available in Inception, Construction, and Operation. See also the <a href="https://telus-digital.github.io/spectra/">SPECTRA landing page</a>.</li>
+      <li><strong>Module 4</strong> &mdash; if you want to feel a bolt rather than read about one, the brownfield lab is the practice ground. Run it again, but this time with a second person in the room for <code>/speckit.clarify</code> and see what changes.</li>
+    </ul>
+
+    <h2><span class="h2-num">12.</span>Knowledge check</h2>
+    <p>Five questions. Pick an answer to see whether it holds.</p>
+    <div class="quiz">
+      <div class="quiz-header">
+        <span class="quiz-title">Knowledge check</span>
+        <span class="quiz-progress">5 questions</span>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="c">
+        <div class="quiz-q-prompt">Q1. Your team adopts an AI coding agent. Velocity on individual tickets improves noticeably, but the time from &ldquo;idea accepted&rdquo; to &ldquo;in production&rdquo; barely moves. What does AI-DLC say is going on?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>The agent needs better prompts</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>The team is not using enough of the agent's features</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>The lifecycle is unchanged &mdash; AI accelerated the typing, but the hand-offs between phases are still human-paced</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>The tickets are too large and should be split further</span></button>
+        </div>
+        <div class="quiz-feedback">
+          <div class="quiz-feedback-title">Answer: c &mdash; the lifecycle is unchanged</div>
+          <div>This is &ldquo;ditch one&rdquo; from section 1: AI-assisted SDLC. Local speed improves, but the waiting &mdash; review queues, clarification round-trips, the gap between design and implementation &mdash; is untouched, because that waiting lives in the hand-offs, not in the typing. AI-DLC's answer is to collapse the phases so there are fewer hand-offs to wait on.</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">Q2. Which statement about a <strong>bolt</strong> is correct?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>It is a two-week sprint with a stricter definition of done</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>It is a work cycle measured in hours or days, and it is short because elaboration was done collectively up front</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>It is the same as a sprint, renamed for the AI era</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>It is a period during which AI works autonomously without human involvement</span></button>
+        </div>
+        <div class="quiz-feedback">
+          <div class="quiz-feedback-title">Answer: b &mdash; hours or days, earned by up-front elaboration</div>
+          <div>The duration is the visible part; the cause is the important part. A bolt is short <em>because</em> mob elaboration removed the ambiguity first &mdash; not because anyone is working faster. Option d gets it exactly backwards: a bolt is the phase with the <em>most</em> human involvement, not the least.</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="d">
+        <div class="quiz-q-prompt">Q3. During Inception, who should be in the room?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>The AI agent, working from the product owner's written ticket</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>The product owner alone, since Inception is about business intent</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>The developers, who will translate the requirements into a design</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Product owner, developers, architects and QE leads &mdash; together, with AI</span></button>
+        </div>
+        <div class="quiz-feedback">
+          <div class="quiz-feedback-title">Answer: d &mdash; all of them, at the same time, with AI</div>
+          <div>The PO validates intent and business alignment; developers, architects and QE leads review technical feasibility and architecture alignment; AI generates the requirements document, stories, scenarios and the in-scope/out-of-scope split. Option a is the anti-pattern from section 7 &mdash; the PO who writes a ticket and leaves &mdash; and it is the most common way AI-DLC degrades back into the SDLC with a chatbot attached.</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="a">
+        <div class="quiz-q-prompt">Q4. In Spec Kit terms, which command <em>is</em> mob elaboration &mdash; the one that specifically exists to have AI ask its questions while the whole team is still assembled?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span><code>/speckit.clarify</code></span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span><code>/speckit.plan</code></span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span><code>/speckit.analyze</code></span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span><code>/speckit.implement</code></span></button>
+        </div>
+        <div class="quiz-feedback">
+          <div class="quiz-feedback-title">Answer: a &mdash; <code>/speckit.clarify</code></div>
+          <div><code>/speckit.clarify</code> is an Inception command and it is the &ldquo;Clarify&rdquo; beat of the loop. Running it alone at your desk converts mob elaboration into an individual guessing exercise &mdash; the questions still get answered, just by whoever is closest to the keyboard. <code>/speckit.plan</code>, <code>/speckit.analyze</code> and <code>/speckit.implement</code> are all Construction.</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">Q5. Why does AI-DLC insist on explicit approval gates rather than letting a well-configured agent run end to end?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>Because AI output is generally low quality and needs correcting</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>Because AI can move fast enough to produce the wrong thing beautifully &mdash; the risk shifts from miscommunication to confident misdirection</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Because compliance frameworks require a human signature on every artifact</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Because gates slow the process down, which improves quality</span></button>
+        </div>
+        <div class="quiz-feedback">
+          <div class="quiz-feedback-title">Answer: b &mdash; speed makes wrong-direction the dominant risk</div>
+          <div>Under the traditional SDLC the main risk is miscommunication across hand-offs. Under AI-DLC it is moving fast in the wrong direction &mdash; with good tests and clean structure around the wrong thing. Gates are not a slowdown (option d) and not a rubber stamp for compliance (option c); they relocate engineering discipline to a few high-value checkpoints so execution can run fast in between.</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <h3>You have finished the course</h3>
+    <p>You started with what a spec is and why code stopped being a sufficient source of truth. You wrote specs, ran the four-phase loop on a greenfield project and then on an inherited one, learned what breaks and what teams get wrong, and worked through how the practice changes review and collaboration.</p>
+    <p>This module put a name on where all of that is heading. Spec-driven development is not a technique bolted onto the SDLC &mdash; it is how the lifecycle works once AI is at the centre of it. You already have the commands. What is left is getting the right people in the room and running your first bolt.</p>
+
+    <div class="module-footer-nav">
+      <a class="mod-nav-prev" href="module-6.html">
+        <span class="mod-nav-label">← Previous · Module 6</span>
+        <span class="mod-nav-title">Quality, Testing &amp; Team Collaboration</span>
+      </a>
+      <a class="mod-nav-next" href="index.html">
+        <span class="mod-nav-label">Course complete →</span>
+        <span class="mod-nav-title">Back to handbook</span>
+      </a>
+    </div>
+  </article>
+</main>
+<script>
+  // Auto-attach copy buttons to all <pre> blocks
+  document.querySelectorAll('pre').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-block';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', async () => {
+      const text = pre.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1400);
+    });
+    wrap.appendChild(btn);
+  });
+
+  // Reveal-on-click blocks
+  document.querySelectorAll('.reveal-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      trigger.parentElement.classList.toggle('open');
+    });
+  });
+
+  // Quiz logic — multiple choice
+  document.querySelectorAll('.quiz-question[data-type="mc"]').forEach((q) => {
+    const correct = q.dataset.correct;
+    const opts = q.querySelectorAll('.quiz-opt');
+    const feedback = q.querySelector('.quiz-feedback');
+    opts.forEach((opt) => {
+      opt.addEventListener('click', () => {
+        const choice = opt.dataset.choice;
+        opts.forEach((o) => {
+          o.disabled = true;
+          if (o.dataset.choice === correct) {
+            o.classList.add('correct');
+          } else if (o === opt) {
+            o.classList.add('incorrect');
+          } else {
+            o.classList.add('dim');
+          }
+        });
+        if (feedback) {
+          feedback.classList.add('show');
+          feedback.classList.add(choice === correct ? 'correct' : 'incorrect');
+        }
+      });
+    });
+  });
+
+  // Quiz logic — open-ended (just reveal)
+  document.querySelectorAll('.quiz-open-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const ans = btn.nextElementSibling;
+      if (ans && ans.classList.contains('quiz-open-answer')) {
+        ans.classList.toggle('show');
+        btn.textContent = ans.classList.contains('show') ? 'Hide answer' : 'Reveal answer';
+      }
+    });
+  });
+</script>
+</body>
+</html>
