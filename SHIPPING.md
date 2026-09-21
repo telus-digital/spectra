@@ -94,7 +94,7 @@ You will meet these as `remote:` lines on a rejected push.
 | --- | --- | --- |
 | `3 of 3 required status checks are expected` | The commit has never been through CI. | Use `python tools/ship.py`. |
 | `Required status check "X" is failing` | CI ran and X failed. | Read the run, fix, ship again. |
-| `N of 3 required status checks are in progress` | CI is still running on that SHA. | Wait. `ship.py` already does. |
+| `N of 3 required status checks are in progress` | A run is in flight — **possibly on a different commit**, see below. | Wait for it to finish. `ship.py` already does. |
 | `Cannot force-push to this branch` | The structure ruleset. You have bypass, so you will see this as a *bypassed* violation on a force-push, not a rejection. | Nothing — it is informational. |
 
 A push that succeeds but prints `Bypassed rule violations for refs/heads/main` is telling you a rule
@@ -112,6 +112,15 @@ Verified on 2026-09-20 against a throwaway ruleset on a throwaway branch, since 
 
 So the gate enforces *"CI ran and passed"*, not merely *"CI is not currently red"*.
 
+Re-confirmed on 2026-09-21 against the real rulesets on `main` itself, after they were split:
+
+| Test | Result |
+| --- | --- |
+| Untested commit, direct `git push origin HEAD:main` | **rejected** — `3 of 3 required status checks are expected` |
+| The same commit under break glass | **accepted**, then bypass revoked |
+| A second untested commit, after revoking | **rejected** again — the gate closed cleanly |
+| `tools/ship.py` on a real change | **landed**, and the bypass report named no status check |
+
 ## Known edge cases
 
 ### The rename deadlock
@@ -126,14 +135,25 @@ Rename a CI job and the ruleset keeps requiring the old context, which will neve
 4. Update `.github/required-checks.json` to match.
 5. Ship normally.
 
-### The concurrency race
+### In-flight runs are counted, whoever they belong to
 
-Observed once on 2026-09-20 and not reproduced in three attempts: an untested commit was accepted
-while a CI run for a *different* SHA was in flight. The run on the accepted commit was created one
-second **after** the push that passed, so it genuinely had no checks at evaluation time.
+**The gate evaluates runs that are in flight on the branch, not only the check runs attached to the
+commit you are pushing.** Observed twice:
 
-The mechanism is GitHub-internal and unexplained. The mitigation is simple and `ship.py` already
-does it: **wait for CI to complete before pushing `main`.** Never push while a run is in flight.
+- 2026-09-20: an untested commit was *accepted* moments after an in-flight run for a **different**
+  SHA went green. The run on the accepted commit was created one second *after* the push, so it
+  genuinely had no checks of its own at evaluation time.
+- 2026-09-21: a push of a commit with **all three checks already green** was *rejected* with
+  `2 of 3 required status checks are in progress`, because an unrelated run was still going.
+
+So an in-flight run can both wrongly satisfy the gate and wrongly block it. Neither is something you
+can reason your way around in the moment; the rule is simply: **never push to `main` while a run is
+in flight.** `ship.py` waits for completion rather than for green-so-far, which is why it is the
+sanctioned path. If you are pushing by hand under break glass, check first:
+
+```bash
+gh run list --branch main --limit 1
+```
 
 ### Spec Kit's auto-commit hooks cannot bypass the gate
 
