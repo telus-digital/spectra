@@ -1,6 +1,72 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version: 1.7.4 → 1.8.0
+Bump type: MINOR — one new obligation in an existing section. No principle added, removed, or
+  redefined, but `main` acquires a gate that did not exist, so this is more than a clarification.
+Rationale: Yesterday's amendment corrected the *description* of how changes land; it left the
+  mechanism itself untouched, and the mechanism was nothing. `main` accepted any push. The "Protect
+  main" ruleset did evaluate required status checks on a direct push — the 1.7.4 force-push printed
+  "3 of 3 required status checks are expected" — but the sole maintainer held an always-bypass, so
+  every gate was advisory. With no second reader and no PR, a broken or untested commit had nothing
+  standing between it and the default branch.
+
+  The gate is now real: required status checks with no bypass actors. Measured against a throwaway
+  ruleset on 2026-09-20 rather than assumed — a green SHA whose checks were earned on another branch
+  is accepted, a failing SHA is rejected by name, and a never-tested SHA is rejected three times out
+  of three. So the rule enforces "CI ran and passed", not merely "CI is not currently red".
+
+  Two things are written into the rule because they are what makes it workable rather than a trap.
+  Check runs attach to a commit, not a branch, which is the whole reason a staging branch can earn
+  them and `main` can accept them — stating that stops the two-push sequence looking arbitrary. And
+  the new obligation is explicitly *separate* from one-branch-per-spec: the branching rule governs
+  spec work, this one governs every change. The 1.7.4 amendment itself is the counterexample — a
+  large documentation change with no spec branch at all, which the branching rule never reached.
+
+  Bypass is per-ruleset rather than per-rule, so a single ruleset would force a choice between
+  keeping admin powers and having a gate. Split in two, the maintainer keeps deletion and
+  force-push bypass — deliberate history rewrites stay possible — and keeps no power to land
+  untested code. The `pull_request` rule is dropped rather than left inert: behind a bypass it fired
+  a violation on every push, which trains a reader to ignore bypass warnings, and a warning nobody
+  reads is worse than no warning.
+
+Modified principles: (none)
+Modified sections:
+  Version Control & Branching Strategy → new subsection: nothing lands on `main` whose commit has
+    not passed CI on its own SHA; enforced by ruleset, no actor may bypass; stated as a separate
+    obligation from one-branch-per-spec
+  Development Workflow step 6 → publishing runs `tools/ship.py`; a direct push to `main` is rejected
+Added sections: (none)
+Removed sections: (none)
+
+Templates & docs in sync:
+  - SHIPPING.md ✅ — new: the standing reference. How the gate works, the measured evidence, every
+    rejection message, the three release paths, and the break-glass procedure
+  - CLAUDE.md ✅ — a "How changes land" section above the agent-context marker, so an agent that
+    reads nothing else still knows not to push to `main`
+  - CONTRIBUTING.md ✅ — states the build-vs-land boundary; "How to cut a release" and
+    "Test, then publish" now point at SHIPPING.md rather than carrying a second copy
+  - tools/checks.py ✅ — new: the catalog-drift checks defined once, run by CI and by the pre-flight
+  - tools/ship.py ✅ — new: the only sanctioned path to `main`
+  - .github/workflows/ci.yml ✅ — push trigger widened to the `ci` staging branch; the catalog job's
+    four inline shell steps now call `tools/checks.py`
+  - .github/required-checks.json ✅ — new: the committed copy of the ruleset's required contexts
+  - tests/test_ci_contract.py ✅ — new: fails when the workflow, the checks registry, and the
+    required contexts disagree, so a renamed job cannot silently make `main` unpushable
+  - .specify/templates/*.md ✅ — the Constitution Check gate is generic; no principle names cited
+
+Deliberately unchanged:
+  - The `pull_request` trigger in ci.yml — harmless, and still correct if a PR is ever opened
+  - VERSION / spectra_cli/ — the CLI channel did not change (Principle VI)
+  - spectra/extension.yml, catalog.json — no shipped file changed (Principle V)
+
+Supersedes: the 1.7.4 report below lists the "Protect main" ruleset under *Deliberately unchanged*.
+  That is no longer true as of this amendment.
+
+Follow-up TODOs: (none)
+
+SYNC IMPACT REPORT
+==================
 Version: 1.7.3 → 1.7.4
 Bump type: PATCH — a factual correction to Governance. No principle added, removed, or redefined; no
   obligation changed — only the mechanism the obligations were described as flowing through.
@@ -732,8 +798,9 @@ under it, never as new extensions:
 5. **Test locally** by installing the working copy with `specify extension add --dev <path-to-spectra>`
    into a throwaway Spec Kit project and exercising every command end to end before publishing.
 6. **Publish** by committing the `spectra/` folder, the `specs/` artifacts, the updated `catalog.json`,
-   `docs/`, and `README.md`, then pushing to `main`; the catalog and package are live immediately at
-   their `raw.githubusercontent.com` links.
+   `docs/`, and `README.md`, then running `tools/ship.py` — a direct push to `main` is rejected, per
+   the Version Control & Branching Strategy. The procedure is `SHIPPING.md`. Once the push lands the
+   catalog and package are live immediately at their `raw.githubusercontent.com` links.
 
 User-facing documentation (`README.md`) and contributor documentation (`CONTRIBUTING.md`) MUST be
 kept consistent with these principles whenever behavior changes.
@@ -752,6 +819,19 @@ spec is complete.
 - **Create the branch before specifying.** The spec branch MUST exist before specification work
   begins. The `before_specify` Git hook (`speckit.git.feature`) automates this; if it is unavailable,
   the branch MUST be created manually with the matching name before `specify` runs.
+
+**Nothing lands on `main` whose commit has not passed CI.** Every commit that reaches `main` MUST
+carry a green run of every required status check **on its own SHA** before it gets there. This is
+enforced rather than reviewed: a branch ruleset requires those checks and **no actor may bypass it**.
+Because check runs attach to a commit rather than to a branch, the commit earns them on a staging
+branch and is then pushed unchanged to `main` — `tools/ship.py` performs exactly that sequence and is
+the only sanctioned way to write to `main`. The mechanism, the release paths, and the break-glass
+procedure for an Actions outage are documented in `SHIPPING.md`.
+
+This is a **separate obligation** from one-branch-per-spec above, and both hold. The branching rule
+governs how *spec work* is organised; this one governs *every* change, including the documentation,
+tooling, and housekeeping commits that never had a spec. A change can satisfy one and violate the
+other, so neither excuses the other.
 
 Rationale: Spectra dogfoods the same Git workflow its `git` extension ships. Pinning the branch
 name to the spec name keeps the branch, the spec directory, and downstream automation (feature
@@ -783,4 +863,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.7.4 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-09-20
+**Version**: 1.8.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-09-21

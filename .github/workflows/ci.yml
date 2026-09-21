@@ -4,7 +4,10 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    # `ci` is the staging branch: tools/ship.py pushes a commit there to earn its check runs, then
+    # pushes the same SHA to main, which the ruleset accepts only because those checks exist and are
+    # green. Check runs attach to a SHA, not a branch, which is what makes that work. See SHIPPING.md.
+    branches: [main, ci]
 
 jobs:
   cli:
@@ -159,57 +162,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: The generated agent listings match agents-list.json
-        # The roster is the single source of truth (Principle V). This fails when a generated region
-        # was hand-edited, when a shipped agent has no prose block, when a prose block exists for an
-        # agent that is not shipped, when a hand-written heading has drifted from the canonical title,
-        # or when the roster and the manifest disagree about the shipped set.
-        run: python3 tools/generate_agent_docs.py --check
+        # Every check below is defined once in tools/checks.py and run from two places: here, and
+        # tools/ship.py's pre-flight. tests/test_ci_contract.py fails when this list and the module's
+        # registry disagree, so a check cannot be registered and silently never run in CI.
+        run: python3 tools/checks.py generated-listings
       - name: extension.yml, catalog.json and the zip agree
-        run: |
-          set -euo pipefail
-          EXT_VERSION="$(sed -n 's/^  version: "\(.*\)"$/\1/p' spectra/extension.yml | head -1)"
-          CAT_VERSION="$(python3 -c 'import json;print(json.load(open("catalog.json"))["extensions"]["spectra"]["version"])')"
-          if [ "$EXT_VERSION" != "$CAT_VERSION" ]; then
-            echo "::error::extension.yml is $EXT_VERSION but catalog.json says $CAT_VERSION." >&2
-            exit 1
-          fi
-          CAT_COMMANDS="$(python3 -c 'import json;print(json.load(open("catalog.json"))["extensions"]["spectra"]["provides"]["commands"])')"
-          EXT_COMMANDS="$(grep -c '^    - name: "speckit\.' spectra/extension.yml)"
-          if [ "$EXT_COMMANDS" != "$CAT_COMMANDS" ]; then
-            echo "::error::extension.yml declares $EXT_COMMANDS commands but catalog.json says $CAT_COMMANDS." >&2
-            exit 1
-          fi
-          echo "Extension $EXT_VERSION with $EXT_COMMANDS commands; catalog agrees."
+        run: python3 tools/checks.py catalog-parity
       - name: Every published copy of the description agrees
-        # FR-051/SC-010: the extension description is published in three places and must read
-        # identically in all of them. The landing page is deliberately absent from this check — it
-        # fetches the value from catalog.json rather than carrying a copy, which is the only way
-        # "every copy agrees" stays true without anyone having to remember it.
-        run: |
-          set -euo pipefail
-          LINE='TELUS Digital - Agentic software engineering across the entire SDLC.'
-          EXT_DESC="$(python3 -c 'import re,sys;t=open("spectra/extension.yml").read();print(re.search(r"^  description: \"(.*)\"$",t,re.M).group(1))')"
-          CAT_DESC="$(python3 -c 'import json;print(json.load(open("catalog.json"))["extensions"]["spectra"]["description"])')"
-          ZIP_DESC="$(unzip -p docs/packages/spectra.zip spectra/extension.yml | python3 -c 'import re,sys;t=sys.stdin.read();print(re.search(r"^  description: \"(.*)\"$",t,re.M).group(1))')"
-          for name in EXT CAT ZIP; do
-            eval "value=\$${name}_DESC"
-            if [ "$value" != "$LINE" ]; then
-              echo "::error::$name description is '$value' but should be '$LINE'." >&2
-              exit 1
-            fi
-          done
-          if grep -qF "$LINE" docs/index.html; then
-            echo "::error::docs/index.html hard-codes the description; it must fetch it from catalog.json." >&2
-            exit 1
-          fi
-          echo "extension.yml, catalog.json and the packaged manifest all carry the agreed line."
+        run: python3 tools/checks.py description-parity
       - name: The published zip matches the spectra/ folder
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/unzipped
-          unzip -q docs/packages/spectra.zip -d /tmp/unzipped
-          if ! diff -r spectra /tmp/unzipped/spectra; then
-            echo "::error::docs/packages/spectra.zip has drifted from the spectra/ folder. Rebuild it." >&2
-            exit 1
-          fi
-          echo "docs/packages/spectra.zip matches spectra/."
+        run: python3 tools/checks.py zip-matches

@@ -55,7 +55,21 @@ repository, not just the shipped wheel.
 python -m unittest discover -s tests
 ```
 
-Contributor workflow, packaging, and release steps: `CONTRIBUTING.md`.
+## How changes land
+
+**Never `git push origin main`.** `main` is gated: a branch ruleset accepts a push only when the
+commit already carries green runs of all three required CI checks, and nobody can bypass it.
+
+```bash
+python tools/ship.py             # checks + tests, earn CI on the `ci` branch, then push main
+python tools/ship.py --dry-run   # checks + tests only, pushes nothing, tolerates a dirty tree
+```
+
+Read `SHIPPING.md` before shipping anything for the first time, and whenever a push is rejected — it
+explains the mechanism, what each rejection message means, the per-channel release paths, and the
+break-glass procedure. Changing a CI job name without reading it will make `main` unpushable.
+
+Contributor workflow and packaging: `CONTRIBUTING.md`. Landing a change: `SHIPPING.md`.
 Per-feature design artifacts live under `specs/<NNN>-<name>/`; note that the older ones predate the
 single-extension consolidation and describe a build script that no longer exists.
 

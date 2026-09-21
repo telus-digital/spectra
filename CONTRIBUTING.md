@@ -9,6 +9,10 @@ These are the maintainer's own notes, kept public so the build, packaging, and r
 inspectable by anyone deciding whether to trust the extension. If you just want to install and use
 Spectra, see the [README](README.md).
 
+**This file is how to build things. [`SHIPPING.md`](SHIPPING.md) is how to land them.** `main` is
+gated on CI and the only way onto it is `python tools/ship.py`; the mechanism, the per-channel
+release paths, and what to do when a push is rejected all live there, stated once.
+
 Spectra is a **single self-contained** [Spec Kit](https://github.com/github/spec-kit) extension,
 `spectra/`, at the repo root. Every Spectra capability is a **command** under it, registered in one
 `spectra/extension.yml` and named in the unified `speckit.spectra.<command>` namespace — Spec Kit
@@ -259,11 +263,12 @@ generic Spec Kit form is `/speckit.<step>`):
 7. **Test locally.** Install your working copy with `--dev` and exercise it end to end — see
    [Test the extension locally](#test-the-extension-locally). Iterate by re-running `/speckit.implement`
    or editing the generated files directly.
-8. **Publish.** Commit the updated `spectra/` folder, `agents-list.json`, the regenerated listings, the
-   updated `catalog.json`, **and** `docs/` (plus the `specs/` artifacts), then push to `main`. The
-   catalog and package are live immediately over their `raw.githubusercontent.com` links — no Pages
-   build to wait on. The roster needs no release at all: merging publishes it, which is why a new agent
-   reaches every installed `spectra` command without a CLI release.
+8. **Publish** — [`SHIPPING.md` → Path A](SHIPPING.md#path-a--an-agent-catalog-channel). Commit
+   everything the step above produced, then `python tools/ship.py`; `main` is gated on CI and a
+   direct push is rejected. The catalog and package are live over their `raw.githubusercontent.com`
+   links the moment it lands — no Pages build to wait on, and no release at all: merging publishes
+   the roster, which is why a new agent reaches every installed `spectra` command without a CLI
+   release.
 
 The [Anatomy of an extension](#anatomy-of-an-extension) section above documents the structure the
 workflow produces — read it so you can review and refine the generated output, not so you can build
@@ -341,12 +346,12 @@ the README, must all use the `raw.githubusercontent.com/telus-digital/spectra/ma
 
 ### Test, then publish
 
-1. **Test** the built extension locally with `--dev` (see [above](#test-the-extension-locally)) — the
-   raw `--from` URLs are not live until you push.
-2. **Commit `catalog.json` and `docs/`** (plus any extension changes) and push to `main`.
-3. The catalog and packages are live immediately at their raw URLs.
+**Test** the built extension locally with `--dev` (see [above](#test-the-extension-locally)) — the
+raw `--from` URLs are not live until you push, so build and test freely first.
 
-Nothing is reachable until you push — build and test freely first.
+Publishing is [`SHIPPING.md` → Path A](SHIPPING.md#path-a--an-agent-catalog-channel): the full list
+of what Principle V requires in the same change, then `python tools/ship.py`. The catalog and
+package are live at their raw URLs the moment the push lands.
 
 ### How users install
 
@@ -430,33 +435,11 @@ at all. Bump the extension, not this. See [Publish the catalog and package](#pub
 
 ### How to cut a release
 
-1. **Bump `VERSION`** on `main`, together with the code change it describes.
-2. **Tag the merge commit and push the tag:**
-   ```bash
-   git checkout main && git pull
-   git tag 3.0.0 && git push origin 3.0.0
-   ```
-3. **`release.yml` does the rest** — it verifies the tag matches `VERSION`, then publishes
-   "Spectra CLI 3.0.0" with auto-generated notes, explicitly marked **Latest**. Watch it with
-   `gh run watch`.
+[`SHIPPING.md` → Path B](SHIPPING.md#path-b--the-cli-cli-channel), which carries the whole
+procedure: bump `VERSION`, **ship before tagging** (the tag has to point at a commit that already
+passed CI), let `release.yml` publish, verify the Latest slot, then smoke-test what a consumer gets.
 
-   > **Never publish or re-publish an old release without re-checking `/releases/latest`.** Left to
-   > GitHub's default, "Latest" is resolved by `created_at` with `published_at` as the tie-breaker, so
-   > touching an older release can steal the slot and point `spectra update` and the landing page's
-   > version pill at an ancient version. `make_latest: true` in the workflow protects new releases;
-   > for anything done by hand, verify afterwards:
-   > ```bash
-   > gh api repos/telus-digital/spectra/releases/latest --jq '{tag: .tag_name, name: .name}'
-   > ```
-   > and fix with `gh release edit <newest-tag> -R telus-digital/spectra --latest`.
-4. **Smoke-test what a consumer gets**, from any directory:
-   ```bash
-   uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra --force
-   spectra              # the banner's `cli vX.Y.Z` line is the version, and works anywhere
-   ```
-   `spectra version` is deliberately *not* used here: it reports the whole stack and so requires a
-   Spec Kit project with Spectra installed, which a bare smoke test has no reason to build.
-   For a full clean-room run (no uv, no `specify`, no `.specify/`), use [`test/run.sh`](test/run.sh).
+The ordering is the part that is easy to get wrong and the reason it is written down once.
 
 ### How consumers get it
 
