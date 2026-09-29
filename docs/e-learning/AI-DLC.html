@@ -929,7 +929,7 @@
           </tr>
           <tr>
             <td><strong>Construction</strong></td>
-            <td><code>/speckit-plan</code> &mdash; core<br><code>/speckit-checklist</code> &mdash; add-on<br><code>/speckit-tasks</code> &mdash; core<br><code>/speckit-analyze</code> &mdash; add-on<br><code>/speckit-implement</code> &mdash; core<br><code>/speckit-converge</code></td>
+            <td><code>/speckit-plan</code> &mdash; core<br><code>/speckit-checklist</code> &mdash; add-on<br><code>/speckit-tasks</code> &mdash; core<br><code>/speckit-analyze</code> &mdash; add-on<br><code>/speckit-implement</code> &mdash; core<br><code>/speckit-converge</code> &mdash; core</td>
             <td>Developers + QE + AI<br><em>(mob construction)</em></td>
             <td><strong>Gate B</strong> &rarr; Execute</td>
           </tr>
@@ -942,7 +942,7 @@
         </tbody>
       </table>
     </div>
-    <p>Two details. <code>/speckit-checklist</code> runs after <code>/speckit-plan</code>, but it tests the spec, so the roster files it with the Inception agents and its findings go back to specify or clarify. <code>/speckit-converge</code> carries no label because it is Spec Kit&rsquo;s own closing check: repeat implement and converge until it reports Converged.</p>
+    <p>Two details. <code>/speckit-checklist</code> runs after <code>/speckit-plan</code>, but it tests the spec, so the roster files it with the Inception agents and its findings go back to specify or clarify. <code>/speckit-converge</code> is the core agent that closes the loop &mdash; SPECTRA&rsquo;s roster files it under Testing &amp; Quality as Convergence: repeat implement and converge until it reports Converged.</p>
     <p>Three things about the table deserve to be said out loud, because they are what turn it from a lookup into a practice.</p>
     <h3><code>/speckit-clarify</code> <em>is</em> mob elaboration</h3>
     <p>This is the single most important mapping on the page. Clarify is the step where the AI asks its questions before anything is planned; AI-DLC&rsquo;s contribution is to insist that it happens <strong>while the room is still assembled</strong>. Run it alone at your desk and you have converted mob elaboration back into an individual guessing exercise. Clarify is an add-on, which means the loop will run without it; AI-DLC is the argument for never skipping it.</p>

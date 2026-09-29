@@ -644,6 +644,13 @@ Generate unit, integration, smoke, and end-to-end tests mapped to acceptance cri
 the Implementation agent, not as a separate command.
 
 - **Run it (Claude)** — `/speckit-implement`
+
+### Convergence — `speckit.converge` ✅
+
+Check the finished build against its spec, plan, and tasks, and append any gaps as new tasks —
+looping with Implementation until the code converges; it never edits code itself.
+
+- **Run it (Claude)** — `/speckit-converge`
 <!-- SPECTRA:GENERATED END id=agents-list-speckit-core -->
 
 ---

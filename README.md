@@ -135,6 +135,7 @@ phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception 
 | Documentation Quality | Implementation | Construction | Add-on | 🚧 under dev |
 | Technical-Debt & Maintainability | Implementation | Construction | Add-on | 🚧 under dev |
 | Testing | Testing & Quality | Construction | Core | ✅ available |
+| Convergence | Testing & Quality | Construction | Core | ✅ available |
 | Test Coverage Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Test Automation Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Flaky Test Detector | Testing & Quality | Construction | Add-on | ✅ available |
@@ -155,8 +156,8 @@ phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception 
 | Observability Readiness | Deployment & Operations | Operation | Add-on | 🚧 under dev |
 
 The agents marked ✅ that aren't shipped by Spectra (Guardrails, Requirements Analyst, Clarifier,
-Requirements Quality, Architecture Planner, Task Planner, Consistency, Implementation, Testing) are
-Spec Kit's own core commands — Spectra layers on top of them.
+Requirements Quality, Architecture Planner, Task Planner, Consistency, Implementation, Testing,
+Convergence) are Spec Kit's own core commands — Spectra layers on top of them.
 <!-- SPECTRA:GENERATED END id=readme-agents-table -->
 
 Full details for every agent — what it does, its arguments, and how to run it — live in

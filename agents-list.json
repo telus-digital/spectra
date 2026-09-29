@@ -352,6 +352,16 @@
       "command": "speckit.implement"
     },
     {
+      "id": "converge",
+      "title": "Convergence",
+      "description": "Check the finished build against its spec, plan, and tasks, and append any gaps as new tasks — looping with Implementation until the code converges; it never edits code itself.",
+      "status": "available",
+      "phase": "testing-quality",
+      "type": "core",
+      "provider": "speckit",
+      "command": "speckit.converge"
+    },
+    {
       "id": "test-coverage",
       "title": "Test Coverage Analyst",
       "description": "Find the gaps against the test pyramid, so coverage is real protection rather than just a percentage.",
