@@ -630,14 +630,17 @@
       <span class="course-nav-brand-text">SDD Learning</span>
     </a>
     <div class="course-nav-modules">
-      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA — Learning">Home</a>
-      <a href="module-1.html" title="Module 1 — SDD Foundations">1</a>
-      <a href="module-2.html" title="Module 2 — Anatomy of a Good Spec">2</a>
-      <a href="module-3.html" title="Module 3 — Greenfield Lab — SPECTRA from Scratch">3</a>
-      <a href="module-4.html" title="Module 4 — Brownfield Lab — Add “Due Date” ★" class="is-active">4</a>
-      <a href="module-5.html" title="Module 5 — Best Practices &amp; Pitfalls">5</a>
-      <a href="module-6.html" title="Module 6 — Quality, Testing &amp; Team Collaboration">6</a>
-      <a href="AI-DLC.html" title="AI-DLC — From SDLC to AI-Driven Development">AI-DLC</a>
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;" class="is-active">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
     </div>
   </div>
 </nav>
@@ -646,7 +649,7 @@
   <header class="hero">
     <div class="hero-eyebrow">Module 4 &middot; the centerpiece</div>
     <h1>Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; to the To-Do App</h1>
-    <p class="hero-lede">Apply SPECTRA to an existing codebase using the incremental-spec pattern. Author a Constitution by reading code, distinguish convention from cruft, and spec only the area of change &mdash; never the whole system.</p>
+    <p class="hero-lede">Adopt SPECTRA on an existing codebase the way Spec Kit&rsquo;s existing-projects guidance recommends: start from a reviewable baseline, write down only the rules that are already true, specify one bounded change, and decide how specs will age. Along the way you&rsquo;ll separate convention from cruft &mdash; and never spec the whole system.</p>
     <div class="meta">
       <div class="meta-item">
         <span class="meta-label">Time</span>
@@ -658,46 +661,45 @@
       </div>
       <div class="meta-item">
         <span class="meta-label">Prerequisites</span>
-        <span class="meta-value">Modules 1&ndash;3; SPECTRA installed</span>
+        <span class="meta-value">Modules 1&ndash;3; SPECTRA CLI, Git, Node.js 18.18+</span>
       </div>
     </div>
   </header>
 
   <article>
-
     <div class="lab-card">
   <div class="lab-card-icon">&#9733;</div>
   <div class="lab-card-body">
     <div class="lab-card-title">Lab codebase &mdash; <code>lab-codebase.zip</code></div>
-    <div class="lab-card-meta">A minimal but fully-working Next.js + TypeScript + Tailwind to-do app with no specs and no due-date feature. About 200 lines across five files.</div>
+    <div class="lab-card-meta">A small, fully working Next.js 15 + TypeScript + Tailwind to-do app with no specs, no tests, no Git history, and no due dates. About 200 lines across five files.</div>
   </div>
   <a class="lab-card-link" href="lab-codebase.zip" download>Download</a>
 </div>
     <h3>Learning objectives</h3>
     <p>By the end of this module, you will be able to:</p>
     <ol>
-      <li>Apply the brownfield SDD pattern (incremental specification at the area of change) to a real codebase.</li>
-      <li>Author a Spec Kit Constitution by <em>reading</em> existing code, not by writing it from scratch.</li>
-      <li>Distinguish <em>conventions</em> (patterns to preserve) from <em>cruft</em> (rough edges that aren't deliberate).</li>
-      <li>Write a focused spec for a small feature without trying to spec the entire system.</li>
-      <li>Recognize and handle the friction Spec Kit has on brownfield work, including the issue #1191 limitation.</li>
+      <li>Adopt Spec Kit and SPECTRA in an existing repository from a reviewable baseline, and confirm from the diff exactly what initialization added.</li>
+      <li>Write a constitution from rules that are already true in the code, and name <em>cruft</em> separately from <em>conventions</em>.</li>
+      <li>Specify one bounded change &mdash; its outcome and its compatibility limits &mdash; without specifying the whole system.</li>
+      <li>Run the full loop on existing code (clarify, plan against the repository, tasks, analyze, implement, converge) and review code and artifacts together.</li>
       <li>Decide, during validation, whether to fix the code or fix the spec.</li>
+      <li>Choose how specs will age in this project and record the choice in the constitution.</li>
     </ol>
 
     <h3>Why this lab is the centerpiece</h3>
     <p>Greenfield SDD is the easy case. Tutorials and demo videos almost always show greenfield. Most real engineering work is brownfield &mdash; you have a codebase, it has conventions (some good, some weird), and you need to add a feature without breaking the rest of it.</p>
-    <p>The brownfield case is where most teams either give up on SDD because the tools &ldquo;don't fit,&rdquo; or generate giant codebase-summary specs that nobody reviews. There's a third path, which this lab teaches: <strong>spec only the area of change.</strong></p>
-    <p>If you only do one lab in this course, do this one.</p>
+    <p>The brownfield case is where most teams either give up on SDD because the tools &ldquo;don't fit,&rdquo; or generate giant codebase-summary specs that nobody reviews. There's a third path, and it's the one Spec Kit's own guidance for existing projects recommends: initialize in place, write down the rules that genuinely hold, and point the workflow at <strong>the next bounded change</strong>.</p>
+    <p>If you only do one lab in this course, do this one. Each agent step ends at a human gate from SPECTRA's agentic SDLC &mdash; agents draft, people decide &mdash; and in this lab every one of those people is you. Commands are shown in the Claude Code / GitHub Copilot trigger form (<code>/speckit-specify</code>); for other agents, see the command-spelling note in Module 1.</p>
 
     <h2><span class="h2-num">1.</span>Run the starter app (15 min)</h2>
 
     <h3>1.1 Get the lab codebase</h3>
-    <p>Download <code>lab-codebase.zip</code> using the link above (or ask the course owner for it). Unzip somewhere you can work in:</p>
+    <p>Download <code>lab-codebase.zip</code> using the link above. Unzip somewhere you can work in:</p>
 <pre><code>unzip lab-codebase.zip -d ~/sdd-brownfield-lab
 cd ~/sdd-brownfield-lab/lab-codebase</code></pre>
 
     <h3>1.2 Install dependencies and run</h3>
-    <p>You need <strong>Node.js 18 or newer</strong>.</p>
+    <p>You need <strong>Node.js 18.18 or newer</strong>.</p>
 <pre><code>npm install
 npm run dev</code></pre>
     <p>Open <a href="http://localhost:3000">http://localhost:3000</a>. You should see &ldquo;My To-Dos&rdquo; &mdash; an input box, an &ldquo;Add&rdquo; button, and (after you add some) a list of tasks. Try it out:</p>
@@ -707,7 +709,7 @@ npm run dev</code></pre>
       <li>Refresh the page. Tasks should persist.</li>
       <li>Delete a task.</li>
     </ol>
-    <p>When you're satisfied it works, stop the dev server with <code>Ctrl+C</code>.</p>
+    <p>Leave a few tasks in the list: saved before due dates existed, they're exactly the data your compatibility requirement must protect. Stop the dev server with <code>Ctrl+C</code>.</p>
 
     <h3>1.3 Read the code</h3>
     <p>Spend 10 minutes reading the source. <strong>Don't skim.</strong> The whole codebase is about 200 lines across:</p>
@@ -723,59 +725,84 @@ npm run dev</code></pre>
       <li><strong>Things that look like <em>conventions</em></strong> &mdash; consistent patterns, deliberately chosen, you'd want to preserve.</li>
       <li><strong>Things that look like <em>cruft</em></strong> &mdash; rough edges, probably not deliberate, you'd fix in passing.</li>
     </ul>
-    <p>This list is the heart of the brownfield work. Your Constitution will encode the conventions. The cruft you'll either tolerate (out of scope), fix during the work (in scope), or note for later (a follow-up spec). But you have to <em>decide</em>, which means you have to name them first.</p>
+    <p>This list is the heart of the brownfield work. Your constitution will encode the conventions. The cruft you'll either tolerate (out of scope), fix during the work (in scope), or note for later (a follow-up spec). But you have to <em>decide</em>, which means you have to name them first.</p>
     <blockquote><strong>A hint, not a spoiler.</strong> The codebase is small but it does have at least three pieces of intentional cruft. If you find none, you're skimming. If you &ldquo;find&rdquo; ten, you may be classifying conventions as cruft. The right number is small.</blockquote>
 
-    <h2><span class="h2-num">2.</span>Install SPECTRA on the brownfield repo (10 min)</h2>
-    <p>Now the brownfield friction starts. Spec Kit was designed greenfield-first, so initializing it on an existing repo requires care.</p>
+    <h2><span class="h2-num">2.</span>Make a reviewable baseline (5 min)</h2>
+    <p>Before any tool touches this repository, commit what's there. Everything that follows &mdash; initialization, the constitution, each spec, every line of generated code &mdash; then shows up as an ordinary diff you can read and revert.</p>
+    <p>The zip ships with no <code>.git</code> and no <code>.gitignore</code>, and <code>npm install</code> just created <code>node_modules/</code> and <code>.next/</code>. Ignore those first, or your baseline will contain thousands of dependency files:</p>
+<pre><code>printf 'node_modules/\n.next/\nnext-env.d.ts\n*.tsbuildinfo\n' &gt; .gitignore
+git init &amp;&amp; git add -A &amp;&amp; git commit -m "baseline"</code></pre>
+    <p><code>git status</code> should now report a clean working tree.</p>
+    <div class="note"><span class="note-label">On a real repository.</span>Commit or stash work in flight and create a branch for the adoption, so it goes through normal review. In this solo lab, the baseline commit is enough.</div>
 
-    <h3>2.1 Initialize</h3>
+    <h2><span class="h2-num">3.</span>Install SPECTRA and review the diff (10 min)</h2>
+
+    <h3>3.1 Initialize in place</h3>
 <pre><code>spectra install</code></pre>
-    <p>Same command as Module 3. When prompted for an AI agent, pick the same one you used there, and restart the agent afterwards so it picks up the commands.</p>
-    <p>This creates <code>.specify/</code>, <code>memory/constitution.md</code>, and the agent config directory. Verify your existing files (<code>app/</code>, <code>lib/</code>, <code>package.json</code>, etc.) are untouched &mdash; nothing in the setup rewrites your source.</p>
+    <p>Same command as Module 3. It notices this folder isn't a Spec Kit project yet and offers to initialize it; accept. What it runs is exactly <code>specify init --here --force</code>, the command Spec Kit's guide prescribes for an existing repository. <code>--here</code> targets the current folder; <code>--force</code> allows a non-empty folder and may replace files at the paths Spec Kit manages. It won't delete your application, but that permission to overwrite is why you made the baseline first.</p>
+    <p>When prompted for an AI agent, pick the one you used in Module 3. SPECTRA then registers its catalog and installs its extension. Restart the agent afterwards. Everything in this lab except <code>/speckit-spectra-domain-analyzer</code> and the pull-request offer after implement is plain Spec Kit.</p>
 
-    <h3>2.2 The known limitation</h3>
-    <p>A heads-up that's worth internalizing now rather than discovering at a bad moment:</p>
-    <blockquote>
-      <p><strong>Spec Kit issue #1191:</strong> Spec Kit is optimized for net-new feature creation. Updating an existing spec &mdash; for instance, when reviewing a feature in production and wanting to amend the spec to reflect a small change &mdash; is awkward, and the workflow assumes &ldquo;feature = new spec folder.&rdquo;</p>
-      <p style="font-size: 13px; color: var(--text-muted);">Source: github.com/github/spec-kit/issues/1191 (referenced in Augment's SDD guide).</p>
-    </blockquote>
-    <p>For this lab, we sidestep the issue by treating the due-date addition as a <em>new</em> feature spec rather than an amendment to a (non-existent) original to-do spec. That's the right call here. In your own brownfield work, plan around this &mdash; each meaningful change becomes its own small spec.</p>
+    <h3>3.2 Review the diff</h3>
+<pre><code>git status</code></pre>
+    <p>Read what changed before going further. You should see only new, untracked folders:</p>
+    <ul>
+      <li><code>.specify/</code> &mdash; Spec Kit's templates, scripts, and extensions, plus <code>.specify/memory/constitution.md</code>, still an unfilled template.</li>
+      <li>Your agent's skill or command files &mdash; for Claude Code, <code>.claude/skills/speckit-*</code>, including SPECTRA's <code>speckit-spectra-*</code>.</li>
+    </ul>
+    <p>No modified files: <code>app/</code>, <code>lib/</code>, and <code>package.json</code> are untouched. And notice what's missing: no <code>specs/</code> folder. Initialization infers no specs for the behaviour your app already has. Commit it:</p>
+<pre><code>git add -A &amp;&amp; git commit -m "Add Spec Kit and SPECTRA"</code></pre>
+    <p>Keep that habit: commit after each step you approve, so the next <code>git diff</code> shows exactly what the next agent run changed.</p>
 
-    <h2><span class="h2-num">3.</span>Author the Constitution from existing code (25 min)</h2>
-    <p>In a greenfield project, you write the Constitution before the code. In a brownfield project, the code exists first &mdash; so you read it and <em>extract</em> the Constitution from observed patterns. This is the most distinctive brownfield activity, and the one most likely to go wrong if rushed.</p>
+    <h3>3.3 The new spec describes the change, not the system</h3>
+    <p>Don't fill that gap with a spec of the whole to-do app. The existing code stays implementation context that every later command reads; your first spec describes only the change you're about to make. Documenting the entire system is the right first feature only when that inventory is itself the deliverable.</p>
+    <p>Your first job after init needn't be a feature at all: a bug fix (Module 6) or an idea assessment (Module 5) can start straight away. This lab takes the feature path.</p>
 
-    <h3>3.1 Use your AI agent to help, but don't blindly trust it</h3>
-    <p>Open <code>memory/constitution.md</code>. It's a starter template; you'll replace it.</p>
-    <p>The temptation is to ask your agent: &ldquo;Read this codebase and generate a Constitution.&rdquo; Don't do that, or at least don't <em>only</em> do that. Two reasons:</p>
-    <ol>
-      <li><strong>The agent will pick up cruft as convention.</strong> It can't tell which patterns are deliberate and which are accidental.</li>
-      <li><strong>The Constitution it produces will be too long.</strong> Agents over-include &ldquo;just in case.&rdquo; A bloated Constitution is the markdown-monster failure mode from Module 1.</li>
-    </ol>
-    <p>The right approach: have the agent draft, you edit ruthlessly. Or write it yourself referencing the code. Either way, the human makes the calls.</p>
+    <h2><span class="h2-num">4.</span>Write the constitution from what's already true (20 min)</h2>
+    <p>In a greenfield project, the constitution comes before the code. Here the code came first, so you <em>extract</em> the constitution from what you observe &mdash; the most distinctive brownfield activity, and the one most likely to go wrong if rushed.</p>
 
-    <h3>3.2 Draft</h3>
-    <p>Try this prompt with your agent:</p>
-<pre><code>Read the existing codebase (app/page.tsx, app/components/*, lib/storage.ts).
-Identify patterns that are repeated and look deliberate &mdash; file layout,
-component conventions, styling choices, data shapes, dependency choices.
-Draft a brief Constitution capturing only those patterns. Skip anything
-that appears in only one place. Aim for under 30 lines.</code></pre>
-    <p>The agent will produce something. Read it carefully. Now edit.</p>
+    <h3>4.1 Only rules that are true today, or explicitly agreed</h3>
+    <p>Every rule has to pass one test: can you point at the code, README, config, or team decision that makes it true? Here your evidence is the source, <code>package.json</code>, <code>tsconfig.json</code>, the Tailwind config, and the README.</p>
+    <p>Don't invent standards to fill the template. The constitution governs everything downstream, and <code>/speckit-analyze</code> treats any conflict with it as critical. Write &ldquo;every feature MUST have unit tests&rdquo; into a repo with no test runner, and every plan either fails analysis or quietly grows a test framework nobody agreed to. That's noise, not a guardrail. If the team <em>does</em> agree to start testing, record that as the decision it is.</p>
 
-    <h3>3.3 What to keep, what to cut</h3>
-    <p>Try writing your own version first, before peeking. Then compare.</p>
+    <h3>4.2 Let the agent gather evidence, not decide</h3>
+    <p>Don't just ask your agent to &ldquo;generate a constitution from this codebase.&rdquo; It will pick up cruft as convention, because it can't tell deliberate from accidental, and it will over-include &ldquo;just in case&rdquo; &mdash; the markdown-monster failure mode from Module 2. Ask for evidence first, in plain chat (this isn't a Spec Kit command, and it shouldn't write anything):</p>
+<pre><code>Read app/page.tsx, app/components/*, lib/storage.ts, package.json and
+README.md. List the patterns that repeat and look deliberate: file layout,
+component conventions, styling, data shapes, dependencies. Cite the file
+that shows each one. List separately anything that looks accidental.
+Don't create or edit any files.</code></pre>
+    <p>Compare its lists with your notes from step 1. Where you're unsure, ask:</p>
+    <ul>
+      <li><strong>Is this pattern repeated, or is it in one place?</strong> Repeated patterns are more likely conventions; one-off oddities are more likely cruft.</li>
+      <li><strong>Is there an obvious cleaner alternative?</strong> If yes, it's probably cruft. If no, it might be a deliberate trade-off you don't yet understand.</li>
+      <li><strong>Would a careful code reviewer catch this?</strong> If yes, cruft. If it would slip past, more likely a convention you just haven't internalized.</li>
+    </ul>
+    <p>You don't have to be right. The point is to <em>decide</em>, then revise as you learn more.</p>
+
+    <h3>4.3 Run <code>/speckit-constitution</code></h3>
+    <p>Now hand over only the rules you accepted:</p>
+<pre><code>/speckit-constitution Record only rules that are already true in this
+codebase: &lt;the conventions you accepted&gt;. Add a "Known cruft" section
+listing &lt;the cruft you named&gt; as defects to fix when convenient, not
+conventions to follow. Keep it short.</code></pre>
+    <p>The agent fills in <code>.specify/memory/constitution.md</code> in Spec Kit's template layout (named principles, governance, a version line), so compare content with the sample below, not layout.</p>
+    <div class="note"><span class="note-label">Human gate &mdash; Foundation.</span>Architects and engineering leads approve every standard; here that's you. For each rule, can you point at the file that makes it true? Cut anything you can't, then commit.</div>
+    <div class="note"><span class="note-label">Optional second opinion.</span><code>/speckit-spectra-domain-analyzer</code> proposes candidate guardrails from the code, each citing its evidence, in <code>.specify/memory/domain-analysis.md</code>. All start unchecked; you tick the ones you accept and pass the file to <code>/speckit-constitution</code>. It never edits the constitution itself.</div>
+
+    <h3>4.4 Compare with a sample</h3>
+    <p>Write your own version first, before peeking. Then compare.</p>
 
     <div class="reveal">
-      <button class="reveal-trigger">
-        <span><span class="reveal-trigger-label">Sample Constitution</span> Reveal a reasonable Constitution for this codebase</span>
+      <button class="reveal-trigger" type="button">
+        <span><span class="reveal-trigger-label">Sample constitution</span> &mdash; a reasonable constitution for this codebase</span>
         <span class="reveal-trigger-icon">+</span>
       </button>
       <div class="reveal-content">
-<pre><code># Todo app &mdash; Constitution
+<pre><code># Todo App Constitution
 
 ## Stack
-- Next.js 14 (App Router) with TypeScript
+- Next.js 15 (App Router) with TypeScript in strict mode
 - React 18
 - Tailwind CSS for styling
 - localStorage for persistence &mdash; no backend, no API routes
@@ -796,55 +823,49 @@ that appears in only one place. Aim for under 30 lines.</code></pre>
 - `createdAt` is an ISO 8601 string
 - Newest tasks render at the top of the list
 - Completed tasks remain in the list with strikethrough; they are not removed
-- Empty input is rejected silently (no error message); no toasts
+- Empty task text is rejected silently (no error message); no toasts
 
 ## State conventions
 - Page owns state; components are presentational and receive callbacks as props
 - localStorage is read once on mount inside a `useEffect`; written on every change
   inside a separate `useEffect`. This is required to avoid hydration mismatch.
 
+## Testing
+- There is no automated test suite. Features are verified by hand against
+  the acceptance scenarios in their spec.
+- Adding a test framework is a separate, explicit decision, never a side
+  effect of a feature.
+
 ## Known cruft (NOT conventions &mdash; fix when convenient)
 - Magic string "todos" repeated in `lib/storage.ts` &mdash; extract a constant
 - Leftover `console.log` in the page's mount effect &mdash; remove
 - IDs generated with `Date.now().toString()` &mdash; switch to `crypto.randomUUID()`
-  (collision-safe; available in all modern browsers)</code></pre>
-        <p>Notice what's happening in that last section. The Constitution explicitly <em>names</em> the cruft as cruft, separate from conventions. This serves two purposes:</p>
-        <ol>
-          <li><strong>It prevents the agent from preserving cruft as if it were intentional.</strong> Without this section, an agent reading &ldquo;the code uses <code>Date.now()</code> for IDs&rdquo; would happily continue using <code>Date.now()</code> for new IDs in the due-date feature.</li>
-          <li><strong>It creates a known list of follow-up work.</strong> The bonus exercise at the end of this module addresses one of these. The rest are stand-alone cleanup specs you (or your team) can pick up later.</li>
-        </ol>
-        <p>This is more honest than the typical &ldquo;ignore the cruft and hope&rdquo; approach. Cruft you've named is cruft you can decide what to do with.</p>
+  (collision-safe; available in modern browsers)</code></pre>
+        <p>Notice the last section: the constitution <em>names</em> the cruft as cruft. That stops the agent preserving it as if it were intentional &mdash; without it, an agent that sees <code>Date.now()</code> IDs would happily use them in the due-date feature &mdash; and it gives you a known list of follow-up work (the bonus exercise takes one item).</p>
+        <p>Notice, too, what's <em>not</em> there: no coverage target, no accessibility standard, no performance budget. Good ideas, perhaps, but none is true of this code or agreed by anyone. The Testing section records the honest state instead.</p>
       </div>
     </div>
 
-    <h3>3.4 What if you found different cruft than the sample?</h3>
-    <p>Good. If you found patterns you suspect are cruft but you're not sure, ask yourself:</p>
-    <ul>
-      <li><strong>Is this pattern repeated, or is it in one place?</strong> Repeated patterns are more likely conventions; one-off oddities are more likely cruft.</li>
-      <li><strong>Is there an obvious cleaner alternative?</strong> If yes, it's probably cruft. If no, it might be a deliberate trade-off you don't yet understand.</li>
-      <li><strong>Would a careful code reviewer catch this?</strong> If yes, cruft. If it would slip past, more likely a convention you just haven't internalized.</li>
-    </ul>
-    <p>You don't have to be right. The point is to <em>decide</em>, then revise as you learn more. A Constitution is a living document.</p>
+    <h2><span class="h2-num">5.</span><code>/speckit-specify</code> &mdash; one bounded change (20 min)</h2>
+    <p><strong>You are not specifying the whole to-do app.</strong> You are specifying <em>the due-date addition</em>: an outcome, plus the compatibility limits that must hold while you deliver it. The existing app is context, not subject.</p>
 
-    <h2><span class="h2-num">4.</span><code>/speckit.specify</code> &mdash; but only for the area of change (30 min)</h2>
-    <p>This is where brownfield SDD diverges most from greenfield. <strong>You are not specifying the whole to-do app.</strong> You are specifying <em>the due-date addition</em>. The existing app is context, not subject.</p>
+    <h3>5.1 Run <code>/speckit-specify</code></h3>
+<pre><code>/speckit-specify Add a due date to to-do items. When creating a task,
+the user must pick a due date, and it must be in the future: tomorrow
+or later, never today. Each task in the list shows its due date. When a
+task's due date has passed and the task isn't completed, its due date
+shows in red. Compatibility limits: adding, completing, deleting and
+persisting tasks keep working exactly as they do today. To-dos saved
+before this change have no due date; they must still load and display,
+and are never shown as overdue. Nothing else about how to-dos are
+stored changes.</code></pre>
+    <p>The agent creates a feature directory such as <code>specs/001-due-date/</code> with <code>spec.md</code> and a built-in quality checklist, <code>checklists/requirements.md</code>. Specify and clarify tick that checklist's items themselves, so read those ticks as the agent's claim, not your sign-off. <strong>The most common failure mode</strong> is over-scoping: sorting by due date, date-range filters, recurring to-dos, reminders, &ldquo;due soon&rdquo; colours. Push back hard on each one.</p>
 
-    <h3>4.1 Run /speckit.specify</h3>
-<pre><code>/speckit.specify
-
-Add a "due date" field to to-do items. The field is required when
-creating a task: the user picks a date that must be in the future
-(today is not allowed; tomorrow or later only). The due date displays
-on each task in the list. If a task's due date is in the past and the
-task is not yet completed, the due date displays in red. Existing
-behaviour (add, mark done, delete, persistence) is preserved.
-Build on the existing patterns documented in the Constitution.</code></pre>
-    <p>The agent will produce a draft spec. <strong>The most common failure mode</strong> is that the agent over-scopes &mdash; it'll add things you didn't ask for, like sorting by due date, filtering by date range, recurring todos, reminder notifications, or &ldquo;due soon&rdquo; warning colours. Push back hard on each one.</p>
-
-    <h3>4.2 Review the draft</h3>
-    <p>Open the generated spec (<code>specs/&lt;NNN&gt;-due-date/spec.md</code> or similar) and apply the six-element checklist from Module 2. Some specific things to look for in <em>this</em> spec:</p>
+    <h3>5.2 Review the draft</h3>
+    <p>Apply the six-element checklist from Module 2. Spec Kit's template uses its own headings (user scenarios, requirements, success criteria, assumptions), so look for each element's content rather than its name. In <em>this</em> spec, check:</p>
     <p><strong>Outcomes &mdash; must be observable.</strong> Not &ldquo;users can set due dates.&rdquo; Closer to: &ldquo;When creating a task, the user must pick a due date in the future. The due date is visible on each task in the list. Tasks whose due date has passed and that are not yet completed display the due date in red.&rdquo;</p>
     <p><strong>In-scope &mdash; minimal, surgical.</strong> This feature adds a date field, validation that it's in the future, display of the date, and a red treatment when overdue. That's it.</p>
+    <p><strong>Compatibility limits &mdash; the brownfield element.</strong> A brownfield spec also says what must not change. Check that each limit survived as its own numbered requirement, not just a sentence in the overview; otherwise nothing downstream can trace to it, and analysis can't flag a missing task.</p>
     <p><strong>Out-of-scope &mdash; write at least 5.</strong> This is the section that prevents an afternoon's feature from becoming a week. Suggested entries:</p>
     <ul>
       <li>Editing the due date after creation</li>
@@ -856,20 +877,20 @@ Build on the existing patterns documented in the Constitution.</code></pre>
       <li>&ldquo;Due soon&rdquo; warnings (orange, yellow, etc.) &mdash; only past-due is red</li>
       <li>Optional due dates (the field is required for new tasks)</li>
     </ul>
-    <p><strong>Constraints &mdash; reuse the Constitution, don't repeat it.</strong> Things like &ldquo;Next.js + Tailwind + localStorage&rdquo; are in the Constitution; the spec doesn't restate them. Spec-level constraints are things specific to <em>this</em> feature: e.g. &ldquo;Due date is a date-only string in <code>YYYY-MM-DD</code> format&rdquo; or &ldquo;The date input uses <code>&lt;input type='date'&gt;</code> for browser-native date picking.&rdquo;</p>
+    <p><strong>Constraints &mdash; reuse the constitution, don't repeat it.</strong> &ldquo;Next.js + Tailwind + localStorage&rdquo; is in the constitution; the spec doesn't restate it. Spec-level constraints are behaviour specific to <em>this</em> feature, such as &ldquo;the date is picked with the browser's own date picker.&rdquo; The stored format belongs in the plan.</p>
     <p><strong>Decisions already made.</strong> This is where you cut off rabbit holes. Examples:</p>
     <ul>
-      <li>Date format: ISO 8601 date-only (<code>YYYY-MM-DD</code>), no time component.</li>
-      <li>&ldquo;In the future&rdquo; is defined as: the picked date is strictly greater than today's date in the user's local timezone.</li>
-      <li>&ldquo;Past due&rdquo; is defined as: the due date is strictly less than today's local date AND the task is not completed.</li>
+      <li>A due date is a date only &mdash; no time component.</li>
+      <li>&ldquo;In the future&rdquo; means the picked date is strictly later than today's date in the user's local timezone.</li>
+      <li>&ldquo;Past due&rdquo; means the due date is strictly earlier than today's local date AND the task is not completed.</li>
       <li>Validation runs on submit; if invalid, the task is not added and a visible inline error appears next to the date input.</li>
-      <li>The red treatment is Tailwind's <code>text-red-600</code>. No icon, no badge, no animation.</li>
+      <li>The overdue treatment is red text on the date only. No icon, no badge, no animation.</li>
     </ul>
-    <p><strong>Verification criteria.</strong> Write at least 6, with at least 2 edge cases.</p>
+    <p><strong>Verification criteria.</strong> At least 6, with at least 2 edge cases. In Spec Kit's template they're the acceptance scenarios under each user story.</p>
 
     <div class="reveal">
-      <button class="reveal-trigger">
-        <span><span class="reveal-trigger-label">Sample verification list</span> Reveal a strong verification section for this spec</span>
+      <button class="reveal-trigger" type="button">
+        <span><span class="reveal-trigger-label">Sample verification list</span> &mdash; a strong verification section for this spec</span>
         <span class="reveal-trigger-icon">+</span>
       </button>
       <div class="reveal-content">
@@ -881,156 +902,238 @@ Build on the existing patterns documented in the Constitution.</code></pre>
           <li>A task with a due date in the past and <code>completed: false</code> displays the due date in red.</li>
           <li>A task with a due date in the past and <code>completed: true</code> does <em>not</em> display in red.</li>
           <li><strong>Edge:</strong> a task created today with tomorrow's due date displays in normal colour today, and would display in red two days from now (verify by adjusting system clock or using a far-past test date).</li>
-          <li><strong>Edge:</strong> refreshing the browser preserves all due dates; existing tasks (created before this change, with no <code>dueDate</code> field) load without errors.</li>
+          <li><strong>Edge:</strong> refreshing the browser preserves all due dates; existing tasks (created before this change, with no <code>dueDate</code> field) load and display without errors and are never red.</li>
         </ul>
-        <p>The pattern: each line is a single, runnable check. None of them say &ldquo;works correctly&rdquo; or &ldquo;handles errors gracefully.&rdquo; Each one would either pass or fail when you walk through it in the browser, with no interpretation needed.</p>
+        <p>The pattern: each line is a single, runnable check that passes or fails in the browser with no interpretation needed. None says &ldquo;works correctly.&rdquo;</p>
       </div>
     </div>
 
-    <h3>4.3 The spec smell to watch for</h3>
-    <p>If your spec mentions specific component file names, function signatures, or Tailwind class strings, you've drifted into the plan. Pull those out. The spec describes behavior; the plan describes implementation. The Module 2 worked example shows the difference if you need a refresher.</p>
+    <h3>5.3 The spec smell to watch for</h3>
+    <p>If your spec mentions component file names, function signatures, Tailwind class strings, or the storage format, you've drifted into the plan. Pull those out. The Module 2 worked example shows the difference if you need a refresher.</p>
+    <div class="note"><span class="note-label">Human gate &mdash; Plan.</span>The product owner approves intent, scope, and business alignment. You're playing that role: fix anything you wouldn't sign off as the person who asked for the feature.</div>
 
-    <h2><span class="h2-num">5.</span><code>/speckit.plan</code> (20 min)</h2>
-<pre><code>/speckit.plan</code></pre>
-    <p>Now you make implementation decisions, anchored to the existing codebase.</p>
-
-    <h3>5.1 What the plan should describe</h3>
+    <h2><span class="h2-num">6.</span><code>/speckit-clarify</code> &mdash; settle what the spec leaves open (10 min)</h2>
+<pre><code>/speckit-clarify</code></pre>
+    <p>Clarify looks for decisions the spec leaves open and asks about them &mdash; one question at a time, at most five per pass, each with a recommended answer. Your answers are written into <code>spec.md</code> under <code>## Clarifications</code>, and the affected requirements are updated. Plausible questions here (yours will differ):</p>
     <ul>
-      <li><strong>Type change:</strong> extend <code>Todo</code> in <code>lib/storage.ts</code> to include <code>dueDate: string</code> (the ISO <code>YYYY-MM-DD</code> string).</li>
-      <li><strong>Backward compatibility on load:</strong> existing tasks in localStorage have no <code>dueDate</code> field. The load path should either coerce them to a sentinel value or filter them out &mdash; pick one and decide deliberately. <em>Recommendation:</em> load them as-is with <code>dueDate: undefined</code> typed as optional, and treat <code>undefined</code> as &ldquo;no due date, never overdue&rdquo; &mdash; but mark <em>that</em> migration step out of scope or note it as cruft for later.</li>
-      <li><strong><code>TodoForm</code> changes:</strong> add an <code>&lt;input type="date"&gt;</code> next to the text input. Add local state for the picked date. Add validation logic that runs on submit. If invalid, set an error message in local state and render it; do not call the parent's <code>onAdd</code>.</li>
-      <li><strong>Validation logic:</strong> &ldquo;in the future&rdquo; check using the <code>YYYY-MM-DD</code> string from the input compared against today's local date in the same format. Pure string comparison works correctly for ISO dates (lexicographic order = chronological order).</li>
-      <li><strong><code>page.tsx</code> changes:</strong> the <code>addTodo</code> function now accepts a <code>dueDate</code> parameter and stores it on the new todo. No other state changes.</li>
-      <li><strong><code>TodoItem</code> changes:</strong> display the due date next to the text. Compute &ldquo;is overdue&rdquo; using the same string-comparison technique. Apply <code>text-red-600</code> to the date span when overdue and not completed.</li>
-      <li><strong>No new dependencies.</strong> Native <code>&lt;input type="date"&gt;</code> and date-string comparison are sufficient.</li>
+      <li>How should a to-do saved before this change &mdash; one with no due date &mdash; display? Blank, or a &ldquo;No due date&rdquo; label?</li>
+      <li>In what format should the date appear in the list?</li>
+      <li>If the page stays open past midnight, should a task turn red without a refresh?</li>
+      <li>Does the inline error clear as soon as the user picks a valid date, or only on the next submit?</li>
+    </ul>
+    <p>Three rules for answering:</p>
+    <ul>
+      <li><strong>Answer from intent.</strong> Replying &ldquo;yes&rdquo; accepts the recommendation &mdash; fine when you've read it and agree, rubber-stamping when you haven't.</li>
+      <li><strong>Prefer the smallest behaviour that meets the outcome.</strong> &ldquo;Turns red on the next page load&rdquo; is a legitimate answer, and far smaller than a live midnight timer.</li>
+      <li><strong>Meet scope-expanding questions with an out-of-scope decision.</strong> That's a clarification too.</li>
+    </ul>
+    <p>If an area still feels vague, run it again with a focus, e.g. <code>/speckit-clarify Focus on how to-dos saved before this change behave.</code> Then commit the spec.</p>
+    <div class="note"><span class="note-label">Human gate &mdash; Plan.</span>Still the product owner's gate. The spec you approve here is the contract everything downstream is checked against.</div>
+
+    <h2><span class="h2-num">7.</span><code>/speckit-plan</code> &mdash; against the repository (15 min)</h2>
+<pre><code>/speckit-plan Build on the existing codebase. Reuse its architecture,
+dependencies, and conventions as recorded in the constitution, and add no
+new dependencies.</code></pre>
+    <p>Now you make implementation decisions, anchored to the code that exists. Besides <code>plan.md</code>, the agent writes supporting files such as <code>research.md</code> and <code>data-model.md</code>.</p>
+
+    <h3>7.1 What the plan should describe</h3>
+    <ul>
+      <li><strong>Type change:</strong> an optional <code>dueDate?: string</code> (ISO <code>YYYY-MM-DD</code>) on <code>Todo</code> in <code>lib/storage.ts</code> &mdash; optional because older to-dos lack it.</li>
+      <li><strong>Compatibility:</strong> loading and saving don't change &mdash; same key, same list. A missing date is handled where dates are displayed (as your clarify answer decided; never overdue).</li>
+      <li><strong><code>TodoForm</code> changes:</strong> an <code>&lt;input type="date"&gt;</code> next to the text input, local state for the picked date, and validation on submit. If invalid, set and render an error message; don't call <code>onAdd</code>.</li>
+      <li><strong>Validation logic:</strong> compare the input's <code>YYYY-MM-DD</code> string with today's local date in the same format. String comparison works for ISO dates (lexicographic order = chronological order).</li>
+      <li><strong><code>page.tsx</code> changes:</strong> <code>addTodo</code> accepts and stores a <code>dueDate</code>. No other state changes.</li>
+      <li><strong><code>TodoItem</code> changes:</strong> show the due date; compute &ldquo;is overdue&rdquo; with the same string comparison; apply <code>text-red-600</code> to the date when overdue and not completed.</li>
+      <li><strong>No new dependencies.</strong></li>
     </ul>
 
-    <h3>5.2 Review the agent's plan</h3>
-    <p>The agent will draft a plan that's roughly along these lines but probably with some divergence. Things to watch for:</p>
+    <h3>7.2 Check that it reuses what exists</h3>
+    <p>The brownfield question for every plan: does it build on this repository, or on a generic idea of a Next.js app?</p>
     <ul>
-      <li><strong><code>Date</code> object trap.</strong> If the agent writes validation as <code>new Date(input) &gt; new Date()</code>, you have a hidden timezone bug &mdash; the input string parses as midnight UTC, and the comparison fails near midnight in some timezones. Push back: &ldquo;Compare ISO date strings lexicographically using <code>today.toISOString().split('T')[0]</code> for the right-hand side.&rdquo;</li>
-      <li><strong>Wrong storage key.</strong> If the plan introduces a new localStorage key for due dates (&ldquo;efficiency&rdquo;), reject it. The Constitution implies one storage location for todos; a new key is scope creep.</li>
-      <li><strong>Migration overreach.</strong> If the plan proposes rewriting all existing todos in localStorage to add a default <code>dueDate</code> value, push back. That's not necessary and it touches data the user didn't explicitly ask to modify. The simpler path: handle missing <code>dueDate</code> at the type level and at the render level.</li>
-      <li><strong>Custom date pickers or libraries.</strong> Anything that introduces a new dependency (<code>react-datepicker</code>, <code>date-fns</code>, etc.) is overkill. Native <code>&lt;input type="date"&gt;</code> and string math are enough.</li>
+      <li><strong>Architecture.</strong> The page still owns state; components stay presentational; storage stays in <code>lib/storage.ts</code>.</li>
+      <li><strong>Dependencies.</strong> <code>package.json</code> doesn't change.</li>
+      <li><strong>Conventions.</strong> Tailwind utilities, <code>"use client"</code>, the existing layout. The plan's Project Structure section should show the real tree (<code>app/</code>, <code>app/components/</code>, <code>lib/</code>), not a template placeholder like <code>src/</code> or <code>backend/</code> + <code>frontend/</code>.</li>
+      <li><strong>Constitution Check.</strong> This gate in the plan should pass with nothing to justify. A &ldquo;justified&rdquo; violation (&ldquo;we need a date library&rdquo;) is your cue to push back.</li>
     </ul>
 
-    <h2><span class="h2-num">6.</span><code>/speckit.tasks</code> (10 min)</h2>
-<pre><code>/speckit.tasks</code></pre>
-    <p>The agent breaks the plan into discrete tasks. A reasonable task list might look like:</p>
-    <ol>
-      <li>Extend the <code>Todo</code> type in <code>lib/storage.ts</code> to include an optional <code>dueDate</code> field.</li>
-      <li>Update <code>app/page.tsx</code>'s <code>addTodo</code> to accept and persist <code>dueDate</code>.</li>
-      <li>Add a date input and local error state to <code>TodoForm</code>.</li>
-      <li>Implement future-date validation in <code>TodoForm</code>'s submit handler.</li>
-      <li>Update <code>TodoForm</code>'s <code>onAdd</code> callback signature to pass <code>dueDate</code>.</li>
-      <li>Display the due date in <code>TodoItem</code> next to the text.</li>
-      <li>Implement the &ldquo;overdue&rdquo; string comparison and apply <code>text-red-600</code> when overdue and not completed.</li>
-      <li>Manual verification against spec criteria.</li>
-    </ol>
-    <p>That's about 8 tasks for an afternoon's work. If your agent produces 4 mega-tasks or 25 micro-tasks, ask it to re-decompose.</p>
-
-    <h2><span class="h2-num">7.</span><code>/speckit.implement</code> (45&ndash;60 min)</h2>
-<pre><code>/speckit.implement</code></pre>
-    <p>The longest phase. The agent works through tasks, generating code. Watch for the same pitfalls as in Module 3, plus brownfield-specific ones.</p>
-
-    <h3>7.1 Brownfield-specific things to watch for</h3>
+    <h3>7.3 Traps to watch for</h3>
     <ul>
-      <li><strong>The agent ignores existing patterns.</strong> If the agent introduces a state-management library (Redux, Zustand) when the existing code uses plain <code>useState</code>, that's a regression. Stop it. State at the page level was a deliberate convention.</li>
-      <li><strong>The agent rewrites things you didn't ask it to.</strong> Some agents will helpfully &ldquo;fix&rdquo; the cruft you named in the Constitution &mdash; replacing <code>Date.now()</code> IDs with <code>crypto.randomUUID()</code>, extracting the storage-key constant, removing the <code>console.log</code>. That's actually <em>fine if you want it</em>, but it's a scope decision: are you fixing cruft as part of this feature, or saving it for a follow-up? Decide deliberately. Mixing cruft cleanup into feature work makes PR review harder.</li>
-      <li><strong>The agent adds new files when existing ones would do.</strong> A new <code>dateUtils.ts</code> module for one helper function is over-engineered. The function probably belongs in <code>lib/storage.ts</code> or inline in the component.</li>
-      <li><strong><code>Date</code> math gone wrong.</strong> Comparing <code>new Date('2026-04-30') &lt; new Date()</code> in JavaScript has timezone subtleties. The agent will sometimes produce code that looks right but is off-by-one near midnight. The reliable pattern (worth pushing for explicitly): compare <code>YYYY-MM-DD</code> strings directly. Lexicographic comparison works correctly for ISO dates.</li>
-      <li><strong>Hydration warnings.</strong> If the &ldquo;today&rdquo; date is computed during render rather than inside an effect or event handler, server and client may compute different values, triggering a React hydration warning. The cleanest pattern: compute &ldquo;today&rdquo; only inside the validation handler (event-time) and inside the <code>TodoItem</code>'s <code>useMemo</code> or directly during client-side render after hydration is complete.</li>
+      <li><strong><code>Date</code> object trap.</strong> If the plan validates with <code>new Date(input) &gt; new Date()</code>, you have a hidden timezone bug: a <code>YYYY-MM-DD</code> string parses as midnight UTC, so depending on your timezone and the hour, today can pass as the future or tomorrow can fail. Push back: compare <code>YYYY-MM-DD</code> strings, building today's from the local calendar (<code>getFullYear()</code>, <code>getMonth() + 1</code>, <code>getDate()</code>, zero-padded). Not <code>toISOString().split('T')[0]</code> &mdash; that's the UTC date, the wrong day for part of every day anywhere outside UTC.</li>
+      <li><strong>New storage key.</strong> If the plan adds a separate localStorage key for due dates (&ldquo;efficiency&rdquo;), reject it. Your spec says nothing else about storage changes.</li>
+      <li><strong>Migration overreach.</strong> If the plan rewrites every existing to-do to add a default <code>dueDate</code>, push back. It's unnecessary and touches data the user didn't ask to modify. Handle a missing <code>dueDate</code> at the type level and the render level instead.</li>
+      <li><strong>Custom date pickers or libraries.</strong> A new dependency (<code>react-datepicker</code>, <code>date-fns</code>) is overkill. Native <code>&lt;input type="date"&gt;</code> and string math are enough.</li>
+    </ul>
+    <div class="note"><span class="note-label">Human gate &mdash; Design.</span>Architects approve the design and its decisions. Move on only when you'd defend every choice in <code>plan.md</code> to someone who knows this codebase. Then commit.</div>
+
+    <h2><span class="h2-num">8.</span><code>/speckit-tasks</code>, then <code>/speckit-analyze</code> (10 min)</h2>
+
+    <h3>8.1 Break the plan into tasks</h3>
+<pre><code>/speckit-tasks</code></pre>
+    <p>The agent writes a dependency-ordered <code>tasks.md</code> in phases: Setup, Foundational, one phase per user story in priority order, then Polish. A reasonable shape for this feature:</p>
+    <div class="diagram">Setup         (probably empty &mdash; the project already exists)
+Foundational  T001 Add optional dueDate to Todo (lib/storage.ts)
+US1 (P1)      T002 Accept and store dueDate in addTodo (app/page.tsx)
+Add a task    T003 Date input, local state, inline error (TodoForm.tsx)
+with a date   T004 Validate "tomorrow or later" on submit
+US2 (P2)      T005 Show the due date (TodoItem.tsx)
+See overdue   T006 Red date when overdue and not completed;
+                   to-dos without a date are never red
+Polish        T007 Walk the spec's acceptance scenarios in the browser</div>
+    <p>About 7&ndash;8 tasks for an afternoon's work. If your agent produces 4 mega-tasks or 25 micro-tasks, ask it to re-decompose. Also delete Setup tasks that scaffold a project that already exists (&ldquo;initialize the project,&rdquo; &ldquo;configure linting&rdquo;), test-framework tasks nobody asked for, and cruft fixes that crept in.</p>
+
+    <h3>8.2 Check consistency before any code exists</h3>
+<pre><code>/speckit-analyze</code></pre>
+    <p>Analyze cross-checks <code>spec.md</code>, <code>plan.md</code>, and <code>tasks.md</code> against each other and the constitution, and reports findings by severity. It's read-only. On a brownfield change, look especially for a compatibility requirement with no task, a task with no requirement (often cruft cleanup or something you ruled out of scope), and plan choices that conflict with the constitution. Those conflicts are always critical &mdash; which is why an invented rule in step 4 would have turned into noise right here.</p>
+    <p>Fix each finding in the step that owns it: requirements with <code>/speckit-specify</code> or <code>/speckit-clarify</code>, design with <code>/speckit-plan</code>, the task list by re-running <code>/speckit-tasks</code>. Re-run <code>/speckit-analyze</code> until it comes back clean. (Spec Kit's full path also offers <code>/speckit-checklist</code> after plan, a reviewer-owned check of the spec's wording; this lab skips it to stay on time.)</p>
+    <div class="note"><span class="note-label">Human gate &mdash; Implement.</span>Engineers review every change. Analyze proposes; you decide which findings are real and where each gets fixed. Commit when it's clean.</div>
+
+    <h2><span class="h2-num">9.</span><code>/speckit-implement</code> &mdash; review code and artifacts together (30&ndash;40 min)</h2>
+    <p>The longest phase. Watch for the same pitfalls as in Module 3, plus brownfield-specific ones.</p>
+
+    <h3>9.1 Implement in stages</h3>
+<pre><code>/speckit-implement Implement only the Setup, Foundational, and first
+user-story phases, then stop and report progress.</code></pre>
+    <p>First, implement counts checklist items; if any are unchecked it pauses to ask whether to continue. Read them before you answer &mdash; implement never changes a checkbox itself. When the run stops, restart the dev server and try:</p>
+    <ul>
+      <li>Add a task with a date in the future. It should appear in the list with the date shown.</li>
+      <li>Try to add with today's date selected. It should show an inline error and not add.</li>
+      <li>Try to add with no date selected. It should show an inline error and not add.</li>
+      <li>Try to add with a past date. It should show an inline error.</li>
+    </ul>
+    <p>Then run <code>/speckit-implement</code> again, without arguments, to finish. Once the display tasks are done, edit a task's <code>dueDate</code> in localStorage to a past date (devtools &rarr; Application &rarr; Local Storage) and refresh. The date should display in red; mark the task done and the red should disappear.</p>
+
+    <h3>9.2 Brownfield-specific things to watch for</h3>
+    <ul>
+      <li><strong>The agent ignores existing patterns.</strong> A state-management library (Redux, Zustand) where the code uses plain <code>useState</code> is a regression. Stop it.</li>
+      <li><strong>The agent rewrites things you didn't ask it to.</strong> Some agents helpfully &ldquo;fix&rdquo; the cruft you named. That's <em>fine if you want it</em>, but decide deliberately: mixing cleanup into feature work makes review harder.</li>
+      <li><strong>Files the plan didn't mention.</strong> If a <code>dateUtils.ts</code> or <code>hooks/</code> folder appears that the plan never named, ask why.</li>
+      <li><strong><code>Date</code> math gone wrong.</strong> The plan may have dodged the step-7 trap and the code fallen into it anyway. Check both comparisons.</li>
+      <li><strong>&ldquo;Today&rdquo; computed during render.</strong> <code>TodoForm</code> is also rendered on the server. Compute today's date during render (say, for a <code>min</code> attribute) and server and browser can disagree, triggering a hydration mismatch. Compute it in the submit handler. <code>TodoItem</code> only renders after the to-dos load in the browser, so it's safe there.</li>
     </ul>
 
-    <h3>7.2 Run after meaningful tasks</h3>
-    <p>Don't wait until the end. After tasks 1&ndash;5 (form + validation), restart the dev server and try:</p>
+    <h3>9.3 Review code and artifacts together</h3>
+<pre><code>git status
+git diff</code></pre>
+    <p>Because you committed after each gate, this diff is exactly what implement did: source changes, tasks marked <code>[X]</code> in <code>tasks.md</code>, and any fixes you made in <code>spec.md</code> or <code>plan.md</code>. Review them as one change. Every code change should trace to a task and every task to a requirement &mdash; code with no task is scope creep, even when it's an improvement. Every <code>[X]</code> needs code behind it.</p>
+    <p>When implement finishes, SPECTRA offers to open a pull request (<code>/speckit-spectra-create-pr</code>). Decline: you haven't converged or validated, and this repo has no GitHub remote, which that command needs.</p>
+    <div class="note"><span class="note-label">Human gate &mdash; Implement.</span>Engineers review every change &mdash; code and artifacts in the same sitting, because either can be the thing that's wrong. Then commit.</div>
+
+    <h3>9.4 If something doesn't work</h3>
+    <p>Ask two questions, in order. <strong>Does the spec describe what you actually want?</strong> If the behaviour surprises you, the spec was often vague: update it, then re-implement just the affected task. <strong>Does the code implement the spec?</strong> If the spec is right, fix the code. Never fix code without checking the spec first &mdash; that's how spec-anchored repos drift back into code-as-truth repos.</p>
+
+    <h2><span class="h2-num">10.</span><code>/speckit-converge</code> &mdash; until it reports Converged (10 min)</h2>
+<pre><code>/speckit-converge</code></pre>
+    <p>Converge compares the code with the spec, plan, and tasks and summarizes what's missing by severity. It's append-only: it never edits or deletes code, and the only thing it can write is new tasks at the end of <code>tasks.md</code>. It ends one of two ways:</p>
     <ul>
-      <li>Add a task with a date in the future. Should appear in the list with the date shown.</li>
-      <li>Try to add with today's date selected. Should show an inline error and not add.</li>
-      <li>Try to add with no date selected. Should show an inline error and not add.</li>
-      <li>Try to add with a past date. Should show an inline error.</li>
+      <li><strong>Converged</strong> &mdash; no gaps; <code>tasks.md</code> is untouched and you get a success message.</li>
+      <li><strong>Tasks appended</strong> &mdash; gaps become new tasks under a Convergence phase. Run <code>/speckit-implement</code>, then <code>/speckit-converge</code> again, until it reports Converged.</li>
     </ul>
-    <p>After tasks 6&ndash;7 (display + red), pick a task you already have and manually edit its <code>dueDate</code> in the localStorage entry to a past date (browser devtools &rarr; Application &rarr; Local Storage &rarr; edit the JSON), then refresh. The date should now display in red. Mark the task done &mdash; the red should disappear.</p>
+    <p>&ldquo;Converged&rdquo; means the code matches the artifacts. It can't tell you whether the artifacts match what you wanted &mdash; that's the next step, and it's yours.</p>
+    <div class="note"><span class="note-label">Human gate &mdash; Implement.</span>Appended tasks are proposals. Each should trace to a requirement; one asking for something the spec never said is a scope question for you, not work for the agent. Review each extra implement pass as you did in step 9.</div>
 
-    <h3>7.3 If something doesn't work</h3>
-    <p>You have two questions to ask, in order:</p>
-    <ol>
-      <li><strong>Does the spec describe what you actually want?</strong> If you're surprised by the behavior, often the spec was vague. Update the spec, then re-implement just the affected task.</li>
-      <li><strong>Does the code implement the spec?</strong> If the spec is right but the code is wrong, fix the code (or have the agent fix it).</li>
-    </ol>
-    <p>Don't fix code without checking the spec first. That's how spec-anchored repos drift back into being code-as-truth repos.</p>
-
-    <h2><span class="h2-num">8.</span>Validate against the spec (20 min)</h2>
+    <h2><span class="h2-num">11.</span>Validate against the spec (10 min)</h2>
     <p>This is the part most teams skip. Don't.</p>
 
-    <h3>8.1 Walk through the verification criteria</h3>
-    <p>Open your spec's verification section. Go through each criterion and verify it holds. For UI criteria, walk through them in the browser. For edge cases, set up the precondition deliberately (edit localStorage, change system clock if you can, add tasks at the right times).</p>
+    <h3>11.1 Walk through the verification criteria</h3>
+    <p>Go through each acceptance scenario in your spec and verify it holds in the browser. For edge cases, set up the precondition deliberately (edit localStorage, change the system clock if you can). The tasks you added in step 1 are genuine pre-change data &mdash; they should still be in the list, without a due date.</p>
 
-    <h3>8.2 Spec-vs-implementation checklist</h3>
+    <h3>11.2 Spec-vs-implementation checklist</h3>
     <ul class="checklist">
-      <li>Existing tasks (created before this change, with no <code>dueDate</code>) still load without errors.</li>
+      <li>Existing tasks (created before this change, with no <code>dueDate</code>) still load and display without errors, and are never shown as overdue.</li>
       <li>Adding a task with tomorrow's date succeeds.</li>
       <li>Adding a task with today's date is rejected with a visible inline error.</li>
       <li>Adding a task with a past date is rejected with a visible inline error.</li>
       <li>Adding a task with no date is rejected with a visible inline error.</li>
-      <li>The due date appears on every task in the list.</li>
+      <li>The due date appears on every task created after this change.</li>
       <li>An overdue, uncompleted task displays its due date in red.</li>
       <li>Marking the overdue task complete removes the red treatment.</li>
       <li>Refreshing the browser preserves due dates.</li>
       <li>No regressions: add (with valid date), mark done, delete still all work.</li>
     </ul>
 
-    <h3>8.3 What if there's a gap?</h3>
-    <p>If you find a behavior not covered by your verification criteria, <strong>add the criterion to the spec</strong>, then verify. The spec is a living artifact. If you found something the spec missed, future you (or a teammate) would have missed it too. Strengthening the spec strengthens the harness.</p>
-    <p>If you find a bug, classify it (this is the SpecOps loop from Module 1):</p>
+    <h3>11.3 What if there's a gap?</h3>
+    <p>If you find a behaviour your criteria don't cover, <strong>add the criterion to the spec</strong>, then verify. If the spec missed it, future you (or a teammate) would have missed it too.</p>
+    <p>If you find a bug, classify it. This is the habit sometimes called the <em>SpecOps</em> loop: treat every escaped bug as feedback on the harness &mdash; the spec and the checks around it &mdash; not only on the code. Module 9 goes deeper; the core is two categories:</p>
     <ul>
-      <li><strong>Spec-to-implementation gap</strong> &mdash; spec was clear, code diverged. Fix the code, and consider whether your validation gates should have caught it earlier.</li>
-      <li><strong>Intent-to-spec gap</strong> &mdash; spec was incomplete. Fix the spec first, then the code.</li>
+      <li><strong>Spec-to-implementation gap</strong> &mdash; the spec was clear, the code diverged. Fix the code, and ask why neither your review nor <code>/speckit-converge</code> caught it.</li>
+      <li><strong>Intent-to-spec gap</strong> &mdash; the spec was incomplete. Fix the spec first, then the code. Converge can't catch these: it measures code against artifacts, and here the artifacts are what's wrong.</li>
     </ul>
-    <p>Each classification points to a different improvement. Spec-to-implementation gaps mean your testing/validation is too loose. Intent-to-spec gaps mean your spec-writing process is missing something. Both are useful signals.</p>
+    <p>The first kind means your validation is too loose; the second, that your spec-writing is missing something. Both are useful signals.</p>
+    <div class="note"><span class="note-label">Human gate &mdash; Test.</span>QE decides what a finding means &mdash; bug, spec gap, or acceptable. Here that call is yours.</div>
 
-    <h2><span class="h2-num">9.</span>Reflection (15 min)</h2>
+    <h2><span class="h2-num">12.</span>Decide how specs will age (5 min)</h2>
+    <p>The feature works. One question remains that the tooling deliberately leaves to you: what happens to <code>specs/001-due-date/</code> when requirements change next month? It's a team convention, not a CLI setting &mdash; exactly what the constitution is for. Pick one of the persistence models from Module 1:</p>
+    <ul>
+      <li><strong>Flow-back</strong> &mdash; edit whichever artifact (or the code) comes first, then reconcile the rest by hand. Risk: silent divergence.</li>
+      <li><strong>Flow-forward</strong> &mdash; finished feature directories are records; a new requirement gets a new directory. Risk: scattered context.</li>
+      <li><strong>Living spec</strong> &mdash; edit <code>spec.md</code> first, then regenerate the plan and tasks. Risk: losing the reasoning in regenerated plans.</li>
+    </ul>
+    <p>Then record your choice:</p>
+<pre><code>/speckit-constitution Add a spec lifecycle rule: &lt;the model you chose, and
+how this project applies it&gt;.</code></pre>
+    <div class="note"><span class="note-label">Human gate &mdash; Foundation.</span>It's a standard, so it's a lead's call. Review the amendment and commit it.</div>
+
+    <div class="reveal">
+      <button class="reveal-trigger" type="button">
+        <span><span class="reveal-trigger-label">Sample</span> &mdash; a spec lifecycle section for this project</span>
+        <span class="reveal-trigger-icon">+</span>
+      </button>
+      <div class="reveal-content">
+<pre><code>## Spec lifecycle
+- Model: flow-forward. A feature directory under specs/ can be edited
+  until its change merges; after that it is a record and is not edited.
+- A later change to the same behaviour gets a new feature directory, and
+  its spec names the directory it builds on or supersedes.
+- specs/ describes changes, not the whole system. Behaviour that predates
+  specs/001-due-date is documented by the code and the README.</code></pre>
+        <p><strong>Why flow-forward here.</strong> Every spec in this repo is a change on top of behaviour nobody specified, so a chain of small change records matches reality; the bonus exercise's cruft fix gets its own directory instead of editing this one. The cost is scattered context, which the linking rule pays down.</p>
+        <p><strong>When you'd choose differently.</strong> Living spec, if you want one current contract per capability and will regenerate plans (keep key decisions somewhere durable, such as an ADR). Flow-back, for a small team that reliably reconciles artifacts at review. None is wrong; leaving the choice unrecorded is.</p>
+      </div>
+    </div>
+
+    <h2><span class="h2-num">13.</span>Reflection (10 min)</h2>
     <p>Same format as Module 3 &mdash; write <code>REFLECTION.md</code> answers honestly, don't share unless you want to.</p>
     <ol>
-      <li>The Constitution-from-existing-code activity &mdash; was it harder or easier than you expected? What did you almost include that you decided to leave out?</li>
+      <li>The constitution-from-existing-code activity &mdash; was it harder or easier than you expected? What did you almost include that wasn't actually true of the code?</li>
       <li>The cruft list &mdash; did you find the three pieces planted in the codebase? Did you find others that turned out to be conventions on closer inspection?</li>
       <li>How tempted were you to spec the <em>entire</em> app? How did you push back against that temptation?</li>
-      <li>The agent's first-draft spec &mdash; what did it over-include? What did it miss?</li>
-      <li>The first time during <code>/speckit.implement</code> that you had to choose between &ldquo;fix the code&rdquo; and &ldquo;fix the spec&rdquo; &mdash; what was the situation, and which did you pick? Why?</li>
+      <li>The agent's first-draft spec &mdash; what did it over-include? What did <code>/speckit-clarify</code> ask that you hadn't thought about?</li>
+      <li>Did <code>/speckit-analyze</code> or <code>/speckit-converge</code> find anything your own review had missed? What does that say about where your attention went?</li>
+      <li>The first time you had to choose between &ldquo;fix the code&rdquo; and &ldquo;fix the spec&rdquo; &mdash; what was the situation, and which did you pick? Why?</li>
       <li>What would have happened to this feature if you'd skipped the spec entirely and just told the agent &ldquo;add a due date field&rdquo;? What problems would you have caught at code review instead of spec review?</li>
-      <li>What's the smallest change to your team's current workflow that would let you do this kind of brownfield SDD on a real Jira ticket next week?</li>
+      <li>What's the smallest change to your team's current workflow that would let you do this kind of brownfield SDD on a real ticket next week?</li>
     </ol>
-    <p>The last one is the most important. SDD is only worth learning if it changes what you do at work. Question 7 is what we'll come back to in Module 7.</p>
+    <p>The last one is the most important. SDD is only worth learning if it changes what you do at work. Keep your answer: Module 9 closes with discussion prompts that ask the same question at team scale.</p>
 
-    <h2><span class="h2-num">10.</span>Bonus exercise (optional, 30 min)</h2>
+    <h2><span class="h2-num">14.</span>Bonus exercise (optional, 30 min)</h2>
     <p>If you finished early and want to push deeper:</p>
-    <p><strong>Pick one piece of cruft from the codebase</strong> (the magic <code>"todos"</code> string, the leftover <code>console.log</code>, or the <code>Date.now()</code> ID generation) and write a <em>small</em> spec to fix it. Use the same workflow. The point: cruft fixes are usually pure scope-creep candidates during feature work, but they become tractable when you spec them as their own focused changes.</p>
-    <p>Recommendation: start with <code>Date.now()</code> &rarr; <code>crypto.randomUUID()</code>. It has the most concrete benefit (collision safety) and forces you to think about whether existing IDs in localStorage need migration. (Spoiler: they don't, because IDs are opaque strings &mdash; you just want new IDs to use the new generator.)</p>
-    <p>This is the brownfield convergence pattern from Module 1: each change adds a small spec, frequently-touched areas accumulate spec coverage, and over time the codebase starts behaving more like a greenfield project. Not because you specced the whole thing &mdash; because you specced each change.</p>
+    <p><strong>Pick one piece of cruft from the codebase</strong> (the magic <code>"todos"</code> string, the leftover <code>console.log</code>, or the <code>Date.now()</code> ID generation) and write a <em>small</em> spec to fix it, following the lifecycle rule you just recorded. Cruft fixes are scope creep during feature work, but they become tractable when you spec them as their own focused changes.</p>
+    <p>Recommendation: start with <code>Date.now()</code> &rarr; <code>crypto.randomUUID()</code>. It has the most concrete benefit (collision safety) and forces you to think about whether existing IDs in localStorage need migration. (Spoiler: they don't, because IDs are opaque strings &mdash; only new IDs need the new generator. Say so in the spec's compatibility limits.)</p>
+    <p>Run it through the same loop, closing with the <code>/speckit-converge</code> check you met in Modules 1 and 3. This is how a brownfield codebase gains spec coverage without anyone writing a system-wide spec: each change adds a small one, frequently touched areas accumulate coverage, and over time the codebase starts behaving more like a greenfield project &mdash; not because you specced the whole thing, but because you specced each change.</p>
 
     <hr>
 
     <h3>What you should now know</h3>
     <ul>
-      <li>Brownfield SDD is incremental, not comprehensive. You spec the change, not the system.</li>
-      <li>The Constitution is <em>extracted</em> from existing code, not <em>imposed</em> on it. Distinguishing convention from cruft is the actual skill.</li>
-      <li>Naming cruft explicitly in the Constitution (separately from conventions) prevents agents from preserving it as if it were intentional.</li>
-      <li>Spec Kit's greenfield bias creates real friction on existing repos (issue #1191 is one example). The workaround is to treat each change as a new feature spec and not try to maintain a single evolving &ldquo;main spec.&rdquo;</li>
-      <li>The validation phase is non-optional. Skipping it turns SDD back into vibe coding with extra ceremony.</li>
-      <li>Bug classification (spec-to-impl gap vs. intent-to-spec gap) drives different improvements &mdash; to validation gates versus to elicitation patterns. Use both.</li>
+      <li>Brownfield SDD is incremental, not comprehensive. You spec the change, not the system &mdash; including what must <em>not</em> change.</li>
+      <li>Start from a reviewable baseline. Initialization adds only <code>.specify/</code> and your agent's command files and infers no specs; the diff proves it.</li>
+      <li>The constitution is <em>extracted</em> from existing code, not <em>imposed</em> on it. Only rules that are true today or explicitly agreed belong there, and naming cruft separately stops agents preserving it.</li>
+      <li>Clarify, analyze, and converge catch different gaps, but only you can check the artifacts against intent. Skipping validation turns SDD back into vibe coding with extra ceremony.</li>
+      <li>How specs age is a team decision. Record it in the constitution before the second feature arrives.</li>
     </ul>
 
     <h3>What's next</h3>
-    <p>In <strong>Module 5</strong> we step out of the agent and look at the practice itself: best practices that consistently improve outcomes, pitfalls that consistently sabotage them, and a critique exercise where you read deliberately broken specs and explain what's wrong with each. Most of the patterns you noticed during Modules 3 and 4 will get names and contexts in Module 5.</p>
+    <p>In <strong>Module 5</strong> you step back to the question that comes before any spec: should this be built at all? You'll run Spec Kit's <code>assess</code> extension on an idea for the same to-do app &mdash; five stages, from intake to a recorded verdict of go, needs-clarification, or kill &mdash; and see how a go hands off to <code>/speckit-specify</code>.</p>
+
 
     <div class="module-footer-nav">
       <a class="mod-nav-prev" href="module-3.html">
-        <span class="mod-nav-label">← Previous · Module 3</span>
+        <span class="mod-nav-label">&larr; Previous &middot; Module 3</span>
         <span class="mod-nav-title">Greenfield Lab</span>
       </a>
-      <a class="mod-nav-next" href="module-5.html">
-        <span class="mod-nav-label">Next · Module 5 →</span>
-        <span class="mod-nav-title">Best Practices &amp; Pitfalls</span>
+      <a class="mod-nav-next" href="assessment.html">
+        <span class="mod-nav-label">Next &middot; Module 5 &rarr;</span>
+        <span class="mod-nav-title">Idea Assessment</span>
       </a>
     </div>
   </article>
@@ -1111,6 +1214,14 @@ Build on the existing patterns documented in the Constitution.</code></pre>
       }
     });
   });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>

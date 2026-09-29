@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5 &mdash; Idea Assessment &middot; SDD with SPECTRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Mona+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Palette shared with the SPECTRA landing page (docs/index.html). */
+    --bg: #0c0a16;
+    --bg-2: #120f22;
+    --bg-elev: rgba(255, 255, 255, 0.04);
+    --surface: rgba(8, 6, 18, 0.55);
+    --text: #e9e7f2;
+    --text-muted: #a3a0b5;
+    --text-subtle: #8b879e;
+    --accent: #a78bfa;
+    --accent-2: #c4b5fd;
+    --accent-soft: rgba(167, 139, 250, 0.10);
+    --accent-line: rgba(167, 139, 250, 0.35);
+    --border: rgba(167, 139, 250, 0.20);
+    --border-strong: rgba(167, 139, 250, 0.34);
+    --code-bg: #0d0b17;
+    --code-text: #ded7f5;
+    --code-comment: #8d88a8;
+    --code-accent: #c4b5fd;
+    --success: #34d399;
+    --success-soft: rgba(52, 211, 153, 0.10);
+    --error: #fb7185;
+    --error-soft: rgba(251, 113, 133, 0.10);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --max-w: 720px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Mona Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 520px at 78% -10%, rgba(167,139,250,0.18), transparent 60%),
+      radial-gradient(900px 480px at 10% 6%, rgba(124,92,222,0.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-2), var(--bg));
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  /* Faint grid overlay, matching the SPECTRA landing page. */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(167,139,250,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167,139,250,0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+  }
+  main {
+    position: relative; z-index: 1;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 64px 28px 120px;
+  }
+  /* Hero */
+  .hero { margin-bottom: 56px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+  .hero-eyebrow {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-weight: 400;
+    font-size: 17px; color: var(--accent); letter-spacing: 0.01em;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 44px; line-height: 1.1;
+    letter-spacing: -0.025em; margin-bottom: 22px; color: var(--text);
+  }
+  .hero-lede {
+    font-size: 19px; line-height: 1.55; color: var(--text-muted); max-width: 600px;
+  }
+  /* Meta block */
+  .meta {
+    display: flex; flex-wrap: wrap;
+    margin-top: 32px; padding: 18px 22px;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 6px; font-size: 14px;
+  }
+  .meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+    padding-right: 32px; margin-right: 32px;
+    border-right: 1px solid var(--border-strong);
+  }
+  .meta-item:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+  .meta-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-subtle); font-weight: 500;
+  }
+  .meta-value { color: var(--text); font-weight: 500; }
+  /* Article typography */
+  article h2 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 28px; line-height: 1.25;
+    letter-spacing: -0.018em; margin-top: 56px; margin-bottom: 18px; color: var(--text);
+  }
+  article h2 .h2-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 400; color: var(--accent); margin-right: 14px;
+  }
+  article h3 {
+    font-weight: 600; font-size: 20px; line-height: 1.3;
+    letter-spacing: -0.012em; margin-top: 36px; margin-bottom: 12px; color: var(--text);
+  }
+  article h4 {
+    font-weight: 600; font-size: 16px;
+    margin-top: 28px; margin-bottom: 8px; color: var(--text);
+  }
+  article p { margin-bottom: 18px; }
+  article ul, article ol { margin: 0 0 22px 0; padding-left: 22px; }
+  article li { margin-bottom: 8px; padding-left: 4px; }
+  article li::marker { color: var(--text-subtle); }
+  article ul ul, article ol ol, article ul ol, article ol ul { margin: 8px 0 4px 0; }
+  article a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-line);
+    transition: border-color 0.15s ease;
+  }
+  article a:hover { border-bottom-color: var(--accent); }
+  article strong { font-weight: 600; color: var(--text); }
+  article em { font-style: italic; }
+  /* Inline code */
+  article code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86em; background: var(--bg-elev);
+    border: 1px solid var(--border); padding: 1px 6px;
+    border-radius: 4px; color: var(--code-text); font-weight: 500;
+  }
+  /* Code blocks */
+  .code-block { position: relative; margin: 22px 0 26px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    border: 1px solid var(--border);
+    padding: 18px 20px; border-radius: 8px; overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px; line-height: 1.6; box-shadow: var(--shadow-sm);
+  }
+  pre code {
+    background: none; border: none; padding: 0;
+    color: inherit; font-size: inherit; font-weight: 400;
+  }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(167, 139, 250, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.26);
+    color: var(--code-text); font-family: 'Mona Sans', sans-serif;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 5px 10px;
+    border-radius: 4px; cursor: pointer; opacity: 0;
+    transition: all 0.15s ease;
+  }
+  .code-block:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: rgba(167, 139, 250, 0.24); }
+  .copy-btn.copied { background: rgba(52, 211, 153, 0.20); border-color: rgba(52, 211, 153, 0.45); }
+  /* Blockquotes & callouts */
+  blockquote {
+    margin: 24px 0; padding: 16px 22px;
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0; color: var(--text); font-size: 16px;
+  }
+  blockquote p { margin-bottom: 12px; }
+  blockquote p:last-child { margin-bottom: 0; }
+  blockquote strong { color: var(--text); }
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto; margin: 22px 0 26px;
+    border: 1px solid var(--border); border-radius: 6px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td {
+    text-align: left; padding: 12px 16px;
+    border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  th {
+    background: var(--bg-elev); font-weight: 600;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+  tr:last-child td { border-bottom: none; }
+  td code, th code { font-size: 13px; }
+  /* HR */
+  hr { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+  /* Module list (README) */
+  .module-list {
+    display: flex; flex-direction: column; gap: 0;
+    margin: 28px 0 32px;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; background: var(--bg-elev);
+  }
+  .module-row {
+    display: grid; grid-template-columns: 48px 1fr auto auto;
+    gap: 18px; align-items: center;
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .module-row:last-child { border-bottom: none; }
+  .module-row.featured {
+    background: linear-gradient(to right, var(--accent-soft), transparent 60%);
+  }
+  .module-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 22px; font-weight: 500; color: var(--accent);
+  }
+  .module-title { font-weight: 600; font-size: 16px; color: var(--text); line-height: 1.35; }
+  .module-title-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+  .module-format { font-size: 13px; color: var(--text-subtle); font-style: italic; }
+  .module-time { font-size: 13px; color: var(--text-muted); font-weight: 500;
+    font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .star { color: var(--accent); margin-left: 4px; }
+  .path-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 22px 0 28px; }
+  .path-card { padding: 18px 22px; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 6px; }
+  .path-card-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; color: var(--text); }
+  .path-card-body { font-size: 14px; color: var(--text-muted); line-height: 1.55; }
+  .footer-note {
+    margin-top: 80px; padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 14px; color: var(--text-subtle); text-align: center;
+  }
+  /* Quiz (Module 1) */
+  .quiz {
+    margin: 28px 0 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .quiz-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .quiz-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 14px; color: var(--accent); letter-spacing: 0.02em;
+  }
+  .quiz-progress { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .quiz-question { padding: 20px 22px; border-bottom: 1px solid var(--border); }
+  .quiz-question:last-child { border-bottom: none; }
+  .quiz-q-prompt { font-weight: 600; margin-bottom: 14px; font-size: 16px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); cursor: pointer;
+    font-size: 15px; line-height: 1.45;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent-line); background: var(--accent-soft); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt-letter {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    width: 18px;
+  }
+  .quiz-opt.correct {
+    background: var(--success-soft);
+    border-color: var(--success);
+  }
+  .quiz-opt.correct .quiz-opt-letter { color: var(--success); }
+  .quiz-opt.incorrect {
+    background: var(--error-soft);
+    border-color: var(--error);
+  }
+  .quiz-opt.incorrect .quiz-opt-letter { color: var(--error); }
+  .quiz-opt.dim { opacity: 0.55; }
+  .quiz-feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--success-soft); border: 1px solid rgba(52, 211, 153, 0.30); }
+  .quiz-feedback.incorrect { background: var(--error-soft); border: 1px solid rgba(251, 113, 133, 0.30); }
+  .quiz-feedback-title { font-weight: 600; margin-bottom: 4px; }
+  .quiz-feedback.correct .quiz-feedback-title { color: var(--success); }
+  .quiz-feedback.incorrect .quiz-feedback-title { color: var(--error); }
+  /* Open-ended quiz answer (no options) */
+  .quiz-open-toggle {
+    margin-top: 8px;
+    padding: 9px 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+  }
+  .quiz-open-toggle:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
+  .quiz-open-answer {
+    margin-top: 12px; padding: 14px 16px;
+    background: var(--accent-soft); border: 1px solid var(--accent-line);
+    border-radius: 6px; font-size: 14px; line-height: 1.6;
+    display: none;
+  }
+  .quiz-open-answer.show { display: block; }
+  /* Reveal block (sample solutions) */
+  .reveal {
+    margin: 24px 0 28px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .reveal-trigger {
+    width: 100%;
+    padding: 16px 22px;
+    background: none; border: none;
+    cursor: pointer;
+    font-family: inherit; font-size: 15px; font-weight: 500;
+    color: var(--text); text-align: left;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    transition: background 0.15s ease;
+  }
+  .reveal-trigger:hover { background: var(--accent-soft); }
+  .reveal-trigger-label {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-right: 8px;
+  }
+  .reveal-trigger-icon {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted); font-size: 14px;
+    transition: transform 0.2s ease;
+  }
+  .reveal.open .reveal-trigger-icon { transform: rotate(45deg); }
+  .reveal-content {
+    display: none;
+    padding: 4px 22px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .reveal.open .reveal-content { display: block; }
+  .reveal-content > *:first-child { margin-top: 18px; }
+  /* Lab placeholder card (Module 4) */
+  .lab-card {
+    margin: 28px 0;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, var(--accent-soft), transparent 80%);
+    border: 1px solid var(--accent-line);
+    border-radius: 10px;
+    display: flex; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+  }
+  .lab-card-icon {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 36px; color: var(--accent); line-height: 1;
+  }
+  .lab-card-body { flex: 1; min-width: 240px; }
+  .lab-card-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .lab-card-meta { font-size: 13px; color: var(--text-muted); }
+  .lab-card-link {
+    display: inline-block;
+    padding: 9px 18px;
+    background: var(--accent); color: var(--bg);
+    font-weight: 500; font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none; border: none;
+    transition: background 0.15s ease;
+  }
+  .lab-card-link:hover { background: var(--accent-2); border-bottom: none; }
+  .lab-card-link.placeholder {
+    background: var(--bg-elev); color: var(--text-muted);
+    border: 1px dashed var(--border-strong); cursor: not-allowed;
+    pointer-events: none; font-style: italic;
+  }
+  /* Note callout (distinct from blockquote) */
+  .note {
+    margin: 22px 0;
+    padding: 14px 18px 14px 18px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  .note-label {
+    display: inline-block;
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); margin-right: 6px;
+    font-size: 14px;
+  }
+  /* Checklist (visual only) */
+  .checklist { list-style: none; padding-left: 0; margin: 14px 0 22px; }
+  .checklist li {
+    padding-left: 28px; position: relative; margin-bottom: 8px;
+  }
+  .checklist li::before {
+    content: ""; position: absolute; left: 0; top: 0.45em;
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--border-strong); border-radius: 3px;
+    background: var(--surface);
+  }
+  /* TOC at top of module pages (within-page only — no cross-page links) */
+  .toc {
+    margin: 28px 0 40px;
+    padding: 18px 22px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .toc-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-bottom: 10px;
+  }
+  .toc ol { padding-left: 22px; margin: 0; font-size: 14px; }
+  .toc ol li { margin-bottom: 4px; }
+  .toc a { border-bottom: none; color: var(--text-muted); }
+  .toc a:hover { color: var(--accent); border-bottom: 1px solid var(--accent-line); }
+  /* Diagram (ASCII flow) */
+  .diagram {
+    margin: 24px 0;
+    padding: 22px;
+    background: var(--code-bg); color: var(--code-text);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  /* Figure (diagram image + caption) */
+  figure.fig { margin: 26px 0; }
+  figure.fig > a { display: block; border-bottom: none; }
+  figure.fig img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; box-shadow: var(--shadow-md);
+  }
+  figure.fig figcaption {
+    margin-top: 10px; font-size: 13px; color: var(--text-subtle);
+    font-style: italic; text-align: center;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    main { padding: 40px 20px 80px; }
+    .hero h1 { font-size: 32px; }
+    .hero-lede { font-size: 17px; }
+    article h2 { font-size: 24px; margin-top: 44px; }
+    article h3 { font-size: 18px; }
+    .meta { flex-direction: column; gap: 12px; padding: 14px 18px; }
+    .meta-item { border-right: none; padding-right: 0; margin-right: 0;
+      border-bottom: 1px solid var(--border-strong); padding-bottom: 12px;
+      margin-bottom: 0; }
+    .meta-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .module-row { grid-template-columns: 36px 1fr; gap: 14px; padding: 14px 18px; }
+    .module-format, .module-time { grid-column: 2; font-size: 12px; }
+    .quiz-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .lab-card { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<style>
+  /* Course navigation bar (shared) */
+  .course-nav {
+    z-index: 50;
+    background: rgba(12, 10, 22, 0.82);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .course-nav-inner {
+    max-width: 820px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 11px 28px;
+  }
+  .course-nav-brand {
+    display: flex; align-items: baseline; gap: 10px;
+    text-decoration: none; border-bottom: none; white-space: nowrap;
+  }
+  .course-nav-brand-mark {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 500; font-size: 18px; color: var(--accent);
+  }
+  .course-nav-brand-text {
+    font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.01em;
+  }
+  .course-nav-brand:hover .course-nav-brand-text { color: var(--accent); }
+  .course-nav-brand.is-active .course-nav-brand-text { color: var(--text); }
+  .course-nav-modules {
+    display: flex; align-items: center; gap: 6px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .course-nav-modules::-webkit-scrollbar { display: none; }
+  .course-nav-modules a {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 30px; height: 30px; padding: 0 9px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface);
+    transition: all 0.15s ease;
+  }
+  .course-nav-modules a:hover {
+    border-color: var(--accent-line); color: var(--accent); background: var(--accent-soft);
+  }
+  .course-nav-modules a.is-active {
+    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  }
+  .course-nav-home {
+    font-family: 'Mona Sans', sans-serif; font-weight: 600;
+    padding: 0 13px; margin-right: 8px;
+  }
+  /* Module footer navigation (prev / next) */
+  .module-footer-nav {
+    margin-top: 56px; padding-top: 28px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: stretch; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .mod-nav-prev, .mod-nav-next {
+    display: inline-flex; flex-direction: column; gap: 3px;
+    text-decoration: none; border-bottom: none; border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+  .mod-nav-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
+  }
+  .mod-nav-prev {
+    align-items: flex-start; padding: 10px 4px; color: var(--text-muted);
+  }
+  .mod-nav-prev .mod-nav-label { color: var(--text-subtle); }
+  .mod-nav-prev .mod-nav-title { font-weight: 500; font-size: 15px; color: var(--text); }
+  .mod-nav-prev:hover .mod-nav-title { color: var(--accent); }
+  .mod-nav-next {
+    margin-left: auto; align-items: flex-end; text-align: right;
+    padding: 12px 20px; background: var(--accent); color: var(--bg);
+  }
+  .mod-nav-next .mod-nav-label { color: var(--bg); opacity: 0.82; }
+  .mod-nav-next .mod-nav-title { font-weight: 600; font-size: 15px; color: var(--bg); }
+  .mod-nav-next:hover { background: var(--accent-2); }
+  @media (max-width: 600px) {
+    .course-nav-inner { padding: 10px 16px; }
+    .course-nav-brand-text { display: none; }
+    .module-footer-nav { gap: 12px; }
+    .mod-nav-next { padding: 10px 16px; }
+  }
+
+  /* ---------- Site-wide top bar (matches docs/index.html) ---------- */
+  .topstack { position: sticky; top: 0; z-index: 60; }
+  .sitebar {
+    background: rgba(12,10,22,0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .sitebar .sitebar-inner {
+    max-width: 960px; margin: 0 auto; padding: 0 22px;
+  }
+  header.site {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 12px 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header.site .brand { display: inline-flex; align-items: center; text-decoration: none; border-bottom: none; }
+  header.site .brand:hover { text-decoration: none; }
+  header.site img.logo { height: 26px; width: auto; opacity: .95; display: block; }
+  header.site .nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  header.site .nav a.nav-page {
+    color: var(--text-muted, #a3a0b5); font-size: 14px; text-decoration: none;
+    padding: 5px 13px; border: 1px solid transparent; border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+    border-bottom: none;
+  }
+  header.site .nav a.nav-page:hover { color: var(--text, #e9e7f2); text-decoration: none; }
+  header.site .nav a.nav-page[aria-current="page"] {
+    color: var(--accent-2, #c4b5fd); border-color: var(--border, rgba(167,139,250,0.20));
+    background: rgba(167,139,250,0.10);
+  }
+  header.site .nav a:focus-visible { outline: 2px solid var(--accent-2, #c4b5fd); outline-offset: 2px; }
+  header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border, rgba(167,139,250,0.20)); margin: 0 4px; }
+  header.site .nav a.nav-jump { color: var(--text-muted, #a3a0b5); font-size: 13px; padding: 5px 5px; text-decoration: none; border-bottom: none; }
+  header.site .nav a.nav-jump:hover { color: var(--text, #e9e7f2); }
+  @media (max-width: 720px) {
+    header.site { flex-wrap: wrap; gap: 10px; }
+    header.site .nav { gap: 4px; }
+    header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
+    header.site .nav .nav-sep { display: none; }
+  }
+</style>
+<div class="topstack">
+<div class="sitebar">
+  <div class="sitebar-inner">
+    <header class="site">
+      <a class="brand" href="../index.html" aria-label="SPECTRA — home">
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-page" href="../index.html">Home</a>
+        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
+        <a class="nav-page" href="../agents.html">Agents</a>
+        <a class="nav-page" href="index.html" aria-current="page">E-Learning</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a class="nav-jump" href="../index.html#install">Install</a>
+      </nav>
+    </header>
+  </div>
+</div>
+<nav class="course-nav">
+  <div class="course-nav-inner">
+    <a class="course-nav-brand" href="index.html">
+      <span class="course-nav-brand-mark">SPECTRA</span>
+      <span class="course-nav-brand-text">SDD Learning</span>
+    </a>
+    <div class="course-nav-modules">
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?" class="is-active">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
+    </div>
+  </div>
+</nav>
+</div>
+<main>
+  <header class="hero">
+    <div class="hero-eyebrow">Module 5</div>
+    <h1>Idea Assessment &mdash; Should We Build It?</h1>
+    <p class="hero-lede">Not every idea deserves a spec. Take two ideas for the to-do app through Spec Kit&rsquo;s five-stage idea assessment, back them with SPECTRA&rsquo;s cited codebase evidence, and reach a verdict you can defend &mdash; including the one that says don&rsquo;t build it.</p>
+    <div class="meta">
+      <div class="meta-item">
+        <span class="meta-label">Time</span>
+        <span class="meta-value">75 min</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Format</span>
+        <span class="meta-value">Concepts + hands-on lab</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Prerequisites</span>
+        <span class="meta-value">Modules 1&ndash;4; SPECTRA installed</span>
+      </div>
+    </div>
+  </header>
+
+  <article>
+    <h3>Learning objectives</h3>
+    <p>By the end of this module, you will be able to:</p>
+    <ol>
+      <li>Tell discovery (&ldquo;should we build it?&rdquo;) from delivery (&ldquo;how do we build it?&rdquo;), and place assessment before Plan in SPECTRA&rsquo;s agentic SDLC.</li>
+      <li>Run the five assessment stages one at a time, reviewing each artifact at its human gate.</li>
+      <li>Hold research to the evidence rules: evidence against, <code>ASSUMPTION</code> tags, no invented citations.</li>
+      <li>Read the scorecard, say what a <code>go</code> requires, and explain what follows each verdict.</li>
+      <li>Resolve a clarification by refining an artifact instead of re-running a stage.</li>
+      <li>Ground an assessment with <code>speckit.spectra.impact</code>, and place <code>speckit.spectra.brd</code> after a <code>go</code>.</li>
+      <li>Hand a <code>go</code> to <code>/speckit-specify</code> yourself.</li>
+    </ol>
+
+    <h2><span class="h2-num">1.</span>Discovery before delivery</h2>
+    <p>Everything so far in this course answers one question: <em>how do we build it?</em> In Modules 3 and 4, somebody had already decided the feature was worth building, and you took that on trust. That decision is where a lot of wasted engineering starts. An idea sounds reasonable in a meeting, becomes a ticket, then a spec, and three weeks later the team learns nobody needed it. SDD makes delivery disciplined. It does nothing to stop you delivering the wrong thing well.</p>
+    <p>Idea assessment is the step in front: <em>should we build it at all?</em> Spec Kit ships it as the <code>assess</code> extension, and keeps the two questions on separate tracks:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th></th><th>Discovery</th><th>Delivery</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Question</strong></td><td>Should we build it?</td><td>How do we build it?</td></tr>
+        <tr><td><strong>Spec Kit tooling</strong></td><td>The <code>assess</code> extension: intake &rarr; research &rarr; define &rarr; shape &rarr; decide</td><td>The SDD loop: constitution &rarr; specify &rarr; &hellip; &rarr; implement &rarr; converge</td></tr>
+        <tr><td><strong>Writes</strong></td><td><code>.specify/assessments/&lt;slug&gt;/</code> &mdash; never source code</td><td><code>specs/&lt;NNN-feature&gt;/</code>, then code</td></tr>
+        <tr><td><strong>Ends with</strong></td><td>A verdict and its reasoning: <code>go</code>, <code>needs-clarification</code>, or <code>kill</code></td><td>A reviewed, merged change</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>1.1 Where assessment sits in the agentic SDLC</h3>
+    <p>SPECTRA runs the agentic SDLC in seven phases, from 00 Foundation to 06 Maintain, each ending at a human gate. Idea assessment sits <strong>in front of 01 Plan</strong>. Plan&rsquo;s gate is the product owner approving a requirement&rsquo;s intent and scope; assessment asks the earlier question of whether there should be a requirement at all. A <code>kill</code> here means Plan never starts.</p>
+    <p>It needs <strong>no source code</strong>: it works in an empty initialized project, even for decisions that aren&rsquo;t about software, and for an existing repository you point intake at the code. And it needs <strong>no SDD first</strong> &mdash; no constitution, no spec. On a brownfield repository it can be the first thing a team does after initializing Spec Kit.</p>
+    <p>The usual rule holds: <strong>agents draft, people decide.</strong> Every stage is a draft for you to review, and the verdict is a recommendation.</p>
+
+    <h2><span class="h2-num">2.</span>Five stages, five artifacts</h2>
+    <p>The extension adds five commands, one per stage, run one at a time with a shared <strong>slug</strong> &mdash; a kebab-case name such as <code>sync-across-devices</code> that becomes the idea&rsquo;s directory. The review between stages is the human gate: every later stage builds on the artifact you just approved.</p>
+    <figure class="fig">
+    <svg viewBox="0 0 680 236" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" role="img" aria-label="The five assessment stages, each writing one artifact, ending in one of three verdicts">
+  <defs>
+    <marker id="assess-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1 L8 5 L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <text x="36" y="18" fill="#a3a0b5" font-size="12">Discovery &#8212; every file is written under .specify/assessments/&lt;slug&gt;/</text>
+
+  <!-- Stage boxes -->
+  <g fill="#1b1533" stroke="#a78bfa" stroke-width="0.75">
+    <rect x="36"  y="30" width="104" height="44" rx="8"/>
+    <rect x="162" y="30" width="104" height="44" rx="8"/>
+    <rect x="288" y="30" width="104" height="44" rx="8"/>
+    <rect x="414" y="30" width="104" height="44" rx="8"/>
+    <rect x="540" y="30" width="104" height="44" rx="8"/>
+  </g>
+  <g fill="#c4b5fd" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">
+    <text x="88"  y="52">intake</text>
+    <text x="214" y="52">research</text>
+    <text x="340" y="52">define</text>
+    <text x="466" y="52">shape</text>
+    <text x="592" y="52">decide</text>
+  </g>
+  <g stroke="#a3a0b5" stroke-width="1.5" fill="none" marker-end="url(#assess-arrow)">
+    <line x1="143" y1="52" x2="158" y2="52"/>
+    <line x1="269" y1="52" x2="284" y2="52"/>
+    <line x1="395" y1="52" x2="410" y2="52"/>
+    <line x1="521" y1="52" x2="536" y2="52"/>
+  </g>
+
+  <!-- Artifacts -->
+  <g fill="#a3a0b5" font-size="12" font-family="'JetBrains Mono', ui-monospace, monospace" text-anchor="middle">
+    <text x="88"  y="92">intake.md</text>
+    <text x="214" y="92">research.md</text>
+    <text x="340" y="92">problem.md</text>
+    <text x="466" y="92">concept.md</text>
+    <text x="592" y="92">decision.md</text>
+  </g>
+
+  <!-- Branch to verdicts -->
+  <path d="M592 100 V122 H131" stroke="#a3a0b5" stroke-width="1.5" fill="none"/>
+  <g stroke="#a3a0b5" stroke-width="1.5" fill="none" marker-end="url(#assess-arrow)">
+    <line x1="131" y1="122" x2="131" y2="146"/>
+    <line x1="340" y1="122" x2="340" y2="146"/>
+    <line x1="549" y1="122" x2="549" y2="146"/>
+  </g>
+
+  <!-- Verdict boxes -->
+  <rect x="36"  y="150" width="190" height="72" rx="8" fill="#1b1533" stroke="#34d399" stroke-width="0.75"/>
+  <rect x="245" y="150" width="190" height="72" rx="8" fill="#1b1533" stroke="#a78bfa" stroke-width="0.75"/>
+  <rect x="454" y="150" width="190" height="72" rx="8" fill="#1b1533" stroke="#a78bfa" stroke-width="0.75"/>
+  <g font-size="14" font-weight="600" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, monospace">
+    <text x="131" y="174" fill="#34d399">go</text>
+    <text x="340" y="174" fill="#c4b5fd">needs-clarification</text>
+    <text x="549" y="174" fill="#c4b5fd">kill</text>
+  </g>
+  <g fill="#a3a0b5" font-size="12" text-anchor="middle">
+    <text x="131" y="196">a person decides; hand off</text>
+    <text x="131" y="212">manually to /speckit-specify</text>
+    <text x="340" y="196">refine the named artifact,</text>
+    <text x="340" y="212">then revise decision.md</text>
+    <text x="549" y="196">stop, and keep the reasoning</text>
+    <text x="549" y="212">&#8212; a successful outcome</text>
+  </g>
+</svg>
+      <figcaption>Five stages, one artifact each, one of three verdicts. You review every artifact before running the next stage.</figcaption>
+    </figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Stage</th><th>Command</th><th>Writes</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Intake</td><td><code>speckit.assess.intake</code></td><td><code>intake.md</code></td><td>Captures the idea &mdash; text, a URL, a ticket, or a pointer into the codebase &mdash; restates it neutrally, records its origin, lists first-glance unknowns. Records; doesn&rsquo;t judge.</td></tr>
+        <tr><td>Research</td><td><code>speckit.assess.research</code></td><td><code>research.md</code></td><td>Evidence <em>for and against</em>: demand, prior art, context, constraints. Each finding sourced or tagged, with a confidence level. Collects; doesn&rsquo;t decide.</td></tr>
+        <tr><td>Define</td><td><code>speckit.assess.define</code></td><td><code>problem.md</code></td><td>Affected users, the problem, goals, non-goals, success metrics, cost of inaction. An idea that arrived as a solution is worked back to its problem.</td></tr>
+        <tr><td>Shape</td><td><code>speckit.assess.shape</code></td><td><code>concept.md</code></td><td>Two or three concept-level options, each with an <strong>appetite</strong> (small, medium, large &mdash; a budget, not an estimate), trade-offs, and rabbit holes. Recommends one, or none. No architecture, APIs, or tasks.</td></tr>
+        <tr><td>Decide</td><td><code>speckit.assess.decide</code></td><td><code>decision.md</code></td><td>Scorecard, rationale, verdict, and for a <code>go</code>, a handoff summary.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>2.1 Prerequisites and guardrails</h3>
+    <ul>
+      <li><strong>Define</strong> is the minimum: it can start from typed input alone. Intake and research are optional.</li>
+      <li><strong>Shape</strong> needs <code>problem.md</code>. <strong>Decide</strong> needs <code>problem.md</code> and reads every artifact present; without <code>concept.md</code>, a <code>go</code> is downgraded to <code>needs-clarification</code>.</li>
+      <li><strong>Skipping research never waives the evidence bar.</strong></li>
+    </ul>
+    <p>Every stage writes only inside <code>.specify/assessments/&lt;slug&gt;/</code> and never edits source code. Slugs are normalized to lowercase kebab-case. No stage overwrites an existing artifact without asking. Web content is untrusted data: well-known public hosts such as <code>github.com</code> are fetched directly, an unfamiliar one only if you say yes. And the extension registers no hooks, so it never inserts itself into your SDD loop.</p>
+
+    <h2><span class="h2-num">3.</span>Evidence, the scorecard, and the verdict</h2>
+
+    <h3>3.1 The evidence rules</h3>
+    <p>Fluent prose looks like evidence. Three rules defend against that, and you enforce them at every review:</p>
+    <ol>
+      <li><strong>Evidence against the idea is required.</strong> <code>research.md</code> always has an &ldquo;Evidence Against the Idea&rdquo; section; if the agent found nothing, it must say so. Research that only builds the case is advocacy.</li>
+      <li><strong>Unsourced claims stay tagged <code>ASSUMPTION</code>.</strong> Every finding carries a source or the tag, plus a confidence of <code>high</code>, <code>medium</code>, or <code>low</code>.</li>
+      <li><strong>Citations are never invented.</strong> A statistic you cannot trace is worse than an honest <code>ASSUMPTION</code>, because people will read it as fact.</li>
+    </ol>
+    <p>For the to-do app, the first finding below is checkable; the second is a guess, and says so:</p>
+<pre><code>- Each browser keeps its own list; the README states the app has no backend
+  and no sync &mdash; [source: README.md] (confidence: high)
+- People who use the app on a laptop also want their list on their phone
+  &mdash; [ASSUMPTION] (confidence: low)</code></pre>
+
+    <h3>3.2 The scorecard</h3>
+    <p>Decide rates six criteria, each <code>strong</code>, <code>adequate</code>, <code>weak</code>, or <code>unknown</code>, with a one-line justification drawn from the artifacts.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Criterion</th><th>The question</th><th>Draws on</th></tr></thead>
+      <tbody>
+        <tr><td>Problem validity</td><td>Is the problem real and worth solving?</td><td><code>problem.md</code>, <code>research.md</code></td></tr>
+        <tr><td>Evidence strength</td><td>How well supported is it, versus assumption-driven?</td><td><code>research.md</code></td></tr>
+        <tr><td>Value vs. inaction</td><td>Does solving it beat doing nothing?</td><td><code>problem.md</code></td></tr>
+        <tr><td>Feasibility / appetite</td><td>Is there a credible option within a sane appetite?</td><td><code>concept.md</code></td></tr>
+        <tr><td>Strategic fit</td><td>Does it align with the project&rsquo;s constitution and goals, where known?</td><td>The constitution, if there is one</td></tr>
+        <tr><td>Risk posture</td><td>Are the major risks understood and credibly mitigated?</td><td>All of them</td></tr>
+      </tbody>
+    </table></div>
+    <p>Risk posture points the same way as the rest: <code>strong</code> means key risks are identified and mitigated. Any <code>unknown</code> must be acknowledged in the rationale.</p>
+
+    <h3>3.3 What a <code>go</code> requires</h3>
+    <p>All three, together:</p>
+    <ul class="checklist">
+      <li>Problem validity rated <code>adequate</code> or better.</li>
+      <li>Evidence strength rated <code>adequate</code> or better &mdash; never <code>weak</code> or <code>unknown</code>.</li>
+      <li>A recommended option in <code>concept.md</code>.</li>
+    </ul>
+    <p>Miss one and the honest verdict is <code>needs-clarification</code>. Feasibility is <em>not</em> on the list: easy to build and worth building are different questions.</p>
+
+    <h3>3.4 Three verdicts, and what follows each</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Verdict</th><th>What it means</th><th>What happens next</th></tr></thead>
+      <tbody>
+        <tr><td><code>go</code></td><td>Problem validity and evidence strength rate at least adequate, and one concept is recommended.</td><td>A person decides whether to act. A software idea can be handed to SDD; an idea that isn&rsquo;t software never needs to enter it.</td></tr>
+        <tr><td><code>needs-clarification</code></td><td>Specific, named unknowns block a defensible call.</td><td>Supply the missing facts in the affected artifacts, then revise <code>decision.md</code>.</td></tr>
+        <tr><td><code>kill</code></td><td>Not worth pursuing now. The decisive reason is stated plainly.</td><td>Keep the record. Stopping is a successful outcome.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Take the last row seriously: a process that never kills anything is a rubber stamp. A written-down <code>kill</code> saves the build cost, and if the facts change later, the record shows which assumption to revisit.</p>
+
+    <h3>3.5 Refine, don&rsquo;t re-run</h3>
+    <p>Each stage normally runs once. A <code>[NEEDS CLARIFICATION: &hellip;]</code> marker is a gap to fill, not a reason to regenerate: edit the Markdown yourself, or ask the agent to update a named artifact, keeping source and confidence tags. Then have <code>decision.md</code> revised if the blocker clears. Re-running is for exceptions such as a wrong slug, and never overwrites without asking. One trap: decide&rsquo;s report names a stage to revisit &mdash; read that as <em>which artifact to refine</em>.</p>
+
+    <h3>3.6 The handoff is manual</h3>
+    <p>No hook connects assessment to SDD. A <code>go</code> writes a handoff summary into <code>decision.md</code> &mdash; problem, chosen approach, scope, success metrics, open questions &mdash; and if you decide to build, you pass it to <code>/speckit-specify</code> yourself. Deciding to build is a human call, and it should look like one.</p>
+
+    <h2><span class="h2-num">4.</span>Where SPECTRA fits</h2>
+    <p>The <code>assess</code> extension is Spec Kit&rsquo;s, added with <code>specify extension add assess</code>, and it works the same in a plain Spec Kit project. SPECTRA adds agents on either side of it. First, untangle four commands that all sound like &ldquo;assess&rdquo;:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Command</th><th>Question it answers</th><th>Writes</th></tr></thead>
+      <tbody>
+        <tr><td><code>speckit.assess.*</code> (Spec Kit <code>assess</code>)</td><td>Is this idea worth building?</td><td><code>.specify/assessments/&lt;slug&gt;/</code></td></tr>
+        <tr><td><code>speckit.bug.assess</code> (Spec Kit <code>bug</code>)</td><td>What is broken, and what is the smallest credible fix?</td><td><code>.specify/bugs/&lt;slug&gt;/assessment.md</code></td></tr>
+        <tr><td><code>speckit.spectra.impact</code> (SPECTRA)</td><td>What would this change actually touch in the codebase?</td><td><code>&lt;artifact-root&gt;/impact-analysis/</code></td></tr>
+        <tr><td><code>speckit.spectra.defect-rca</code> (SPECTRA)</td><td>Why did this defect happen, and what prevents it recurring?</td><td><code>&lt;artifact-root&gt;/defect-rca/</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>This module uses the first and third; Module 6 uses the second. <code>&lt;artifact-root&gt;</code> is <code>docs/</code> unless your constitution declares an <code>Artifact root:</code> line.</p>
+
+    <h3>4.1 Impact: what the idea would actually touch</h3>
+    <p>Research looks outward, at users and prior art. <code>speckit.spectra.impact</code> looks inward: give it one paragraph describing what should be true after the change, and it reads the project, asks at most five questions the code cannot answer, and writes a numbered analysis where every finding carries a <code>path:line</code> citation and a confidence level. It states how much it read and what it searched for without finding, derives its rating from fixed triggers, never claims there is no impact, and makes no network requests.</p>
+    <p>That evidence feeds <strong>research</strong> (cited constraints and evidence against, instead of assumptions about the code), <strong>shape</strong> (realistic appetites and rabbit holes), and <strong>decide</strong> (grounded feasibility and risk ratings). Know its limit: impact can show an idea is expensive, never that anyone wants it. Code carries no evidence of demand.</p>
+
+    <h3>4.2 BRD: structure a <code>go</code> before specify</h3>
+    <p>After a <code>go</code>, you can hand the summary straight to <code>/speckit-specify</code>. When the requirement needs more structure first &mdash; prioritized user journeys and testable business requirements for a product owner to approve in Plan &mdash; run <code>/speckit-spectra-brd</code> on it. It writes a specify-ready BRD under <code>&lt;artifact-root&gt;/brd/</code>, asks questions only where there are gaps, never invents scope, and tells you to run specify rather than running it.</p>
+    <p>Several of these documents could each hold the same success metrics. Give each a single job:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Artifact</th><th>Its job</th><th>Success metrics</th></tr></thead>
+      <tbody>
+        <tr><td><code>problem.md</code>, <code>decision.md</code></td><td>Why: problem, evidence, verdict</td><td>First written here, as the decision&rsquo;s yardstick. After handoff, a record &mdash; don&rsquo;t edit it to match later changes.</td></tr>
+        <tr><td>Impact analysis</td><td>What it would touch; risk; rollback</td><td>None. Evidence, not requirements.</td></tr>
+        <tr><td>BRD (optional)</td><td>Journeys, requirements, scope</td><td>Carried over from the handoff summary, not rewritten; can link back to <code>decision.md</code>.</td></tr>
+        <tr><td><code>spec.md</code></td><td>What to build</td><td>Success Criteria. From here on, metrics change only here.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Metrics flow one way &mdash; <code>problem.md</code>, handoff, BRD, spec &mdash; and change only in the newest artifact in that chain.</p>
+
+    <h2>Lab &mdash; Should the to-do app sync across devices?</h2>
+    <div class="lab-card">
+      <div class="lab-card-icon">&#9733;</div>
+      <div class="lab-card-body">
+        <div class="lab-card-title">Lab codebase &mdash; <code>lab-codebase.zip</code></div>
+        <div class="lab-card-meta">The same Next.js to-do app as Module 4. Use your Module 4 project if you have it; download only if you are starting fresh.</div>
+      </div>
+      <a class="lab-card-link" href="lab-codebase.zip" download>Download</a>
+    </div>
+    <p>You will assess two ideas. <strong>&ldquo;Sync to-dos across devices&rdquo;</strong> sounds like something every to-do app should have, and runs straight into what this codebase is. <strong>&ldquo;Show only open tasks&rdquo;</strong>, the stretch, is small enough to reach a <code>go</code>. Nothing in this lab edits source code or runs the app. Prompts use the Claude Code / Copilot spelling; Module 1 lists the others.</p>
+
+    <h2><span class="h2-num">5.</span>Set up (5 min)</h2>
+    <h3>5.1 Open the project</h3>
+    <p>Open your Module 4 project, where SPECTRA is already installed, and commit any leftover work so this lab&rsquo;s files show up cleanly in <code>git status</code>. If you skipped Module 4, start fresh:</p>
+<pre><code>unzip lab-codebase.zip -d ~/sdd-assess-lab
+cd ~/sdd-assess-lab/lab-codebase
+git init &amp;&amp; git add -A &amp;&amp; git commit -m "baseline"
+spectra install</code></pre>
+    <p>Accept the offer to initialize Spec Kit, pick your agent, and restart it. No <code>npm install</code> needed.</p>
+
+    <h3>5.2 Add the assess extension</h3>
+<pre><code>specify extension add assess</code></pre>
+    <p>The install ends with <code>&#9888; Configuration may be required</code>, pointing at <code>.specify/extensions/assess/</code>. Ignore it; the extension ships no configuration file. Then <strong>restart your agent</strong> so it loads the five new commands.</p>
+    <ul class="checklist">
+      <li><code>specify extension list</code> shows <code>assess</code>, and typing <code>/speckit-assess</code> in your agent offers all five stages.</li>
+      <li>If the add fails, run <code>spectra version</code>: the course needs Spec Kit 1.0.9 or later, and <code>spectra update</code> brings it current.</li>
+    </ul>
+
+    <h2><span class="h2-num">6.</span>Intake: capture the idea (5 min)</h2>
+<pre><code>/speckit-assess-intake "Sync to-dos across devices, so a task I add on my laptop is there on my phone." This is an idea for this repository; read enough of the codebase to record what it relates to. slug=sync-across-devices</code></pre>
+    <p>The agent writes <code>.specify/assessments/sync-across-devices/intake.md</code>. If it asks for a slug, you left off <code>slug=</code>.</p>
+    <p><strong>Human gate:</strong> you confirm the idea was recorded faithfully, before anyone evaluates it. Check <code>intake.md</code>:</p>
+    <ul class="checklist">
+      <li>It quotes your words, and the restatement is neutral &mdash; neither &ldquo;a great addition&rdquo; nor &ldquo;infeasible&rdquo;.</li>
+      <li>&ldquo;Raised by&rdquo; and &ldquo;Trigger&rdquo; are <code>[NEEDS CLARIFICATION: &hellip;]</code> unless you supplied them. An invented trigger (&ldquo;users have been asking&rdquo;) is fabrication; correct it.</li>
+      <li>Unknowns are listed but not answered &mdash; which devices, whose account, two devices editing one task &mdash; and there is no solution or verdict.</li>
+    </ul>
+
+    <h2><span class="h2-num">7.</span>Research: evidence for and against (7 min)</h2>
+<pre><code>/speckit-assess-research slug=sync-across-devices</code></pre>
+    <p>The agent may search the web. If it asks to fetch a host it doesn&rsquo;t recognize, the default is no; say yes only for a site you know.</p>
+    <p><strong>Human gate:</strong> you decide whether this research actually challenges the idea. Check <code>research.md</code>:</p>
+    <ul class="checklist">
+      <li>Every finding carries <code>[source: &hellip;]</code> or <code>[ASSUMPTION]</code>, plus a confidence level.</li>
+      <li>&ldquo;Evidence Against the Idea&rdquo; has substance. The README alone supplies some: no backend, no auth, no sync.</li>
+      <li>&ldquo;Users &amp; Demand&rdquo; is honest. A course app has no real users, so expect <code>ASSUMPTION</code> and low confidence. An invented survey result is a failure; an admitted gap is not.</li>
+      <li>Spot-check one listed source: the claim is really there.</li>
+    </ul>
+    <p>If something fails, ask the agent to fix that part of <code>research.md</code>. Don&rsquo;t re-run the stage.</p>
+
+    <h2><span class="h2-num">8.</span>Ground it in the code with impact (10 min)</h2>
+    <h3>8.1 Run the impact analysis</h3>
+<pre><code>/speckit-spectra-impact A person who uses the to-do app on more than one device sees the same tasks on each: a task added, completed, or deleted on one device appears on the others without any manual export or import. Today each browser keeps its own separate list.</code></pre>
+    <p>When it asks whether this repository is the only system involved, answer <strong>1 &mdash; just this repository</strong>; the document records that you said so. It may then ask up to five questions, one at a time, each with a recommendation. Answer as the product owner, or press Enter to accept it (recorded as <em>defaulted &mdash; not confirmed</em>). It writes a numbered analysis and a folder index under <code>docs/impact-analysis/</code>, or your declared artifact root.</p>
+    <p><strong>Human gate:</strong> the analysis is always a <code>draft</code>; you decide what it means. Check that:</p>
+    <ul class="checklist">
+      <li>Findings cite <code>path:line</code> in files you recognize, such as the localStorage helpers in <code>lib/storage.ts</code>.</li>
+      <li>It names what it searched for and did not find &mdash; server routes, network calls, authentication. That <em>evidenced absence</em> proves there is no backend to build on.</li>
+      <li>The rating names its trigger, coverage is stated, and effort is a coupling heuristic, not days.</li>
+      <li>If the security and privacy lens fired, it routes to a named agent rather than analysing. That agent may not exist yet; a routed item is a handoff, not a promise.</li>
+    </ul>
+
+    <h3>8.2 Fold the findings into research</h3>
+    <p>Decide weighs the artifacts in the assessment directory, so evidence that lives only in <code>docs/</code> won&rsquo;t reach it. Bring it in:</p>
+<pre><code>Add the relevant findings from docs/impact-analysis/&lt;NNN&gt;-&lt;name&gt;.md to
+.specify/assessments/sync-across-devices/research.md, under "Data &amp; Constraints"
+and "Evidence Against the Idea". Keep each path:line citation as the source,
+list the analysis under Sources, and use research.md's own high/medium/low
+confidence scale. Add nothing the analysis does not say, and keep every
+existing source and confidence tag.</code></pre>
+    <ul class="checklist">
+      <li>The new findings carry <code>path:line</code> sources, and the demand findings are unchanged &mdash; code is no evidence anyone wants sync.</li>
+    </ul>
+
+    <h2><span class="h2-num">9.</span>Define, then shape (8 min)</h2>
+    <h3>9.1 Define the problem</h3>
+<pre><code>/speckit-assess-define slug=sync-across-devices</code></pre>
+    <p><strong>Human gate:</strong> you confirm the problem is stated as a problem, not a feature. Check <code>problem.md</code>:</p>
+    <ul class="checklist">
+      <li>It doesn&rsquo;t say &ldquo;build sync&rdquo;. It says who is stuck: someone using more than one device can&rsquo;t see the same tasks on each.</li>
+      <li>Users that research didn&rsquo;t support are marked <code>[NEEDS CLARIFICATION: &hellip;]</code>, and non-goals bound the idea (sharing lists with other people, real-time collaboration).</li>
+      <li>Success metrics are measurable, even with an &ldquo;unknown&rdquo; baseline, and the cost of inaction is honest.</li>
+    </ul>
+
+    <h3>9.2 Shape the options &mdash; and talk about appetite</h3>
+<pre><code>/speckit-assess-shape slug=sync-across-devices</code></pre>
+    <p>Here the idea meets the codebase. The app has no backend, so real sync means <em>building one</em>: somewhere to store tasks, a way to know whose they are, and a rule for when two devices change the same task. Before reading <code>concept.md</code>, decide: how much is this worth to a 200-line, single-browser app? A day? A month? That is the <strong>appetite</strong> &mdash; a budget you set, not an estimate you are handed.</p>
+    <p><strong>Human gate:</strong> check that shaping stayed at concept level and took appetite seriously:</p>
+    <ul class="checklist">
+      <li>Two or three genuinely different options, including a smallest-thing-that-could-work and, where sensible, do nothing or buy instead of build &mdash; each with appetite, trade-offs, and rabbit holes.</li>
+      <li>No endpoints, schemas, or task lists. If they crept in, ask the agent to remove them.</li>
+      <li>The recommendation ties back to <code>problem.md</code>&rsquo;s goals &mdash; or recommends none, which is valid.</li>
+    </ul>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample options</span> &mdash; the spread a reasonable concept.md might weigh</span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+        <ul>
+          <li><strong>Export and import a file</strong> (small). No backend. But it isn&rsquo;t really sync: it is manual, and an old file can overwrite newer tasks.</li>
+          <li><strong>A hosted sync service</strong> (medium). Less to build, but accounts, a vendor, ongoing cost, and task data leaving the device.</li>
+          <li><strong>Our own backend with accounts</strong> (large). Rabbit holes: conflicting edits, identity, hosting, privacy.</li>
+          <li><strong>Do nothing.</strong> Each browser keeps its own list, as the README already says.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2><span class="h2-num">10.</span>Decide (5 min)</h2>
+<pre><code>/speckit-assess-decide slug=sync-across-devices</code></pre>
+    <p>Expect <code>needs-clarification</code> or <code>kill</code>. Read the scorecard like this:</p>
+    <ol>
+      <li><strong>Problem validity and Evidence strength first</strong> &mdash; they gate a <code>go</code>. With demand resting on assumptions, Evidence strength shouldn&rsquo;t be above <code>weak</code>.</li>
+      <li><strong>Every justification points at an artifact.</strong> &ldquo;Feasibility: weak&rdquo; should cite the missing backend, not a feeling. Every <code>unknown</code> is acknowledged.</li>
+      <li><strong>The verdict follows the ratings.</strong> Weak evidence plus <code>go</code> is an over-claim; push back.</li>
+    </ol>
+    <p>For this idea, <strong><code>needs-clarification</code></strong> means named unknowns block the call &mdash; typically real demand, and the appetite for a backend. <strong><code>kill</code></strong> means cost beats value: a backend, identity, and hosting, for demand nobody has shown (and if your Module 4 constitution kept &ldquo;no backend&rdquo;, Strategic fit agrees). A <strong><code>go</code></strong> is a red flag; check Evidence strength.</p>
+    <p><strong>Human gate:</strong> you are the product owner. The verdict is a recommendation; accepting it, or overriding it with a reason, is your call. Commit now so the next step&rsquo;s changes are easy to review (adjust the second path if you declared another artifact root):</p>
+<pre><code>git add .specify/assessments docs/impact-analysis
+git commit -m "Assess sync across devices"</code></pre>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample scorecard</span> &mdash; one defensible reading, not the only right answer</span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+        <p>A <strong>sample</strong>. Your ratings will differ; what matters is that each is justified from the artifacts and the verdict follows the rules.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Criterion</th><th>Rating</th><th>Justification</th></tr></thead>
+          <tbody>
+            <tr><td>Problem validity</td><td><code>weak</code></td><td>Plausible, but no user signal for this app; demand is <code>ASSUMPTION</code>.</td></tr>
+            <tr><td>Evidence strength</td><td><code>weak</code></td><td>Codebase findings cited from the impact analysis; demand uncited. Research confidence: low.</td></tr>
+            <tr><td>Value vs. inaction</td><td><code>unknown</code></td><td>Each browser keeps its own list; no data on how many people hit that.</td></tr>
+            <tr><td>Feasibility / appetite</td><td><code>weak</code></td><td>Beyond manual export, every option needs storage, identity, and a server the app lacks (impact: localStorage only, no API routes, no auth).</td></tr>
+            <tr><td>Strategic fit</td><td><code>weak</code></td><td>The Module 4 constitution declares localStorage-only persistence, no backend.</td></tr>
+            <tr><td>Risk posture</td><td><code>weak</code></td><td>Conflicting edits, task data leaving the device, running a service &mdash; named, none mitigated.</td></tr>
+          </tbody>
+        </table></div>
+        <p><strong>Verdict: <code>needs-clarification</code>.</strong> Blocking: <code>[NEEDS CLARIFICATION: Do people use this app on more than one device?]</code> and <code>[NEEDS CLARIFICATION: What appetite will we accept for building and running a backend?]</code> Revisit: research, shape.</p>
+        <p>A <code>kill</code> is equally defensible (&ldquo;cost exceeds value: a backend, accounts, and hosting for demand nobody has evidenced&rdquo;). The indefensible answer is <code>go</code>.</p>
+      </div>
+    </div>
+
+    <h2><span class="h2-num">11.</span>Refine instead of re-running (5 min)</h2>
+    <p>Pick one <code>[NEEDS CLARIFICATION: &hellip;]</code> marker you can answer and resolve it. Appetite is the easiest, and it lives in <code>concept.md</code>. For this exercise you are the product owner, so a fact you supply is sourced to you:</p>
+<pre><code>As product owner, I have confirmed the appetite for this idea: at most one week
+of work, and no hosted service we would have to run or pay for. Record that in
+.specify/assessments/sync-across-devices/concept.md, sourced to me with today's
+date, and adjust any wording there that depended on the old appetite. Then check
+whether this resolves a blocker in decision.md; if it does, revise the scorecard,
+rationale, and verdict in place. Keep every source and confidence tag, and do not
+regenerate either file.</code></pre>
+    <p>Or edit <code>concept.md</code> yourself &mdash; replace the marker with the fact and <code>[source: product owner, &lt;date&gt;]</code> &mdash; then ask the agent to revise <code>decision.md</code>.</p>
+    <p>With that appetite no real sync option fits, so expect the verdict to harden, often to <code>kill</code>. Resolving an unknown doesn&rsquo;t always move an idea forward; sometimes it closes the question. That is the funnel doing its job.</p>
+    <p><strong>Human gate:</strong> you supplied the fact; the agent must not invent anything around it. Run <code>git diff</code>:</p>
+    <ul class="checklist">
+      <li>A few targeted lines changed in <code>concept.md</code> and <code>decision.md</code> &mdash; not two rewritten files.</li>
+      <li>The marker is gone, the fact carries its source, and the rationale says what changed and why the verdict did or didn&rsquo;t move.</li>
+      <li>Nobody re-ran shape or decide. If the agent offers to, it must ask before overwriting &mdash; say no.</li>
+    </ul>
+
+    <h2><span class="h2-num">12.</span>Stretch: take a small idea to <code>go</code>, and hand it off (10 min)</h2>
+    <p>Now a proportionate idea. Today finished tasks stay in the list, struck through. Run each stage separately and review each artifact, as before:</p>
+<pre><code>/speckit-assess-intake "Let me hide completed tasks so I only see what is still open." This is an idea for this repository. slug=show-open-tasks</code></pre>
+<pre><code>/speckit-assess-research slug=show-open-tasks Include prior art from other to-do apps, such as the TodoMVC project on github.com.</code></pre>
+<pre><code>/speckit-assess-define slug=show-open-tasks</code></pre>
+<pre><code>/speckit-assess-shape slug=show-open-tasks</code></pre>
+<pre><code>/speckit-assess-decide slug=show-open-tasks</code></pre>
+    <p>This should score very differently: small appetite, nothing leaving the browser, a comfortable fit with how the app works, plenty of prior art. A <code>go</code> is likely. If you get <code>needs-clarification</code>, find the criterion that blocked it &mdash; usually Evidence strength &mdash; and refine that artifact.</p>
+    <p><strong>Human gate:</strong> a <code>go</code> says the idea is worth specifying, not that you must build it. If you go ahead, the handoff is yours:</p>
+<pre><code>/speckit-specify Use the handoff summary in .specify/assessments/show-open-tasks/decision.md to specify a way to show only the open tasks in the to-do list.</code></pre>
+    <p>Or structure it as a business requirement first: run the BRD agent on the decision, then give the BRD it writes to <code>/speckit-specify</code>. Pick one route, so the metrics live once in the chain.</p>
+<pre><code>/speckit-spectra-brd .specify/assessments/show-open-tasks/decision.md</code></pre>
+    <ul class="checklist">
+      <li>The new <code>spec.md</code> takes its success criteria from the handoff instead of inventing new ones.</li>
+      <li>The out-of-scope items survived, and the carried-forward questions are open questions, ready for <code>/speckit-clarify</code>.</li>
+    </ul>
+    <p><strong>Stop there</strong>; don&rsquo;t run <code>/speckit-plan</code>. The point is the moment discovery hands over to delivery.</p>
+
+    <h2><span class="h2-num">13.</span>Optional: run the assessment as a workflow</h2>
+    <p>Spec Kit also ships the process as a first-party <strong>bundle</strong>: the <code>assess</code> extension plus an <code>assess</code> workflow. It needs network access and Spec Kit 1.0.9 or later, and sits outside the 75 minutes. Read what a bundle installs before installing it:</p>
+<pre><code>specify bundle info assess
+specify bundle install assess
+specify workflow run assess --input idea="Let me reorder tasks by dragging them" --input slug="reorder-tasks"</code></pre>
+    <p>It runs the five stages back to back, then stops at a final <code>review-verdict</code> gate: <strong>approve</strong> completes the assessment, <strong>reject</strong> aborts it. A <code>go</code> is still handed off manually. You trade the per-stage reviews for one review of all five artifacts at the end, so a bad intake is caught late. Use a fresh slug: stages won&rsquo;t overwrite existing artifacts in an unattended run. The workflow suits triaging a queue of ideas the same way every time; the stage-by-stage path suits contested ideas, and learning.</p>
+
+    <h2>Knowledge check</h2>
+    <div class="quiz">
+      <div class="quiz-header"><span class="quiz-title">Knowledge check</span><span class="quiz-progress">7 questions</span></div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">1. Where does idea assessment sit in SPECTRA&rsquo;s agentic SDLC, and what does it need first?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>In 02 Design; it needs an approved <code>spec.md</code>.</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>Before 01 Plan; it needs only an initialized project &mdash; no code, constitution, or spec.</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>In 06 Maintain; it needs a reproduction.</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>After 03 Implement; it needs working code.</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: b</div><div>Assessment decides whether Plan should start at all, and it works in an empty initialized project with no SDD artifacts. Bug fixing is what belongs to Maintain.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="c">
+        <div class="quiz-q-prompt">2. A scorecard rates Problem validity and Feasibility <code>strong</code>, Evidence strength <code>weak</code>, and a concept is recommended. What is the most positive verdict it can honestly record?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span><code>go</code>, because two criteria are <code>strong</code>.</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span><code>go</code>, if a person approves it.</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span><code>needs-clarification</code>.</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span><code>kill</code>.</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: c</div><div>A <code>go</code> needs Problem validity <em>and</em> Evidence strength at <code>adequate</code> or better, plus a recommended concept. Weak evidence caps the verdict at <code>needs-clarification</code> however strong the rest is. <code>kill</code> is possible, but not the most positive.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="d">
+        <div class="quiz-q-prompt">3. A <code>research.md</code> lists six findings, all in favour, and has no &ldquo;Evidence Against the Idea&rdquo; section. What do you do?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>Accept it &mdash; the idea is simply good.</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>Skip research and let decide weigh the risks.</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Delete the assessment and run all five stages again.</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Ask the agent to add the section, sourced or tagged <code>ASSUMPTION</code> &mdash; and to say so there if it truly finds nothing.</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: d</div><div>The section is required every time, and &ldquo;none found&rdquo; must be said explicitly. You fix it by refining the artifact; skipping research never waives the evidence bar, and regenerating everything is not how gaps are filled.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="a">
+        <div class="quiz-q-prompt">4. The verdict is <code>needs-clarification</code> because <code>concept.md</code> has an appetite marker. The product owner now says: one week, no hosted service. What next?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>Record the appetite in <code>concept.md</code> (yourself or via the agent), keep the tags, then revise <code>decision.md</code> if the blocker clears.</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>Re-run <code>/speckit-assess-shape</code>, then <code>/speckit-assess-decide</code>.</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Start a new assessment under a new slug.</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Hand it to <code>/speckit-specify</code> and settle appetite during planning.</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: a</div><div>Clarifications are resolved by refining the affected artifact, then the decision. Re-running is for exceptions such as a wrong slug, and asks before overwriting. Handing off an unresolved decision skips the gate.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="c">
+        <div class="quiz-q-prompt">5. What does <code>/speckit-spectra-impact</code> add that the assess stages don&rsquo;t produce themselves?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>Evidence that users want the feature.</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>A <code>go</code> / <code>needs-clarification</code> / <code>kill</code> verdict.</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Cited <code>path:line</code> evidence of what the change would touch, a rating with its trigger, and a statement of how much it read.</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>A first draft of <code>spec.md</code>.</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: c</div><div>Impact traces what a change would disturb, with citations and a stated coverage boundary. It cannot show demand &mdash; code says nothing about whether anyone wants a feature. The verdict belongs to decide, and impact never creates or links a spec.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">6. <code>show-open-tasks</code> reaches <code>go</code>. What happens next?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>A Spec Kit hook runs <code>/speckit-specify</code> with the handoff summary.</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>A person decides whether to act; if so, they run <code>/speckit-specify</code> with the handoff summary themselves, optionally via <code>/speckit-spectra-brd</code> first.</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>The decide stage writes <code>spec.md</code> from the handoff summary.</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>The assess workflow continues into <code>/speckit-plan</code>.</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: b</div><div>The extension registers no hooks, and decide only prepares the handoff; it never writes a spec. Even the workflow stops at its <code>review-verdict</code> gate. Crossing into delivery is a deliberate human step.</div></div>
+      </div>
+
+      <div class="quiz-question">
+        <div class="quiz-q-prompt">7. Your sync assessment ends in <code>kill</code>. A teammate says the hour was wasted, because nothing got built. What do you tell them?</div>
+        <button class="quiz-open-toggle">Reveal answer</button>
+        <div class="quiz-open-answer">The <code>kill</code> is the deliverable. For an hour of reading, we learned that sync means building and running a backend, accounts, and conflict handling the app doesn&rsquo;t have (cited in the impact analysis), for demand nobody has evidenced (every demand claim is an <code>ASSUMPTION</code>), against a constitution that says localStorage only. Otherwise we would have found out weeks into a plan. And because <code>decision.md</code> records the decisive reason, whoever proposes sync again &mdash; say, once real users ask &mdash; can reopen it with new evidence against a named assumption instead of restarting the argument.</div>
+      </div>
+    </div>
+
+    <hr>
+
+    <h3>What's next</h3>
+    <p>This module asked whether something new should be built. <strong>Module 6, Bug Fix</strong>, turns to something already built that is broken. You will take a real defect in a fresh copy of the lab app through Spec Kit&rsquo;s <code>bug</code> workflow &mdash; assess, fix, verify &mdash; with a diagnosis before any code changes, a fix that stays inside what the diagnosis covers, and verification against the original reproduction.</p>
+
+    <div class="module-footer-nav">
+      <a class="mod-nav-prev" href="module-4.html">
+        <span class="mod-nav-label">&larr; Previous &middot; Module 4</span>
+        <span class="mod-nav-title">Brownfield Lab</span>
+      </a>
+      <a class="mod-nav-next" href="bugfix.html">
+        <span class="mod-nav-label">Next &middot; Module 6 &rarr;</span>
+        <span class="mod-nav-title">Bug Fix</span>
+      </a>
+    </div>
+  </article>
+</main>
+<script>
+  // Auto-attach copy buttons to all <pre> blocks
+  document.querySelectorAll('pre').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-block';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', async () => {
+      const text = pre.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1400);
+    });
+    wrap.appendChild(btn);
+  });
+
+  // Reveal-on-click blocks
+  document.querySelectorAll('.reveal-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      trigger.parentElement.classList.toggle('open');
+    });
+  });
+
+  // Quiz logic — multiple choice
+  document.querySelectorAll('.quiz-question[data-type="mc"]').forEach((q) => {
+    const correct = q.dataset.correct;
+    const opts = q.querySelectorAll('.quiz-opt');
+    const feedback = q.querySelector('.quiz-feedback');
+    opts.forEach((opt) => {
+      opt.addEventListener('click', () => {
+        const choice = opt.dataset.choice;
+        opts.forEach((o) => {
+          o.disabled = true;
+          if (o.dataset.choice === correct) {
+            o.classList.add('correct');
+          } else if (o === opt) {
+            o.classList.add('incorrect');
+          } else {
+            o.classList.add('dim');
+          }
+        });
+        if (feedback) {
+          feedback.classList.add('show');
+          feedback.classList.add(choice === correct ? 'correct' : 'incorrect');
+        }
+      });
+    });
+  });
+
+  // Quiz logic — open-ended (just reveal)
+  document.querySelectorAll('.quiz-open-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const ans = btn.nextElementSibling;
+      if (ans && ans.classList.contains('quiz-open-answer')) {
+        ans.classList.toggle('show');
+        btn.textContent = ans.classList.contains('show') ? 'Hide answer' : 'Reveal answer';
+      }
+    });
+  });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
+</script>
+</body>
+</html>

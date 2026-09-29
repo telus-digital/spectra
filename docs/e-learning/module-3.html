@@ -630,14 +630,17 @@
       <span class="course-nav-brand-text">SDD Learning</span>
     </a>
     <div class="course-nav-modules">
-      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA — Learning">Home</a>
-      <a href="module-1.html" title="Module 1 — SDD Foundations">1</a>
-      <a href="module-2.html" title="Module 2 — Anatomy of a Good Spec">2</a>
-      <a href="module-3.html" title="Module 3 — Greenfield Lab — SPECTRA from Scratch" class="is-active">3</a>
-      <a href="module-4.html" title="Module 4 — Brownfield Lab — Add “Due Date” ★">4</a>
-      <a href="module-5.html" title="Module 5 — Best Practices &amp; Pitfalls">5</a>
-      <a href="module-6.html" title="Module 6 — Quality, Testing &amp; Team Collaboration">6</a>
-      <a href="AI-DLC.html" title="AI-DLC — From SDLC to AI-Driven Development">AI-DLC</a>
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch" class="is-active">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
     </div>
   </div>
 </nav>
@@ -646,11 +649,11 @@
   <header class="hero">
     <div class="hero-eyebrow">Module 3</div>
     <h1>Greenfield Lab &mdash; SPECTRA from Scratch</h1>
-    <p class="hero-lede">Install SPECTRA, walk through the four-phase workflow on a small to-do app, and feel the workflow in your hands before applying it to a real codebase.</p>
+    <p class="hero-lede">Install SPECTRA, then take a small to-do app through Spec Kit&rsquo;s full path &mdash; constitution to converge &mdash; stopping at every human gate. Feel the whole workflow in your hands before you point it at a real codebase.</p>
     <div class="meta">
       <div class="meta-item">
         <span class="meta-label">Time</span>
-        <span class="meta-value">90 min</span>
+        <span class="meta-value">2 hours</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Format</span>
@@ -658,7 +661,7 @@
       </div>
       <div class="meta-item">
         <span class="meta-label">Prerequisites</span>
-        <span class="meta-value">Modules 1, 2; an AI agent; Node 18+; uv &amp; Git</span>
+        <span class="meta-value">Modules 1, 2; an AI agent; Node 18.18+; uv &amp; Git</span>
       </div>
     </div>
   </header>
@@ -668,261 +671,390 @@
     <h3>Learning objectives</h3>
     <p>By the end of this module, you will be able to:</p>
     <ol>
-      <li>Install SPECTRA and initialize a new project with a chosen AI agent.</li>
-      <li>Walk through the four-phase workflow (<code>/speckit.specify</code> &rarr; <code>/speckit.plan</code> &rarr; <code>/speckit.tasks</code> &rarr; <code>/speckit.implement</code>) end to end on a small greenfield feature.</li>
-      <li>Identify the artifacts produced at each phase and review them critically.</li>
+      <li>Install SPECTRA into a new project and confirm your AI agent can see the Spec Kit and SPECTRA commands.</li>
+      <li>Run Spec Kit&rsquo;s full path end to end on a small greenfield app: <code>/speckit-constitution</code> &rarr; <code>/speckit-specify</code> &rarr; <code>/speckit-clarify</code> &rarr; <code>/speckit-plan</code> &rarr; <code>/speckit-checklist</code> &rarr; <code>/speckit-tasks</code> &rarr; <code>/speckit-analyze</code> &rarr; <code>/speckit-implement</code> &rarr; <code>/speckit-converge</code>.</li>
+      <li>Name the artifact each step produces and review it critically before moving on.</li>
+      <li>Act at each human gate: answer clarify&rsquo;s questions, tick the checklist yourself, and fix each analyze finding where it belongs.</li>
       <li>Recognize when the agent is making assumptions you should have specified explicitly.</li>
     </ol>
 
     <h3>What you'll build</h3>
     <p>A simple <strong>single-page to-do web app</strong>. Users can add tasks, see them listed, mark them done (and undo), and delete them. Tasks persist in the browser via <code>localStorage</code> &mdash; no database, no backend.</p>
-    <p>Tech stack:</p>
+    <p>Tech stack, as <code>create-next-app</code> 15 scaffolds it:</p>
     <ul>
-      <li><strong>Next.js 14</strong> (App Router) for the framework</li>
-      <li><strong>React 18</strong> with TypeScript</li>
-      <li><strong>Tailwind CSS</strong> for styling</li>
+      <li><strong>Next.js 15</strong> (App Router) for the framework</li>
+      <li><strong>React 19</strong> with TypeScript</li>
+      <li><strong>Tailwind CSS v4</strong> for styling</li>
       <li><strong>localStorage</strong> for persistence</li>
     </ul>
-    <p>This is small enough to finish in 90 minutes, but real enough to require thinking about edge cases. It's also a useful mirror for Module 4: when you start the brownfield lab, you'll be working with a starter app that looks structurally similar to what you build here. Same stack; different starting point.</p>
-    <div class="note"><span class="note-label">A note on Git.</span>This lab deliberately skips Git. Everything stays local on disk. You'll see the four-phase artifacts as files in your project, not as commits. In real work, committing at each phase boundary is a useful habit (covered in Module 5) &mdash; but for a 90-minute lab, the ceremony gets in the way of feeling the workflow.</div>
+    <p>This is small enough to finish in two hours, but real enough to require thinking about edge cases. It's also a mirror for Module 4, whose starter is a to-do app of the same shape on the same framework (it pins React 18 and Tailwind CSS 3; nothing in either lab depends on the difference).</p>
 
-    <h2><span class="h2-num">1.</span>Setup (15 minutes)</h2>
+    <h3>The route</h3>
+    <p>This lab runs Spec Kit&rsquo;s <strong>full path</strong>: the core loop plus three optional quality gates &mdash; clarify, checklist, and analyze &mdash; which SPECTRA&rsquo;s roster lists as add-ons. A feature this small could take the short path (specify &rarr; plan &rarr; tasks &rarr; implement &rarr; converge); you take the long way once so you know what each gate buys you.</p>
+    <p>Agents draft, people decide. Every step stops at a human gate, and in this lab every role at the gate is you. Feature artifacts land in <code>specs/001-&lt;name&gt;/</code>.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Step</th><th>You run</th><th>It produces</th><th>Human gate</th></tr></thead>
+      <tbody>
+        <tr><td>2</td><td><code>/speckit-constitution</code></td><td><code>.specify/memory/constitution.md</code></td><td>Foundation &mdash; leads approve every standard</td></tr>
+        <tr><td>3</td><td><code>/speckit-specify</code></td><td><code>spec.md</code>, <code>checklists/requirements.md</code></td><td>Plan &mdash; the product owner approves intent and scope</td></tr>
+        <tr><td>4</td><td><code>/speckit-clarify</code></td><td>Your answers, written into <code>spec.md</code></td><td>Plan &mdash; the product owner answers</td></tr>
+        <tr><td>5</td><td><code>/speckit-plan</code></td><td><code>plan.md</code> and supporting design files</td><td>Design &mdash; architects approve the design</td></tr>
+        <tr><td>6</td><td><code>/speckit-checklist</code></td><td><code>checklists/&lt;name&gt;.md</code></td><td>Plan, revisited &mdash; the reviewer ticks each item</td></tr>
+        <tr><td>7</td><td><code>/speckit-tasks</code></td><td><code>tasks.md</code></td><td>Implement &mdash; engineers review the breakdown</td></tr>
+        <tr><td>8</td><td><code>/speckit-analyze</code></td><td>A report; no file changes</td><td>Implement &mdash; you decide what each finding means</td></tr>
+        <tr><td>9</td><td><code>/speckit-implement</code></td><td>Code; tasks ticked <code>[X]</code></td><td>Implement &mdash; engineers review every change</td></tr>
+        <tr><td>10</td><td><code>/speckit-converge</code></td><td>Nothing, or new tasks in <code>tasks.md</code></td><td>Implement &mdash; you decide when it&rsquo;s done</td></tr>
+        <tr><td>&mdash;</td><td><code>/speckit-spectra-create-pr</code> (offered)</td><td>Nothing: you decline it</td><td>Deploy &mdash; a maintainer merges</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><span class="note-label">Two different &ldquo;plans&rdquo;.</span>SPECTRA&rsquo;s <em>Plan</em> phase turns a business ask into requirements and testable stories. The <code>speckit.plan</code> command belongs to the <em>Design</em> phase: it writes the technical plan.</div>
+    <div class="note"><span class="note-label">A note on Git.</span>Spec Kit doesn&rsquo;t need Git: it tracks the <em>active feature</em> in <code>.specify/feature.json</code>, not by the branch you have checked out. <code>create-next-app</code> normally runs <code>git init</code> and makes one commit for you (<code>--disable-git</code> skips that); after that, this lab never asks you to commit. In real work, committing at each human gate is a cheap habit (Module 8). For numbered feature branches such as <code>001-todo-app</code>, <code>specify extension add git</code> adds them &mdash; the active feature still comes from <code>.specify/feature.json</code>.</div>
+
+    <h2><span class="h2-num">1.</span>Setup (15 min)</h2>
 
     <h3>1.1 Pick your AI agent</h3>
-    <p>SPECTRA works with every agent Spec Kit supports. Pick whichever you have access to:</p>
-    <ul>
-      <li><strong>Claude Code</strong> (recommended for this lab &mdash; strongest spec-writing performance)</li>
-      <li><strong>GitHub Copilot</strong> (in VS Code)</li>
-      <li><strong>Cursor</strong></li>
-      <li><strong>Gemini CLI</strong></li>
-    </ul>
-    <p>If your team has mixed adoption, this is a good moment to pair up &mdash; one person drives, one observes.</p>
+    <p>SPECTRA works with any coding agent Spec Kit supports &mdash; Claude Code, GitHub Copilot, Cursor, Gemini CLI, and many more. The course&rsquo;s command examples use the Claude Code and Copilot trigger form; if your agent spells commands differently, see Module 1&rsquo;s &ldquo;Command spelling&rdquo; note. If your team has mixed adoption, pair up: one person drives, one observes.</p>
 
     <h3>1.2 Scaffold the Next.js project</h3>
-    <p>Use the official <code>create-next-app</code> to scaffold. From a directory of your choice:</p>
-<pre><code>npx create-next-app@14 todo-app --typescript --tailwind --app --no-src-dir --no-eslint --import-alias "@/*"
+    <p>From a directory of your choice:</p>
+<pre><code>npx create-next-app@15 todo-app --typescript --tailwind --app --no-src-dir --no-eslint --turbopack --import-alias "@/*"
 cd todo-app</code></pre>
-    <p>When prompted by older versions of the CLI, accept the defaults (App Router, Tailwind, TypeScript, no <code>src/</code> directory). The flags above pre-answer those prompts.</p>
-    <p>Verify the scaffold:</p>
-<pre><code>npm run dev</code></pre>
-    <p>Open <a href="http://localhost:3000">http://localhost:3000</a>. You should see the default Next.js welcome page. Stop the dev server with <code>Ctrl+C</code> when you've confirmed it works.</p>
+    <p>The flags pre-answer the prompts (TypeScript, Tailwind, App Router, no <code>src/</code>, no linter, Turbopack, default import alias). If your version still asks something, accept the default. Then run <code>npm run dev</code>, open <a href="http://localhost:3000">http://localhost:3000</a>, confirm you see the Next.js welcome page, and stop the server with <code>Ctrl+C</code>.</p>
 
     <h3>1.3 Install SPECTRA</h3>
-    <p>SPECTRA ships as a <a href="https://docs.astral.sh/uv/"><code>uv</code></a> tool. Install it once, from anywhere &mdash; there's no repository to clone.</p>
+    <p>SPECTRA ships as a <a href="https://docs.astral.sh/uv/"><code>uv</code></a> tool. Install it once, from anywhere:</p>
 <pre><code>uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra</code></pre>
-    <p>Verify:</p>
-<pre><code>spectra</code></pre>
-    <p>The banner prints a <code>cli vX.Y.Z</code> line &mdash; that's your installed version. Running <code>spectra</code> bare is informational only and never touches the current folder.</p>
-    <div class="note"><span class="note-label">Don't have <code>uv</code> yet?</span>On macOS or Linux run <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code>; on Windows (PowerShell) run <code>irm https://astral.sh/uv/install.ps1 | iex</code>. Open a new terminal afterwards so <code>uv</code> is on your <code>PATH</code>. You also need <strong>Git</strong>, which <code>uv</code> uses to fetch SPECTRA. Step-by-step instructions for all three operating systems are on the <a href="https://telus-digital.github.io/spectra/">SPECTRA install page</a>.</div>
-    <div class="note"><span class="note-label">What you just installed.</span><code>spectra</code> is a setup and lifecycle command, not a replacement for Spec Kit. In the next step it will install Spec Kit's <code>specify</code> CLI for you if you don't already have it &mdash; the four-phase workflow you're about to run is Spec Kit's, and SPECTRA is what puts it in place and adds agents on top.</div>
+    <p>Run <code>spectra</code> on its own to verify: the banner&rsquo;s <code>cli vX.Y.Z</code> line is your installed version. Bare <code>spectra</code> is informational only and never touches the current folder. (No <code>uv</code> or Git yet? The <a href="../index.html#prereqs">SPECTRA install guide</a> has per-OS steps.)</p>
+    <p><code>spectra</code> is a setup and lifecycle command, not a replacement for Spec Kit. The workflow you&rsquo;re about to run is Spec Kit&rsquo;s; SPECTRA puts it in place, keeps it current, and adds its own <code>speckit.spectra.*</code> agents on top.</p>
 
-    <h3>1.4 Install SPECTRA into the scaffolded project</h3>
-    <p>From the <code>todo-app/</code> directory:</p>
+    <h3>1.4 Install SPECTRA into the project</h3>
+    <p>From <code>todo-app/</code>:</p>
 <pre><code>spectra install</code></pre>
-    <p>That one command does the whole setup: it installs Spec Kit's <code>specify</code> CLI if it's missing, offers to run <code>specify init</code> because this folder isn't a Spec Kit project yet, registers the public SPECTRA catalog, and installs SPECTRA's agents. When it asks which AI agent you're using, pick the one you chose in 1.1.</p>
-    <p>After it finishes, your directory will contain (in addition to the Next.js scaffold):</p>
-<pre><code>.specify/                # Spec Kit's state, plus the SPECTRA catalog
-memory/
-&#8594; constitution.md      # Project-wide context (initially a template)
-.claude/                 # Or .github/, .cursor/, etc., depending on agent</code></pre>
-    <div class="note"><span class="note-label">Restart your AI agent.</span>Commands are written to disk at install time, so an agent that was already running won't see them. Restart it before the next step.</div>
-    <p>The four-phase slash commands (<code>/speckit.specify</code>, <code>/speckit.plan</code>, <code>/speckit.tasks</code>, <code>/speckit.implement</code>) are now available inside your AI agent's chat interface for this directory &mdash; along with SPECTRA's own <code>speckit.spectra.*</code> agents. Run <code>spectra agent-list</code> to see those; they go beyond the four phases and are outside the scope of this lab, but they're worth knowing exist.</p>
-    <div class="note"><span class="note-label">The trigger form differs by agent.</span>Spec Kit translates each command into your agent's native format at install time, so what you actually type depends on your agent. <strong>Claude</strong> registers them as skills invoked with dashes &mdash; <code>/speckit-specify</code>, <code>/speckit-plan</code>, and so on. Other agents keep the dots &mdash; kiro-cli uses <code>/speckit.specify</code>. This course writes the dotted form throughout; swap in dashes if you're on Claude. Your agent's own command or skill list shows the exact trigger.</div>
+    <p>That one command:</p>
+    <ol>
+      <li>Installs Spec Kit&rsquo;s <code>specify</code> CLI if it&rsquo;s missing.</li>
+      <li>Offers to initialize this folder as a Spec Kit project. Say yes: it runs exactly <code>specify init --here --force</code> &mdash; &ldquo;here&rdquo; is this folder, and <code>--force</code> lets it proceed in a folder that already has files. It may overwrite Spec Kit&rsquo;s own managed files but doesn&rsquo;t delete your app. When it asks for your coding agent, pick the one from 1.1.</li>
+      <li>Registers the public SPECTRA catalog.</li>
+      <li>Installs the SPECTRA extension.</li>
+    </ol>
+    <p>Your project now has, alongside the scaffold (shown for Claude Code):</p>
+<pre><code>.specify/
+  memory/constitution.md    # the constitution - a template until step 2
+  templates/                # spec, plan, tasks, checklist, constitution templates
+  extensions/spectra/       # the SPECTRA extension
+.claude/skills/             # speckit-* and speckit-spectra-* skills</code></pre>
+    <p><code>specify init</code> infers nothing from your code; everything under <code>.specify/</code> starts as a template.</p>
+    <div class="note"><span class="note-label">Restart your AI agent.</span>Commands are written to disk at install time, so an agent that was already running won't see them.</div>
+    <p>Then check the stack and see what&rsquo;s on offer:</p>
+<pre><code>spectra version
+spectra agent-list</code></pre>
+    <p><code>spectra version</code> reports every part of the stack. This course needs <strong>Spec Kit 1.0.9 or later</strong>; if yours is older, <code>spectra update</code> brings it current. <code>spectra agent-list</code> prints SPECTRA&rsquo;s roster by SDLC phase, marking each agent <em>core</em> or <em>add-on</em> and saying whether Spec Kit or SPECTRA provides it. Today you use Spec Kit&rsquo;s agents; the <code>speckit.spectra.*</code> ones are beyond this lab.</p>
+    <div class="note"><span class="note-label">No SPECTRA?</span>From step 2 on, everything except the pull-request offer in step 9 is plain Spec Kit. Install it with <code>uv tool install specify-cli</code>, then run <code>specify init --here --force --integration claude</code> in <code>todo-app/</code> (<code>specify integration list</code> shows the other agents&rsquo; keys). Add <code>--non-interactive</code> for CI or agent harnesses, and <code>--script sh|ps|py</code> to pick the helper-script flavour.</div>
 
     <h3>1.5 Sanity-check the agent</h3>
-    <p>Open your AI agent in this directory and try a no-op:</p>
-<pre><code>/speckit.specify</code></pre>
-    <p>You should see a prompt asking what feature you want to specify. If you see that, setup is done. If you don't, the agent isn't seeing the slash commands &mdash; most often a fixable matter of restarting the agent or pointing it at the right directory.</p>
+    <p>Open your agent in <code>todo-app/</code> and type <code>/speckit</code>. The command list should show <code>speckit-constitution</code> through <code>speckit-converge</code>, plus SPECTRA&rsquo;s <code>speckit-spectra-*</code> agents. If not, restart the agent and check it&rsquo;s running in <code>todo-app/</code>. (Don&rsquo;t test with a bare <code>/speckit-specify</code>: without a description it just stops with an error.)</p>
 
-    <h2><span class="h2-num">2.</span>Author the Constitution (10 minutes)</h2>
-    <p>The Constitution holds project-wide context that doesn't belong in any single spec. Open <code>memory/constitution.md</code>. It starts as a template; replace it with the following.</p>
-    <div class="note"><span class="note-label">Note.</span>Some Spec Kit versions auto-generate a richer Constitution template. If yours has more sections than this, that's fine &mdash; the content below is the <em>minimum</em> for this lab. Keep what's there if it helps, but don't add ceremony for ceremony's sake.</div>
-<pre><code># Todo app &mdash; Constitution
+    <h2><span class="h2-num">2.</span>Write the constitution (10 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Foundation.</span>Architects and engineering leads approve every standard before the first feature. Here, that&rsquo;s you.</div>
+    <p>The constitution holds project-wide standards that don't belong in any single spec. SPECTRA calls the agent that writes it <em>Guardrails</em>. It lives at <code>.specify/memory/constitution.md</code> and starts as a template. Give your standards to the command:</p>
+<pre><code>/speckit-constitution Record these standards for a single-page to-do app.
 
-## Stack
-- Next.js 14 (App Router) with TypeScript
-- React 18
-- Tailwind CSS for styling
+Stack
+- Next.js 15 (App Router) with TypeScript; React 19 as scaffolded
+- Tailwind CSS v4 for styling
 - localStorage for persistence &mdash; no backend, no database, no API routes
 
-## Code organisation
-- Page lives in `app/page.tsx`
-- Components live in `app/components/`
-- Storage helpers and shared types live in `lib/storage.ts`
-- Components that use browser APIs (localStorage, useState, useEffect)
-  declare `"use client"` at the top
+Code organisation
+- The page lives in app/page.tsx
+- Components live in app/components/
+- Storage helpers and shared types live in lib/storage.ts
+- Components that use browser APIs or React state declare "use client"
 
-## Styling conventions
-- Tailwind utility classes only &mdash; no separate CSS files for layout
-- `app/globals.css` contains only the three Tailwind directives
-- Default Tailwind palette; no custom theme extension for this lab
+Styling
+- Tailwind utility classes only; no separate CSS files for layout
+- app/globals.css keeps what the scaffold put there; add no new rules
 
-## Data conventions
-- Todos are objects: `{ id: string, text: string, completed: boolean, createdAt: string }`
-- `createdAt` is an ISO 8601 string
-- IDs are generated using `crypto.randomUUID()` (collision-safe; available in
-  all modern browsers)
-- The localStorage key is exposed as a single named constant in `lib/storage.ts`,
-  not duplicated as a magic string
+Data
+- A todo is { id: string, text: string, completed: boolean, createdAt: string }
+- createdAt is an ISO 8601 string
+- IDs come from crypto.randomUUID() (collision-safe, in all modern browsers)
+- The localStorage key is one named constant in lib/storage.ts, never a
+  repeated magic string
 
-## UI conventions
+UI
 - Single page, no routing
-- Empty state when there are no tasks
+- An empty state when there are no tasks
 - Newest task at the top of the list
-- Completed tasks show a strikethrough; the row is not removed</code></pre>
-    <p>This is short on purpose. The Constitution should hold <em>durable</em> conventions, not the world. If something here turns out to be wrong later, you'll change it once and every future spec inherits the change.</p>
-    <div class="note"><span class="note-label">Why are some specifics here?</span>You'll notice the Constitution names <code>crypto.randomUUID()</code> and a single named constant for the storage key. These aren't ceremony for its own sake &mdash; they're decisions worth pinning at the project level so the agent doesn't reinvent them in every spec. Compare the brownfield lab in Module 4, where the starter codebase doesn't follow either of these and you'll see why having them in the Constitution matters.</div>
+- Completed tasks show a strikethrough; the row is not removed
 
-    <h2><span class="h2-num">3.</span><code>/speckit.specify</code> (15 minutes)</h2>
-    <p>In your AI agent, run:</p>
-<pre><code>/speckit.specify
+Workflow
+- Specs are spec-first: written before the code, not maintained afterwards
+- No automated test suite in this lab; each user story is verified by hand
+  against its acceptance scenarios</code></pre>
+    <p>The agent maps your list onto the constitution template &mdash; named principles in MUST/SHOULD language, a version number, a governance section, and a <em>Sync Impact Report</em> comment at the top &mdash; and writes <code>.specify/memory/constitution.md</code>. (You can edit that file by hand instead; the command adds the structure and keeps dependent templates in step.)</p>
 
-Build a single-page to-do web app. The user can add a task, see all
-tasks in a list, mark a task as done (and undo), and delete a task.
-Tasks persist across page reloads via localStorage. The home page
-("/") is the only page. Newest tasks appear at the top.</code></pre>
-    <p>The agent will produce a draft spec at <code>specs/&lt;NNN&gt;-todo-app/spec.md</code> (or similar &mdash; the path varies slightly by Spec Kit version). It will likely ask clarifying questions, or include <code>[NEEDS CLARIFICATION]</code> markers in the draft. Engage with these &mdash; the dialogue is part of the practice, not a flaw.</p>
+    <h3>2.1 Review it</h3>
+    <ul class="checklist">
+      <li>Every standard you gave it is there, and nothing has been invented. Invented standards turn into noise in every later plan and analysis.</li>
+      <li>The rules you mean as non-negotiable read as MUST: the ID generator, the single storage-key constant, no backend.</li>
+      <li>No <code>[PLACEHOLDER]</code> tokens are left. A ratification date marked TODO is fine for a lab.</li>
+    </ul>
+    <p>This is short on purpose. The constitution should hold <em>durable</em> conventions, not the world. If something here turns out to be wrong later, you'll change it once and every future spec inherits the change.</p>
+    <div class="note"><span class="note-label">Why are some specifics here?</span><code>crypto.randomUUID()</code> and a single named storage-key constant are decisions worth pinning at the project level so the agent doesn't reinvent them in every spec. The Module 4 starter follows neither, and you'll see there why that matters. The Workflow lines settle two things the agent would otherwise guess: how long the spec matters (spec-first, from Module 1) and whether to set up a test framework.</div>
+
+    <h2><span class="h2-num">3.</span><code>/speckit-specify</code> &mdash; the what and why (10 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Plan.</span>The product owner approves intent, scope, and business alignment. You&rsquo;re the product owner.</div>
+<pre><code>/speckit-specify Build a single-page to-do app for one person keeping a short
+personal list in their own browser. They can add a task, see all their
+tasks in one list with the newest at the top, mark a task as done (and
+undo that), and delete a task. Their tasks are still there after they
+reload the page or come back later in the same browser. There are no
+accounts, and nothing leaves the browser.</code></pre>
+    <p>Notice what&rsquo;s missing: Next.js, React, Tailwind, localStorage. <code>specify</code> is for the <strong>what</strong> and the <strong>why</strong>. The stack is already in the constitution, and the design belongs to <code>/speckit-plan</code>.</p>
+    <p>The agent creates a feature directory (for example <code>specs/001-todo-app/</code>), writes <code>spec.md</code>, and records the directory in <code>.specify/feature.json</code> as the active feature. It also creates <code>checklists/requirements.md</code>, a built-in spec-quality checklist whose items specify and clarify tick and untick themselves as the spec changes &mdash; read those ticks as the agent&rsquo;s own claim, not a sign-off. If it hit a decision it couldn&rsquo;t make, it may ask you up to three questions straight away. Answer them; the dialogue is part of the practice.</p>
 
     <h3>3.1 Review checklist</h3>
-    <p>Once the agent produces a draft, <strong>don't accept it as-is</strong>. Open the file and check it against the six-element framework from Module 2:</p>
+    <p><strong>Don't accept the draft as-is.</strong> It has prioritised user stories with Given/When/Then acceptance scenarios, edge cases, numbered requirements (<code>FR-001</code>&hellip;), success criteria, and assumptions. Check it against the six-element framework from Module 2:</p>
     <ul class="checklist">
       <li><strong>Outcomes</strong> are observable (someone can tell whether the work is done by using the app)</li>
       <li><strong>In-scope</strong> items are listed</li>
       <li><strong>Out-of-scope</strong> items are listed (this is the one most often missing)</li>
-      <li><strong>Constraints</strong> are stated (or covered by the Constitution and not repeated here)</li>
-      <li><strong>Decisions made</strong> &mdash; empty input handling, ordering, completed-task display</li>
-      <li><strong>Verification criteria</strong> &mdash; concrete, runnable checks, not vibes</li>
+      <li><strong>Constraints</strong> are stated (or covered by the constitution and not repeated here)</li>
+      <li><strong>Decisions made</strong> &mdash; some will still be open; the next step is for those</li>
+      <li><strong>Verification criteria</strong> &mdash; the acceptance scenarios are concrete, runnable checks, not vibes</li>
     </ul>
-    <p>If any of these are weak, edit the spec directly. You can also re-prompt the agent: <em>&ldquo;The out-of-scope list is missing &mdash; please add at least four items based on what the Constitution and the request imply.&rdquo;</em></p>
+    <p>If any are weak, edit the spec directly or ask the agent: <em>&ldquo;The out-of-scope list is missing &mdash; please add at least four items based on what the constitution and the request imply.&rdquo;</em> If the draft names components or storage APIs, the how is leaking into the what; trim it.</p>
+    <div class="note"><span class="note-label">Don&rsquo;t re-run specify to fix the spec.</span>Each <code>/speckit-specify</code> run starts a <em>new</em> feature directory (<code>002-&hellip;</code>) and makes it the active one. Refine this spec by editing it, by asking in chat, or with clarify next.</div>
 
-    <h3>3.2 Things to deliberately decide</h3>
-    <p>These are the questions a thin spec will leave unanswered. You should make explicit decisions:</p>
+    <h2><span class="h2-num">4.</span><code>/speckit-clarify</code> &mdash; settle the open questions (10 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Plan.</span>Still the product owner&rsquo;s call. The agent asks and recommends; you decide.</div>
+<pre><code>/speckit-clarify</code></pre>
+    <p>Clarify scans the spec for gaps that would change what gets built and asks about the ones that matter most &mdash; <strong>at most five questions per pass</strong>, one at a time, each with a recommended answer and its reasoning. Reply with an option letter, &ldquo;yes&rdquo; to take the recommendation, or a short answer of your own. After each answer it writes the decision into <code>spec.md</code>: a Q &rarr; A line under a <code>## Clarifications</code> heading, plus the change itself in the section it affects.</p>
+
+    <h3>4.1 Decide before it asks</h3>
+    <p>A thin to-do spec leaves these open. Have an answer ready for each; clarify will probably ask about some, and you should raise the rest.</p>
     <ul>
-      <li><strong>Empty input.</strong> What happens when a user presses &ldquo;Add&rdquo; with an empty string? With only whitespace? Reject silently, show an error, disable the button?</li>
-      <li><strong>Sorting and ordering.</strong> Newest at the top, but what about completed tasks &mdash; do they stay in place, sink to the bottom, or hide?</li>
-      <li><strong>Editing existing tasks.</strong> In or out of scope? (For this lab, recommend <strong>out of scope</strong> &mdash; it's a Module 4 brownfield exercise candidate.)</li>
-      <li><strong>Maximum length.</strong> Should there be a character limit on task text?</li>
-      <li><strong>Confirmation on delete.</strong> Hard delete with no confirmation, or a &ldquo;Are you sure?&rdquo; step? (For 90 minutes, recommend hard delete with no confirmation.)</li>
-      <li><strong>localStorage failures.</strong> What if the browser is in private mode and writes throw? Crash, ignore silently, or show a toast?</li>
+      <li><strong>Empty input.</strong> An empty string? Only whitespace? Reject silently, show an error, disable the button?</li>
+      <li><strong>Completed tasks.</strong> Stay in place, sink, or hide? (Your constitution says they stay; if asked, answer consistently.)</li>
+      <li><strong>Editing existing tasks.</strong> Recommend <strong>out of scope</strong> for this lab; it makes a good follow-up feature.</li>
+      <li><strong>Maximum length.</strong> A character limit on task text?</li>
+      <li><strong>Confirmation on delete.</strong> Recommend hard delete, no confirmation.</li>
+      <li><strong>localStorage failures.</strong> If the browser is in private mode and writes throw: crash, ignore silently, or tell the user?</li>
     </ul>
-    <p>You won't get all of these perfect. The point is to notice that you're making decisions, not letting the agent silently make them for you.</p>
+    <p>If something is still open after one pass, run it again with a focus:</p>
+<pre><code>/speckit-clarify Focus on what the user sees when saving fails, and on very long task text.</code></pre>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample answers</span> &mdash; one reasonable set of decisions</span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+        <ul>
+          <li><strong>Empty or whitespace-only input:</strong> nothing is added and no error is shown; text is trimmed before saving.</li>
+          <li><strong>Completed tasks:</strong> stay where they are, struck through.</li>
+          <li><strong>Editing:</strong> out of scope.</li>
+          <li><strong>Length:</strong> 200 characters at most; the input accepts no more.</li>
+          <li><strong>Delete:</strong> immediate, no confirmation.</li>
+          <li><strong>Saving fails:</strong> the app keeps working for the rest of the visit and shows a short, non-blocking message that changes won&rsquo;t be kept.</li>
+        </ul>
+        <p>Yours can differ. What matters is that each is now a decision in the spec, not a guess in the code.</p>
+      </div>
+    </div>
 
-    <h3>3.3 Stop when</h3>
-    <p>You stop iterating on the spec when <strong>a new engineer could implement the app from your spec without asking you anything</strong>. Not before. If you'd still need to clarify something to write the code, the spec isn't done.</p>
+    <h3>4.2 Check the answers landed</h3>
+    <ul class="checklist">
+      <li><code>spec.md</code> has a <code>## Clarifications</code> section with one Q &rarr; A line per answer</li>
+      <li>Each answer also changed the section it affects &mdash; the empty-input rule is a requirement or an edge case, not only a line under Clarifications</li>
+      <li>No earlier sentence still contradicts an answer</li>
+    </ul>
+    <p>You stop iterating on the spec when <strong>a new engineer could implement the app from your spec without asking you anything</strong>. Not before.</p>
 
-    <h2><span class="h2-num">4.</span><code>/speckit.plan</code> (15 minutes)</h2>
-    <p>In your agent:</p>
-<pre><code>/speckit.plan</code></pre>
-    <p>The agent generates a <code>plan.md</code> (and possibly supporting files) describing <em>how</em> to build what the spec describes. This is where you make implementation decisions: file layout, component structure, what state lives where, how localStorage is read and written.</p>
+    <h2><span class="h2-num">5.</span><code>/speckit-plan</code> &mdash; the how (15 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Design.</span>Architects approve the design and the decisions in it. You&rsquo;re the architect.</div>
+<pre><code>/speckit-plan Build it on the stack the constitution sets out. Keep it small:
+one page, three components, one storage module.</code></pre>
+    <p>This is where implementation detail belongs. The agent writes <code>plan.md</code> &mdash; technical context, a <em>Constitution Check</em> against your standards, the project structure &mdash; plus supporting files beside it: <code>research.md</code> (decisions and why), <code>data-model.md</code> (the Todo entity), and <code>quickstart.md</code> (how to run and validate).</p>
 
-    <h3>4.1 Review checklist for the plan</h3>
+    <h3>5.1 Review checklist for the plan</h3>
     <p>The plan should:</p>
     <ul class="checklist">
       <li>Identify the components to create &mdash; minimum: a form, a list, and a list-item component</li>
       <li>State where state lives (the page, lifted up; not scattered across components)</li>
       <li>Describe the localStorage read/write pattern (load once on mount; save on change; handle the SSR case where <code>window</code> is undefined)</li>
       <li>Decide which fields exist on a Todo object and where the type is defined</li>
-      <li>Match the Constitution's conventions (file layout, <code>crypto.randomUUID()</code>, single storage-key constant)</li>
+      <li>Pass its Constitution Check honestly. A plan that &ldquo;passes&rdquo; while using <code>Date.now()</code> for IDs hasn't checked anything.</li>
     </ul>
 
-    <h3>4.2 What the plan should <em>not</em> contain</h3>
+    <h3>5.2 What the plan should <em>not</em> contain</h3>
     <ul>
-      <li>Full component bodies (that's <code>/speckit.implement</code>'s job)</li>
-      <li>Specifics that contradict the Constitution (if it does, fix one or the other &mdash; both being authoritative is the point of having both)</li>
-      <li>Things that should have been in the spec (&ldquo;we should also support tags&rdquo; &mdash; no, that's a scope change, go back to <code>/speckit.specify</code>)</li>
+      <li>Full component bodies (that's <code>/speckit-implement</code>'s job)</li>
+      <li>Specifics that contradict the constitution (if it does, fix one or the other &mdash; both being authoritative is the point of having both)</li>
+      <li>Things that should have been in the spec (&ldquo;we should also support tags&rdquo; &mdash; no, that's a scope change; take it back to the spec)</li>
     </ul>
-    <p>If the plan is wrong, fix it before moving on. The cost of a wrong plan caught here is minutes. The cost of a wrong plan caught at <code>/speckit.implement</code> is potentially the whole afternoon.</p>
+    <p>If the plan is wrong, fix it before moving on. The cost of a wrong plan caught here is minutes. The cost of a wrong plan caught at <code>/speckit-implement</code> is potentially the whole afternoon.</p>
 
-    <h3>4.3 SSR / hydration: the one gotcha to watch for</h3>
+    <h3>5.3 SSR / hydration: the one gotcha to watch for</h3>
     <p>Next.js renders pages on the server first, then hydrates them in the browser. <code>localStorage</code> doesn't exist on the server. If the plan reads localStorage during the initial render, the client and server will produce different HTML and React will throw a hydration warning.</p>
     <p>The right pattern: the page renders an empty initial state on first paint, then a <code>useEffect</code> hook reads localStorage after mount and updates state. The plan should call this out explicitly. If it doesn't, push back: <em>&ldquo;How does this avoid hydration mismatch when localStorage is read?&rdquo;</em></p>
-    <p>This is the kind of stack-specific issue the Constitution can't anticipate but the plan must.</p>
+    <p>This is the kind of stack-specific issue the constitution can't anticipate but the plan must.</p>
 
-    <h2><span class="h2-num">5.</span><code>/speckit.tasks</code> (10 minutes)</h2>
-<pre><code>/speckit.tasks</code></pre>
-    <p>The agent breaks the plan into a list of discrete, ordered tasks in <code>tasks.md</code>. Each task should be small enough to implement and verify on its own.</p>
+    <h2><span class="h2-num">6.</span><code>/speckit-checklist</code> &mdash; unit tests for your requirements (10 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Plan, revisited.</span>You&rsquo;re the reviewer signing off that the requirements are good enough to build from. The agent writes the questions; only you tick the boxes.</div>
+<pre><code>/speckit-checklist Focus on user-facing behaviour: empty states, input rules, and what happens when saving fails.</code></pre>
+    <p>This checklist tests the <em>spec</em>, not the code: is each requirement complete, clear, consistent, measurable? The agent may ask up to three quick questions first, then writes <code>checklists/&lt;name&gt;.md</code> (<code>ux.md</code>, say) with every item unchecked. Something like:</p>
+<pre><code>- [ ] CHK001 Is the behaviour for whitespace-only input specified? [Edge Case, Spec &sect;FR-003]
+- [ ] CHK002 Is "newest at the top" defined for tasks added in the same second? [Clarity]
+- [ ] CHK003 Is what the user sees when saving fails described? [Gap]</code></pre>
 
-    <h3>5.1 Review checklist</h3>
+    <h3>6.1 Review and tick &mdash; yourself</h3>
+    <p>Work through the file with <code>spec.md</code> open beside it:</p>
+    <ul>
+      <li>If the spec answers the question, change <code>- [ ]</code> to <code>- [x]</code>. The tick means <em>you</em> are satisfied with the requirement &mdash; not that anything is built.</li>
+      <li>If it doesn&rsquo;t, fix the spec first (edit <code>spec.md</code>, or <code>/speckit-clarify</code> with that item as the focus), then tick.</li>
+      <li>If an item asks about something you&rsquo;ve deliberately left out, make sure the out-of-scope list says so; then it&rsquo;s settled and you can tick it.</li>
+    </ul>
+    <p>The agent never self-approves. You can ask it to help evaluate an item (&ldquo;does the spec answer CHK003?&rdquo;), but the tick is yours. Leave anything unticked and <code>/speckit-implement</code> will stop before it starts and ask whether to proceed anyway.</p>
+    <div class="note"><span class="note-label">Two kinds of checklist.</span><code>checklists/requirements.md</code> is the built-in one: specify and clarify tick and untick its items themselves as the spec changes. Treat those ticks as the agent&rsquo;s claim, not a sign-off, and challenge any you disagree with. The checklists <code>/speckit-checklist</code> generates are reviewer-owned: the command leaves every item unchecked, and only you tick them. Implement counts both.</div>
+
+    <h2><span class="h2-num">7.</span><code>/speckit-tasks</code> &mdash; break it down (5 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Implement.</span>Engineers review the breakdown before any code is written.</div>
+<pre><code>/speckit-tasks</code></pre>
+    <p>The agent turns the plan into <code>tasks.md</code>: small, ordered tasks, each naming the file it touches, in phases &mdash; <strong>Setup</strong> (housekeeping, such as clearing the scaffold&rsquo;s demo page), <strong>Foundational</strong> (what every story needs first: the Todo type, the storage key, load and save helpers), <strong>one phase per user story</strong> in priority order, and <strong>Polish</strong> (cross-cutting clean-up and final verification). Tests, when the spec asks for them, sit inside each story&rsquo;s phase.</p>
+    <p><code>[P]</code> marks a task that can run in parallel with its neighbours &mdash; different files, no dependency on unfinished work. <code>[US1]</code>, <code>[US2]</code>&hellip; tag the story a task serves. During implement, finished tasks are ticked <code>[X]</code>. An excerpt might look like:</p>
+<pre><code>## Phase 3: User Story 1 - Add and see tasks (Priority: P1)
+- [ ] T004 [P] [US1] Create the add-task form in app/components/TodoForm.tsx
+- [ ] T005 [P] [US1] Create the list and row components in app/components/
+- [ ] T006 [US1] Hold state in app/page.tsx; load after mount, save on change</code></pre>
+
+    <h3>7.1 Review checklist</h3>
     <ul class="checklist">
       <li>Tasks are roughly the right size &mdash; neither &ldquo;build the app&rdquo; (too big) nor &ldquo;import useState&rdquo; (too small)</li>
       <li>Tasks are ordered so dependencies resolve naturally (storage helpers and types before components; form before list; list before delete)</li>
       <li>Each task has a clear &ldquo;done&rdquo; criterion you could check off without ambiguity</li>
       <li>The hydration handling is its own task or explicitly part of the page-component task</li>
+      <li><code>[P]</code> appears only on tasks that really touch different files</li>
     </ul>
 
-    <h3>5.2 Common defects</h3>
+    <h3>7.2 Common defects</h3>
     <ul>
       <li><strong>Mega-task syndrome</strong> &mdash; &ldquo;Build the page&rdquo; with no breakdown. Push back: split into state setup, render, mount-effect for load, change-effect for save.</li>
       <li><strong>Missing wiring</strong> &mdash; components listed but no task to connect them on the page. Add it.</li>
-      <li><strong>No verification step</strong> &mdash; the last task should be &ldquo;manually verify against spec criteria&rdquo; or similar. If it's missing, add it.</li>
+      <li><strong>No verification step</strong> &mdash; your constitution says stories are verified by hand, so Polish should end with &ldquo;verify every acceptance scenario in <code>spec.md</code>&rdquo;. If it's missing, add it.</li>
     </ul>
 
-    <h2><span class="h2-num">6.</span><code>/speckit.implement</code> (20 minutes)</h2>
-<pre><code>/speckit.implement</code></pre>
-    <p>The agent works through the task list, generating code for each task. Depending on your agent, it may:</p>
+    <h2><span class="h2-num">8.</span><code>/speckit-analyze</code> &mdash; catch drift before you build (10 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Implement.</span>The report is advice. You decide what each finding means and where it gets fixed.</div>
+<pre><code>/speckit-analyze</code></pre>
+    <p>Analyze reads the spec, plan, tasks, and constitution together and reports where they disagree: a requirement with no task, a task with no requirement, a plan choice that contradicts the spec, vague wording, one thing called two names. It is <strong>read-only</strong> &mdash; it never edits a file. You get findings graded CRITICAL, HIGH, MEDIUM, or LOW, a table mapping each requirement to its tasks, and an offer to suggest fixes it won&rsquo;t apply on its own. Any conflict with the constitution is automatically CRITICAL.</p>
+
+    <h3>8.1 Fix each finding in the step that owns it</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>The finding is about&hellip;</th><th>Fix it in&hellip;</th></tr></thead>
+      <tbody>
+        <tr><td>A requirement &mdash; missing, vague, or contradictory</td><td>The spec: <code>/speckit-clarify</code>, or edit <code>spec.md</code></td></tr>
+        <tr><td>The design &mdash; a plan choice that breaks the spec or the constitution</td><td>The plan: <code>/speckit-plan</code>, or edit <code>plan.md</code></td></tr>
+        <tr><td>The task list &mdash; a gap, an orphan task, a wrong order</td><td>The tasks: re-run <code>/speckit-tasks</code>, or edit <code>tasks.md</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>Patching <code>tasks.md</code> to cover a requirement problem just hides the disagreement. Fix the source and let the fix ripple (a changed requirement may mean re-running <code>/speckit-plan</code> or <code>/speckit-tasks</code>), then re-run <code>/speckit-analyze</code>. Repeat until it comes back clean: nothing CRITICAL, and any MEDIUM or LOW you leave is a call you made, not one you skipped.</p>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Typical findings</span> &mdash; what analyze often turns up here</span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+        <ul>
+          <li><strong>The empty-state requirement has no task.</strong> Owner: the task list.</li>
+          <li><strong>The plan generates IDs with <code>Date.now()</code>.</strong> A constitution conflict, so CRITICAL. Owner: the plan; regenerate the tasks after.</li>
+          <li><strong>&ldquo;Newest at the top&rdquo; in the spec, &ldquo;sorted by date&rdquo; in the plan.</strong> Terminology drift. Owner: the plan.</li>
+          <li><strong>The 200-character limit from clarify has no task.</strong> Owner: the task list.</li>
+        </ul>
+        <p>Illustrative only. If your first run is clean, read the coverage table anyway.</p>
+      </div>
+    </div>
+
+    <h2><span class="h2-num">9.</span><code>/speckit-implement</code> &mdash; build it in stages (20 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Implement.</span>Engineers review every change. The agent writes the code; you read it and run it.</div>
+    <p>Before it writes a line, implement counts the boxes in every checklist under <code>checklists/</code>. If any are unticked, it shows a table and asks whether to proceed anyway. The honest answer is usually &ldquo;no&rdquo; &mdash; go back to step 6.</p>
+
+    <h3>9.1 Scope each run</h3>
+    <p>Don&rsquo;t let it build everything in one go. Scoped runs are easier to review, and on large features they keep the agent inside its context window. Tell it where to stop:</p>
+<pre><code>/speckit-implement only execute the Setup and Foundational phases, then stop and report progress</code></pre>
+    <p>Check the app still runs and the storage module follows the constitution. Then:</p>
+<pre><code>/speckit-implement only execute the User Story 1 phase, then stop and report progress</code></pre>
+    <p>Continue one story at a time, then Polish. Task ranges work too (<code>only execute tasks T001-T006</code>). Finished tasks are ticked <code>[X]</code>, so each run picks up where the last stopped. <strong>Verify each stage before you start the next.</strong></p>
+
+    <h3>9.2 Watch for these moments</h3>
     <ul>
-      <li>Stop after each task and ask for confirmation (Claude Code default)</li>
-      <li>Run through the whole list and report at the end (some Cursor configurations)</li>
-      <li>Pause when it hits ambiguity (most agents)</li>
+      <li><strong>The agent invents a new requirement.</strong> If it suddenly adds a &ldquo;due date&rdquo; field that wasn't in the spec, stop it. Either the spec was wrong (go back and fix it) or the agent is hallucinating scope. (If you find yourself wanting due dates, don't add them here &mdash; that's the Module 4 brownfield exercise.)</li>
+      <li><strong>The agent uses <code>Date.now()</code> for IDs.</strong> The constitution specifies <code>crypto.randomUUID()</code>. Push back. This is exactly the kind of small constitution violation that becomes cruft over time if uncaught.</li>
+      <li><strong>The agent hardcodes the localStorage key.</strong> Same logic &mdash; the constitution specifies a single named constant. If the agent inlines <code>"todos"</code> strings, push back.</li>
+      <li><strong>The agent skips the hydration consideration.</strong> If you see localStorage being read in a component body (not inside a <code>useEffect</code>), the browser will warn. Have the agent fix it.</li>
     </ul>
 
-    <h3>6.1 Watch for these moments</h3>
-    <ul>
-      <li><strong>The agent invents a new requirement.</strong> If it suddenly adds a &ldquo;due date&rdquo; field that wasn't in the spec, stop it. Either the spec was wrong (go back and fix it) or the agent is hallucinating scope. (Note: if you find yourself wanting due dates, don't add them here &mdash; that's the Module 4 brownfield exercise.)</li>
-      <li><strong>The agent uses <code>Date.now()</code> for IDs.</strong> The Constitution specified <code>crypto.randomUUID()</code>. If the agent ignores it, push back. This is exactly the kind of small Constitution violation that becomes cruft over time if uncaught.</li>
-      <li><strong>The agent hardcodes the localStorage key.</strong> Same logic &mdash; the Constitution specified a single named constant. If the agent inlines <code>"todos"</code> strings, push back.</li>
-      <li><strong>The agent skips the hydration consideration.</strong> If you see localStorage being read in a component body (not inside a <code>useEffect</code>), the build will warn. Have the agent fix it.</li>
-    </ul>
+    <h3>9.3 The pull-request offer &mdash; decline it</h3>
+    <p>After every implement run, SPECTRA&rsquo;s <code>after_implement</code> hook offers <code>/speckit-spectra-create-pr</code> (<em>&ldquo;Open a pull request for this spec?&rdquo;</em>). <strong>Decline it here.</strong> Declining does nothing: nothing is checked, committed, or pushed. Accepting wouldn&rsquo;t get far anyway &mdash; the command needs the <code>gh</code> CLI signed in and a GitHub remote, and this repository has none.</p>
+    <p>On a real project you&rsquo;d accept once the feature is done &mdash; after converge reports Converged &mdash; with the repository on GitHub and the work on a feature branch. It still asks before every commit, push, and the pull request itself. That&rsquo;s the Deploy gate: the agent opens the pull request; a maintainer decides whether it merges. You can always run <code>/speckit-spectra-create-pr</code> yourself later.</p>
 
-    <h3>6.2 Run the app</h3>
-    <p>Once <code>/speckit.implement</code> finishes:</p>
-<pre><code>npm run dev</code></pre>
-    <p>Open <a href="http://localhost:3000">http://localhost:3000</a>. Try:</p>
+    <h3>9.4 Run the app</h3>
+    <p>Once the last phase is done, run <code>npm run dev</code>, open <a href="http://localhost:3000">http://localhost:3000</a>, and try:</p>
     <ol>
       <li>Add a task. Does it appear at the top of the list?</li>
-      <li>Mark it done. Does the strikethrough appear?</li>
-      <li>Mark it undone. Does the strikethrough disappear?</li>
-      <li>Delete it. Does it vanish from the list?</li>
+      <li>Try to add an empty or whitespace-only task. Does the app do what you decided in step 4?</li>
+      <li>Mark a task done, then undone. Does the strikethrough appear and disappear?</li>
+      <li>Delete everything. Do you see the empty state?</li>
       <li>Add three tasks, refresh the page. Are all three still there?</li>
-      <li>Open the browser devtools &rarr; Application &rarr; Local Storage. Is there a key matching the constant from your Constitution? Does its value look like a JSON array of todo objects?</li>
+      <li>Open the browser devtools &rarr; Application &rarr; Local Storage. Is there a key matching the constant from your constitution? Does its value look like a JSON array of todo objects?</li>
     </ol>
-    <p>If any of these fail, you have a divergence between spec and code. Investigate:</p>
-    <ul>
-      <li>Is the spec wrong? (Did you not specify what you actually wanted?)</li>
-      <li>Is the code wrong? (Did the agent miss something the spec stated?)</li>
-    </ul>
-    <p>Whichever is wrong, fix that one. Then re-verify.</p>
+    <p>If any of these fail, you have a divergence between spec and code. Is the spec wrong (you didn&rsquo;t specify what you actually wanted), or the code (the agent missed something the spec stated)? Whichever is wrong, fix that one. Then re-verify.</p>
 
-    <h2><span class="h2-num">7.</span>Reflection (10 minutes)</h2>
+    <h2><span class="h2-num">10.</span><code>/speckit-converge</code> &mdash; close the gap (5 min)</h2>
+    <div class="note"><span class="note-label">Human gate &mdash; Implement.</span>Converge proposes remaining work. You decide whether each item is real &mdash; and when the feature is done.</div>
+<pre><code>/speckit-converge</code></pre>
+    <p>Run it once implement has worked through the current <code>tasks.md</code>. Converge compares the code with the spec, plan, tasks, and constitution, and summarises each gap as <em>missing</em>, <em>partial</em>, <em>contradicts</em>, or <em>unrequested</em> (code nobody asked for). Then it ends one of two ways:</p>
+    <ul>
+      <li><strong>Converged.</strong> No gaps; <code>tasks.md</code> is left exactly as it was and you get a success message. You&rsquo;re done.</li>
+      <li><strong>Tasks appended.</strong> It adds a Convergence phase to the end of <code>tasks.md</code>, one task per gap, each tracing to its source &mdash; for example <code>- [ ] T019 Show the empty-state message per FR-006 (missing)</code>.</li>
+    </ul>
+    <p>Converge is <strong>append-only</strong>: it leaves your code alone, never removing a line, and never touches the spec or plan. Even unrequested code gets a task to review it, not a deletion.</p>
+    <div class="diagram">/speckit-implement  --&gt;  /speckit-converge  --&gt;  Converged?  -- yes --&gt;  done
+        ^                                            |
+        |                                            | no
+        +-------------- tasks appended --------------+</div>
+    <p>Read appended tasks before you implement them. If one traces to a requirement you no longer want, that&rsquo;s a change to the spec, not a task to quietly skip. Then implement (decline the pull-request offer again) and converge again. Each pass should find less. When it says Converged, run the checks in 9.4 one last time.</p>
+
+    <h2><span class="h2-num">11.</span>Reflection (10 min)</h2>
     <p>Spend 10 minutes writing answers to these in a <code>REFLECTION.md</code> file in your project root. You don't need to share these with anyone, but writing them down is the difference between learning the practice and just executing the steps.</p>
     <ol>
-      <li><strong>Where did you make decisions during <code>/speckit.specify</code> that the agent would have made wrongly if you'd left them implicit?</strong></li>
-      <li><strong>What got caught at <code>/speckit.plan</code> review that would have been more painful to fix at <code>/speckit.implement</code>?</strong> (The hydration handling is the obvious candidate &mdash; was there anything else?)</li>
-      <li><strong>Did the agent ever invent scope? How did you notice?</strong></li>
-      <li><strong>How does this feel compared to &ldquo;just write a prompt and let the agent code&rdquo;? Faster? Slower? Different in kind?</strong></li>
-      <li><strong>Of the conventions in your Constitution, which ones did the agent honor without prompting, and which did you have to reinforce?</strong></li>
+      <li><strong>Where did clarify ask about something you'd have left implicit &mdash; and what would the agent have assumed?</strong></li>
+      <li><strong>What got caught at <code>/speckit-plan</code> review that would have been more painful to fix at <code>/speckit-implement</code>?</strong> (The hydration handling is the obvious candidate &mdash; was there anything else?)</li>
+      <li><strong>Which checklist items couldn't you tick honestly on the first read? What did you change?</strong></li>
+      <li><strong>What did analyze find, and which step owned each fix?</strong></li>
+      <li><strong>Did converge append anything? Did the agent invent scope anywhere, and how did you notice?</strong></li>
+      <li><strong>Of the conventions in your constitution, which did the agent honor without prompting, and which did you have to reinforce?</strong></li>
+      <li><strong>Which quality gates would you keep for a feature this size, and which for a production one? Overall, how does this compare to &ldquo;just write a prompt and let the agent code&rdquo;?</strong></li>
     </ol>
     <p>There's no right answer to any of these. The honest one is the useful one.</p>
 
-    <h2><span class="h2-num">8.</span>Common issues and how to handle them</h2>
+    <h2><span class="h2-num">12.</span>Common issues and how to handle them</h2>
 
     <h3>&ldquo;The agent's spec is way too long&rdquo;</h3>
-    <p>Edit it down. Spec Kit's default templates can be verbose, and some agents pad them further. Anything that doesn't add information should go. The good test from Module 2 still applies: if a sentence wouldn't change the agent's behavior, it doesn't belong.</p>
+    <p>Edit it down. Spec Kit's default templates can be verbose, and some agents pad them further. The test from Module 2 still applies: if a sentence wouldn't change the agent's behavior, it doesn't belong. Stack details that leaked in from the constitution can go too &mdash; the plan picks them up anyway.</p>
 
-    <h3>&ldquo;The agent ignored my Constitution&rdquo;</h3>
-    <p>Some agents have weaker context discipline than others. If the Constitution says <code>crypto.randomUUID()</code> and the agent uses <code>Date.now()</code> anyway, two things to try:</p>
-    <ol>
-      <li>Reference the Constitution explicitly in the spec or plan: <em>&ldquo;Per the Constitution, IDs use <code>crypto.randomUUID()</code>.&rdquo;</em></li>
-      <li>Re-prompt mid-implement: <em>&ldquo;The Constitution requires <code>crypto.randomUUID()</code> for IDs. Replace the <code>Date.now()</code> calls.&rdquo;</em></li>
-    </ol>
-    <p>If your agent consistently ignores Constitutions, that's a tooling-level concern worth raising on your team.</p>
+    <h3>&ldquo;The agent ignored my constitution&rdquo;</h3>
+    <p>Analyze and converge both treat a constitution conflict as their most severe finding, so these usually surface. If the agent still uses <code>Date.now()</code> despite the constitution, reference the rule explicitly in the plan (<em>&ldquo;Per the constitution, IDs use <code>crypto.randomUUID()</code>&rdquo;</em>) or re-prompt mid-implement. If your agent consistently ignores the constitution, that's a tooling-level concern worth raising on your team.</p>
 
-    <h3>&ldquo;The phases blur into each other&rdquo;</h3>
-    <p>Especially common with Claude Code, which can helpfully (or annoyingly, depending on context) do all four phases in one pass when you give it a sufficiently specific request. To prevent this, run the slash commands one at a time and review the artifact between each. The whole point of the workflow is the review checkpoints.</p>
+    <h3>&ldquo;The steps blur into each other&rdquo;</h3>
+    <p>Some agents will helpfully (or annoyingly) run several steps in one pass when a request is specific enough. Run the commands one at a time and review the artifact between each. The whole point of the workflow is the human gates.</p>
 
-    <h3>&ldquo;I want to skip /speckit.tasks&rdquo;</h3>
-    <p>You can. Some teams find <code>/speckit.specify</code> + <code>/speckit.plan</code> + direct implementation works fine for small features. The argument for keeping <code>/speckit.tasks</code> is that it forces explicit task-sizing decisions. The argument against is overhead.</p>
-    <p>For this lab, do all four. After the lab, decide for your team.</p>
+    <h3>&ldquo;Clarify asked nothing&rdquo;</h3>
+    <p>It found no gaps it judged high-impact. If you know of an open question, name the area: <code>/speckit-clarify Focus on delete behaviour and text length.</code> Or write the decision into <code>spec.md</code> yourself.</p>
+
+    <h3>&ldquo;Implement stopped to ask about unchecked items&rdquo; / &ldquo;The agent ticked my checklist&rdquo;</h3>
+    <p>The stop is working as designed: finish the review in step 6 rather than answering &ldquo;yes&rdquo; out of habit. Ticks in <code>checklists/requirements.md</code> are expected &mdash; specify and clarify maintain them &mdash; but they&rsquo;re the agent&rsquo;s claim, so check them. Ticks in a checklist from <code>/speckit-checklist</code> should only ever be yours; untick anything you haven&rsquo;t reviewed.</p>
+
+    <h3>&ldquo;The commands are working on the wrong feature&rdquo;</h3>
+    <p>You probably ran <code>/speckit-specify</code> twice, and the newer directory is now active. Open <code>.specify/feature.json</code>; it should read like <code>{"feature_directory": "specs/001-todo-app"}</code>. Point it back, or set the <code>SPECIFY_FEATURE_DIRECTORY</code> environment variable. Checking out a Git branch does not change the active feature.</p>
+
+    <h3>&ldquo;Converge keeps appending tasks&rdquo;</h3>
+    <p>Each pass should find less. If the same gap keeps coming back, the spec and the code disagree about something another implement pass can&rsquo;t settle. Decide which one is right, and fix that one.</p>
+
+    <h3>&ldquo;I want to skip the quality gates&rdquo;</h3>
+    <p>You can. Only <code>/speckit-specify</code> is strictly required before <code>/speckit-plan</code>; clarify, checklist, and analyze earn their keep wherever there&rsquo;s real ambiguity. For this lab, run them all. After the lab, decide for your team.</p>
 
     <h3>&ldquo;The hydration warning won't go away&rdquo;</h3>
     <p>The classic causes:</p>
@@ -931,28 +1063,29 @@ Tasks persist across page reloads via localStorage. The home page
       <li>The initial state of <code>useState</code> differing between server and client.</li>
       <li>A component that uses <code>Date.now()</code> or <code>Math.random()</code> during render (different value on server vs client).</li>
     </ul>
-    <p>The fix in all three cases is the same: render a stable initial state on the server, then update once mounted. The Spec Kit plan should have called this out &mdash; if it didn't, that's a useful note for your reflection.</p>
+    <p>The fix in all three cases is the same: render a stable initial state on the server, then update once mounted. The plan should have called this out &mdash; if it didn't, that's a useful note for your reflection.</p>
 
     <hr>
 
     <h3>What you should now know</h3>
     <ul>
-      <li>Spec Kit's four phases produce four reviewable artifacts (<code>spec.md</code>, <code>plan.md</code>, <code>tasks.md</code>, working code) with explicit review checkpoints between each.</li>
-      <li>The Constitution holds durable conventions; the spec holds task-specific intent. Keeping them separate keeps both readable.</li>
-      <li>Each phase forces a different kind of decision &mdash; <em>what</em> (specify), <em>how</em> (plan), <em>steps</em> (tasks), <em>code</em> (implement). Mixing them produces vague specs, kitchen-sink plans, or untested code.</li>
-      <li>Stack-specific gotchas (like Next.js hydration) belong in the plan, not the Constitution. The Constitution is for durable team conventions; the plan is for how-this-feature-works-on-this-stack.</li>
+      <li>Spec Kit&rsquo;s full path produces a reviewable artifact at every step, and every step has a human gate.</li>
+      <li>The constitution holds durable conventions; the spec holds this feature&rsquo;s intent. Keeping them separate keeps both readable.</li>
+      <li>Each step forces a different decision: <em>what</em> (specify), <em>what exactly</em> (clarify), <em>how</em> (plan), <em>is the spec good enough</em> (checklist), <em>in what order</em> (tasks), <em>do they agree</em> (analyze), <em>code</em> (implement), <em>is it done</em> (converge).</li>
+      <li>The quality gates never approve themselves: you answer clarify, you tick the checklist, you decide what each analyze finding means.</li>
+      <li>Stack-specific gotchas (like Next.js hydration) belong in the plan, not the constitution.</li>
     </ul>
 
     <h3>What's next</h3>
-    <p>In <strong>Module 4</strong> you'll apply the same workflow to a <em>brownfield</em> codebase &mdash; a starter to-do app shipped with this course. The mechanics are the same, but the context-management challenge is fundamentally different. You'll see why the brownfield case is where most teams struggle, and how the incremental approach Module 1 introduced actually plays out in practice. The brownfield starter uses the same stack you just used, so what you learned here transfers directly.</p>
+    <p>In <strong>Module 4</strong> you'll take the same workflow into a <em>brownfield</em> codebase &mdash; the starter to-do app shipped with this course &mdash; and add a due date to it. The loop is the same; what changes is where the context comes from. Instead of writing standards before any code exists, you draw guardrails from code that already does, and you keep the first spec to one bounded change. It's the centerpiece of the course, and where most teams find SDD hardest.</p>
 
     <div class="module-footer-nav">
       <a class="mod-nav-prev" href="module-2.html">
-        <span class="mod-nav-label">← Previous · Module 2</span>
+        <span class="mod-nav-label">&larr; Previous &middot; Module 2</span>
         <span class="mod-nav-title">Anatomy of a Good Spec</span>
       </a>
       <a class="mod-nav-next" href="module-4.html">
-        <span class="mod-nav-label">Next · Module 4 →</span>
+        <span class="mod-nav-label">Next &middot; Module 4 &rarr;</span>
         <span class="mod-nav-title">Brownfield Lab</span>
       </a>
     </div>
@@ -1034,6 +1167,14 @@ Tasks persist across page reloads via localStorage. The home page
       }
     });
   });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>

@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7 &mdash; Customization &middot; SDD with SPECTRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Mona+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Palette shared with the SPECTRA landing page (docs/index.html). */
+    --bg: #0c0a16;
+    --bg-2: #120f22;
+    --bg-elev: rgba(255, 255, 255, 0.04);
+    --surface: rgba(8, 6, 18, 0.55);
+    --text: #e9e7f2;
+    --text-muted: #a3a0b5;
+    --text-subtle: #8b879e;
+    --accent: #a78bfa;
+    --accent-2: #c4b5fd;
+    --accent-soft: rgba(167, 139, 250, 0.10);
+    --accent-line: rgba(167, 139, 250, 0.35);
+    --border: rgba(167, 139, 250, 0.20);
+    --border-strong: rgba(167, 139, 250, 0.34);
+    --code-bg: #0d0b17;
+    --code-text: #ded7f5;
+    --code-comment: #8d88a8;
+    --code-accent: #c4b5fd;
+    --success: #34d399;
+    --success-soft: rgba(52, 211, 153, 0.10);
+    --error: #fb7185;
+    --error-soft: rgba(251, 113, 133, 0.10);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --max-w: 720px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Mona Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 520px at 78% -10%, rgba(167,139,250,0.18), transparent 60%),
+      radial-gradient(900px 480px at 10% 6%, rgba(124,92,222,0.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-2), var(--bg));
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  /* Faint grid overlay, matching the SPECTRA landing page. */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(167,139,250,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167,139,250,0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+  }
+  main {
+    position: relative; z-index: 1;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 64px 28px 120px;
+  }
+  /* Hero */
+  .hero { margin-bottom: 56px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+  .hero-eyebrow {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-weight: 400;
+    font-size: 17px; color: var(--accent); letter-spacing: 0.01em;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 44px; line-height: 1.1;
+    letter-spacing: -0.025em; margin-bottom: 22px; color: var(--text);
+  }
+  .hero-lede {
+    font-size: 19px; line-height: 1.55; color: var(--text-muted); max-width: 600px;
+  }
+  /* Meta block */
+  .meta {
+    display: flex; flex-wrap: wrap;
+    margin-top: 32px; padding: 18px 22px;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 6px; font-size: 14px;
+  }
+  .meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+    padding-right: 32px; margin-right: 32px;
+    border-right: 1px solid var(--border-strong);
+  }
+  .meta-item:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+  .meta-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-subtle); font-weight: 500;
+  }
+  .meta-value { color: var(--text); font-weight: 500; }
+  /* Article typography */
+  article h2 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 28px; line-height: 1.25;
+    letter-spacing: -0.018em; margin-top: 56px; margin-bottom: 18px; color: var(--text);
+  }
+  article h2 .h2-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 400; color: var(--accent); margin-right: 14px;
+  }
+  article h3 {
+    font-weight: 600; font-size: 20px; line-height: 1.3;
+    letter-spacing: -0.012em; margin-top: 36px; margin-bottom: 12px; color: var(--text);
+  }
+  article h4 {
+    font-weight: 600; font-size: 16px;
+    margin-top: 28px; margin-bottom: 8px; color: var(--text);
+  }
+  article p { margin-bottom: 18px; }
+  article ul, article ol { margin: 0 0 22px 0; padding-left: 22px; }
+  article li { margin-bottom: 8px; padding-left: 4px; }
+  article li::marker { color: var(--text-subtle); }
+  article ul ul, article ol ol, article ul ol, article ol ul { margin: 8px 0 4px 0; }
+  article a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-line);
+    transition: border-color 0.15s ease;
+  }
+  article a:hover { border-bottom-color: var(--accent); }
+  article strong { font-weight: 600; color: var(--text); }
+  article em { font-style: italic; }
+  /* Inline code */
+  article code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86em; background: var(--bg-elev);
+    border: 1px solid var(--border); padding: 1px 6px;
+    border-radius: 4px; color: var(--code-text); font-weight: 500;
+  }
+  /* Code blocks */
+  .code-block { position: relative; margin: 22px 0 26px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    border: 1px solid var(--border);
+    padding: 18px 20px; border-radius: 8px; overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px; line-height: 1.6; box-shadow: var(--shadow-sm);
+  }
+  pre code {
+    background: none; border: none; padding: 0;
+    color: inherit; font-size: inherit; font-weight: 400;
+  }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(167, 139, 250, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.26);
+    color: var(--code-text); font-family: 'Mona Sans', sans-serif;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 5px 10px;
+    border-radius: 4px; cursor: pointer; opacity: 0;
+    transition: all 0.15s ease;
+  }
+  .code-block:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: rgba(167, 139, 250, 0.24); }
+  .copy-btn.copied { background: rgba(52, 211, 153, 0.20); border-color: rgba(52, 211, 153, 0.45); }
+  /* Blockquotes & callouts */
+  blockquote {
+    margin: 24px 0; padding: 16px 22px;
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0; color: var(--text); font-size: 16px;
+  }
+  blockquote p { margin-bottom: 12px; }
+  blockquote p:last-child { margin-bottom: 0; }
+  blockquote strong { color: var(--text); }
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto; margin: 22px 0 26px;
+    border: 1px solid var(--border); border-radius: 6px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td {
+    text-align: left; padding: 12px 16px;
+    border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  th {
+    background: var(--bg-elev); font-weight: 600;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+  tr:last-child td { border-bottom: none; }
+  td code, th code { font-size: 13px; }
+  /* HR */
+  hr { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+  /* Module list (README) */
+  .module-list {
+    display: flex; flex-direction: column; gap: 0;
+    margin: 28px 0 32px;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; background: var(--bg-elev);
+  }
+  .module-row {
+    display: grid; grid-template-columns: 48px 1fr auto auto;
+    gap: 18px; align-items: center;
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .module-row:last-child { border-bottom: none; }
+  .module-row.featured {
+    background: linear-gradient(to right, var(--accent-soft), transparent 60%);
+  }
+  .module-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 22px; font-weight: 500; color: var(--accent);
+  }
+  .module-title { font-weight: 600; font-size: 16px; color: var(--text); line-height: 1.35; }
+  .module-title-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+  .module-format { font-size: 13px; color: var(--text-subtle); font-style: italic; }
+  .module-time { font-size: 13px; color: var(--text-muted); font-weight: 500;
+    font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .star { color: var(--accent); margin-left: 4px; }
+  .path-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 22px 0 28px; }
+  .path-card { padding: 18px 22px; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 6px; }
+  .path-card-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; color: var(--text); }
+  .path-card-body { font-size: 14px; color: var(--text-muted); line-height: 1.55; }
+  .footer-note {
+    margin-top: 80px; padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 14px; color: var(--text-subtle); text-align: center;
+  }
+  /* Quiz (Module 1) */
+  .quiz {
+    margin: 28px 0 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .quiz-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .quiz-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 14px; color: var(--accent); letter-spacing: 0.02em;
+  }
+  .quiz-progress { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .quiz-question { padding: 20px 22px; border-bottom: 1px solid var(--border); }
+  .quiz-question:last-child { border-bottom: none; }
+  .quiz-q-prompt { font-weight: 600; margin-bottom: 14px; font-size: 16px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); cursor: pointer;
+    font-size: 15px; line-height: 1.45;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent-line); background: var(--accent-soft); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt-letter {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    width: 18px;
+  }
+  .quiz-opt.correct {
+    background: var(--success-soft);
+    border-color: var(--success);
+  }
+  .quiz-opt.correct .quiz-opt-letter { color: var(--success); }
+  .quiz-opt.incorrect {
+    background: var(--error-soft);
+    border-color: var(--error);
+  }
+  .quiz-opt.incorrect .quiz-opt-letter { color: var(--error); }
+  .quiz-opt.dim { opacity: 0.55; }
+  .quiz-feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--success-soft); border: 1px solid rgba(52, 211, 153, 0.30); }
+  .quiz-feedback.incorrect { background: var(--error-soft); border: 1px solid rgba(251, 113, 133, 0.30); }
+  .quiz-feedback-title { font-weight: 600; margin-bottom: 4px; }
+  .quiz-feedback.correct .quiz-feedback-title { color: var(--success); }
+  .quiz-feedback.incorrect .quiz-feedback-title { color: var(--error); }
+  /* Open-ended quiz answer (no options) */
+  .quiz-open-toggle {
+    margin-top: 8px;
+    padding: 9px 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+  }
+  .quiz-open-toggle:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
+  .quiz-open-answer {
+    margin-top: 12px; padding: 14px 16px;
+    background: var(--accent-soft); border: 1px solid var(--accent-line);
+    border-radius: 6px; font-size: 14px; line-height: 1.6;
+    display: none;
+  }
+  .quiz-open-answer.show { display: block; }
+  /* Reveal block (sample solutions) */
+  .reveal {
+    margin: 24px 0 28px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .reveal-trigger {
+    width: 100%;
+    padding: 16px 22px;
+    background: none; border: none;
+    cursor: pointer;
+    font-family: inherit; font-size: 15px; font-weight: 500;
+    color: var(--text); text-align: left;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    transition: background 0.15s ease;
+  }
+  .reveal-trigger:hover { background: var(--accent-soft); }
+  .reveal-trigger-label {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-right: 8px;
+  }
+  .reveal-trigger-icon {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted); font-size: 14px;
+    transition: transform 0.2s ease;
+  }
+  .reveal.open .reveal-trigger-icon { transform: rotate(45deg); }
+  .reveal-content {
+    display: none;
+    padding: 4px 22px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .reveal.open .reveal-content { display: block; }
+  .reveal-content > *:first-child { margin-top: 18px; }
+  /* Lab placeholder card (Module 4) */
+  .lab-card {
+    margin: 28px 0;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, var(--accent-soft), transparent 80%);
+    border: 1px solid var(--accent-line);
+    border-radius: 10px;
+    display: flex; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+  }
+  .lab-card-icon {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 36px; color: var(--accent); line-height: 1;
+  }
+  .lab-card-body { flex: 1; min-width: 240px; }
+  .lab-card-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .lab-card-meta { font-size: 13px; color: var(--text-muted); }
+  .lab-card-link {
+    display: inline-block;
+    padding: 9px 18px;
+    background: var(--accent); color: var(--bg);
+    font-weight: 500; font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none; border: none;
+    transition: background 0.15s ease;
+  }
+  .lab-card-link:hover { background: var(--accent-2); border-bottom: none; }
+  .lab-card-link.placeholder {
+    background: var(--bg-elev); color: var(--text-muted);
+    border: 1px dashed var(--border-strong); cursor: not-allowed;
+    pointer-events: none; font-style: italic;
+  }
+  /* Note callout (distinct from blockquote) */
+  .note {
+    margin: 22px 0;
+    padding: 14px 18px 14px 18px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  .note-label {
+    display: inline-block;
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); margin-right: 6px;
+    font-size: 14px;
+  }
+  /* Checklist (visual only) */
+  .checklist { list-style: none; padding-left: 0; margin: 14px 0 22px; }
+  .checklist li {
+    padding-left: 28px; position: relative; margin-bottom: 8px;
+  }
+  .checklist li::before {
+    content: ""; position: absolute; left: 0; top: 0.45em;
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--border-strong); border-radius: 3px;
+    background: var(--surface);
+  }
+  /* TOC at top of module pages (within-page only — no cross-page links) */
+  .toc {
+    margin: 28px 0 40px;
+    padding: 18px 22px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .toc-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-bottom: 10px;
+  }
+  .toc ol { padding-left: 22px; margin: 0; font-size: 14px; }
+  .toc ol li { margin-bottom: 4px; }
+  .toc a { border-bottom: none; color: var(--text-muted); }
+  .toc a:hover { color: var(--accent); border-bottom: 1px solid var(--accent-line); }
+  /* Diagram (ASCII flow) */
+  .diagram {
+    margin: 24px 0;
+    padding: 22px;
+    background: var(--code-bg); color: var(--code-text);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  /* Figure (diagram image + caption) */
+  figure.fig { margin: 26px 0; }
+  figure.fig > a { display: block; border-bottom: none; }
+  figure.fig img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; box-shadow: var(--shadow-md);
+  }
+  figure.fig figcaption {
+    margin-top: 10px; font-size: 13px; color: var(--text-subtle);
+    font-style: italic; text-align: center;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    main { padding: 40px 20px 80px; }
+    .hero h1 { font-size: 32px; }
+    .hero-lede { font-size: 17px; }
+    article h2 { font-size: 24px; margin-top: 44px; }
+    article h3 { font-size: 18px; }
+    .meta { flex-direction: column; gap: 12px; padding: 14px 18px; }
+    .meta-item { border-right: none; padding-right: 0; margin-right: 0;
+      border-bottom: 1px solid var(--border-strong); padding-bottom: 12px;
+      margin-bottom: 0; }
+    .meta-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .module-row { grid-template-columns: 36px 1fr; gap: 14px; padding: 14px 18px; }
+    .module-format, .module-time { grid-column: 2; font-size: 12px; }
+    .quiz-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .lab-card { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<style>
+  /* Course navigation bar (shared) */
+  .course-nav {
+    z-index: 50;
+    background: rgba(12, 10, 22, 0.82);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .course-nav-inner {
+    max-width: 820px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 11px 28px;
+  }
+  .course-nav-brand {
+    display: flex; align-items: baseline; gap: 10px;
+    text-decoration: none; border-bottom: none; white-space: nowrap;
+  }
+  .course-nav-brand-mark {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 500; font-size: 18px; color: var(--accent);
+  }
+  .course-nav-brand-text {
+    font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.01em;
+  }
+  .course-nav-brand:hover .course-nav-brand-text { color: var(--accent); }
+  .course-nav-brand.is-active .course-nav-brand-text { color: var(--text); }
+  .course-nav-modules {
+    display: flex; align-items: center; gap: 6px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .course-nav-modules::-webkit-scrollbar { display: none; }
+  .course-nav-modules a {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 30px; height: 30px; padding: 0 9px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface);
+    transition: all 0.15s ease;
+  }
+  .course-nav-modules a:hover {
+    border-color: var(--accent-line); color: var(--accent); background: var(--accent-soft);
+  }
+  .course-nav-modules a.is-active {
+    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  }
+  .course-nav-home {
+    font-family: 'Mona Sans', sans-serif; font-weight: 600;
+    padding: 0 13px; margin-right: 8px;
+  }
+  /* Module footer navigation (prev / next) */
+  .module-footer-nav {
+    margin-top: 56px; padding-top: 28px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: stretch; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .mod-nav-prev, .mod-nav-next {
+    display: inline-flex; flex-direction: column; gap: 3px;
+    text-decoration: none; border-bottom: none; border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+  .mod-nav-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
+  }
+  .mod-nav-prev {
+    align-items: flex-start; padding: 10px 4px; color: var(--text-muted);
+  }
+  .mod-nav-prev .mod-nav-label { color: var(--text-subtle); }
+  .mod-nav-prev .mod-nav-title { font-weight: 500; font-size: 15px; color: var(--text); }
+  .mod-nav-prev:hover .mod-nav-title { color: var(--accent); }
+  .mod-nav-next {
+    margin-left: auto; align-items: flex-end; text-align: right;
+    padding: 12px 20px; background: var(--accent); color: var(--bg);
+  }
+  .mod-nav-next .mod-nav-label { color: var(--bg); opacity: 0.82; }
+  .mod-nav-next .mod-nav-title { font-weight: 600; font-size: 15px; color: var(--bg); }
+  .mod-nav-next:hover { background: var(--accent-2); }
+  @media (max-width: 600px) {
+    .course-nav-inner { padding: 10px 16px; }
+    .course-nav-brand-text { display: none; }
+    .module-footer-nav { gap: 12px; }
+    .mod-nav-next { padding: 10px 16px; }
+  }
+
+  /* ---------- Site-wide top bar (matches docs/index.html) ---------- */
+  .topstack { position: sticky; top: 0; z-index: 60; }
+  .sitebar {
+    background: rgba(12,10,22,0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .sitebar .sitebar-inner {
+    max-width: 960px; margin: 0 auto; padding: 0 22px;
+  }
+  header.site {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 12px 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header.site .brand { display: inline-flex; align-items: center; text-decoration: none; border-bottom: none; }
+  header.site .brand:hover { text-decoration: none; }
+  header.site img.logo { height: 26px; width: auto; opacity: .95; display: block; }
+  header.site .nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  header.site .nav a.nav-page {
+    color: var(--text-muted, #a3a0b5); font-size: 14px; text-decoration: none;
+    padding: 5px 13px; border: 1px solid transparent; border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+    border-bottom: none;
+  }
+  header.site .nav a.nav-page:hover { color: var(--text, #e9e7f2); text-decoration: none; }
+  header.site .nav a.nav-page[aria-current="page"] {
+    color: var(--accent-2, #c4b5fd); border-color: var(--border, rgba(167,139,250,0.20));
+    background: rgba(167,139,250,0.10);
+  }
+  header.site .nav a:focus-visible { outline: 2px solid var(--accent-2, #c4b5fd); outline-offset: 2px; }
+  header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border, rgba(167,139,250,0.20)); margin: 0 4px; }
+  header.site .nav a.nav-jump { color: var(--text-muted, #a3a0b5); font-size: 13px; padding: 5px 5px; text-decoration: none; border-bottom: none; }
+  header.site .nav a.nav-jump:hover { color: var(--text, #e9e7f2); }
+  @media (max-width: 720px) {
+    header.site { flex-wrap: wrap; gap: 10px; }
+    header.site .nav { gap: 4px; }
+    header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
+    header.site .nav .nav-sep { display: none; }
+  }
+</style>
+<div class="topstack">
+<div class="sitebar">
+  <div class="sitebar-inner">
+    <header class="site">
+      <a class="brand" href="../index.html" aria-label="SPECTRA — home">
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-page" href="../index.html">Home</a>
+        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
+        <a class="nav-page" href="../agents.html">Agents</a>
+        <a class="nav-page" href="index.html" aria-current="page">E-Learning</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a class="nav-jump" href="../index.html#install">Install</a>
+      </nav>
+    </header>
+  </div>
+</div>
+<nav class="course-nav">
+  <div class="course-nav-inner">
+    <a class="course-nav-brand" href="index.html">
+      <span class="course-nav-brand-mark">SPECTRA</span>
+      <span class="course-nav-brand-text">SDD Learning</span>
+    </a>
+    <div class="course-nav-modules">
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own" class="is-active">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
+    </div>
+  </div>
+</nav>
+</div>
+<main>
+  <header class="hero">
+    <div class="hero-eyebrow">Module 7</div>
+    <h1>Customization &mdash; Make the Workflow Your Own</h1>
+    <p class="hero-lede">The built-in workflow is a starting point, not a limit. Learn Spec Kit&rsquo;s five building blocks for changing it, how the template stack decides which file wins, and how to reshape SPECTRA&rsquo;s documents and move where it writes them &mdash; without forking anything you would lose on the next update.</p>
+    <div class="meta">
+      <div class="meta-item">
+        <span class="meta-label">Time</span>
+        <span class="meta-value">60 min</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Format</span>
+        <span class="meta-value">Concepts + hands-on lab</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Prerequisites</span>
+        <span class="meta-value">Modules 1&ndash;4 (uses your Module 4 project)</span>
+      </div>
+    </div>
+  </header>
+
+  <article>
+    <h3>Learning objectives</h3>
+    <p>By the end of this module, you will be able to:</p>
+    <ol>
+      <li>Pick the right building block &mdash; extension, preset, project-local override, workflow, or bundle &mdash; for a customization.</li>
+      <li>Predict which layer supplies a template, and confirm it with <code>specify preset resolve</code>.</li>
+      <li>Explain why a template change applies on the next run but a command change only on install.</li>
+      <li>Evaluate a component before installing it, using <code>specify bundle info</code> and each catalog&rsquo;s install policy.</li>
+      <li>Reshape SPECTRA&rsquo;s documents with a template override and move them with the <code>Artifact root:</code> line &mdash; without touching <code>.specify/extensions/</code>.</li>
+      <li>Avoid shadowed templates, processes with no templates, and preset stacks nobody can explain.</li>
+    </ol>
+
+    <h2><span class="h2-num">1.</span>Why customize at all</h2>
+    <p>Everything you have run so far &mdash; the SDD loop, idea assessment, the bug workflow &mdash; is one of Spec Kit&rsquo;s first-party processes, and Spec Kit calls them starting points, not limits. Your team has standards the defaults know nothing about: an accessibility bar, a security review, a house format for decision records, a rule about where documents live.</p>
+    <p>Two tempting ways to get those standards into the agent&rsquo;s output both fail. <strong>Asking every time</strong> works until the person who cares goes on holiday. <strong>Editing the installed files</strong> works until the next update replaces them.</p>
+    <p>The supported path is to encode the standard <em>once</em>, in a layer the tools already read, and commit it. The constitution says what must be <em>true</em> of the work; a template says what every document must <em>contain</em>. Neither removes a human gate: a customization changes what the agent drafts, and people still decide whether the draft is right.</p>
+
+    <h2><span class="h2-num">2.</span>Five building blocks, and when to use each</h2>
+    <p>Spec Kit gives you five ways to change the workflow, and each answers a different kind of goal.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Your goal</th><th>Use</th><th>For example</th></tr></thead>
+      <tbody>
+        <tr><td>Add a new command, capability, or process</td><td><strong>Extension</strong></td><td><code>bug</code>, <code>assess</code>; SPECTRA itself</td></tr>
+        <tr><td>Integrate an external tool or service</td><td><strong>Extension</strong></td><td>Pushing tasks into your issue tracker</td></tr>
+        <tr><td>Change the format or terminology of specs, plans, or tasks</td><td><strong>Preset</strong></td><td>Test-first task ordering</td></tr>
+        <tr><td>Enforce organizational or regulatory standards in the existing templates</td><td><strong>Preset</strong></td><td>A security section in every plan, in every repository</td></tr>
+        <tr><td>Ship reusable domain templates</td><td><strong>Preset</strong> if they replace existing templates; <strong>extension</strong> if they come with new commands</td><td>A regulated-industry spec shape</td></tr>
+        <tr><td>Make a one-off template change in one project</td><td><strong>Project-local override</strong></td><td>This lab&rsquo;s Accessibility section</td></tr>
+        <tr><td>Automate a multi-step process</td><td><strong>Workflow</strong></td><td>specify &rarr; plan &rarr; tasks &rarr; implement, with gates</td></tr>
+        <tr><td>Provision a complete role-based setup in one step</td><td><strong>Bundle</strong></td><td><code>bugfix</code>: the <code>bug</code> extension plus its workflow</td></tr>
+      </tbody>
+    </table></div>
+    <p>A quick way to hold it: a new <em>verb</em> is an extension; a different <em>shape</em> is a preset (many repositories) or an override (this one); a <em>sequence</em> is a workflow; the <em>whole kit</em> is a bundle.</p>
+
+    <h2><span class="h2-num">3.</span>How Spec Kit decides which template wins</h2>
+    <p>When a command needs a template, Spec Kit looks through four layers, top to bottom, and uses the <strong>first match</strong>:</p>
+    <div class="diagram"> A command asks for a template, e.g. spec-template
+        │
+        ▼
+ 1  Project overrides   .specify/templates/overrides/   committed with your repo
+        │ not found
+        ▼
+ 2  Presets             .specify/presets/&lt;id&gt;/          lowest priority number first
+        │ not found
+        ▼
+ 3  Extensions          .specify/extensions/&lt;id&gt;/       by priority; SPECTRA is here
+        │ not found
+        ▼
+ 4  Spec Kit core       .specify/templates/             created by specify init
+
+ First match wins.</div>
+    <h3>3.1 Each file is resolved on its own</h3>
+    <p>Your specs can come from a project override while your plans come from core and your ADRs from SPECTRA. To see which layer supplies a file, ask:</p>
+<pre><code>specify preset resolve spec-template</code></pre>
+    <p>It prints the winning path and its layer &mdash; <code>(top layer from: core)</code> in a fresh project, <code>(top layer from: project override)</code> once you add your own copy. Despite its name, it traces the whole stack, extensions included.</p>
+
+    <h3>3.2 Templates resolve when used; commands are written at install time</h3>
+    <p><code>/speckit-specify</code> reads whichever spec template the stack resolves at that moment, so a template override applies on the very next run &mdash; no reinstall, no restart.</p>
+    <p>Commands are different. Installing or removing an extension or preset writes the effective command files into your agent&rsquo;s directory (for Claude Code, <code>.claude/skills/</code>), and the agent runs those files without walking the stack again. So a <strong>command</strong> override takes effect when components are installed or reconciled, not live. If you changed a command and nothing happened, check that first.</p>
+
+    <h3>3.3 Removing a layer restores the one below</h3>
+    <p>There is nothing to reset. Delete your override, or remove a preset, and the next layer down supplies the file again.</p>
+
+    <h2><span class="h2-num">4.</span>Presets, workflows, bundles &mdash; and whom to trust</h2>
+
+    <h3>4.1 Presets: priority and composition</h3>
+    <p>A preset overrides templates and commands supplied by core <em>and</em> by installed extensions. Browse with <code>specify preset search</code>, inspect with <code>specify preset info &lt;id&gt;</code>, install with <code>specify preset add &lt;id&gt;</code>.</p>
+    <p>Presets stack by <strong>priority</strong> &mdash; 10 by default, and the <strong>lower number wins</strong>. Install a compliance preset with <code>--priority 5</code> and a style preset at the default, and compliance wins for any file both provide. <code>specify preset list</code> prints presets winner first; <code>set-priority</code> reorders them.</p>
+    <p>By default a preset&rsquo;s file <strong>replaces</strong> the lower layer&rsquo;s. A preset can instead <strong>prepend</strong> or <strong>append</strong> its content to the lower layer&rsquo;s, or <strong>wrap</strong> it, using a <code>{CORE_TEMPLATE}</code> placeholder where the lower layer&rsquo;s content goes. Those three let a preset <em>add</em> to a template without forking it, so upstream improvements still reach you.</p>
+
+    <h3>4.2 Workflows and overlays, in brief</h3>
+    <p>A workflow chains commands, prompts, shell steps, and human gates into a run that can pause and resume. <code>specify workflow list</code> shows what is installed &mdash; typically Spec Kit&rsquo;s built-in <code>speckit</code> workflow &mdash; and <code>run</code>, <code>status</code>, and <code>resume</code> drive one. To change an installed workflow without editing it, add an <strong>overlay</strong>: a small YAML file that edits its steps (replace a gate, insert a lint step), registered with <code>specify workflow overlay add &lt;file&gt; --priority &lt;n&gt;</code>. Overlays live under <code>.specify/workflows/overlays/</code>, so they survive workflow updates.</p>
+
+    <h3>4.3 Bundles: read before you install</h3>
+    <p>A bundle is a versioned <code>bundle.yml</code> that pins extensions, presets, and workflows for a role or team and installs them in one step. It adds no behaviour of its own. Spec Kit ships two first-party bundles, <code>bugfix</code> and <code>assess</code> &mdash; orchestrated versions of what you ran in Modules 6 and 5.</p>
+<pre><code>specify bundle search           # what exists, with a trust indicator
+specify bundle info &lt;id&gt;        # the full expanded component set &mdash; read this first
+specify bundle install &lt;id&gt;     # only after you have read it</code></pre>
+    <p><code>info</code> shows exactly what <code>install</code> would add &mdash; every component with its pinned version &mdash; plus a <strong>verified</strong> or <strong>community</strong> marker. <code>remove</code> takes out only what that bundle contributed. Installing from a catalog needs network access.</p>
+
+    <h3>4.4 Catalogs and trust</h3>
+    <p>Catalogs are where <code>search</code> and <code>add</code> look. Each is <strong>install-allowed</strong> or <strong>discovery-only</strong>: out of the box, Spec Kit&rsquo;s official catalog allows installs, while its community catalog lets you find components but not install them.</p>
+    <p>SPECTRA arrives the same way: <code>spectra install</code> registers SPECTRA&rsquo;s public catalog with <code>--install-allowed</code> and installs the extension from it. That registration in <code>.specify/extension-catalogs.yml</code> takes the place of the built-in list, which is why <code>specify extension search</code> in a SPECTRA project offers only SPECTRA. (Extensions shipped inside Spec Kit, such as <code>bug</code> and <code>assess</code>, still install normally.)</p>
+    <ul>
+      <li>Community components are maintained independently and not reviewed by Spec Kit&rsquo;s maintainers. Read the source before installing.</li>
+      <li>Never flip a discovery-only catalog to install-allowed to get past the guard &mdash; that flag <em>is</em> the vetting boundary.</li>
+      <li>In an unfamiliar repository, run <code>specify extension catalog list</code> first. A committed catalog file is not evidence anyone reviewed what it points at.</li>
+    </ul>
+
+    <h2><span class="h2-num">5.</span>SPECTRA&rsquo;s customization points</h2>
+    <p>SPECTRA is not a special case. It is an extension, installed from a catalog into <code>.specify/extensions/spectra/</code>, and its document templates sit in layer 3 of the stack. Every SPECTRA document agent resolves its template through that stack, so you customize SPECTRA exactly as you customize Spec Kit.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Template name</th><th>Shapes the output of</th></tr></thead>
+      <tbody>
+        <tr><td><code>adr-template</code></td><td><code>speckit.spectra.adr</code></td></tr>
+        <tr><td><code>brd-template</code></td><td><code>speckit.spectra.brd</code></td></tr>
+        <tr><td><code>impact-analysis-template</code></td><td><code>speckit.spectra.impact</code></td></tr>
+        <tr><td><code>test-strategy-template</code>, <code>test-plan-template</code></td><td><code>speckit.spectra.test-strategy</code>, <code>speckit.spectra.test-plan</code></td></tr>
+        <tr><td><code>defect-rca-template</code></td><td><code>speckit.spectra.defect-rca</code></td></tr>
+        <tr><td><code>pr-template</code>, <code>review-template</code></td><td><code>speckit.spectra.create-pr</code> (PR body), <code>speckit.spectra.review-pr</code> (review and comments)</td></tr>
+        <tr><td><code>kb-document-template</code>, or <code>&lt;category&gt;-template</code></td><td><code>speckit.spectra.kb-vault</code> &mdash; any knowledge document, or one category</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>5.1 Override, commit, and leave the extension alone</h3>
+    <p>Copy the shipped template to <code>.specify/templates/overrides/&lt;name&gt;.md</code>, edit it, and commit it. Every later document of that kind follows your structure, for the whole team, and the override survives <code>specify extension update</code> because it lives outside the extension&rsquo;s folder. Never edit files under <code>.specify/extensions/</code>: an update replaces them wholesale, and your change goes with them.</p>
+
+    <h3>5.2 It tells you which template it used &mdash; and follows it</h3>
+    <p>Every SPECTRA command reports the template it resolved, by path, because an override that silently failed looks exactly like one that worked. It then follows that template&rsquo;s sections exactly &mdash; same sections, order, and headings. A section you removed stays removed (the command mentions the omission once); a section you added gets filled from what the agent gathered, or says plainly that it has nothing, rather than inventing content.</p>
+    <p>A template controls <em>shape</em>, not the rules that make a document trustworthy: some invariants stay with each command, such as the impact agent&rsquo;s citation rule.</p>
+
+    <h3>5.3 Artifact root: where SPECTRA writes</h3>
+    <p>SPECTRA&rsquo;s document agents write under <code>docs/</code> by default (<code>docs/adr/</code>, <code>docs/brd/</code>, &hellip;). One line in <code>.specify/memory/constitution.md</code> moves all of them at once:</p>
+<pre><code>Artifact root: documents/</code></pre>
+    <p>The path must be project-relative; a value starting with <code>/</code> or containing <code>..</code> is rejected. SPECTRA <em>offers</em> this line &mdash; the ADR agent does when <code>docs/</code> looks like a published site source, where an internal decision record would go public &mdash; but never writes it into your constitution. You add it; it is your standard. Shape and location are independent: overrides decide one, the artifact root the other.</p>
+
+    <h2><span class="h2-num">6.</span>Pitfalls</h2>
+
+    <h3>6.1 One flat overrides folder</h3>
+    <p>Core templates, extension templates, and SPECTRA&rsquo;s per-category kb-vault templates are all overridden from <code>.specify/templates/overrides/</code>, by file name alone. A kb-vault category named <code>spec</code>, <code>plan</code>, <code>tasks</code>, <code>checklist</code>, or <code>constitution</code> would be shaped by <code>spec-template.md</code> (and so on) &mdash; the very file that overrides a core template. Keep category names clear of those five words.</p>
+
+    <h3>6.2 <code>bug</code> and <code>assess</code> ship no templates</h3>
+    <p>Look inside <code>.specify/extensions/bug/</code>: a README, a manifest, and <code>commands/</code> &mdash; no <code>templates/</code>. The report formats live in the command files, so restyling <code>assessment.md</code> or <code>decision.md</code> takes a command override or a preset, which applies at install time, not on the next run.</p>
+
+    <h3>6.3 A stack nobody can reason about</h3>
+    <p>Every preset is another layer that might win for some file. With three presets and a few overrides, your spec may come from one layer and your plan from another. Before you debug the agent, ask the stack: <code>specify preset resolve &lt;name&gt;</code> for the file, <code>specify preset list</code> for the order.</p>
+
+    <h3>6.4 An override is a fork &mdash; and only yours until committed</h3>
+    <p>With the default replace behaviour your copy wins outright, including over later improvements to the shipped template. After updating, diff your override against its source:</p>
+<pre><code>diff .specify/extensions/spectra/templates/adr-template.md .specify/templates/overrides/adr-template.md</code></pre>
+    <p>And an override works locally the moment you save it, which makes it easy to forget that nobody else has it until it is committed.</p>
+
+    <h2>Lab &mdash; make your Module 4 project your own</h2>
+    <div class="lab-card">
+      <div class="lab-card-icon">&#9733;</div>
+      <div class="lab-card-body">
+        <div class="lab-card-title">Lab codebase &mdash; <code>lab-codebase.zip</code></div>
+        <div class="lab-card-meta">Use your finished Module 4 project (SPECTRA installed, due-date feature built). Starting over? Unzip this again and redo Module 4&rsquo;s setup first.</div>
+      </div>
+      <a class="lab-card-link" href="lab-codebase.zip" download>Download</a>
+    </div>
+    <p>You will override Spec Kit&rsquo;s spec template, reshape SPECTRA&rsquo;s ADRs, move where SPECTRA writes, and inspect a bundle without installing it (about 45 minutes). Start from a clean tree so every change shows up as a reviewable diff:</p>
+<pre><code>cd ~/sdd-brownfield-lab/lab-codebase    # or wherever your Module 4 project lives
+git status                              # commit or stash anything left from Module 4</code></pre>
+    <div class="note"><span class="note-label">Commands.</span>Agent commands are shown in the Claude Code / GitHub Copilot form (<code>/speckit-specify</code>). If your agent spells them differently, see the note in Module 1.</div>
+
+    <h2><span class="h2-num">7.</span>See the layers (3 min)</h2>
+<pre><code>specify preset resolve spec-template
+specify preset resolve adr-template</code></pre>
+    <p>You should see something like this (long paths wrap):</p>
+<pre><code>  spec-template:
+&hellip;/lab-codebase/.specify/templates/spec-template.md
+    (top layer from: core)
+  adr-template:
+&hellip;/lab-codebase/.specify/extensions/spectra/templates/adr-template.md
+    (top layer from: extension:spectra v&lt;version&gt;)</code></pre>
+    <ul class="checklist">
+      <li>The spec template comes from Spec Kit core (layer 4).</li>
+      <li>The ADR template comes from the SPECTRA extension (layer 3) &mdash; the same stack, one layer up.</li>
+    </ul>
+
+    <h2><span class="h2-num">8.</span>Add a project override for specs (10 min)</h2>
+    <p>Your team has decided every UI change to the to-do app must state its accessibility behaviour up front. It is a standard for this one project, so a project-local override is the right tool.</p>
+
+    <h3>8.1 Copy the core template into the override slot</h3>
+<pre><code>mkdir -p .specify/templates/overrides
+cp .specify/templates/spec-template.md .specify/templates/overrides/spec-template.md</code></pre>
+
+    <h3>8.2 Add a mandatory section</h3>
+    <p>Open the copy and insert this between <strong>Success Criteria</strong> and <strong>Assumptions</strong>:</p>
+<pre><code>## Accessibility *(mandatory)*
+
+&lt;!--
+  ACTION REQUIRED: State how keyboard, screen-reader, and zoom users get the same
+  outcome as a mouse user. Each item is a testable behaviour, not implementation.
+  No user interface? Write "No user-facing interface" and why.
+--&gt;
+
+- **A11Y-001**: [Keyboard: every new control works with the keyboard alone]
+- **A11Y-002**: [Screen readers: changes the user needs to know about are announced]
+- **A11Y-003**: [Colour: no information is conveyed by colour alone]
+- **A11Y-004**: [Readability: WCAG 2.2 AA contrast; layout works at 200% zoom]</code></pre>
+    <p>The guidance comment is written for the agent: it is the instruction every future spec will be drafted against.</p>
+
+    <h3>8.3 Confirm the stack sees it</h3>
+<pre><code>specify preset resolve spec-template</code></pre>
+    <ul class="checklist">
+      <li>The path now ends in <code>.specify/templates/overrides/spec-template.md</code>.</li>
+      <li>The layer reads <code>(top layer from: project override)</code>.</li>
+    </ul>
+
+    <h3>8.4 Specify a tiny change</h3>
+    <p>No reinstall, no restart &mdash; <code>/speckit-specify</code> resolves the template when it runs. Keep the change tiny, so the new section is the interesting part:</p>
+<pre><code>/speckit-specify Show a count of open (not yet completed) tasks above the list,
+for example "3 open". The count updates when a task is added, completed, or deleted.</code></pre>
+    <p>This creates a new feature folder under <code>specs/</code> and makes it the active feature. You will not plan or build it; it exists to prove the template.</p>
+
+    <h3>8.5 Human gate &mdash; review the spec</h3>
+    <p>You are the product owner at the Plan gate: approve intent and scope, and check the new section earned its place.</p>
+    <ul class="checklist">
+      <li>An <strong>Accessibility</strong> section sits between Success Criteria and Assumptions, where you put it.</li>
+      <li>Each item is a testable statement about the count &mdash; not your placeholder echoed back, not &ldquo;N/A&rdquo;.</li>
+      <li>No implementation crept in: &ldquo;screen-reader users hear the new count&rdquo; belongs in the spec; <code>aria-live="polite"</code> belongs in the plan.</li>
+      <li>No scope crept in: no filters, no per-day counts.</li>
+    </ul>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample section</span> &mdash; a good Accessibility section for the open-task count</span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+<pre><code>## Accessibility *(mandatory)*
+
+- **A11Y-001**: The count is information, not a control: it adds no stop to
+  the keyboard tab order.
+- **A11Y-002**: When the count changes, screen-reader users are told the new
+  count without navigating back to it.
+- **A11Y-003**: The count is given in words and numbers ("3 open"), never by
+  colour or an icon alone.
+- **A11Y-004**: The count stays readable at 200% zoom and meets AA contrast.</code></pre>
+        <p>A person with a keyboard, a screen reader, and browser zoom can check every line &mdash; and none names an attribute, a component, or a Tailwind class.</p>
+      </div>
+    </div>
+    <div class="note"><span class="note-label">Look back.</span>If your Module 4 build marks overdue dates with red text alone, A11Y-003 would have flagged it at spec time. That is why the question belongs in the template: it gets asked on every feature, whoever runs the agent.</div>
+
+    <h2><span class="h2-num">9.</span>Override a SPECTRA template (10 min)</h2>
+    <p>Your architects want every decision record to say how the decision could be undone. Same mechanism, different layer: this time you shadow an extension&rsquo;s template.</p>
+
+    <h3>9.1 Copy SPECTRA&rsquo;s ADR template</h3>
+<pre><code>cp .specify/extensions/spectra/templates/adr-template.md .specify/templates/overrides/adr-template.md</code></pre>
+
+    <h3>9.2 Add a Rollback Plan section</h3>
+    <p>The shipped template has Context, Decision, and Consequences. Add this after Consequences:</p>
+<pre><code>## Rollback Plan
+
+&lt;!--
+  How would we reverse this decision if it proves wrong? State the signal that
+  would trigger reversal, the steps in order, and what happens to data written
+  under this decision meanwhile. If reversal is impractical, say so and why.
+--&gt;
+
+[Rollback plan]</code></pre>
+    <p>Guidance comments never reach a finished ADR, so you can leave the copy&rsquo;s header comment or trim it.</p>
+
+    <h3>9.3 Record a real decision from Module 4</h3>
+    <p>In Module 4 you settled how due dates are stored and compared &mdash; exactly what a later maintainer will want explained. Check that the stack now reports <code>(top layer from: project override)</code>, then run the agent:</p>
+<pre><code>specify preset resolve adr-template</code></pre>
+<pre><code>/speckit-spectra-adr Store each to-do's due date as a date-only ISO string (YYYY-MM-DD)
+on the existing Todo record, and compare dates as strings rather than Date objects.</code></pre>
+    <p>The agent reads the constitution, your specs, and <code>lib/storage.ts</code>, then asks up to five clarifying questions &mdash; expect one about rollback, which the codebase cannot answer. It writes <code>docs/adr/ADR-001-&lt;title&gt;.md</code> (a higher number if ADRs already exist) and checks the decision against your constitution.</p>
+
+    <h3>9.4 Human gate &mdash; approve the decision record</h3>
+    <p>This is the Design gate, where architects approve decisions. Today that is you.</p>
+    <ul class="checklist">
+      <li>The report names the template it used: <code>.specify/templates/overrides/adr-template.md</code>.</li>
+      <li>A Rollback Plan section follows Consequences, and no guidance comment or <code>[placeholder]</code> survived.</li>
+      <li>The rollback plan is grounded (the storage format, older tasks saved without a due date) or says plainly what it does not know. Invented detail is a reason to send it back.</li>
+      <li>The status is <code>Proposed</code>.</li>
+      <li>If the agent recommended a constitution change, you decided on purpose. It edits the constitution only if you agree.</li>
+    </ul>
+    <div class="note"><span class="note-label">Wrong template?</span>If the report names <code>.specify/extensions/spectra/templates/adr-template.md</code>, your override was not picked up. Check the file name, the folder, and that the file is not empty &mdash; exactly the failure the path report exists to catch.</div>
+
+    <h2><span class="h2-num">10.</span>Redirect SPECTRA&rsquo;s output (7 min)</h2>
+    <p>Suppose your organization keeps internal documents in <code>documents/</code> and reserves <code>docs/</code> for published material.</p>
+
+    <h3>10.1 Declare the artifact root</h3>
+    <p>Open <code>.specify/memory/constitution.md</code> and add this line yourself &mdash; under a short &ldquo;Documentation&rdquo; heading, for example:</p>
+<pre><code>Artifact root: documents/</code></pre>
+
+    <h3>10.2 Record a second decision</h3>
+<pre><code>/speckit-spectra-adr Keep every to-do in the single existing "todos" localStorage entry;
+new features add fields to the Todo record instead of introducing new storage keys.</code></pre>
+
+    <h3>10.3 What to expect</h3>
+    <p>The ADR command&rsquo;s own instructions define what happens, so check the run against them:</p>
+    <ul>
+      <li><strong>It writes to the new root:</strong> <code>documents/adr/ADR-002-&lt;title&gt;.md</code> (or your next number).</li>
+      <li><strong>The numbering continues</strong> across both folders: it still reads <code>docs/adr/</code> for context and numbering.</li>
+      <li><strong>The earlier folder is read-only.</strong> Nothing in <code>docs/adr/</code> is moved or edited. If the new decision supersedes an old one there, the new ADR&rsquo;s Context says so, and you are told which file to update after you move it.</li>
+      <li><strong>It says so once:</strong> where ADRs live now, that the earlier folder was left untouched, and a command you can run to consolidate, along the lines of <code>git mv docs/adr/*.md documents/adr/ &amp;&amp; rmdir docs/adr</code>. It does not run it.</li>
+      <li><strong>Your override still applies</strong> &mdash; the same template path as in step 9.</li>
+    </ul>
+    <p><strong>Human gate:</strong> review this ADR against the step 9.4 checklist.</p>
+
+    <h2><span class="h2-num">11.</span>Remove an override and watch the next layer return (2 min)</h2>
+    <p>Park the spec override outside the stack rather than deleting it; you will decide in step 13 whether to keep it:</p>
+<pre><code>mv .specify/templates/overrides/spec-template.md spec-template.parked.md
+specify preset resolve spec-template</code></pre>
+    <ul class="checklist">
+      <li>The spec template is back to <code>(top layer from: core)</code>. No reinstall, no reset &mdash; the next layer down simply wins again. A command override, by contrast, would change nothing until components were reinstalled or reconciled.</li>
+    </ul>
+
+    <h2><span class="h2-num">12.</span>Explore the ecosystem without installing (8 min)</h2>
+    <p>These commands need network access. None of them changes your project.</p>
+<pre><code>specify extension catalog list
+specify extension search
+specify preset catalog list
+specify preset search
+specify bundle search
+specify bundle info bugfix</code></pre>
+    <ul>
+      <li><strong>Extension catalogs:</strong> most likely just <code>spectra</code>, install allowed &mdash; so <code>extension search</code> here shows SPECTRA alone. Your project decides where discovery looks.</li>
+      <li><strong>Preset catalogs</strong> are configured separately: Spec Kit&rsquo;s official (install allowed) and community (discovery only). Some community presets do at organization scale what you did by hand in step 8; <code>specify preset info &lt;id&gt;</code> names the repository to read first.</li>
+      <li><strong>Bundles:</strong> <code>search</code> marks each entry verified or community; <code>info bugfix</code> expands the first-party bug-fix bundle.</li>
+    </ul>
+    <div class="note"><span class="note-label">&ldquo;Bundle not found&rdquo;?</span>First-party bundles arrived in Spec Kit 1.0.9. Check with <code>spectra version</code>; bring Spec Kit current with <code>spectra update</code>.</div>
+    <p>Before opening the answer, note for <code>bugfix</code>: what it adds, who maintains it, whether it is verified, and what it touches that you already have. That is the review you owe any component.</p>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample reading</span> &mdash; what <code>bundle info bugfix</code> tells you</span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+        <ul>
+          <li><strong>Adds:</strong> the <code>bug</code> extension from Module 6, plus the <code>bugfix</code> workflow &mdash; assess, a review gate where you approve or reject the assessment, then fix and test.</li>
+          <li><strong>Maintained by:</strong> Spec Kit&rsquo;s own maintainers, from the first-party catalog, marked <strong>verified</strong>.</li>
+          <li><strong>Touches:</strong> you installed <code>bug</code> yourself. A bundle never adopts a component installed outside it; if your version does not match the bundle&rsquo;s pin, install stops before changing anything and names the component.</li>
+          <li><strong>Decision:</strong> nothing to install today. The bundle adds orchestration, not capability you lack.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2><span class="h2-num">13.</span>Decide what to keep, then commit it (5 min)</h2>
+<pre><code>git status</code></pre>
+    <p>You should see the ADR override, the constitution change, two ADRs, the count spec, and the parked spec template. Decide each one:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Change</th><th>Keep it if&hellip;</th><th>Otherwise</th></tr></thead>
+      <tbody>
+        <tr><td><code>.specify/templates/overrides/adr-template.md</code></td><td>Every ADR, from everyone, should carry a rollback plan.</td><td>Delete it.</td></tr>
+        <tr><td><code>spec-template.parked.md</code></td><td>Accessibility should be this project&rsquo;s standard: move it back to <code>.specify/templates/overrides/spec-template.md</code>.</td><td>Delete it.</td></tr>
+        <tr><td><code>Artifact root: documents/</code></td><td>Your team wants SPECTRA&rsquo;s documents there: consolidate the ADRs into <code>documents/adr/</code>.</td><td>Delete the line; move ADR-002 into <code>docs/adr/</code>.</td></tr>
+        <tr><td>The two ADRs</td><td>Always &mdash; they record real Module 4 decisions.</td><td>&mdash;</td></tr>
+        <tr><td>The count spec under <code>specs/</code></td><td>You plan to build it later.</td><td>Delete the folder; your next <code>/speckit-specify</code> resets the active feature.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><span class="note-label">git mv or mv?</span><code>git mv</code> only moves files Git already tracks. Both ADRs are new, so use a plain <code>mv</code> until they are committed.</div>
+    <p>Check your branch (<code>git branch --show-current</code>) &mdash; with the <code>git</code> extension, step 8 may have created a feature branch. Then stage what you kept, by path. If you kept everything and consolidated the ADRs:</p>
+<pre><code>git add .specify/templates/overrides/ .specify/memory/constitution.md documents/
+git commit -m "Add team template overrides and record due-date storage decisions"</code></pre>
+    <p>The commit is the point: an override on your machine is a preference; an override in the repository is a team standard every teammate&rsquo;s agent follows.</p>
+    <div class="note"><span class="note-label">For the rest of the course.</span>Later modules write SPECTRA paths against the default <code>docs/</code>. If you kept <code>documents/</code>, read them with your root instead.</div>
+
+    <h2>Knowledge check</h2>
+    <div class="quiz">
+      <div class="quiz-header"><span class="quiz-title">Knowledge check</span><span class="quiz-progress">7 questions</span></div>
+
+      <div class="quiz-question" data-type="mc" data-correct="c">
+        <div class="quiz-q-prompt">1. Your organization wants every plan, in every repository, to include a threat-model section. Which building block fits best?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>A project-local override of the plan template, committed to each repository</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>A new extension that adds a threat-model command</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>A preset that overrides the plan template, installed in each repository</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>A workflow overlay</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: c</div><div>Enforcing a standard in an existing template across many repositories is a preset&rsquo;s job. An override is for one project &mdash; thirty copies are thirty forks to keep in step. An extension adds commands; the goal here is to change an existing artifact. An overlay edits workflow steps, not templates.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="a">
+        <div class="quiz-q-prompt">2. Two presets both provide <code>plan-template.md</code>: <code>compliance</code>, installed with <code>--priority 5</code>, and <code>house-style</code>, installed at the default priority. There is no project override. Which plan template does <code>/speckit-plan</code> use?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span><code>compliance</code>&rsquo;s</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span><code>house-style</code>&rsquo;s</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Whichever preset was installed most recently</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Both, concatenated</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: a</div><div>The lower priority number wins, and the default is 10, so 5 beats <code>house-style</code>; install order plays no part. Content is combined only if a preset declares <code>prepend</code>, <code>append</code>, or <code>wrap</code> &mdash; the default is <code>replace</code>. <code>specify preset resolve plan-template</code> confirms it.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="d">
+        <div class="quiz-q-prompt">3. Your spec-template override applied on the very next <code>/speckit-specify</code>. A teammate&rsquo;s command override for <code>/speckit-bug-assess</code> changed nothing. Most likely why?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>Spec Kit does not support command overrides</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>The <code>bug</code> extension has to be disabled first</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>The override has to be registered with <code>specify preset resolve</code></span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Commands are written into the agent&rsquo;s directory at install time, so a command override applies on install or reconciliation, not live</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: d</div><div>Templates are resolved whenever a command needs one, so template overrides apply immediately. Commands are written into the agent&rsquo;s directory at install time and run from there. <code>specify preset resolve</code> only reports what the stack resolves; it registers nothing.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">4. You want every ADR in this repository to include a Rollback Plan, and the change must survive <code>specify extension update</code>. What do you do?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>Edit <code>.specify/extensions/spectra/templates/adr-template.md</code></span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>Copy that file to <code>.specify/templates/overrides/adr-template.md</code>, edit the copy, and commit it</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Edit the ADR command file under <code>.specify/extensions/spectra/commands/</code></span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Add &ldquo;include a rollback plan&rdquo; to every <code>/speckit-spectra-adr</code> prompt</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: b</div><div>The override slot sits outside the extension&rsquo;s folder, beats the shipped template, and is shared once committed. Files under <code>.specify/extensions/</code> are replaced on update, so (a) and (c) are lost. (d) is &ldquo;remember to ask every time&rdquo;. The template path the command reports confirms the override is in use.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="c">
+        <div class="quiz-q-prompt">5. Your project already has ADR-001 and ADR-002 in <code>docs/adr/</code>. You add <code>Artifact root: documents/</code> to the constitution and run <code>/speckit-spectra-adr</code>. What happens?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>It moves <code>docs/adr/</code> to <code>documents/adr/</code>, then writes ADR-003</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>It keeps writing to <code>docs/adr/</code> until you delete that folder</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>It writes <code>documents/adr/ADR-003-&hellip;</code>, leaves <code>docs/adr/</code> untouched, and offers a command you can run to consolidate</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>It starts a new sequence at <code>documents/adr/ADR-001-&hellip;</code></span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: c</div><div>The declared root wins. The command still reads <code>docs/adr/</code> for context and numbering, so the sequence continues at 003, but treats it as read-only. It mentions the move once and hands you the command instead of running it.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">6. A colleague suggests installing a bundle to &ldquo;set everything up&rdquo;. What should you run first?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span><code>specify bundle install &lt;id&gt;</code> &mdash; you can always remove it afterwards</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span><code>specify bundle info &lt;id&gt;</code>, to read the full component set, the pinned versions, and the verified or community marker</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Mark the bundle&rsquo;s catalog install-allowed, so the install cannot be refused</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span><code>specify bundle update --all</code></span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: b</div><div><code>info</code> shows exactly what <code>install</code> would apply, plus the trust indicator, before anything changes. Installing first means reviewing after the fact. Flipping a catalog to install-allowed removes the guard that exists to make you vet it. <code>update</code> only refreshes bundles already installed.</div></div>
+      </div>
+
+      <div class="quiz-question">
+        <div class="quiz-q-prompt">7. Your team wants (1) a data-retention section in every repository&rsquo;s specs, (2) this repository&rsquo;s SPECTRA documents under <code>handbook/</code>, and (3) a &ldquo;Regulatory drivers&rdquo; section in this repository&rsquo;s BRDs. For each: which mechanism, what do you commit, and how do you check it took effect?</div>
+        <button class="quiz-open-toggle">Reveal answer</button>
+        <div class="quiz-open-answer">
+          <p><strong>(1) A preset</strong> overriding the spec template &mdash; ideally with <code>append</code> or <code>wrap</code>, so it adds the section without forking core&rsquo;s template &mdash; installed in each repository. Check with <code>specify preset resolve spec-template</code> and the next generated spec.</p>
+          <p><strong>(2) The artifact root line.</strong> Add <code>Artifact root: handbook/</code> to <code>.specify/memory/constitution.md</code> yourself (SPECTRA only offers it) and commit it. Check that the next SPECTRA document lands under <code>handbook/</code>.</p>
+          <p><strong>(3) A project-local override.</strong> Copy <code>.specify/extensions/spectra/templates/brd-template.md</code> to <code>.specify/templates/overrides/brd-template.md</code>, add the section, commit. Check that <code>specify preset resolve brd-template</code> reports the project override and that <code>/speckit-spectra-brd</code> names that path.</p>
+          <p>Each standard lives in a committed file the tools read &mdash; not in anyone&rsquo;s memory, and not in <code>.specify/extensions/</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <h3>What's next</h3>
+    <p><strong>Module 8 &mdash; Best Practices &amp; Pitfalls</strong> steps back from the tools to the practice: the habits that consistently make spec-driven development work, the failure modes that sink it, and a critique exercise on deliberately flawed specs. Take one question with you: which of your team&rsquo;s standards belong in the constitution, and which in a template?</p>
+
+    <div class="module-footer-nav">
+      <a class="mod-nav-prev" href="bugfix.html">
+        <span class="mod-nav-label">&larr; Previous &middot; Module 6</span>
+        <span class="mod-nav-title">Bug Fix</span>
+      </a>
+      <a class="mod-nav-next" href="module-5.html">
+        <span class="mod-nav-label">Next &middot; Module 8 &rarr;</span>
+        <span class="mod-nav-title">Best Practices &amp; Pitfalls</span>
+      </a>
+    </div>
+  </article>
+</main>
+<script>
+  // Auto-attach copy buttons to all <pre> blocks
+  document.querySelectorAll('pre').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-block';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', async () => {
+      const text = pre.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1400);
+    });
+    wrap.appendChild(btn);
+  });
+
+  // Reveal-on-click blocks
+  document.querySelectorAll('.reveal-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      trigger.parentElement.classList.toggle('open');
+    });
+  });
+
+  // Quiz logic — multiple choice
+  document.querySelectorAll('.quiz-question[data-type="mc"]').forEach((q) => {
+    const correct = q.dataset.correct;
+    const opts = q.querySelectorAll('.quiz-opt');
+    const feedback = q.querySelector('.quiz-feedback');
+    opts.forEach((opt) => {
+      opt.addEventListener('click', () => {
+        const choice = opt.dataset.choice;
+        opts.forEach((o) => {
+          o.disabled = true;
+          if (o.dataset.choice === correct) {
+            o.classList.add('correct');
+          } else if (o === opt) {
+            o.classList.add('incorrect');
+          } else {
+            o.classList.add('dim');
+          }
+        });
+        if (feedback) {
+          feedback.classList.add('show');
+          feedback.classList.add(choice === correct ? 'correct' : 'incorrect');
+        }
+      });
+    });
+  });
+
+  // Quiz logic — open-ended (just reveal)
+  document.querySelectorAll('.quiz-open-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const ans = btn.nextElementSibling;
+      if (ans && ans.classList.contains('quiz-open-answer')) {
+        ans.classList.toggle('show');
+        btn.textContent = ans.classList.contains('show') ? 'Hide answer' : 'Reveal answer';
+      }
+    });
+  });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
+</script>
+</body>
+</html>

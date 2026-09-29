@@ -630,14 +630,17 @@
       <span class="course-nav-brand-text">SDD Learning</span>
     </a>
     <div class="course-nav-modules">
-      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA — Learning">Home</a>
-      <a href="module-1.html" title="Module 1 — SDD Foundations">1</a>
-      <a href="module-2.html" title="Module 2 — Anatomy of a Good Spec" class="is-active">2</a>
-      <a href="module-3.html" title="Module 3 — Greenfield Lab — SPECTRA from Scratch">3</a>
-      <a href="module-4.html" title="Module 4 — Brownfield Lab — Add “Due Date” ★">4</a>
-      <a href="module-5.html" title="Module 5 — Best Practices &amp; Pitfalls">5</a>
-      <a href="module-6.html" title="Module 6 — Quality, Testing &amp; Team Collaboration">6</a>
-      <a href="AI-DLC.html" title="AI-DLC — From SDLC to AI-Driven Development">AI-DLC</a>
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec" class="is-active">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
     </div>
   </div>
 </nav>
@@ -646,7 +649,7 @@
   <header class="hero">
     <div class="hero-eyebrow">Module 2</div>
     <h1>Anatomy of a Good Spec</h1>
-    <p class="hero-lede">The six-element framework for specs an AI agent can act on without guessing &mdash; plus how to keep them from bloating into markdown monsters.</p>
+    <p class="hero-lede">The six-element framework for specs an AI agent can act on without guessing, how it maps onto Spec Kit&rsquo;s spec template, and the gates that check a spec before anyone builds on it &mdash; without letting it bloat into a markdown monster.</p>
     <div class="meta">
       <div class="meta-item">
         <span class="meta-label">Time</span>
@@ -669,13 +672,15 @@
     <p>By the end of this module, you will be able to:</p>
     <ol>
       <li>Apply the six-element framework to write a spec that an AI agent can act on without guessing.</li>
+      <li>Keep the <em>what</em> and <em>why</em> in the spec and the <em>how</em> in the plan, and place each element in the right section of Spec Kit&rsquo;s spec template.</li>
       <li>Decompose oversized features using INVEST and MoSCoW so each spec stays human-reviewable.</li>
-      <li>Decide what context belongs in a Spec Kit Constitution versus what belongs in a per-feature spec.</li>
-      <li>Identify and fix the four most common ways specs go wrong in practice.</li>
+      <li>Decide what belongs in the project&rsquo;s constitution and what belongs in a per-feature spec.</li>
+      <li>Check a spec before you build on it with <code>/speckit-clarify</code> and requirements checklists, and name the gate that catches each of the four most common spec failures.</li>
     </ol>
 
     <h2><span class="h2-num">1.</span>The six-element framework</h2>
     <p>The strongest predictor of whether a spec produces good agent output is whether it answers six specific questions. If any of them are missing, the agent fills in the gap, usually badly.</p>
+    <p>All six need answers before an agent writes code, but Spec Kit doesn&rsquo;t keep them in one file: the spec holds the <strong>what</strong> and <strong>why</strong>, the plan holds the <strong>how</strong>. Section 2 maps each element to its home.</p>
 
     <h3>Element 1 &mdash; Outcomes when the work is done</h3>
     <p>Not &ldquo;build an auth flow.&rdquo; Closer to: &ldquo;A returning user with valid credentials lands on their dashboard within 2 seconds of submitting the login form. A user with invalid credentials sees an error message within 1 second and the form retains their entered email.&rdquo;</p>
@@ -684,7 +689,7 @@
 
     <h3>Element 2 &mdash; In-scope and out-of-scope</h3>
     <p>Most engineers remember to write the in-scope list. The out-of-scope list is where specs fall apart.</p>
-    <p>Agents have absorbed an industry-wide pattern of what auth flows usually look like. If your spec says &ldquo;users can sign in&rdquo; and stops there, the agent will probably also build OAuth, password reset, account lockout after failed attempts, email verification, and remember-me cookies &mdash; because that's what auth flows usually have. None of those may be what you actually want for this iteration.</p>
+    <p>Agents have absorbed an industry-wide pattern of what auth flows usually look like. If your spec says &ldquo;users can sign in&rdquo; and stops there, the agent will probably also build OAuth, password reset, account lockout after failed attempts, email verification, and remember-me cookies &mdash; because that&rsquo;s what auth flows usually have. None of those may be what you actually want for this iteration.</p>
     <p>Out-of-scope statements close the door:</p>
     <blockquote>
       <p>Out of scope:</p>
@@ -699,26 +704,26 @@
     <p>The out-of-scope list is at least as important as the in-scope list, sometimes more. Write it deliberately.</p>
 
     <h3>Element 3 &mdash; Constraints and assumptions</h3>
-    <p>Anything that affects implementation choices and isn't obvious from the codebase. Tech stack, library choices, performance budgets, third-party API limits, data residency requirements, browser support targets.</p>
-    <p>Constraints come from outside the spec &mdash; they're imposed on you. Assumptions are statements about reality that you're treating as given. Both belong here.</p>
+    <p>Anything that shapes the solution and isn&rsquo;t obvious from the codebase. Constraints are imposed on you from outside; assumptions are statements about reality you&rsquo;re treating as given.</p>
+    <p>They come in two kinds. <strong>Product-level</strong> ones &mdash; who the users are, what devices they use, what the feature can rely on &mdash; are <em>what</em>, so they go in the spec. <strong>Technical</strong> ones &mdash; the stack, the libraries, a latency budget in milliseconds &mdash; are <em>how</em>, so they go to the plan, or to the constitution if they hold for every feature. For the course&rsquo;s to-do app:</p>
     <blockquote>
-      <p>Constraints:</p>
+      <p>Assumptions (spec):</p>
       <ul>
-        <li>Backend must use the existing Express + better-sqlite3 setup</li>
-        <li>Frontend must remain dependency-free (no React, no build step)</li>
-        <li>All API responses &lt; 200ms p95 on local dev hardware</li>
+        <li>One user per browser; no sign-in</li>
+        <li>To-dos survive a page reload on the same device; no cross-device sync</li>
+        <li>Usable on a phone-width screen (375px) as well as a desktop</li>
       </ul>
-      <p>Assumptions:</p>
+      <p>Technical constraints (plan or constitution):</p>
       <ul style="margin-bottom: 0;">
-        <li>Single-user app; no auth needed</li>
-        <li>SQLite file lives at the project root and is gitignored</li>
-        <li>The browser is modern (ES2020+ supported)</li>
+        <li>Next.js App Router with React and TypeScript; styling with Tailwind</li>
+        <li>Persistence stays in browser localStorage; no backend, no database</li>
+        <li>No new runtime dependency without the team agreeing to it</li>
       </ul>
     </blockquote>
 
     <h3>Element 4 &mdash; Decisions already made</h3>
-    <p>Things you've decided that the agent should not relitigate. If you've already chosen a date format, a validation library, a particular pattern from elsewhere in the codebase &mdash; say so explicitly.</p>
-    <p>Without this section, agents will reinvent things you already decided. They might pick <code>moment.js</code> when you've already standardized on <code>date-fns</code>. They might use <code>Joi</code> when the rest of the codebase uses <code>zod</code>. Each of these reinventions is a small future refactor.</p>
+    <p>Things you&rsquo;ve decided that the agent should not relitigate. If you&rsquo;ve already chosen a date format, a validation library, a particular pattern from elsewhere in the codebase &mdash; say so explicitly.</p>
+    <p>Without this, agents will reinvent things you already decided. They might pick <code>moment.js</code> when you&rsquo;ve already standardized on <code>date-fns</code>. They might use <code>Joi</code> when the rest of the codebase uses <code>zod</code>. Each of these reinventions is a small future refactor.</p>
     <blockquote>
       <p>Decisions already made:</p>
       <ul style="margin-bottom: 0;">
@@ -727,51 +732,72 @@
         <li>All new endpoints follow the existing <code>/api/&lt;resource&gt;</code> pattern</li>
       </ul>
     </blockquote>
+    <p>Every one of those is technical, so in Spec Kit it lives in the constitution (project-wide) or in what you hand to <code>/speckit-plan</code> (this feature). The spec keeps only decisions a user would notice &mdash; &ldquo;one comment per order,&rdquo; &ldquo;only the uploader can delete a file.&rdquo;</p>
 
     <h3>Element 5 &mdash; Task breakdown</h3>
     <p>Break the work into discrete, verifiable sub-tasks. Each task should be small enough that a single agent run can complete it and a human can verify it without losing focus.</p>
-    <p>This is the element where Spec Kit specifically helps &mdash; Phase 3 (<code>/speckit.tasks</code>) generates this from the plan. But you should still review and edit the task list manually. Agents tend to produce too-coarse tasks (because they're trained on PR-sized chunks), and the SDD failure mode is one giant task that nobody can review.</p>
-    <p>A useful task-sizing heuristic: if a task can't be unit-tested or end-to-end-tested in isolation, it's too big.</p>
+    <p>This is the one element you don&rsquo;t write into the spec. <code>/speckit-tasks</code> generates <code>tasks.md</code> from the plan: Setup, Foundational, one phase per user story in priority order, then Polish. The spec&rsquo;s job is to be <em>sliceable</em> &mdash; prioritized user stories that can each be built and tested on their own. If you can&rsquo;t see how your spec would break into tasks, it isn&rsquo;t ready.</p>
+    <p>Still review and edit the generated task list. Agents tend to produce too-coarse tasks (they&rsquo;re trained on PR-sized chunks), and the SDD failure mode is one giant task nobody can review. A useful heuristic: if a task can&rsquo;t be tested in isolation, it&rsquo;s too big.</p>
 
     <h3>Element 6 &mdash; Verification criteria</h3>
-    <p>Specifically: what tests pass, what edge cases are handled, what error conditions are covered. The verification section is what distinguishes &ldquo;done&rdquo; from &ldquo;looks done.&rdquo; It's also what an adversarial verifier agent (covered in Module 5) would check against.</p>
-    <p>Examples of strong verification criteria:</p>
+    <p>Specifically: what behaviour proves the work is done, what edge cases are handled, what error conditions are covered. The verification section is what distinguishes &ldquo;done&rdquo; from &ldquo;looks done.&rdquo; It&rsquo;s also what an adversarial verifier agent (covered in Module 8) would check against.</p>
+    <p>In the spec, write verification as observable behaviour; the plan and tasks turn it into unit, integration, and end-to-end tests. For the to-do app&rsquo;s &ldquo;add a to-do&rdquo;:</p>
     <blockquote>
       <ul style="margin-bottom: 0;">
-        <li>Unit test: rejects empty <code>text</code> field with HTTP 400</li>
-        <li>Unit test: trims whitespace from <code>text</code> before storing</li>
-        <li>Integration test: created todo appears at the top of GET /api/todos response</li>
-        <li>Edge case: <code>text</code> longer than 1000 characters is rejected</li>
-        <li>Edge case: concurrent POSTs to /api/todos do not produce duplicate IDs</li>
-        <li>Manual: visual regression &mdash; adding a todo doesn't shift other items in the list</li>
+        <li><strong>Given</strong> an empty input, <strong>when</strong> the user presses Add, <strong>then</strong> no to-do is created</li>
+        <li><strong>Given</strong> a title with leading and trailing spaces, <strong>when</strong> it is added, <strong>then</strong> it is saved trimmed</li>
+        <li><strong>Given</strong> three existing to-dos, <strong>when</strong> a new one is added, <strong>then</strong> it appears at the top of the list</li>
+        <li>After a page reload, every to-do and its done state are still there</li>
+        <li>Edge case: a title longer than 200 characters is refused with an inline message</li>
+        <li>Edge case: pressing Add twice in quick succession creates exactly one to-do</li>
       </ul>
     </blockquote>
     <p>Notice that these are all things you can verify. &ldquo;Should be performant&rdquo; or &ldquo;should handle errors gracefully&rdquo; are not verification criteria; they are wishes.</p>
 
-    <h2><span class="h2-num">2.</span>A worked example: from bad spec to good spec</h2>
-    <p>Let's take a deliberately weak spec and rewrite it.</p>
+    <h2><span class="h2-num">2.</span>What versus how: where each element lives</h2>
+    <p><code>/speckit-specify</code> writes the <strong>what</strong> and <strong>why</strong> &mdash; user-facing behaviour, goals, acceptance criteria &mdash; and leaves the tech stack out; its own quality checklist fails a spec that names languages, frameworks, or APIs. <code>/speckit-plan</code> takes the <strong>how</strong>: stack, architecture, technical constraints. The spec template has four top-level sections &mdash; <strong>User Scenarios &amp; Testing</strong>, <strong>Requirements</strong>, and <strong>Success Criteria</strong> (all mandatory), plus <strong>Assumptions</strong>. Here is where each element lands:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Element</th><th>Artifact</th><th>Where, exactly</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1. Outcomes</td><td><code>spec.md</code></td><td><strong>User Scenarios &amp; Testing</strong>: prioritized user stories (P1, P2&hellip;), each independently testable. <strong>Success Criteria</strong>: measurable, technology-agnostic outcomes.</td></tr>
+          <tr><td>2. In / out of scope</td><td><code>spec.md</code></td><td><strong>Requirements</strong> (FR-001&hellip;) for what&rsquo;s in; <strong>Assumptions</strong> for what&rsquo;s out this iteration.</td></tr>
+          <tr><td>3. Constraints &amp; assumptions</td><td>Split</td><td>Product-level &rarr; spec <strong>Assumptions</strong>. Technical &rarr; the plan&rsquo;s Technical Context, or the constitution.</td></tr>
+          <tr><td>4. Decisions already made</td><td>Split</td><td>Ones a user would notice &rarr; spec <strong>Requirements</strong>. Technical &rarr; the constitution or the plan.</td></tr>
+          <tr><td>5. Task breakdown</td><td><code>tasks.md</code></td><td>Not in the spec. Generated by <code>/speckit-tasks</code>, one phase per user story.</td></tr>
+          <tr><td>6. Verification</td><td><code>spec.md</code>, then plan and tasks</td><td><strong>User Scenarios &amp; Testing</strong>: Given/When/Then acceptance scenarios and Edge Cases; <strong>Success Criteria</strong>. Test layers and tooling come later.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>When something is genuinely undecided, the spec says so with a <code>[NEEDS CLARIFICATION: &hellip;]</code> marker instead of guessing; <code>/speckit-specify</code> keeps at most three and asks you about each.</p>
+    <p>So Spec Kit doesn&rsquo;t shrink the framework; it distributes it. A quick test for any line headed for <code>spec.md</code>: <em>would a user or a product owner notice if this changed?</em> If yes, it&rsquo;s <em>what</em>. If only an engineer would notice, it&rsquo;s <em>how</em> &mdash; it goes in the plan.</p>
+
+    <h2><span class="h2-num">3.</span>A worked example: from bad spec to good spec</h2>
+    <p>Let&rsquo;s take a deliberately weak spec and rewrite it.</p>
 
     <h3>Bad spec</h3>
     <blockquote>
       <p><strong>Add file uploads</strong></p>
       <p>Users should be able to upload files. Make it secure and fast. Use AWS for storage.</p>
     </blockquote>
-    <p>This is vague enough that the agent has to guess most of what matters. It will probably build something. It will probably not be what you wanted. Let's diagnose:</p>
+    <p>This is vague enough that the agent has to guess most of what matters. It will probably build something. It will probably not be what you wanted. Let&rsquo;s diagnose:</p>
     <ul>
       <li><strong>Outcomes:</strong> &ldquo;be able to upload files&rdquo; &mdash; not observable. Upload how? Web form? CLI? API? Drag-and-drop?</li>
       <li><strong>Scope:</strong> None. Image only? PDF only? Any file type? Size limits?</li>
-      <li><strong>Constraints:</strong> &ldquo;Use AWS.&rdquo; Which AWS service? S3? EFS? Lambda?</li>
+      <li><strong>Constraints:</strong> &ldquo;Use AWS.&rdquo; Which AWS service? S3? EFS? Lambda? (And that&rsquo;s a <em>how</em> sitting in a <em>what</em>.)</li>
       <li><strong>Decisions made:</strong> &ldquo;secure and fast.&rdquo; Neither is a decision; both are platitudes.</li>
       <li><strong>Tasks:</strong> None.</li>
-      <li><strong>Verification:</strong> None. How would the team know it's done?</li>
+      <li><strong>Verification:</strong> None. How would the team know it&rsquo;s done?</li>
     </ul>
 
-    <h3>Good spec (same feature, six elements applied)</h3>
+    <h3>Good draft (same feature, six elements applied)</h3>
     <blockquote>
       <p><strong>Outcomes</strong></p>
       <ul>
         <li>A signed-in user can attach a file to a project from the project detail page.</li>
-        <li>The file appears in the project's &ldquo;Attachments&rdquo; list within 2 seconds of upload.</li>
+        <li>The file appears in the project&rsquo;s &ldquo;Attachments&rdquo; list within 2 seconds of upload.</li>
         <li>Other users with access to the project see the new attachment after a refresh.</li>
         <li>Files persist across deploys.</li>
       </ul>
@@ -810,7 +836,7 @@
         <li><strong>Unit:</strong> File over 10MB rejected with HTTP 413</li>
         <li><strong>Unit:</strong> Non-allowed MIME type rejected with HTTP 415</li>
         <li><strong>Unit:</strong> Filename containing <code>../</code> is sanitized before being stored as S3 key</li>
-        <li><strong>Integration:</strong> Successful upload creates an <code>attachments</code> row and returns 201 with the row's contents</li>
+        <li><strong>Integration:</strong> Successful upload creates an <code>attachments</code> row and returns 201 with the row&rsquo;s contents</li>
         <li><strong>Integration:</strong> GET /api/projects/:id/attachments returns the new file</li>
         <li><strong>E2E:</strong> Drag-and-drop on the project page visually renders a thumbnail (image) or filename row (PDF) within 2 seconds</li>
         <li><strong>Edge case:</strong> A user without project membership receives 403, no S3 write occurs</li>
@@ -818,10 +844,47 @@
       </ul>
     </blockquote>
     <p>This is roughly twice as long as the bad spec. It is also approximately 100 times more useful. The agent now knows exactly what to build, what not to build, what tools to use, and what tests to make pass.</p>
-    <p>A common worry at this stage: &ldquo;isn't writing this spec almost as much work as writing the code?&rdquo; Sometimes yes &mdash; for short tasks. For non-trivial work, the spec is 20&ndash;40% of the time. The leverage is that the AI can now produce code that's right the first time, and the spec persists as documentation that anyone can review.</p>
+    <p>A common worry at this stage: &ldquo;isn&rsquo;t writing this spec almost as much work as writing the code?&rdquo; Sometimes yes &mdash; for short tasks. For non-trivial work, the spec is 20&ndash;40% of the time. The leverage is that the AI can now produce code that&rsquo;s right the first time, and the spec persists as documentation that anyone can review.</p>
 
-    <h2><span class="h2-num">3.</span>Decomposition: keeping specs reviewable</h2>
-    <p>The best-written spec in the world is useless if it's too big to review. Two frameworks help with sizing.</p>
+    <h3>Sorting the draft: spec or plan?</h3>
+    <p>The draft answers all six questions, but it mixes <em>what</em> and <em>how</em>. Sort it before it goes near <code>/speckit-specify</code>. Outcomes, scope, and the behaviour behind each verification criterion become the spec, in the template&rsquo;s shape (abridged):</p>
+    <pre><code>## User Scenarios &amp; Testing
+
+### User Story 1 - Attach a file to a project (Priority: P1)
+
+A project member adds a JPEG, PNG, or PDF from the project page by
+drag-and-drop or file picker, and sees it under Attachments.
+
+**Acceptance Scenarios**:
+
+1. **Given** a member on the project page, **When** they drop a 2 MB PNG,
+   **Then** its thumbnail appears under Attachments within 2 seconds.
+2. **Given** someone who is not a project member, **When** they try to
+   attach a file, **Then** it is refused and nothing is stored.
+
+## Requirements
+
+- **FR-001**: Members MUST be able to attach JPEG, PNG, and PDF files up to 10 MB.
+- **FR-002**: The system MUST let only the uploader delete an attachment.
+
+## Success Criteria
+
+- **SC-001**: Attachments are still available after the application is redeployed.
+
+## Assumptions
+
+- Out of scope this iteration: video, inline preview or annotation, sharing
+  outside the project, folders, resumable uploads.</code></pre>
+    <p>Everything an engineer chose &mdash; the bucket, the key pattern, the middleware, the table, the status codes &mdash; waits for the plan:</p>
+    <pre><code>/speckit-plan Store files in the existing S3 bucket projects-attachments-prod,
+keyed &lt;projectId&gt;/&lt;uuid&gt;-&lt;originalFilename&gt;. Uploads go through the API
+server with the existing multer middleware. Record metadata in the existing
+attachments table; reuse the membership middleware; enforce the size limit on
+client and server. Errors are HTTP 4xx with { error: string }.</code></pre>
+    <p>Nothing was lost. But now a product owner who has never heard of <code>multer</code> can review the spec, and the team can change storage providers without touching a single acceptance scenario.</p>
+
+    <h2><span class="h2-num">4.</span>Decomposition: keeping specs reviewable</h2>
+    <p>The best-written spec in the world is useless if it&rsquo;s too big to review. Two frameworks help with sizing.</p>
 
     <h3>INVEST</h3>
     <p>Each spec (or sliced sub-spec) should be:</p>
@@ -834,97 +897,147 @@
       <li><strong>Testable</strong> &mdash; has verification criteria you can actually run</li>
     </ul>
     <p>If a spec fails any of these, slice it. The most common failures are <em>small</em> and <em>testable</em> &mdash; engineers tend to write specs that are genuinely too big or that conclude with &ldquo;and then make sure it works&rdquo; rather than concrete tests.</p>
+    <p>Spec Kit&rsquo;s template applies the same thinking inside a single spec. Every user story gets a priority and must be <em>independently testable</em>: build only that story and you should still have something that delivers value. That matters downstream, because <code>/speckit-tasks</code> gives each story its own phase in priority order.</p>
 
     <h3>MoSCoW</h3>
     <p>Within a spec, prioritize requirements:</p>
     <ul>
-      <li><strong>Must have</strong> &mdash; without this, the feature doesn't ship</li>
+      <li><strong>Must have</strong> &mdash; without this, the feature doesn&rsquo;t ship</li>
       <li><strong>Should have</strong> &mdash; important but the feature ships without it if forced</li>
       <li><strong>Could have</strong> &mdash; nice extras</li>
-      <li><strong>Won't have</strong> &mdash; explicitly out of scope this iteration</li>
+      <li><strong>Won&rsquo;t have</strong> &mdash; explicitly out of scope this iteration</li>
     </ul>
-    <p>MoSCoW is most useful when you're tempted to write a giant in-scope list. Forcing yourself to mark some items &ldquo;should&rdquo; or &ldquo;could&rdquo; reveals the things that don't actually need to be in this spec. Often they become a follow-up spec, or they become out-of-scope items.</p>
+    <p>MoSCoW is most useful when you&rsquo;re tempted to write a giant in-scope list. Forcing yourself to mark some items &ldquo;should&rdquo; or &ldquo;could&rdquo; reveals the things that don&rsquo;t actually need to be in this spec. Often they become a follow-up spec, or they become out-of-scope items.</p>
+    <p>In the template&rsquo;s terms: the Must-haves are your P1 story; Should- and Could-haves become lower-priority stories or a follow-up spec; Won&rsquo;t-haves go under Assumptions as explicit scope boundaries.</p>
 
     <h3>A practical rule</h3>
-    <p>If your spec exceeds about 500 words of content (excluding boilerplate), it's probably too big. Slice it. There are exceptions &mdash; security or compliance specs may legitimately need more &mdash; but treat exceptions skeptically.</p>
+    <p>If your spec exceeds about 500 words of content (excluding boilerplate), it&rsquo;s probably too big. Slice it. There are exceptions &mdash; security or compliance specs may legitimately need more &mdash; but treat exceptions skeptically. When an epic genuinely won&rsquo;t fit, Spec Kit&rsquo;s last-resort answer is a <em>spec of specs</em>: a roadmap of independently testable slices, each with its own spec that runs the full loop.</p>
 
-    <h2><span class="h2-num">4.</span>Constitution vs. spec: where context lives</h2>
-    <p>GitHub Spec Kit introduces a concept called the <strong>Constitution</strong>. Other tools have similar concepts under different names: Kiro calls it Steering, OpenSpec calls it custom profiles, generic terms like AGENTS.md or memory-bank refer to the same idea.</p>
-    <p>The Constitution captures <strong>persistent project context</strong> &mdash; things that are true across all features, all specs, all PRs. The spec captures <strong>task-specific context</strong> &mdash; what's true only for this particular piece of work.</p>
+    <h2><span class="h2-num">5.</span>Constitution vs. spec: where context lives</h2>
+    <p>Spec Kit keeps <strong>persistent project context</strong> &mdash; things true across all features, all specs, all PRs &mdash; in the <strong>constitution</strong>, a single file at <code>.specify/memory/constitution.md</code>. You write it once per project with <code>/speckit-constitution</code> (SPECTRA&rsquo;s <em>Guardrails</em> agent, <code>speckit.constitution</code>) and revise it only when a principle genuinely changes. Other tools have the same idea: Kiro calls it steering; AGENTS.md files and memory banks play the same role. The spec captures <strong>task-specific context</strong> &mdash; what&rsquo;s true only for this piece of work.</p>
+    <p>The constitution is also the yardstick every later artifact is checked against. <code>/speckit-specify</code> and <code>/speckit-clarify</code> read it before writing, the plan includes a constitution check that must pass before design work starts, and <code>/speckit-analyze</code> treats any conflict with it as critical. Workflow conventions belong here too &mdash; including your team&rsquo;s spec-persistence choice from Module 1. That&rsquo;s a team agreement, not a CLI setting, so record it where every agent will read it.</p>
     <div class="table-wrap">
       <table>
         <thead>
           <tr><th>Constitution</th><th>Per-feature spec</th></tr>
         </thead>
         <tbody>
-          <tr><td>&ldquo;All API endpoints return JSON with <code>Content-Type: application/json</code>&rdquo;</td><td>&ldquo;POST /api/todos accepts <code>{ text: string }</code>&rdquo;</td></tr>
-          <tr><td>&ldquo;Errors use HTTP 4xx with <code>{ error: string }</code> body&rdquo;</td><td>&ldquo;Reject empty <code>text</code> with HTTP 400&rdquo;</td></tr>
-          <tr><td>&ldquo;We use better-sqlite3, not Knex or Prisma&rdquo;</td><td>&ldquo;Add a <code>due_date</code> column to the <code>todos</code> table&rdquo;</td></tr>
-          <tr><td>&ldquo;Frontend uses vanilla JS, no frameworks&rdquo;</td><td>&ldquo;Show overdue todos in red&rdquo;</td></tr>
-          <tr><td>&ldquo;All dates are ISO 8601 strings&rdquo;</td><td>(Constitution covers this; spec doesn't repeat it)</td></tr>
+          <tr><td>&ldquo;Persistence is browser localStorage; no backend, no database&rdquo;</td><td>&ldquo;A to-do can carry an optional due date that survives a page reload&rdquo;</td></tr>
+          <tr><td>&ldquo;User input is validated before it is saved, with problems shown inline&rdquo;</td><td>&ldquo;An empty to-do title is refused with an inline message&rdquo;</td></tr>
+          <tr><td>&ldquo;Next.js App Router, React, TypeScript, and Tailwind; no second UI framework&rdquo;</td><td>&ldquo;Overdue to-dos are shown in red&rdquo;</td></tr>
+          <tr><td>&ldquo;All dates are stored as ISO 8601 strings&rdquo;</td><td>(The constitution covers this; the spec doesn&rsquo;t repeat it)</td></tr>
         </tbody>
       </table>
     </div>
     <p>Why this separation matters:</p>
     <ol>
-      <li><strong>Specs stay focused.</strong> A spec doesn't have to repeat the conventions of the codebase every time. It just states what's specific to this change.</li>
-      <li><strong>Conventions stay enforced.</strong> When you change the Constitution (rare), every future spec inherits the change. When you change a spec (often), other specs aren't affected.</li>
-      <li><strong>Reviewability.</strong> A 200-word spec with an 800-word Constitution is easier to review than a 1000-word spec.</li>
+      <li><strong>Specs stay focused.</strong> A spec doesn&rsquo;t have to repeat the conventions of the codebase every time. It just states what&rsquo;s specific to this change.</li>
+      <li><strong>Conventions stay enforced.</strong> When you change the constitution (rare), every future spec and plan is checked against the new version. When you change a spec (often), other specs aren&rsquo;t affected.</li>
+      <li><strong>Reviewability.</strong> A 200-word spec with an 800-word constitution is easier to review than a 1000-word spec.</li>
     </ol>
-    <p>A common adoption mistake: cramming Constitution-level conventions into every spec, &ldquo;just to be safe.&rdquo; This produces the markdown-monster failure mode B&ouml;ckeler warns about. Trust the Constitution. If a convention isn't in it but should be, fix the Constitution.</p>
+    <p>A common adoption mistake: cramming constitution-level conventions into every spec, &ldquo;just to be safe.&rdquo; This produces the markdown-monster failure mode B&ouml;ckeler warns about. Trust the constitution. If a convention isn&rsquo;t in it but should be, fix the constitution.</p>
 
-    <h2><span class="h2-num">5.</span>Common spec failures</h2>
-    <p>Four patterns to watch for in your own writing and in code review:</p>
+    <h2><span class="h2-num">6.</span>Four common spec failures</h2>
+    <p>Four patterns to watch for in your own writing and in review. Section 7 shows which gate catches each one.</p>
 
     <h3>Failure 1 &mdash; &ldquo;How&rdquo; leaks into &ldquo;what&rdquo;</h3>
-    <p>The bad spec example earlier in this module showed this in mild form. A more egregious version: function names, library names, and database column names appearing in the spec. These belong in the plan, not the spec. They constrain the agent unnecessarily and they entangle a description of intent with one particular implementation.</p>
-    <p>Cure: when you find yourself reaching for a code-shaped detail, ask &ldquo;is this an outcome or a constraint?&rdquo; If it's neither, it goes in the plan.</p>
+    <p>The bad spec earlier in this module showed this in mild form (&ldquo;Use AWS&rdquo;). A more egregious version: function names, library names, and database column names appearing in the spec. These belong in the plan, not the spec. They constrain the agent unnecessarily and they entangle a description of intent with one particular implementation.</p>
+    <p>Cure: when you find yourself reaching for a code-shaped detail, ask &ldquo;would a user or product owner notice if this changed?&rdquo; If not, it&rsquo;s <em>how</em>: move it to the plan, or to the constitution if it holds for every feature.</p>
 
     <h3>Failure 2 &mdash; Implicit assumptions</h3>
-    <p>Specs that say &ldquo;users can search&rdquo; without saying what they're searching, what fields are searched, what happens with no results, whether search is case-sensitive, whether typos are tolerated. The agent has to invent answers to all of these.</p>
-    <p>Cure: imagine you're explaining the feature to a sharp but new engineer. Every question they'd ask is one your spec should answer.</p>
+    <p>Specs that say &ldquo;users can search&rdquo; without saying what they&rsquo;re searching, what fields are searched, what happens with no results, whether search is case-sensitive, whether typos are tolerated. The agent has to invent answers to all of these.</p>
+    <p>Cure: imagine you&rsquo;re explaining the feature to a sharp but new engineer. Every question they&rsquo;d ask is one your spec should answer &mdash; or record under Assumptions.</p>
 
     <h3>Failure 3 &mdash; Verification by vibe</h3>
     <p>&ldquo;Should work correctly.&rdquo; &ldquo;Should be fast.&rdquo; &ldquo;Handles errors gracefully.&rdquo; None of these are verifiable.</p>
-    <p>Cure: convert each vague criterion into a specific, testable statement. &ldquo;Fast&rdquo; becomes &ldquo;p95 latency under 200ms on the existing API benchmark.&rdquo; &ldquo;Errors gracefully&rdquo; becomes &ldquo;returns HTTP 4xx with a descriptive <code>error</code> field; never 500 for client mistakes; logs server errors with stack traces.&rdquo;</p>
+    <p>Cure: convert each vague criterion into a specific, testable statement. &ldquo;Fast&rdquo; becomes &ldquo;search results appear within 1 second for a list of 500 to-dos.&rdquo; &ldquo;Errors gracefully&rdquo; becomes &ldquo;a save that fails leaves the list unchanged and tells the user what happened.&rdquo;</p>
 
     <h3>Failure 4 &mdash; Specifying too much</h3>
     <p>The reverse of Failures 1&ndash;3: a spec that runs to 2000 words because the author wanted to be thorough. The agent and the reviewers both lose focus. The minor details overshadow the load-bearing ones.</p>
-    <p>Cure: keep the spec to what removes ambiguity. If a detail wouldn't change the agent's behavior, it doesn't belong in the spec. If it's a project-wide convention, move it to the Constitution.</p>
-    <p>The goal isn't comprehensive &mdash; it's <em>just enough</em>.</p>
+    <p>Cure: keep the spec to what removes ambiguity. If a detail wouldn&rsquo;t change the agent&rsquo;s behaviour, it doesn&rsquo;t belong in the spec. If it&rsquo;s a project-wide convention, move it to the constitution.</p>
+    <p>The goal isn&rsquo;t comprehensive &mdash; it&rsquo;s <em>just enough</em>.</p>
+
+    <h2><span class="h2-num">7.</span>Checking a spec before you build on it</h2>
+    <p>Specs have bugs too, and they&rsquo;re cheapest to fix before a plan is built on them. Only <code>/speckit-specify</code> is strictly required before <code>/speckit-plan</code>; the checks below are optional quality gates (SPECTRA lists <code>speckit.clarify</code> and <code>speckit.checklist</code> as add-on agents). Use them whenever there is real ambiguity &mdash; for production work, most of the time.</p>
+
+    <h3>7.1 <code>/speckit-clarify</code>: ask before you plan</h3>
+    <p>Clarify scans the spec for gaps &mdash; unclear scope, missing error and empty states, unstated roles, vague adjectives &mdash; and asks <strong>at most five</strong> targeted questions per pass, one at a time, usually multiple-choice with a recommended answer. Each answer is written back into <code>spec.md</code>, logged under a dated Clarifications heading and applied to the section it affects, so the decision lives in the spec rather than a chat transcript.</p>
+    <p>Run it <strong>before</strong> <code>/speckit-plan</code>; designing on top of ambiguity is the rework it exists to prevent. It&rsquo;s repeatable: run it again with a focus area to go after a different part of the spec.</p>
+    <pre><code>/speckit-clarify Focus on who can see and delete attachments, and what happens when an upload fails partway.</code></pre>
+
+    <h3>7.2 <code>checklists/requirements.md</code>: the built-in self-check</h3>
+    <p><code>/speckit-specify</code> creates this file next to the spec and evaluates the spec against it: no implementation details; requirements testable and unambiguous; success criteria measurable and technology-agnostic; edge cases identified; scope clearly bounded; no <code>[NEEDS CLARIFICATION]</code> markers left. <code>/speckit-clarify</code> re-evaluates it after each pass.</p>
+    <p>The agent maintains this one, so treat its ticks as the agent&rsquo;s own claim, not a sign-off &mdash; a fast way to see what&rsquo;s still open.</p>
+
+    <h3>7.3 Custom checklists: unit tests for requirements</h3>
+    <p><code>/speckit-checklist</code> generates a checklist for a focus area &mdash; <code>checklists/ux.md</code>, <code>checklists/security.md</code> &mdash; whose items test the <em>spec</em>, not the code: does it say something, clearly and consistently? In Spec Kit&rsquo;s full path it runs after <code>/speckit-plan</code> and before <code>/speckit-tasks</code>.</p>
+    <pre><code>/speckit-checklist Focus on upload limits, permissions, and failure handling.</code></pre>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Tests the code (not a checklist item)</th><th>Tests the spec (a good checklist item)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>A 12 MB upload shows an error</td><td>Is the behaviour for an over-limit file specified, including what the user is told?</td></tr>
+          <tr><td>Thumbnails render within 2 seconds</td><td>Does &ldquo;within 2 seconds&rdquo; say where the clock starts &mdash; on drop, or when the upload finishes?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>These checklists belong to the <strong>reviewer</strong>. The command leaves every item unchecked; a person ticks <code>[x]</code> only when satisfied the requirement is well written &mdash; <code>[x]</code> never means &ldquo;built.&rdquo; An agent may help evaluate items when you explicitly ask, but never approves them on its own. When an item fails, fix the spec with <code>/speckit-clarify</code> or <code>/speckit-specify</code>, not the checklist.</p>
+
+    <h3>7.4 The gate at implement</h3>
+    <p>Before it writes any code, <code>/speckit-implement</code> counts the checked and unchecked items in every file under <code>checklists/</code>. If anything is unchecked, it stops, shows you the counts, and asks whether to proceed anyway. It never ticks a box itself. An unreviewed checklist can&rsquo;t slip through quietly &mdash; someone has to decide to go ahead.</p>
+
+    <h3>7.5 Which gate catches which failure</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Failure</th><th>Caught by</th><th>How</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1. How leaks into what</td><td><code>checklists/requirements.md</code>, confirmed by the reviewer</td><td>&ldquo;No implementation details&rdquo; is a built-in item; the reviewer moves each offending line to the plan.</td></tr>
+          <tr><td>2. Implicit assumptions</td><td><code>/speckit-clarify</code></td><td>Its scan hunts for undefined scope, missing states, and unstated roles, and asks before the plan bakes a guess in.</td></tr>
+          <tr><td>3. Verification by vibe</td><td>A custom checklist from <code>/speckit-checklist</code></td><td>&ldquo;Is &lsquo;fast&rsquo; quantified?&rdquo; is the kind of item it writes; the reviewer won&rsquo;t tick it until the spec states a number. Clarify&rsquo;s hunt for vague adjectives is an earlier net.</td></tr>
+          <tr><td>4. Specifying too much</td><td>The human reviewer, backed by the constitution</td><td>No command flags a spec for being long. A person has to spot detail that doesn&rsquo;t change behaviour and move project-wide conventions to the constitution.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The pattern: agents draft, gates make gaps visible, people decide.</p>
 
     <hr>
 
     <h2>Writing exercise</h2>
-    <p>You're going to rewrite a deliberately bad spec into a good one. Allow yourself 25 minutes. Use the six-element framework.</p>
+    <p>You&rsquo;re going to rewrite a deliberately bad spec into a good one. Allow yourself 25 minutes. Use the six-element framework.</p>
 
     <h3>Context</h3>
     <p>Imagine your team owns a customer-facing web app. The Customer Success team has asked engineering for a &ldquo;comments&rdquo; feature: customers should be able to leave comments on the items in their order history, mainly for their own future reference.</p>
     <p>A junior engineer drafted this spec:</p>
     <blockquote>
       <p><strong>Add comments</strong></p>
-      <p>Customers want to leave comments on their orders. We should add this. Make sure it's secure and works on mobile. Save comments somewhere persistent. Allow editing and deleting. Should integrate with the existing order page. Use the database we already have.</p>
+      <p>Customers want to leave comments on their orders. We should add this. Make sure it&rsquo;s secure and works on mobile. Save comments somewhere persistent. Allow editing and deleting. Should integrate with the existing order page. Use the database we already have.</p>
     </blockquote>
 
     <h3>Your task</h3>
     <p>Rewrite this as a proper spec using the six-element framework. Make reasonable assumptions where the original is vague &mdash; but write each assumption down in the appropriate section. You should produce something that:</p>
     <ol>
       <li>Has clear, observable outcomes</li>
-      <li>States what's in scope and what's out of scope</li>
+      <li>States what&rsquo;s in scope and what&rsquo;s out of scope</li>
       <li>Lists constraints and assumptions</li>
       <li>Calls out any decisions already made (you can invent reasonable ones; just be explicit)</li>
-      <li>Breaks the work into 4&ndash;8 tasks</li>
+      <li>Breaks the work into 4&ndash;8 tasks (<code>/speckit-tasks</code> would regenerate these from the plan &mdash; here they prove the spec slices cleanly)</li>
       <li>Has at least 6 verification criteria, including at least 2 edge cases</li>
+      <li>Marks each line other than the tasks <strong>S</strong> (belongs in <code>spec.md</code>) or <strong>P</strong> (belongs in the plan or the constitution)</li>
     </ol>
 
     <h3>Self-review checklist</h3>
     <p>After you finish, run your spec through this:</p>
     <ul class="checklist">
       <li>Could a new engineer build the feature from your spec without asking the original requester anything?</li>
-      <li>Does any sentence in your spec dictate <em>implementation</em> (function names, library names, schema details)? If so, move it to where it belongs (a future plan).</li>
+      <li>Does any line marked <strong>S</strong> dictate <em>implementation</em> (function names, library names, schema details, status codes)? If so, re-mark it <strong>P</strong>.</li>
       <li>Is each outcome observable from outside the system?</li>
+      <li>Could you write each <strong>S</strong> verification criterion as a Given/When/Then scenario?</li>
       <li>Could you write at least one failing test for each verification criterion before any code exists?</li>
-      <li>Is your spec under 500 words of actual content (excluding boilerplate)?</li>
+      <li>Is the <strong>S</strong> part under 500 words of actual content (excluding boilerplate)?</li>
       <li>Did you write down at least 3 out-of-scope items?</li>
     </ul>
     <p>If you answered &ldquo;no&rdquo; to any of these, revise.</p>
@@ -932,31 +1045,28 @@
     <div class="note"><span class="note-label">Important.</span>Do the exercise yourself first. Comparing your spec to the reference below is the actual learning &mdash; skipping ahead robs you of it.</div>
 
     <div class="reveal">
-      <button class="reveal-trigger">
-        <span><span class="reveal-trigger-label">Sample solution</span> Reveal a reference rewrite of the comments spec</span>
-        <span class="reveal-trigger-icon">+</span>
-      </button>
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample solution</span> &mdash; a reference rewrite of the comments spec</span><span class="reveal-trigger-icon">+</span></button>
       <div class="reveal-content">
-        <p>Yours doesn't need to look exactly like this &mdash; assumptions can vary &mdash; but the structure should match.</p>
+        <p>Yours doesn&rsquo;t need to look exactly like this &mdash; assumptions can vary &mdash; but the structure should match.</p>
         <blockquote>
           <p><strong>Customer comments on order history items</strong></p>
-          <p><strong>Outcomes</strong></p>
+          <p><strong>Outcomes</strong> (S)</p>
           <ul>
             <li>On the order history page, a customer can add a free-text comment to any of their own past orders.</li>
             <li>The comment appears immediately under that order in the order history view.</li>
             <li>The customer can edit or delete their own comments.</li>
             <li>Comments persist across sessions and devices.</li>
           </ul>
-          <p><strong>In scope</strong></p>
+          <p><strong>In scope</strong> (S)</p>
           <ul>
             <li>One comment per customer per order (a customer can edit, but not stack multiple)</li>
             <li>Plain text comments up to 500 characters</li>
-            <li>Edit and delete actions, available only to the comment's author</li>
+            <li>Edit and delete actions, available only to the comment&rsquo;s author</li>
             <li>Mobile-responsive UI matching the existing order history layout</li>
           </ul>
-          <p><strong>Out of scope</strong></p>
+          <p><strong>Out of scope</strong> (S)</p>
           <ul>
-            <li>Comments visible to anyone other than the comment's author (no shared/public comments)</li>
+            <li>Comments visible to anyone other than the comment&rsquo;s author (no shared/public comments)</li>
             <li>Rich text or markdown formatting</li>
             <li>File attachments, images, or links with previews</li>
             <li>Notifications when a comment is added (no emails, no push)</li>
@@ -965,65 +1075,65 @@
           </ul>
           <p><strong>Constraints</strong></p>
           <ul>
-            <li>Backend uses the existing Postgres database; no new infrastructure</li>
-            <li>Reuse the existing customer auth middleware</li>
-            <li>All endpoints follow the existing <code>/api/v1/&lt;resource&gt;</code> pattern</li>
-            <li>Mobile breakpoint: usable down to 375px viewport width</li>
+            <li>(S) Usable down to a 375px-wide screen</li>
+            <li>(P) Backend uses the existing Postgres database; no new infrastructure</li>
+            <li>(P) Reuse the existing customer auth middleware</li>
+            <li>(P) All endpoints follow the existing <code>/api/v1/&lt;resource&gt;</code> pattern</li>
           </ul>
-          <p><strong>Decisions already made</strong></p>
+          <p><strong>Decisions already made</strong> (P)</p>
           <ul>
             <li>Comment is associated with the <code>(customer_id, order_id)</code> pair (uniqueness constraint)</li>
             <li>Soft deletes (<code>deleted_at</code> column), not hard deletes</li>
             <li>Validation errors return HTTP 400 with <code>{ error: string }</code>, matching existing endpoints</li>
             <li>Comment timestamps stored as ISO 8601 UTC</li>
           </ul>
-          <p><strong>Tasks</strong></p>
+          <p><strong>Tasks</strong> (regenerated later by <code>/speckit-tasks</code>)</p>
           <ol>
             <li>Add a <code>comments</code> table with the chosen columns and uniqueness constraint</li>
             <li>Implement POST /api/v1/orders/:orderId/comment (create or replace own comment)</li>
             <li>Implement DELETE /api/v1/orders/:orderId/comment (soft delete own comment)</li>
-            <li>Extend GET /api/v1/orders to include the customer's own comment per order</li>
+            <li>Extend GET /api/v1/orders to include the customer&rsquo;s own comment per order</li>
             <li>Add the comment UI to the order history page (display, edit-in-place, delete)</li>
             <li>Add mobile-responsive styles</li>
             <li>Write integration tests covering the verification criteria below</li>
           </ol>
-          <p><strong>Verification</strong></p>
+          <p><strong>Verification</strong> (S as behaviour; the status codes are P)</p>
           <ul style="margin-bottom: 0;">
-            <li>Unit: empty comment text rejected with HTTP 400</li>
-            <li>Unit: comment text &gt; 500 chars rejected with HTTP 400</li>
-            <li>Unit: deleting another customer's comment returns HTTP 403, no DB change</li>
-            <li>Integration: creating a comment on order X then GET /api/v1/orders shows the comment under order X only</li>
-            <li>Integration: editing a comment updates the same row (no duplicate rows created)</li>
-            <li>Integration: soft-deleted comments are not returned by GET endpoints</li>
-            <li>E2E: on mobile (375px viewport), the comment input and existing order details are both visible without horizontal scroll</li>
-            <li>Edge case: rapid double-submit of the comment form does not create duplicate comments</li>
-            <li>Edge case: an order ID that doesn't belong to the requesting customer returns HTTP 404 (not 403, to avoid leaking order existence)</li>
+            <li>An empty comment is refused (HTTP 400)</li>
+            <li>A comment over 500 characters is refused (HTTP 400)</li>
+            <li>A customer cannot delete another customer&rsquo;s comment (HTTP 403, nothing changes)</li>
+            <li>A comment added to order X shows under order X only</li>
+            <li>Editing a comment changes it in place; no second comment appears</li>
+            <li>A deleted comment no longer appears anywhere</li>
+            <li>On a 375px-wide screen, the comment input and the order details are both visible without horizontal scrolling</li>
+            <li>Edge case: a rapid double-submit of the comment form creates one comment, not two</li>
+            <li>Edge case: an order that doesn&rsquo;t belong to the customer behaves as if it doesn&rsquo;t exist (HTTP 404, not 403, to avoid leaking that it does)</li>
           </ul>
         </blockquote>
-        <p>Notice what this spec <em>doesn't</em> include:</p>
+        <p>Notice where things landed. The spec keeps outcomes, scope, one product-level constraint (the phone-width screen), and the behaviour behind each check. The database, middleware, endpoint pattern, soft deletes, uniqueness key, error format, and status codes are plan material &mdash; or constitution material, if they hold for every feature. And notice what it <em>doesn&rsquo;t</em> include at all:</p>
         <ul>
           <li>No SQL DDL &mdash; that goes in the plan</li>
-          <li>No mention of specific frameworks or libraries &mdash; assumed in the Constitution</li>
+          <li>No mention of specific frameworks or libraries &mdash; the constitution already records them</li>
           <li>No copy text for buttons or error messages &mdash; design and copy own that</li>
           <li>No timing estimates &mdash; those are sprint-planning concerns, not spec concerns</li>
         </ul>
-        <p>If you compare this to your version, focus on the <em>structure</em> and <em>completeness</em> of each element, not on getting the exact same wording.</p>
+        <p>If you compare this to your version, focus on the <em>structure</em> and <em>completeness</em> of each element, and on whether your S/P split matches, not on getting the exact same wording.</p>
       </div>
     </div>
 
     <hr>
 
-    <h3>What you'll do next</h3>
-    <p>In <strong>Module 3</strong>, you'll install SPECTRA and run the full four-phase workflow on a small greenfield feature. You'll write a real spec, generate a plan, watch the agent produce a task list, and implement against it. The goal is to feel the workflow in your hands before applying it to a brownfield codebase in Module 4.</p>
-    <p>Bring the writing exercise from this module &mdash; the discipline of writing the six elements is exactly what <code>/speckit.specify</code> will ask you to do, and you'll be much faster if you've already practiced.</p>
+    <h3>What&rsquo;s next</h3>
+    <p>In <strong>Module 3</strong>, the greenfield lab, you&rsquo;ll install SPECTRA and take a small to-do app through the loop yourself &mdash; constitution, spec, plan, tasks, implement &mdash; reviewing each artifact at its gate. The goal is to feel the workflow in your hands before Module 4 applies it to an existing codebase.</p>
+    <p>Bring this module&rsquo;s writing exercise. The six elements are what <code>/speckit-specify</code> needs from you, and knowing which half belongs to <code>/speckit-plan</code> will keep your first spec clean.</p>
 
     <div class="module-footer-nav">
       <a class="mod-nav-prev" href="module-1.html">
-        <span class="mod-nav-label">← Previous · Module 1</span>
+        <span class="mod-nav-label">&larr; Previous &middot; Module 1</span>
         <span class="mod-nav-title">SDD Foundations</span>
       </a>
       <a class="mod-nav-next" href="module-3.html">
-        <span class="mod-nav-label">Next · Module 3 →</span>
+        <span class="mod-nav-label">Next &middot; Module 3 &rarr;</span>
         <span class="mod-nav-title">Greenfield Lab</span>
       </a>
     </div>
@@ -1105,6 +1215,14 @@
       }
     });
   });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<!-- Displayed as Module 8 in the course; the filename predates the renumbering. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module 5 &mdash; Best Practices &amp; Pitfalls &middot; SDD with SPECTRA</title>
+<title>Module 8 &mdash; Best Practices &amp; Pitfalls &middot; SDD with SPECTRA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Mona+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -630,23 +631,26 @@
       <span class="course-nav-brand-text">SDD Learning</span>
     </a>
     <div class="course-nav-modules">
-      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA — Learning">Home</a>
-      <a href="module-1.html" title="Module 1 — SDD Foundations">1</a>
-      <a href="module-2.html" title="Module 2 — Anatomy of a Good Spec">2</a>
-      <a href="module-3.html" title="Module 3 — Greenfield Lab — SPECTRA from Scratch">3</a>
-      <a href="module-4.html" title="Module 4 — Brownfield Lab — Add “Due Date” ★">4</a>
-      <a href="module-5.html" title="Module 5 — Best Practices &amp; Pitfalls" class="is-active">5</a>
-      <a href="module-6.html" title="Module 6 — Quality, Testing &amp; Team Collaboration">6</a>
-      <a href="AI-DLC.html" title="AI-DLC — From SDLC to AI-Driven Development">AI-DLC</a>
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls" class="is-active">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
     </div>
   </div>
 </nav>
 </div>
 <main>
   <header class="hero">
-    <div class="hero-eyebrow">Module 5</div>
+    <div class="hero-eyebrow">Module 8</div>
     <h1>Best Practices &amp; Pitfalls</h1>
-    <p class="hero-lede">Patterns that consistently produce good outcomes, the eight failure modes that consistently sabotage adoption, and a critique exercise on three deliberately broken specs.</p>
+    <p class="hero-lede">Patterns that consistently produce good outcomes, how to size work so the agent doesn&rsquo;t lose the thread mid-implementation, the nine failure modes that sabotage adoption, and a critique exercise on three deliberately broken specs.</p>
     <div class="meta">
       <div class="meta-item">
         <span class="meta-label">Time</span>
@@ -669,115 +673,176 @@
     <p>By the end of this module, you will be able to:</p>
     <ol>
       <li>Apply the human-reviewability test to decide when a spec is too big.</li>
-      <li>Use the adversarial agent pattern to catch failures a single agent would miss.</li>
-      <li>Tier AI models by role to avoid overspending on cheap tasks and underspending on expensive ones.</li>
-      <li>Recognize the eight most common pitfalls before they consume a sprint.</li>
+      <li>Run the workflow&rsquo;s quality gates as decisions with a named owner, not as formalities.</li>
+      <li>Use the adversarial verifier pattern, and tier AI models by role.</li>
+      <li>Size implementation to the agent&rsquo;s context window, reaching for a spec of specs only when nothing lighter works.</li>
+      <li>Recognize the nine most common pitfalls before they consume a sprint.</li>
       <li>Critique a poorly written spec and suggest specific, actionable fixes.</li>
     </ol>
 
     <h2><span class="h2-num">1.</span>Best practices that consistently work</h2>
-    <p>The labs in Modules 3 and 4 exposed you to a lot of small judgment calls. This section names the patterns that repeatedly produce good outcomes across teams that have been doing SDD for a while.</p>
+    <p>The labs in Modules 3 and 4 exposed you to a lot of small judgment calls, and Modules 5 to 7 added the work around a feature. This section names the patterns that repeatedly produce good outcomes across teams that have been doing SDD for a while.</p>
 
     <h3>1.1 Human reviewability is the master test</h3>
     <blockquote>If you find yourself skimming a spec thinking &ldquo;the AI probably got it right,&rdquo; the feature is too large.</blockquote>
-    <p>That single sentence (paraphrased from intent-driven.dev) is the most useful heuristic in SDD. It applies at every phase. If the spec is too long to read carefully, slice it. If the plan has too many components to think through, break it. If the task list is too long to review, fewer tasks per spec.</p>
+    <p>That single sentence (paraphrased from intent-driven.dev) is the most useful heuristic in SDD. It applies at every phase. If the spec is too long to read carefully, slice it. If the plan has too many components to think through, break it. If the task list is too long to review, put fewer tasks in each spec.</p>
     <p>Two practical sub-rules:</p>
     <ol>
       <li><strong>Hard cap on per-feature spec content.</strong> Around 500 words of substantive content (not counting boilerplate). Hard cases get exceptions, but treat them as exceptions.</li>
-      <li><strong>Decompose using INVEST.</strong> Independent, Negotiable, Valuable, Estimable, Small, Testable. If a feature fails any of these, it's a candidate for slicing into smaller specs.</li>
+      <li><strong>Decompose using INVEST.</strong> Independent, Negotiable, Valuable, Estimable, Small, Testable. If a feature fails any of these, it&rsquo;s a candidate for slicing into smaller specs.</li>
     </ol>
-    <p>The human-reviewability test isn't a guideline; it's the thing that prevents the markdown-monster failure mode. Take it seriously.</p>
+    <p>The human-reviewability test isn&rsquo;t a guideline; it&rsquo;s the thing that prevents the markdown-monster failure mode. Take it seriously. Section 2 covers the agent&rsquo;s side of the same problem: a feature can be perfectly reviewable by you and still too big for one implementation run.</p>
 
     <h3>1.2 Specify just enough to remove ambiguity</h3>
     <p>Piskala calls this the &ldquo;Golden Rule&rdquo; of SDD: use the minimum specification rigor that removes ambiguity for your context. Not maximum. Not comprehensive. <strong>Minimum.</strong></p>
     <p>The trigger from Augment is worth committing to memory:</p>
     <blockquote>If you'd be annoyed to have the agent interpret requirements differently than you meant, write the spec. If you could fix the output in a quick follow-up prompt, skip it.</blockquote>
-    <p>Two implications:</p>
+    <p>Three implications:</p>
     <ul>
       <li><strong>Stakes calibrate rigor.</strong> A 30-line auth bug fix might warrant a careful spec because misinterpretation has security consequences. A 200-line refactor of a private utility might not, because errors are caught on diff.</li>
-      <li><strong>Spec depth is per-feature, not per-team.</strong> Don't decree that &ldquo;every spec must have all six sections fully populated.&rdquo; Some sections are obvious from context for some features. Trust the writer to decide what's needed.</li>
+      <li><strong>Spec depth is per-feature, not per-team.</strong> Don&rsquo;t decree that &ldquo;every spec must have all six sections fully populated.&rdquo; Some sections are obvious from context for some features. Trust the writer to decide what&rsquo;s needed.</li>
+      <li><strong>The same calibration picks your gates.</strong> A small, clear feature can take the short path &mdash; specify, plan, tasks, implement, converge. Anything two reasonable people could read differently goes through <code>/speckit-clarify</code> before anyone plans it.</li>
     </ul>
 
-    <h3>1.3 Use adversarial agent patterns when stakes are high</h3>
+    <h3>1.3 Treat every gate as a decision, not a formality</h3>
+    <p>Spec Kit&rsquo;s full path puts a quality gate between most steps. A gate only works if someone actually stands at it:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Gate</th><th>Who decides</th><th>The habit that makes it work</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>/speckit-clarify</code></td><td>Whoever holds the intent &mdash; usually the product owner</td><td>At most five questions per pass, answers written into <code>spec.md</code>. Run it again with a focus area rather than hoping one pass caught everything.</td></tr>
+          <tr><td><code>/speckit-checklist</code></td><td>The reviewer</td><td>A custom checklist item is ticked <code>[x]</code> only by a person; the agent helps evaluate when asked. (The built-in <code>checklists/requirements.md</code> is different: specify and clarify tick it themselves, so read those ticks as the agent&rsquo;s claim, not a sign-off.) <code>/speckit-implement</code> asks before continuing past unchecked items and never ticks any.</td></tr>
+          <tr><td><code>/speckit-analyze</code></td><td>The owner of the step the finding belongs to</td><td>Fix each finding at its source &mdash; requirements in specify or clarify, design in plan, the task list by re-running tasks &mdash; then re-run analyze until clean. Hand-editing <code>tasks.md</code> to quiet a finding just hides it.</td></tr>
+          <tr><td><code>/speckit-implement</code></td><td>The engineer reviewing the diff</td><td>Verify each stage &mdash; run the app, run the tests, read the change &mdash; before starting the next.</td></tr>
+          <tr><td><code>/speckit-converge</code></td><td>The engineer</td><td>It either reports <strong>Converged</strong> or appends tasks under a Convergence section of <code>tasks.md</code>. Implement those and converge again until Converged. Skip it and a &ldquo;done&rdquo; feature ships with a requirement nobody built.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Agents draft, people decide. A gate nobody owns is just one more step the agent runs on its own.</p>
+
+    <h3>1.4 Use adversarial agent patterns when stakes are high</h3>
     <p>For high-stakes features (security boundaries, payment flows, anything in regulated domains), a single agent reviewing its own output is overconfident by design. Use multiple agents with opposing roles:</p>
     <ul>
       <li><strong>Coordinator agent:</strong> decomposes the spec into work units.</li>
       <li><strong>Implementor agents:</strong> in parallel, each work on a discrete task. Their job is to produce code that satisfies the spec.</li>
-      <li><strong>Verifier agent:</strong> checks each implementor's output against the spec. Its job is to <em>find divergence</em>, not to be polite.</li>
+      <li><strong>Verifier agent:</strong> checks each implementor&rsquo;s output against the spec. Its job is to <em>find divergence</em>, not to be polite.</li>
     </ul>
-    <p>The Verifier's opposing goal is the load-bearing part. Implementing agents are trained to be helpful, which means they're optimistic about their own output. A Verifier with the opposing instruction &mdash; &ldquo;find every way this output fails to match the spec&rdquo; &mdash; catches mistakes the implementor missed.</p>
-    <p>A practical signal you need this pattern: you've shipped a bug that the spec clearly described as out-of-bounds, but the agent generated it anyway and the team's review missed it. That's exactly the gap a Verifier closes.</p>
-    <p>This pattern also forces your spec to be more explicit, because the Verifier has to be able to check it. Vague verification criteria make the Verifier useless. Bring the discipline upstream.</p>
+    <p>The Verifier&rsquo;s opposing goal is the load-bearing part. Implementing agents are trained to be helpful, which means they&rsquo;re optimistic about their own output. A Verifier with the opposing instruction &mdash; &ldquo;find every way this output fails to match the spec&rdquo; &mdash; catches mistakes the implementor missed.</p>
+    <p>You already have a narrow, built-in version: <code>/speckit-converge</code> exists only to find where the code falls short of the artifacts, and it can&rsquo;t fix its way to a pass, because its only possible write is appending tasks. For high-stakes work, go further and give a second agent the explicit brief to break the implementation.</p>
+    <p>A practical signal you need this pattern: you&rsquo;ve shipped a bug the spec clearly ruled out, the agent generated it anyway, and review missed it. The pattern also forces your spec to be more explicit, because the Verifier has to be able to check it. Bring the discipline upstream.</p>
 
-    <h3>1.4 Tier your models by role</h3>
+    <h3>1.5 Tier your models by role</h3>
     <p>Different phases need different model capabilities, and using the same model for everything either wastes money or sacrifices quality.</p>
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Role</th><th>Model class</th><th>Why</th></tr>
+          <tr><th>Role</th><th>Model tier</th><th>Why</th></tr>
         </thead>
         <tbody>
-          <tr><td>Spec writing / refining</td><td>Most capable available</td><td>Errors here propagate to every later phase</td></tr>
-          <tr><td>Plan and tasks</td><td>Most capable available</td><td>Same logic &mdash; design errors are expensive</td></tr>
-          <tr><td>Implementation</td><td>Mid-tier (Sonnet-class, GPT-5.1-Codex)</td><td>Code generation is well-served by mid-tier models; the spec already constrains the output heavily</td></tr>
-          <tr><td>Verification</td><td>Fast / cheap</td><td>Checking is a narrower task than generating; smaller models do it well at much lower cost</td></tr>
+          <tr><td>Spec writing / refining</td><td>Your most capable model</td><td>Errors here propagate to every later phase</td></tr>
+          <tr><td>Plan and tasks</td><td>Your most capable model</td><td>Same logic &mdash; design errors are expensive</td></tr>
+          <tr><td>Implementation</td><td>A strong coding model a tier below your best &mdash; faster and cheaper</td><td>Code generation is well served by mid-tier models; the spec and plan already constrain the output heavily</td></tr>
+          <tr><td>Verification</td><td>A fast, inexpensive model for mechanical checks; step back up for adversarial review of high-stakes work</td><td>Checking is a narrower task than generating; smaller models do routine checks well at much lower cost</td></tr>
         </tbody>
       </table>
     </div>
-    <p>The mistake to avoid: using a top-tier model for implementation and a cheap one for spec authoring. That's exactly backward. A bad spec can't be saved by a good implementation; a good spec can be implemented well by a mid-tier model.</p>
-    <p>If your team is locked into a single model, default to &ldquo;good enough across all phases&rdquo; rather than the cheapest option &mdash; the spec phase has the most leverage and is least forgiving.</p>
+    <p>The mistake to avoid: using a top-tier model for implementation and a cheap one for spec authoring. That&rsquo;s exactly backward. A bad spec can&rsquo;t be saved by a good implementation; a good spec can be implemented well by a mid-tier model.</p>
+    <p>Model names and prices change every few months; the shape of this table doesn&rsquo;t. If your team is locked into a single model, default to &ldquo;good enough across all phases&rdquo; rather than the cheapest option &mdash; the spec phase has the most leverage and is least forgiving.</p>
 
-    <h3>1.5 Pair specs with project-level context</h3>
-    <p>Every meaningful SDD tool has a Constitution-equivalent: GitHub Spec Kit's <code>constitution.md</code>, Kiro's Steering, OpenSpec's profiles, the more generic <code>AGENTS.md</code> convention. Use it.</p>
+    <h3>1.6 Pair specs with project-level context</h3>
+    <p>Every serious SDD tool has a place for durable project context: Spec Kit&rsquo;s constitution at <code>.specify/memory/constitution.md</code> (SPECTRA calls the agent that writes it Guardrails), Kiro&rsquo;s steering files, the more generic <code>AGENTS.md</code> convention. Use it.</p>
     <p>The right division (revisiting Module 2):</p>
     <ul>
       <li><strong>Constitution:</strong> durable conventions that apply across all features (stack, error response shape, auth pattern, file layout)</li>
-      <li><strong>Spec:</strong> task-specific intent (what changes for this feature, what's in/out of scope, decisions made for this work)</li>
+      <li><strong>Spec:</strong> task-specific intent (what changes for this feature, what&rsquo;s in/out of scope, decisions made for this work)</li>
     </ul>
-    <p>Don't cram Constitution-level conventions into every spec, &ldquo;to be safe.&rdquo; That's how specs bloat into markdown monsters. Trust the Constitution. If a convention is missing, fix the Constitution once instead of repeating it in every spec.</p>
-    <p>A Constitution maintenance habit: review it quarterly. Conventions drift. New patterns become standard, old ones become obsolete. A stale Constitution is worse than no Constitution because it teaches the agent the wrong patterns.</p>
+    <p>Don&rsquo;t cram constitution-level conventions into every spec &ldquo;to be safe.&rdquo; That&rsquo;s how specs bloat into markdown monsters. Trust the constitution. If a convention is missing, fix the constitution once instead of repeating it in every spec.</p>
+    <p>Two maintenance habits. Write down only what is already true or explicitly agreed &mdash; invented standards become noise in every later plan and analysis. And review it quarterly: a stale constitution is worse than none because it teaches the agent the wrong patterns.</p>
 
-    <h3>1.6 Apply systems thinking for cross-feature analysis</h3>
+    <h3>1.7 Apply systems thinking for cross-feature analysis</h3>
     <p>Specs are usually authored one feature at a time. But features interact in non-linear ways. The classic example (intent-driven.dev): an inventory-alert feature combined with an existing notification system can produce notification storms during peak traffic &mdash; a problem only visible if you analyze the specs together as a system, not as isolated features.</p>
-    <p>Practical implication: when a spec touches a system area that other specs also touch (notifications, auth, data egress), do a brief cross-feature review before implementing. Not a full architecture review &mdash; just &ldquo;do any other features in this area cause the new one to behave badly, or vice versa?&rdquo;</p>
-    <p>The Architecture role from Module 6 owns this. If your team doesn't have someone in that role yet, designate it informally for the duration of a feature.</p>
+    <p>Practical implication: when a spec touches a system area that other specs also touch (notifications, auth, data egress), do a brief cross-feature review before implementing: &ldquo;do any other features in this area cause the new one to behave badly, or vice versa?&rdquo; SPECTRA&rsquo;s <code>speckit.spectra.impact</code> helps by reporting what a proposed change would actually touch, with cited <code>path:line</code> evidence. The Architecture role from Module 9 owns this review; if nobody holds that role yet, designate someone for the duration of the feature.</p>
 
-    <h3>1.7 Commit at every phase boundary</h3>
+    <h3>1.8 Commit at every phase boundary</h3>
     <p>Commit your spec, plan, and tasks separately, before generating code. This gives you natural rollback points and makes the artifacts greppable in Git history.</p>
     <p>The minimum hygiene:</p>
-<pre><code>git commit -m "spec: &lt;feature&gt;"
+<pre><code>git commit -m "spec: &lt;feature&gt;"                 # after specify + clarify
 git commit -m "plan: &lt;feature&gt;"
-git commit -m "tasks: &lt;feature&gt;"
-git commit -m "feat: &lt;feature&gt; (spec-driven)"</code></pre>
-    <p>If the implementation goes sideways, you can <code>git reset --hard &lt;plan-commit&gt;</code> and re-run <code>/speckit.tasks</code> and <code>/speckit.implement</code> without losing the upstream work.</p>
+git commit -m "tasks: &lt;feature&gt;"                # once analyze is clean
+git commit -m "feat: &lt;feature&gt; (spec-driven)"   # once converge says Converged</code></pre>
+    <p>If the implementation goes sideways, <code>git reset --hard &lt;tasks-commit&gt;</code> throws away the generated code and you can re-run <code>/speckit-implement</code> without losing the upstream work. If the task list itself was the problem, reset to the plan commit and re-run <code>/speckit-tasks</code> first.</p>
 
-    <h2><span class="h2-num">2.</span>Pitfalls that consistently sabotage SDD adoption</h2>
+    <h2><span class="h2-num">2.</span>Sizing work to the context window</h2>
+    <p>Section 1.1 sizes work for the human reviewer. This section sizes it for the agent, and the two limits are not the same.</p>
+
+    <h3>2.1 Why big features fail mid-implement</h3>
+    <p>The pattern is recognizable. Specify, plan, and tasks go smoothly. Then, deep into a long <code>/speckit-implement</code> run, the agent starts to drift: it skips tasks, marks work done that isn&rsquo;t, contradicts a plan decision it followed an hour ago. It often happens right around the moment the agent compacts its context &mdash; summarizing the conversation so far to make room.</p>
+    <p>The cause is context-window exhaustion. A run that tries to hold the spec, the plan, the task list, and every file it has touched fills the window, and the model&rsquo;s grip on the early material weakens. Compaction then swaps detail for a summary, and the detail it drops is often the constraint that mattered. The fix is not a better prompt. It is a smaller run.</p>
+
+    <h3>2.2 Four options, lightest first</h3>
+    <p>Each option adds overhead, so stop at the first one that works.</p>
+    <p><strong>1 &mdash; Scope each implement run.</strong> <code>/speckit-implement</code> considers whatever you type after it, so you can bound a run by task range or by phase:</p>
+<pre><code>/speckit-implement only execute tasks T001-T010, then stop and report progress
+/speckit-implement only execute Phase 3 (User Story 1), then stop</code></pre>
+    <p>Completed tasks are marked <code>[X]</code> in <code>tasks.md</code>, so the next run resumes where this one stopped. Between runs, stand at the gate: run the app and the tests, read the diff. This works with any agent, and it is enough for most features.</p>
+    <p><strong>2 &mdash; Delegate parallel tasks to sub-agents.</strong> If your coding agent supports sub-agents, ask implement to hand each <code>[P]</code> task to one. Each sub-agent starts with one task and the parts of the plan it needs, so the main session never fills up; <code>[P]</code> tasks touch different files and don&rsquo;t depend on each other, which is what makes them safe to farm out.</p>
+<pre><code>/speckit-implement delegate each [P] task in this phase to a sub-agent</code></pre>
+    <p><strong>3 &mdash; Combine both.</strong> Scope the run to one phase and delegate its <code>[P]</code> tasks: the scope keeps the main session small, delegation keeps each task small.</p>
+    <p><strong>4 &mdash; A spec of specs.</strong> When even one phase is too much for one run, the feature is really several features. This is the last resort.</p>
+
+    <h3>2.3 The spec of specs</h3>
+    <p>A spec of specs splits an epic into slices that are each specified on their own &mdash; own <code>spec.md</code>, <code>plan.md</code>, and <code>tasks.md</code> &mdash; tied together by a roadmap. Suppose that after the due-date lab the team wants to turn the to-do app into a lightweight planner: repeating to-dos, reminders, a calendar view, snoozing. That&rsquo;s an epic. Start with a <strong>roadmap pass</strong> &mdash; a short planning conversation with the agent, not a full spec: state the whole epic; find slices that are <strong>independently testable</strong> (building any one leaves something you can demonstrate); give each one line of intent and an explicit <strong>scope boundary</strong> saying what is deferred to a sibling; order them by <strong>dependency</strong>; and record the result.</p>
+    <p>The roadmap names and orders the slices; it doesn&rsquo;t design them. It is an ordinary Markdown file under version control &mdash; <code>specs/&lt;epic&gt;/roadmap.md</code>, or a top-level <code>ROADMAP.md</code> for an epic that cuts across the whole product:</p>
+<pre><code># Roadmap: Planner
+
+Turn the to-do app into a lightweight planner, one shippable slice at a time.
+
+Status: planned &middot; in-progress &middot; done
+
+| ID | Slice            | Intent                                    | Scope boundary                               | Depends on | Status      | Spec                       |
+|----|------------------|-------------------------------------------|----------------------------------------------|------------|-------------|----------------------------|
+| R1 | Repeating to-dos | Repeat a to-do daily, weekly, or monthly  | Next one appears on completion; no reminders | &mdash;          | done        | specs/002-repeating-todos/ |
+| R2 | Reminders        | Remind the user before a to-do falls due  | One reminder per to-do; no snooze            | &mdash;          | in-progress | specs/003-reminders/       |
+| R3 | Calendar view    | See to-dos laid out by due date           | Read-only; no drag-to-reschedule             | &mdash;          | in-progress | specs/004-calendar-view/   |
+| R4 | Snooze           | Push a reminder back by a chosen interval | Reminders only; the due date never moves     | R2         | planned     | &mdash;                          |</code></pre>
+    <ul>
+      <li><strong>Every slice runs the full loop.</strong> Take the next entry whose dependencies are done, run <code>/speckit-specify</code> for that slice alone, and carry on to converge. Mark it <code>done</code> when it converges.</li>
+      <li><strong>IDs are stable.</strong> Once a slice&rsquo;s spec cites R2, R2 is never renumbered.</li>
+      <li><strong>Link both ways.</strong> The slice&rsquo;s <code>spec.md</code> names its parent in its input line (<code>Parent roadmap: specs/planner/roadmap.md &rarr; R2</code>), and the roadmap&rsquo;s Spec column points back. One search finds the whole family.</li>
+      <li><strong>Roadmap first when you re-split.</strong> If scope moves, change the roadmap entry before any slice spec. No single slice gets to redraw the boundaries; the roadmap does.</li>
+      <li><strong>Parallel slices get their own worktree.</strong> R2 and R3 are both in progress. The active feature lives in <code>.specify/feature.json</code>, not in the Git branch, so two slices in one checkout would fight over it; a Git worktree per slice gives each run its own.</li>
+    </ul>
+    <p>Spec C in the critique exercise below is what you get when a roadmap is written as if it were one spec.</p>
+
+    <h2><span class="h2-num">3.</span>Pitfalls that consistently sabotage SDD adoption</h2>
     <p>The labs probably surfaced one or two of these. The full list:</p>
 
     <h3>Pitfall 1 &mdash; Over-specification</h3>
     <p>The spec reads like pseudo-code. Function names, exact error messages, schema column names appear before the plan phase. The abstraction benefit is lost; the agent has nothing to figure out, so the spec is just a slow way of typing the code.</p>
     <p><strong>Symptom:</strong> you find yourself thinking &ldquo;this would be easier to just write.&rdquo;</p>
-    <p><strong>Cure:</strong> strip implementation detail. Ask: does this constrain <em>what</em> should happen, or <em>how</em>? If &ldquo;how,&rdquo; it belongs in the plan.</p>
+    <p><strong>Cure:</strong> strip implementation detail. Ask: does this constrain <em>what</em> should happen, or <em>how</em>? If &ldquo;how,&rdquo; it belongs in <code>/speckit-plan</code>.</p>
 
     <h3>Pitfall 2 &mdash; Spec rot</h3>
-    <p>You're spec-anchored on paper, but specs aren't updated when code changes. Six months in, the specs are lies. The build still passes because the validation gates were never set up to catch drift.</p>
+    <p>You meant to keep your specs, but nobody updates them when the code changes. Six months in, the specs are lies, and every agent that reads them is misled.</p>
     <p><strong>Symptom:</strong> specs in your repo from a year ago that nobody has read since they merged.</p>
-    <p><strong>Cure:</strong> treat spec edits as part of the change, not a follow-up. Make spec updates required for any PR that changes behavior the spec covered. Use CI to fail builds where new behavior isn't reflected in any spec.</p>
+    <p><strong>Cure:</strong> decide how your specs age (Module 1) &mdash; spec-first, spec-anchored, or spec-as-source &mdash; and record the choice in the constitution so the agents work to it too. If you keep specs, the spec edit is part of the change, not a follow-up. At review time, <code>speckit.spectra.review-pr</code> checks a pull request against the spec it carries and flags a change no requirement authorized.</p>
 
     <h3>Pitfall 3 &mdash; Specification theater (the markdown monster)</h3>
-    <p>You're producing elaborate specs that nobody actually reviews. Specs get rubber-stamped because they're long, and a long doc nobody read is just expensive overhead.</p>
+    <p>You&rsquo;re producing elaborate specs that nobody actually reviews. Specs get rubber-stamped because they&rsquo;re long, and a long doc nobody read is just expensive overhead.</p>
     <p><strong>Symptom:</strong> specs are getting longer over time and review comments are getting shorter.</p>
-    <p><strong>Cure:</strong> apply the human-reviewability test. If specs are too long to review, slice them. Reward concision in code review.</p>
+    <p><strong>Cure:</strong> apply the human-reviewability test (1.1). If specs are too long to review, slice them. Reward concision in code review.</p>
 
     <h3>Pitfall 4 &mdash; False confidence from passing spec tests</h3>
-    <p>A passing spec test only proves code matches spec. If the spec is wrong, the code is faithfully wrong. A green CI on a faulty spec is more dangerous than a red CI on a missing spec, because it produces undeserved trust.</p>
+    <p>A passing spec test only proves code matches spec. If the spec is wrong, the code is faithfully wrong. A green CI on a faulty spec is more dangerous than a red CI on a missing spec, because it produces undeserved trust. The same goes for <code>/speckit-converge</code>: Converged means the code matches the artifacts, no more.</p>
     <p><strong>Symptom:</strong> a bug ships that &ldquo;should have been caught&rdquo; but the spec test passed.</p>
-    <p><strong>Cure:</strong> when bugs surface, classify them with the SpecOps loop (intent-to-spec vs spec-to-implementation). Intent-to-spec bugs mean your elicitation patterns need work; treat them as a higher-priority fix than the bug itself.</p>
+    <p><strong>Cure:</strong> when bugs surface, classify them with the SpecOps loop (Module 9): intent-to-spec versus spec-to-implementation. Intent-to-spec bugs mean your elicitation needs work; treat that as a higher-priority fix than the bug itself.</p>
 
     <h3>Pitfall 5 &mdash; Tooling cargo-culting</h3>
-    <p>You're applying the full SDD ceremony (Constitution + spec + plan + tasks + implement) to every change, including mechanical ones. The tool has become a religion.</p>
+    <p>You&rsquo;re running the full path &mdash; every optional gate, every time &mdash; on every change, including mechanical ones. The tool has become a religion.</p>
     <p><strong>Symptom:</strong> small bug fixes that take a day instead of an hour.</p>
-    <p><strong>Cure:</strong> the &ldquo;skip the spec&rdquo; criteria from Module 1 are real. Mechanical, well-understood, quickly reviewable changes don't need ceremony. Empower engineers to choose.</p>
+    <p><strong>Cure:</strong> the &ldquo;when not to use SDD&rdquo; criteria from Module 1 are real. Small, clear features can take the short path (1.2). A defect usually doesn&rsquo;t need a feature spec at all &mdash; Spec Kit&rsquo;s <code>bug</code> workflow from Module 6 is sized for it. Empower engineers to choose.</p>
 
     <h3>Pitfall 6 &mdash; AI-generated spec bloat</h3>
     <p>You let the agent write the first-draft spec and accept it without editing. The agent over-includes &ldquo;to be safe.&rdquo; The spec is verbose, repetitive, and harder to review than the code it directs.</p>
@@ -785,21 +850,26 @@ git commit -m "feat: &lt;feature&gt; (spec-driven)"</code></pre>
     <p><strong>Cure:</strong> treat agent drafts as input, not output. Edit ruthlessly. The team that writes the <em>shortest</em> clear spec wins.</p>
 
     <h3>Pitfall 7 &mdash; Premature comprehensiveness</h3>
-    <p>You try to spec the whole system upfront, often when adopting SDD on a brownfield codebase (the temptation Module 4 warned about). The result: a giant spec nobody reads, written before you've learned anything from doing SDD on real changes.</p>
-    <p><strong>Symptom:</strong> &ldquo;we'll roll out SDD once we finish writing the system spec.&rdquo;</p>
+    <p>You try to spec the whole system upfront, often when adopting SDD on a brownfield codebase (the temptation Module 4 warned about). The result: a giant spec nobody reads, written before you&rsquo;ve learned anything from doing SDD on real changes.</p>
+    <p><strong>Symptom:</strong> &ldquo;we&rsquo;ll roll out SDD once we finish writing the system spec.&rdquo;</p>
     <p><strong>Cure:</strong> never write the system spec. Spec changes incrementally. Frequently-touched areas accumulate spec coverage organically. Premature comprehensiveness is how SDD adoptions die.</p>
 
     <h3>Pitfall 8 &mdash; &ldquo;SpecFall&rdquo;</h3>
-    <p>You install SPECTRA, run a training, and don't change anything else about how product, architecture, and engineering collaborate. SDD becomes a technical artifact in an unchanged process. Krishnan calls this &ldquo;SpecFall&rdquo; &mdash; analogous to the classic &ldquo;Scrumerfall&rdquo; failure where teams adopt Scrum ceremonies on top of waterfall thinking and wonder why nothing changes.</p>
+    <p>You install SPECTRA, run a training, and don&rsquo;t change anything else about how product, architecture, and engineering collaborate. SDD becomes a technical artifact in an unchanged process. Krishnan calls this &ldquo;SpecFall&rdquo; &mdash; analogous to the classic &ldquo;Scrumerfall&rdquo; failure where teams adopt Scrum ceremonies on top of waterfall thinking and wonder why nothing changes.</p>
     <p><strong>Symptom:</strong> PMs still write Jira tickets exactly as before, engineers translate them into specs in isolation, nothing about cross-functional collaboration has changed.</p>
-    <p><strong>Cure:</strong> treat SDD adoption as a process change, not a tooling change. Specs become the shared interface where PM/architecture/engineering meet. Module 6 covers this in depth; for now, just notice that adopting SPECTRA without changing how your team collaborates produces almost no benefit.</p>
+    <p><strong>Cure:</strong> treat SDD adoption as a process change, not a tooling change. Specs become the shared interface where PM, architecture, and engineering meet. Module 9 covers this in depth.</p>
+
+    <h3>Pitfall 9 &mdash; Gates in name only</h3>
+    <p>The workflow has all its gates and nobody stands at them. Custom checklists are ticked by whoever ran them, analyze findings vanish because someone edited <code>tasks.md</code> instead of the spec, one long implement run goes straight to a pull request, and converge never runs.</p>
+    <p><strong>Symptom:</strong> every custom checklist item is <code>[x]</code> and nobody can remember ticking one.</p>
+    <p><strong>Cure:</strong> name an owner for each gate (1.3). Only a person ticks a custom checklist item; a finding is fixed in the step that owns it; each implement stage is verified; and the pull request waits until converge says Converged.</p>
 
     <hr>
 
     <h2>Critique exercise</h2>
     <p>Spend 20 minutes on this. Three deliberately broken specs follow. For each, write a short critique:</p>
     <ul>
-      <li>What's wrong with it?</li>
+      <li>What&rsquo;s wrong with it?</li>
       <li>Which best practice is it violating, or which pitfall is it falling into?</li>
       <li>How would you fix it?</li>
     </ul>
@@ -809,22 +879,22 @@ git commit -m "feat: &lt;feature&gt; (spec-driven)"</code></pre>
     <blockquote>Add the ability for users to upload a profile picture. The function should be called <code>uploadProfilePicture(userId, file)</code>. It should resize the image using sharp's <code>.resize(256, 256)</code> method, then save it to S3 using <code>s3.putObject({ Bucket: 'profile-pics', Key: `${userId}.jpg`, Body: resizedBuffer })</code>. Update the <code>users</code> table by setting <code>profile_picture_url = `https://profile-pics.s3.amazonaws.com/${userId}.jpg`</code> for that user.</blockquote>
 
     <div class="reveal">
-      <button class="reveal-trigger">
+      <button class="reveal-trigger" type="button">
         <span><span class="reveal-trigger-label">Sample critique &mdash; A</span> Reveal</span>
         <span class="reveal-trigger-icon">+</span>
       </button>
       <div class="reveal-content">
-        <p><strong>What's wrong:</strong> This is the <em>over-specification</em> pitfall (Pitfall 1) in its purest form. The &ldquo;spec&rdquo; is mostly an implementation. It names a function (<code>uploadProfilePicture</code>), specifies a library (<code>sharp</code>), provides exact API call shapes (<code>s3.putObject(...)</code>), and even hardcodes the URL pattern. There's nothing for a plan or implementation phase to add.</p>
-        <p>It's also missing every element except a thin sketch of in-scope work:</p>
+        <p><strong>What&rsquo;s wrong:</strong> This is the <em>over-specification</em> pitfall (Pitfall 1) in its purest form. The &ldquo;spec&rdquo; is mostly an implementation. It names a function (<code>uploadProfilePicture</code>), specifies a library (<code>sharp</code>), provides exact API call shapes (<code>s3.putObject(...)</code>), and even hardcodes the URL pattern. There&rsquo;s nothing for a plan or implementation phase to add.</p>
+        <p>It&rsquo;s also missing every element except a thin sketch of in-scope work:</p>
         <ul>
           <li>No outcomes (what does the user actually experience? Where do they upload? When does the picture appear?)</li>
           <li>No out-of-scope items (cropping? animations? video?)</li>
-          <li>No verification criteria (what's the failure case? What if the file isn't an image?)</li>
+          <li>No verification criteria (what&rsquo;s the failure case? What if the file isn&rsquo;t an image?)</li>
           <li>No constraints (size limits? Allowed formats? Auth?)</li>
         </ul>
         <p><strong>How to fix it:</strong> rewrite at the behavior level. Something like:</p>
         <blockquote>
-          <p><strong>Outcomes:</strong> a signed-in user can upload an image to use as their profile picture. The new picture replaces any existing one. The picture appears in the user's avatar slot wherever it's currently shown, within 5 seconds of upload.</p>
+          <p><strong>Outcomes:</strong> a signed-in user can upload an image to use as their profile picture. The new picture replaces any existing one. The picture appears in the user&rsquo;s avatar slot wherever it&rsquo;s currently shown, within 5 seconds of upload.</p>
           <p><strong>In scope:</strong> JPEG and PNG only, max 5MB, single picture per user, replaces previous on upload.</p>
           <p style="margin-bottom: 0;"><strong>Out of scope:</strong> cropping UI, multiple historical pictures, removing without replacing, gravatar fallback changes.</p>
         </blockquote>
@@ -836,68 +906,70 @@ git commit -m "feat: &lt;feature&gt; (spec-driven)"</code></pre>
     <blockquote>Users want a better search experience. Improve the search to be faster, more relevant, and more user-friendly. Should handle typos and synonyms. The search bar should give a great experience overall. Make it work well on mobile too. Should integrate with the existing search infrastructure where possible. Performance should be acceptable.</blockquote>
 
     <div class="reveal">
-      <button class="reveal-trigger">
+      <button class="reveal-trigger" type="button">
         <span><span class="reveal-trigger-label">Sample critique &mdash; B</span> Reveal</span>
         <span class="reveal-trigger-icon">+</span>
       </button>
       <div class="reveal-content">
-        <p><strong>What's wrong:</strong> This is <em>verification by vibe</em> (a sub-pattern of Pitfall 1's opposite &mdash; Module 2 Failure 3). The spec is full of words like &ldquo;better,&rdquo; &ldquo;faster,&rdquo; &ldquo;more relevant,&rdquo; &ldquo;great experience,&rdquo; &ldquo;acceptable&rdquo; &mdash; none of which are verifiable. It also lacks every other element of a good spec.</p>
+        <p><strong>What&rsquo;s wrong:</strong> This is <em>verification by vibe</em> (Module 2&rsquo;s Failure 3 &mdash; roughly the opposite of Pitfall 1). The spec is full of words like &ldquo;better,&rdquo; &ldquo;faster,&rdquo; &ldquo;more relevant,&rdquo; &ldquo;great experience,&rdquo; &ldquo;acceptable&rdquo; &mdash; none of which are verifiable. It also lacks every other element of a good spec.</p>
         <p>Three specific failures:</p>
         <ol>
-          <li><strong>No measurable outcomes.</strong> &ldquo;Better&rdquo; doesn't tell the agent (or a reviewer) what to build. Faster than what? More relevant by what definition?</li>
+          <li><strong>No measurable outcomes.</strong> &ldquo;Better&rdquo; doesn&rsquo;t tell the agent (or a reviewer) what to build. Faster than what? More relevant by what definition?</li>
           <li><strong>Vague scope.</strong> Search across what data? Posts? Users? Products? All of the above?</li>
           <li><strong>No verification criteria.</strong> What test would prove this is done?</li>
         </ol>
         <p><strong>How to fix it:</strong> make every adjective measurable. &ldquo;Faster&rdquo; becomes &ldquo;p95 search latency under 100ms (currently 400ms).&rdquo; &ldquo;More relevant&rdquo; becomes &ldquo;top-3 results for the test query set match human-rated top results in 80% of cases (currently 60%).&rdquo; &ldquo;Handle typos&rdquo; becomes &ldquo;single-character typos in user names produce the correct result.&rdquo; &ldquo;Mobile&rdquo; becomes &ldquo;the search input is reachable and usable at viewports as narrow as 375px.&rdquo;</p>
-        <p>Without measurability, the spec just gives the agent vibes to chase. You'll get something. It probably won't be what you wanted. You won't be able to prove either way.</p>
+        <p>This is exactly the spec the gates exist for. <code>/speckit-clarify</code> would spend its five questions on these adjectives, and a checklist item such as &ldquo;Is &lsquo;faster&rsquo; quantified?&rdquo; fails on sight. Without measurability, the spec just gives the agent vibes to chase. You&rsquo;ll get something. It probably won&rsquo;t be what you wanted. You won&rsquo;t be able to prove either way.</p>
       </div>
     </div>
 
     <h3>Spec C &mdash; &ldquo;Reports module&rdquo;</h3>
     <blockquote>
       <p>Build a reports module that lets administrators generate reports about user activity. Reports should include: daily active users, weekly active users, monthly active users, retention curves (1-day, 7-day, 30-day), revenue per user, churn rate, average session length, conversion rates from each funnel step, geographic distribution of users, device type breakdown, and exportable CSV downloads of all metrics. Reports should be schedulable (daily, weekly, monthly) and emailable. Each report should have visual charts. Charts should support drill-down by clicking. Admins should be able to define custom reports by combining metrics. Custom reports should be shareable. Custom reports should support permissioning so different admins can see different reports.</p>
-      <p style="margin-bottom: 0;"><strong>Out of scope:</strong> Real-time reports (we'll add streaming later)</p>
+      <p style="margin-bottom: 0;"><strong>Out of scope:</strong> Real-time reports (we&rsquo;ll add streaming later)</p>
     </blockquote>
 
     <div class="reveal">
-      <button class="reveal-trigger">
+      <button class="reveal-trigger" type="button">
         <span><span class="reveal-trigger-label">Sample critique &mdash; C</span> Reveal</span>
         <span class="reveal-trigger-icon">+</span>
       </button>
       <div class="reveal-content">
-        <p><strong>What's wrong:</strong> This is <em>premature comprehensiveness</em> (Pitfall 7) and a failed <em>human-reviewability test</em> (Best Practice 1.1). The &ldquo;feature&rdquo; is at least eight features in a trench coat: scheduled reports, exportable reports, custom report builder, charting, drill-down, permissioning, sharing, geographic analytics, conversion funnel analytics. Each one is its own feature.</p>
-        <p>The out-of-scope list has one item, which is a tell: when in-scope is sprawling and out-of-scope is empty, the author hasn't drawn the boundaries deliberately. They've just listed every feature they could think of.</p>
-        <p><strong>How to fix it:</strong> decompose using INVEST and MoSCoW. A reasonable v1 might be only &ldquo;daily active users&rdquo; &mdash; one metric, one chart, no scheduling, no custom reports, no permissioning, no email. Ship it. Then layer:</p>
+        <p><strong>What&rsquo;s wrong:</strong> This is <em>premature comprehensiveness</em> (Pitfall 7) and a failed <em>human-reviewability test</em> (Best Practice 1.1). The &ldquo;feature&rdquo; is at least eight features in a trench coat: scheduled reports, exportable reports, custom report builder, charting, drill-down, permissioning, sharing, geographic analytics, conversion funnel analytics. Each one is its own feature, and together they would overwhelm any single implement run.</p>
+        <p>The out-of-scope list has one item, which is a tell: when in-scope is sprawling and out-of-scope is empty, the author hasn&rsquo;t drawn the boundaries deliberately. They&rsquo;ve just listed every feature they could think of.</p>
+        <p><strong>How to fix it:</strong> decompose using INVEST and MoSCoW. A reasonable first slice, R1, might be only &ldquo;daily active users&rdquo; &mdash; one metric, one chart, no scheduling, no custom reports, no permissioning, no email. Ship it. Then layer:</p>
         <ul>
-          <li>Spec 2: weekly + monthly active users (extends the existing UI)</li>
-          <li>Spec 3: CSV export</li>
-          <li>Spec 4: scheduled email delivery</li>
-          <li>Spec 5: revenue per user</li>
-          <li>Spec 6: retention curves</li>
+          <li>R2: weekly + monthly active users (extends the existing UI)</li>
+          <li>R3: CSV export</li>
+          <li>R4: scheduled email delivery</li>
+          <li>R5: revenue per user</li>
+          <li>R6: retention curves</li>
           <li>&hellip; etc.</li>
         </ul>
-        <p>Each spec is independently reviewable, independently testable, and independently shippable. None of them is bigger than 500 words.</p>
-        <p>The original spec is worth shipping eventually, but as a <em>roadmap</em>, not as a single spec. Specs are not the right document for a roadmap. A roadmap is. Don't conflate them.</p>
+        <p>Each slice is independently reviewable, independently testable, and independently shippable. None of them is bigger than 500 words.</p>
+        <p>The original spec is worth keeping, but as a <em>roadmap</em> &mdash; the spec of specs from section 2.3, with a stable ID, a scope boundary, and dependencies for each slice &mdash; not as a single spec. Specs are not the right document for a roadmap. A roadmap is. Don&rsquo;t conflate them.</p>
       </div>
     </div>
 
     <hr>
 
-    <h2><span class="h2-num">3.</span>Putting it together</h2>
+    <h2><span class="h2-num">4.</span>Putting it together</h2>
     <p>The patterns and pitfalls above are descriptive, not prescriptive. They describe what tends to happen, not what you must do. When in doubt, return to the principle behind them:</p>
     <blockquote>The goal of SDD is to make intent explicit and enforceable, with the minimum overhead that achieves that goal.</blockquote>
-    <p>Everything else is implementation detail. Concision over completeness. Review over generation. Slicing over comprehensiveness. The pitfalls are mostly variations on &ldquo;we forgot to apply that principle.&rdquo; When you notice you're drifting into a pitfall, ask whether you're optimizing for the principle or for the appearance of doing SDD. Drop whatever isn't serving the principle.</p>
+    <p>Everything else is implementation detail. Concision over completeness. Review over generation. Slicing over comprehensiveness. Small runs over heroic ones. The pitfalls are mostly variations on &ldquo;we forgot to apply that principle.&rdquo; When you notice you&rsquo;re drifting into a pitfall, ask whether you&rsquo;re optimizing for the principle or for the appearance of doing SDD. Drop whatever isn&rsquo;t serving the principle.</p>
+
+    <hr>
 
     <h3>What's next</h3>
-    <p><strong>Module 6</strong> turns from individual practice to team practice &mdash; how SDD changes the collaboration between PM, architecture, engineering, and quality. It's the most important module for anyone in a leadership or coordination role, and it's also the module where most SDD adoptions either succeed or quietly fail.</p>
+    <p><strong>Module 9</strong> turns from individual practice to team practice &mdash; how the workflow&rsquo;s own gates and SPECTRA&rsquo;s testing agents fit alongside the quality mechanisms you already know, and how SDD changes the collaboration between product, architecture, engineering, and quality, down to who stands at which human gate. It&rsquo;s the most important module for anyone in a leadership or coordination role, and it&rsquo;s also the module where most SDD adoptions either succeed or quietly fail.</p>
 
     <div class="module-footer-nav">
-      <a class="mod-nav-prev" href="module-4.html">
-        <span class="mod-nav-label">← Previous · Module 4</span>
-        <span class="mod-nav-title">Brownfield Lab</span>
+      <a class="mod-nav-prev" href="customization.html">
+        <span class="mod-nav-label">&larr; Previous &middot; Module 7</span>
+        <span class="mod-nav-title">Customization</span>
       </a>
       <a class="mod-nav-next" href="module-6.html">
-        <span class="mod-nav-label">Next · Module 6 →</span>
+        <span class="mod-nav-label">Next &middot; Module 9 &rarr;</span>
         <span class="mod-nav-title">Quality, Testing &amp; Team Collaboration</span>
       </a>
     </div>
@@ -979,6 +1051,14 @@ git commit -m "feat: &lt;feature&gt; (spec-driven)"</code></pre>
       }
     });
   });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>

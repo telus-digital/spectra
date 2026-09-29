@@ -635,14 +635,17 @@
       <span class="course-nav-brand-text">SDD Learning</span>
     </a>
     <div class="course-nav-modules">
-      <a href="index.html" class="course-nav-home is-active" title="SDD with SPECTRA — Learning">Home</a>
-      <a href="module-1.html" title="Module 1 — SDD Foundations">1</a>
-      <a href="module-2.html" title="Module 2 — Anatomy of a Good Spec">2</a>
-      <a href="module-3.html" title="Module 3 — Greenfield Lab — SPECTRA from Scratch">3</a>
-      <a href="module-4.html" title="Module 4 — Brownfield Lab — Add “Due Date” ★">4</a>
-      <a href="module-5.html" title="Module 5 — Best Practices &amp; Pitfalls">5</a>
-      <a href="module-6.html" title="Module 6 — Quality, Testing &amp; Team Collaboration">6</a>
-      <a href="AI-DLC.html" title="AI-DLC — From SDLC to AI-Driven Development">AI-DLC</a>
+      <a href="index.html" title="SDD with SPECTRA &mdash; Learning" class="course-nav-home is-active">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
     </div>
   </div>
 </nav>
@@ -651,25 +654,27 @@
   <header class="hero">
     <div class="hero-eyebrow">Course handbook</div>
     <h1>SDD with SPECTRA</h1>
-    <p class="hero-lede">A tool-neutral methodology for keeping AI-generated code aligned with intent, anchored to SPECTRA for the hands-on labs. Designed for engineers who already write code daily and have at least passing exposure to AI coding agents.</p>
+    <p class="hero-lede">Spec-driven development for engineers who already write code daily and have at least passing exposure to AI coding agents. You learn the method by running it &mdash; the core loop, a greenfield and a brownfield build, and the workflows that sit around it: deciding whether an idea is worth building, fixing what breaks, and shaping the process to fit your team. The labs run on SPECTRA; the method transfers to any Spec Kit project.</p>
     <div class="meta">
       <div class="meta-item">
         <span class="meta-label">Total time</span>
-        <span class="meta-value">9 hours</span>
+        <span class="meta-value">About 13 hours</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Pace</span>
-        <span class="meta-value">Self-paced or 2-day workshop</span>
+        <span class="meta-value">Self-paced or 3-day workshop</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Format</span>
-        <span class="meta-value">7 modules + 2 labs</span>
+        <span class="meta-value">10 modules + 5 labs</span>
       </div>
     </div>
   </header>
 
   <article>
-    <div class="note"><span class="note-label">SPECTRA and Spec Kit.</span><strong>SPECTRA</strong> is built <em>on top of</em> <a href="https://github.com/github/spec-kit">GitHub Spec Kit</a> &mdash; it does not replace it. Spec Kit provides the core spec-driven loop this course teaches (<code>specify</code> &rarr; <code>plan</code> &rarr; <code>tasks</code> &rarr; <code>implement</code>); SPECTRA installs that loop for you with one command and adds agents for the work surrounding the code &mdash; requirements, architecture decisions, quality gates, and delivery. So learning SDD with SPECTRA means you are genuinely learning Spec Kit: the four-phase vocabulary, the artifacts, and the slash commands are all Spec Kit's, and everything in this course transfers to a plain Spec Kit project. SPECTRA is built and maintained by TELUS Digital &mdash; see the <a href="https://telus-digital.github.io/spectra/">SPECTRA landing page</a> for the full picture.</div>
+    <div class="note"><span class="note-label">SPECTRA and Spec Kit.</span><strong>SPECTRA</strong> is built <em>on top of</em> <a href="https://github.com/github/spec-kit">GitHub Spec Kit</a> &mdash; it does not replace it. Spec Kit provides everything this course teaches as method: the spec-driven loop (constitution, specify, clarify, plan, checklist, tasks, analyze, implement, converge), the bug-fix and idea-assessment workflows, and the extensions, presets and overrides you customize it with. SPECTRA installs and keeps that toolchain current with one command, and adds its own agents for the work around the code &mdash; requirements, impact, architecture decisions, test strategy, root-cause analysis, and pull-request delivery. Everything except the <code>speckit.spectra.*</code> agents transfers to a plain Spec Kit project. SPECTRA is built and maintained by TELUS Digital &mdash; see the <a href="https://telus-digital.github.io/spectra/">SPECTRA landing page</a> for the full picture.</div>
+
+    <div class="note"><span class="note-label">Command spelling.</span>Every command has one identity &mdash; written <code>speckit.specify</code> or <code>speckit.spectra.adr</code> &mdash; and your coding agent decides how you type it. The course shows the form Claude Code and GitHub Copilot use: <code>/speckit-specify</code>, <code>/speckit-spectra-adr</code>. Other agents differ: kiro-cli uses <code>/speckit.specify</code>, Codex uses <code>$speckit-specify</code>, and Kimi uses <code>/skill:speckit-specify</code>. Your agent&rsquo;s own command list always shows the exact trigger.</div>
 
     <h2>Course structure</h2>
     <div class="module-list">
@@ -677,16 +682,16 @@
         <div class="module-num">1</div>
         <div>
           <div class="module-title">SDD Foundations</div>
-          <div class="module-title-sub">Definitions, the three levels, the four-phase workflow, when not to use SDD</div>
+          <div class="module-title-sub">What a spec is, the full spec-driven workflow and its human gates, how specs persist and evolve, when not to use SDD</div>
         </div>
         <div class="module-format">Reading + knowledge check</div>
-        <div class="module-time">45 min</div>
+        <div class="module-time">50 min</div>
       </a>
       <a class="module-row" href="module-2.html">
         <div class="module-num">2</div>
         <div>
           <div class="module-title">Anatomy of a Good Spec</div>
-          <div class="module-title-sub">The six-element framework, decomposition, Constitution vs spec, common failures</div>
+          <div class="module-title-sub">The six-element framework, what belongs in the spec versus the plan, checklists as unit tests for requirements, constitution vs spec</div>
         </div>
         <div class="module-format">Reading + writing exercise</div>
         <div class="module-time">60 min</div>
@@ -694,44 +699,71 @@
       <a class="module-row" href="module-3.html">
         <div class="module-num">3</div>
         <div>
-          <div class="module-title">Greenfield Lab &mdash; SPECTRA from scratch</div>
-          <div class="module-title-sub">Install SPECTRA, run the four-phase workflow on a small to-do app</div>
+          <div class="module-title">Greenfield Lab &mdash; SPECTRA from Scratch</div>
+          <div class="module-title-sub">Install SPECTRA and run the full workflow &mdash; with clarify, checklist, analyze, and converge &mdash; on a new to-do app</div>
         </div>
         <div class="module-format">Hands-on lab</div>
-        <div class="module-time">90 min</div>
+        <div class="module-time">2 hrs</div>
       </a>
       <a class="module-row featured" href="module-4.html">
         <div class="module-num">4</div>
         <div>
-          <div class="module-title">Brownfield Lab &mdash; Add &ldquo;due date&rdquo; to the to-do app<span class="star">&#9733;</span></div>
-          <div class="module-title-sub">The centerpiece. Apply SDD to an existing codebase using the incremental-spec pattern.</div>
+          <div class="module-title">Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; to the To-Do App<span class="star">&#9733;</span></div>
+          <div class="module-title-sub">The centerpiece. Adopt the workflow in an existing codebase: a reviewable baseline, guardrails drawn from the code, one bounded change.</div>
         </div>
         <div class="module-format">Hands-on lab</div>
         <div class="module-time">2&ndash;3 hrs</div>
       </a>
-      <a class="module-row" href="module-5.html">
+      <a class="module-row" href="assessment.html">
         <div class="module-num">5</div>
         <div>
+          <div class="module-title">Idea Assessment &mdash; Should We Build It?</div>
+          <div class="module-title-sub">Take an idea from intake to a go, needs-clarification, or kill verdict backed by evidence &mdash; before anyone writes a spec</div>
+        </div>
+        <div class="module-format">Concepts + hands-on lab</div>
+        <div class="module-time">75 min</div>
+      </a>
+      <a class="module-row" href="bugfix.html">
+        <div class="module-num">6</div>
+        <div>
+          <div class="module-title">Bug Fix &mdash; Assess, Fix, Verify</div>
+          <div class="module-title-sub">Diagnose a real defect in the lab app, fix only what the diagnosis covers, and verify against the original reproduction</div>
+        </div>
+        <div class="module-format">Concepts + hands-on lab</div>
+        <div class="module-time">75 min</div>
+      </a>
+      <a class="module-row" href="customization.html">
+        <div class="module-num">7</div>
+        <div>
+          <div class="module-title">Customization &mdash; Make the Workflow Your Own</div>
+          <div class="module-title-sub">Extensions, presets, project overrides, workflows, and bundles &mdash; and SPECTRA&rsquo;s own template overrides and artifact root</div>
+        </div>
+        <div class="module-format">Concepts + hands-on lab</div>
+        <div class="module-time">60 min</div>
+      </a>
+      <a class="module-row" href="module-5.html">
+        <div class="module-num">8</div>
+        <div>
           <div class="module-title">Best Practices &amp; Pitfalls</div>
-          <div class="module-title-sub">What works consistently, what sabotages adoption, three deliberately broken specs to critique</div>
+          <div class="module-title-sub">What works consistently, sizing work to the context window, what sabotages adoption, three deliberately broken specs to critique</div>
         </div>
         <div class="module-format">Reading + critique exercise</div>
         <div class="module-time">60 min</div>
       </a>
       <a class="module-row" href="module-6.html">
-        <div class="module-num">6</div>
+        <div class="module-num">9</div>
         <div>
           <div class="module-title">Quality, Testing &amp; Team Collaboration</div>
           <div class="module-title-sub">Why specs catch what unit tests miss, the role split, the review-bottleneck risk</div>
         </div>
-        <div class="module-format">Reading + discussion</div>
+        <div class="module-format">Reading + team discussion</div>
         <div class="module-time">60 min</div>
       </a>
       <a class="module-row" href="AI-DLC.html">
-        <div class="module-num">7</div>
+        <div class="module-num">10</div>
         <div>
           <div class="module-title">AI-DLC</div>
-          <div class="module-title-sub">Inception &rarr; Construction &rarr; Operation, the Plan-Clarify-Approve-Execute loop, bolts instead of sprints, who is in the room at each phase, and the Spec Kit commands that run it</div>
+          <div class="module-title-sub">Inception &rarr; Construction &rarr; Operation, how the agentic SDLC phases map onto them, bolts instead of sprints, and who is in the room at each gate</div>
         </div>
         <div class="module-format">Reading + knowledge check</div>
         <div class="module-time">60 min</div>
@@ -743,37 +775,38 @@
     <div class="path-grid">
       <div class="path-card">
         <div class="path-card-title">Self-paced (recommended)</div>
-        <div class="path-card-body">One or two modules per week over 4&ndash;5 weeks. Gives time for the labs to settle and for discussion prompts to land in real team contexts.</div>
+        <div class="path-card-body">One or two modules per week over about six weeks. Gives the labs time to settle and the discussion prompts time to land in real team contexts.</div>
       </div>
       <div class="path-card">
-        <div class="path-card-title">Two-day workshop</div>
-        <div class="path-card-body">Day 1 covers Modules 1&ndash;3 (foundations + greenfield lab); day 2 covers Modules 4&ndash;7 (brownfield lab + practice + team aspects + AI-DLC).</div>
+        <div class="path-card-title">Three-day workshop</div>
+        <div class="path-card-body">Day 1: Modules 1&ndash;3 (foundations and the greenfield lab). Day 2: Modules 4&ndash;5 (the brownfield lab and idea assessment). Day 3: Modules 6&ndash;10 (bug fix, customization, practice, team, and AI-DLC).</div>
       </div>
       <div class="path-card">
         <div class="path-card-title">Engineering-leadership track</div>
-        <div class="path-card-body">Modules 1, 5, 6, and AI-DLC only. Skips the labs but covers everything needed to sponsor adoption &mdash; including how the lifecycle itself changes.</div>
+        <div class="path-card-body">Modules 1, 5, 8, 9, and 10 &mdash; read the concepts and skip the labs. Covers everything needed to sponsor adoption: the method, how ideas earn investment, what goes wrong, and how the lifecycle itself changes.</div>
       </div>
       <div class="path-card">
         <div class="path-card-title">Hands-on track</div>
-        <div class="path-card-body">Modules 2, 3, 4 only. For engineers who want to feel the practice before reading about it.</div>
+        <div class="path-card-body">The five labs &mdash; Modules 3, 4, 5, 6, and 7. For engineers who want to feel the practice before reading about it.</div>
       </div>
     </div>
 
     <h2>Lab codebase</h2>
-    <p>Both labs use the same stack &mdash; <strong>Next.js 14 + React 18 + TypeScript + Tailwind CSS + localStorage</strong> &mdash; so what you learn in Module 3 transfers directly to Module 4.</p>
+    <p>Every lab uses the same kind of app &mdash; <strong>Next.js 15 + TypeScript + Tailwind CSS + localStorage</strong>, no backend &mdash; so what you learn in one lab transfers directly to the next. (The app you scaffold in Module 3 gets whatever <code>create-next-app</code> installs today, React 19 and Tailwind CSS v4; the Modules 4&ndash;7 starter pins React 18 and Tailwind CSS 3.)</p>
     <ul>
-      <li><strong>Module 3 (greenfield)</strong> scaffolds a fresh Next.js project with <code>create-next-app</code> and uses SPECTRA to build a small to-do app from scratch. No Git, everything local.</li>
-      <li><strong>Module 4 (brownfield)</strong> uses a starter codebase shipped with the course &mdash; a minimal but fully working to-do app. It supports add, mark-done, and delete, but has no specs and no due-date feature, mirroring the kind of codebase teams typically inherit. Module 4 walks through using the brownfield workflow to add a &ldquo;due date&rdquo; feature on top of it. The codebase ships without that feature on purpose.</li>
+      <li><strong>Module 3 (greenfield)</strong> scaffolds a fresh Next.js project with <code>create-next-app</code> and uses SPECTRA to build a small to-do app from scratch.</li>
+      <li><strong>Modules 4&ndash;7</strong> use a starter codebase shipped with the course &mdash; a minimal but fully working to-do app with add, mark-done, and delete, and no specs. It mirrors the kind of codebase teams typically inherit. Module 4 adds a due date to it; Module 5 assesses ideas for it; Module 6 starts from a fresh copy to hunt down a real defect; Module 7 customizes the project you built in Module 4.</li>
     </ul>
-    <p>The lab codebase ships as <code>lab-codebase.zip</code>. The download link is on the Module 4 page. Unzip it once and run <code>npm install &amp;&amp; npm run dev</code> to get started.</p>
+    <p>The starter ships as <code>lab-codebase.zip</code>; the download link is on each lab page. Unzip it and run <code>npm install &amp;&amp; npm run dev</code> to get started.</p>
 
     <h2>Prerequisites</h2>
     <ul>
       <li>Working knowledge of JavaScript / TypeScript and React</li>
-      <li>Familiarity with the command line</li>
+      <li>Familiarity with the command line and Git</li>
       <li>Access to an AI coding agent &mdash; Claude Code (recommended), GitHub Copilot, Cursor, or similar</li>
-      <li><strong>Node.js 18+</strong> for running both labs</li>
-      <li><strong><a href="https://docs.astral.sh/uv/">uv</a> and Git</strong> for installing SPECTRA (<code>uv</code> manages Python for you &mdash; you don't write Python in either lab)</li>
+      <li><strong>Node.js 18.18+</strong> for running the labs</li>
+      <li><strong><a href="https://docs.astral.sh/uv/">uv</a> and Git</strong> for installing SPECTRA (<code>uv</code> manages Python for you &mdash; you don&rsquo;t write Python in any lab)</li>
+      <li><strong>Spec Kit 1.0.9 or later.</strong> <code>spectra install</code> installs the latest release when Spec Kit is missing; <code>spectra version</code> shows what you have, and <code>spectra update</code> brings it current.</li>
     </ul>
 
   </article>
@@ -856,6 +889,14 @@
       }
     });
   });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>

@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6 &mdash; Bug Fix &middot; SDD with SPECTRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Mona+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Palette shared with the SPECTRA landing page (docs/index.html). */
+    --bg: #0c0a16;
+    --bg-2: #120f22;
+    --bg-elev: rgba(255, 255, 255, 0.04);
+    --surface: rgba(8, 6, 18, 0.55);
+    --text: #e9e7f2;
+    --text-muted: #a3a0b5;
+    --text-subtle: #8b879e;
+    --accent: #a78bfa;
+    --accent-2: #c4b5fd;
+    --accent-soft: rgba(167, 139, 250, 0.10);
+    --accent-line: rgba(167, 139, 250, 0.35);
+    --border: rgba(167, 139, 250, 0.20);
+    --border-strong: rgba(167, 139, 250, 0.34);
+    --code-bg: #0d0b17;
+    --code-text: #ded7f5;
+    --code-comment: #8d88a8;
+    --code-accent: #c4b5fd;
+    --success: #34d399;
+    --success-soft: rgba(52, 211, 153, 0.10);
+    --error: #fb7185;
+    --error-soft: rgba(251, 113, 133, 0.10);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --max-w: 720px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Mona Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 520px at 78% -10%, rgba(167,139,250,0.18), transparent 60%),
+      radial-gradient(900px 480px at 10% 6%, rgba(124,92,222,0.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-2), var(--bg));
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  /* Faint grid overlay, matching the SPECTRA landing page. */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(167,139,250,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167,139,250,0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 75%);
+  }
+  main {
+    position: relative; z-index: 1;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 64px 28px 120px;
+  }
+  /* Hero */
+  .hero { margin-bottom: 56px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+  .hero-eyebrow {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-weight: 400;
+    font-size: 17px; color: var(--accent); letter-spacing: 0.01em;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 44px; line-height: 1.1;
+    letter-spacing: -0.025em; margin-bottom: 22px; color: var(--text);
+  }
+  .hero-lede {
+    font-size: 19px; line-height: 1.55; color: var(--text-muted); max-width: 600px;
+  }
+  /* Meta block */
+  .meta {
+    display: flex; flex-wrap: wrap;
+    margin-top: 32px; padding: 18px 22px;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 6px; font-size: 14px;
+  }
+  .meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+    padding-right: 32px; margin-right: 32px;
+    border-right: 1px solid var(--border-strong);
+  }
+  .meta-item:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+  .meta-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-subtle); font-weight: 500;
+  }
+  .meta-value { color: var(--text); font-weight: 500; }
+  /* Article typography */
+  article h2 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 600; font-size: 28px; line-height: 1.25;
+    letter-spacing: -0.018em; margin-top: 56px; margin-bottom: 18px; color: var(--text);
+  }
+  article h2 .h2-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 400; color: var(--accent); margin-right: 14px;
+  }
+  article h3 {
+    font-weight: 600; font-size: 20px; line-height: 1.3;
+    letter-spacing: -0.012em; margin-top: 36px; margin-bottom: 12px; color: var(--text);
+  }
+  article h4 {
+    font-weight: 600; font-size: 16px;
+    margin-top: 28px; margin-bottom: 8px; color: var(--text);
+  }
+  article p { margin-bottom: 18px; }
+  article ul, article ol { margin: 0 0 22px 0; padding-left: 22px; }
+  article li { margin-bottom: 8px; padding-left: 4px; }
+  article li::marker { color: var(--text-subtle); }
+  article ul ul, article ol ol, article ul ol, article ol ul { margin: 8px 0 4px 0; }
+  article a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-line);
+    transition: border-color 0.15s ease;
+  }
+  article a:hover { border-bottom-color: var(--accent); }
+  article strong { font-weight: 600; color: var(--text); }
+  article em { font-style: italic; }
+  /* Inline code */
+  article code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86em; background: var(--bg-elev);
+    border: 1px solid var(--border); padding: 1px 6px;
+    border-radius: 4px; color: var(--code-text); font-weight: 500;
+  }
+  /* Code blocks */
+  .code-block { position: relative; margin: 22px 0 26px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    border: 1px solid var(--border);
+    padding: 18px 20px; border-radius: 8px; overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px; line-height: 1.6; box-shadow: var(--shadow-sm);
+  }
+  pre code {
+    background: none; border: none; padding: 0;
+    color: inherit; font-size: inherit; font-weight: 400;
+  }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(167, 139, 250, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.26);
+    color: var(--code-text); font-family: 'Mona Sans', sans-serif;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 5px 10px;
+    border-radius: 4px; cursor: pointer; opacity: 0;
+    transition: all 0.15s ease;
+  }
+  .code-block:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: rgba(167, 139, 250, 0.24); }
+  .copy-btn.copied { background: rgba(52, 211, 153, 0.20); border-color: rgba(52, 211, 153, 0.45); }
+  /* Blockquotes & callouts */
+  blockquote {
+    margin: 24px 0; padding: 16px 22px;
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0; color: var(--text); font-size: 16px;
+  }
+  blockquote p { margin-bottom: 12px; }
+  blockquote p:last-child { margin-bottom: 0; }
+  blockquote strong { color: var(--text); }
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto; margin: 22px 0 26px;
+    border: 1px solid var(--border); border-radius: 6px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td {
+    text-align: left; padding: 12px 16px;
+    border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  th {
+    background: var(--bg-elev); font-weight: 600;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+  tr:last-child td { border-bottom: none; }
+  td code, th code { font-size: 13px; }
+  /* HR */
+  hr { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+  /* Module list (README) */
+  .module-list {
+    display: flex; flex-direction: column; gap: 0;
+    margin: 28px 0 32px;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; background: var(--bg-elev);
+  }
+  .module-row {
+    display: grid; grid-template-columns: 48px 1fr auto auto;
+    gap: 18px; align-items: center;
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .module-row:last-child { border-bottom: none; }
+  .module-row.featured {
+    background: linear-gradient(to right, var(--accent-soft), transparent 60%);
+  }
+  .module-num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 22px; font-weight: 500; color: var(--accent);
+  }
+  .module-title { font-weight: 600; font-size: 16px; color: var(--text); line-height: 1.35; }
+  .module-title-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+  .module-format { font-size: 13px; color: var(--text-subtle); font-style: italic; }
+  .module-time { font-size: 13px; color: var(--text-muted); font-weight: 500;
+    font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .star { color: var(--accent); margin-left: 4px; }
+  .path-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 22px 0 28px; }
+  .path-card { padding: 18px 22px; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 6px; }
+  .path-card-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; color: var(--text); }
+  .path-card-body { font-size: 14px; color: var(--text-muted); line-height: 1.55; }
+  .footer-note {
+    margin-top: 80px; padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 14px; color: var(--text-subtle); text-align: center;
+  }
+  /* Quiz (Module 1) */
+  .quiz {
+    margin: 28px 0 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .quiz-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .quiz-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 14px; color: var(--accent); letter-spacing: 0.02em;
+  }
+  .quiz-progress { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .quiz-question { padding: 20px 22px; border-bottom: 1px solid var(--border); }
+  .quiz-question:last-child { border-bottom: none; }
+  .quiz-q-prompt { font-weight: 600; margin-bottom: 14px; font-size: 16px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); cursor: pointer;
+    font-size: 15px; line-height: 1.45;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent-line); background: var(--accent-soft); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt-letter {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    width: 18px;
+  }
+  .quiz-opt.correct {
+    background: var(--success-soft);
+    border-color: var(--success);
+  }
+  .quiz-opt.correct .quiz-opt-letter { color: var(--success); }
+  .quiz-opt.incorrect {
+    background: var(--error-soft);
+    border-color: var(--error);
+  }
+  .quiz-opt.incorrect .quiz-opt-letter { color: var(--error); }
+  .quiz-opt.dim { opacity: 0.55; }
+  .quiz-feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--success-soft); border: 1px solid rgba(52, 211, 153, 0.30); }
+  .quiz-feedback.incorrect { background: var(--error-soft); border: 1px solid rgba(251, 113, 133, 0.30); }
+  .quiz-feedback-title { font-weight: 600; margin-bottom: 4px; }
+  .quiz-feedback.correct .quiz-feedback-title { color: var(--success); }
+  .quiz-feedback.incorrect .quiz-feedback-title { color: var(--error); }
+  /* Open-ended quiz answer (no options) */
+  .quiz-open-toggle {
+    margin-top: 8px;
+    padding: 9px 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+  }
+  .quiz-open-toggle:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
+  .quiz-open-answer {
+    margin-top: 12px; padding: 14px 16px;
+    background: var(--accent-soft); border: 1px solid var(--accent-line);
+    border-radius: 6px; font-size: 14px; line-height: 1.6;
+    display: none;
+  }
+  .quiz-open-answer.show { display: block; }
+  /* Reveal block (sample solutions) */
+  .reveal {
+    margin: 24px 0 28px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+  .reveal-trigger {
+    width: 100%;
+    padding: 16px 22px;
+    background: none; border: none;
+    cursor: pointer;
+    font-family: inherit; font-size: 15px; font-weight: 500;
+    color: var(--text); text-align: left;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    transition: background 0.15s ease;
+  }
+  .reveal-trigger:hover { background: var(--accent-soft); }
+  .reveal-trigger-label {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-right: 8px;
+  }
+  .reveal-trigger-icon {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted); font-size: 14px;
+    transition: transform 0.2s ease;
+  }
+  .reveal.open .reveal-trigger-icon { transform: rotate(45deg); }
+  .reveal-content {
+    display: none;
+    padding: 4px 22px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .reveal.open .reveal-content { display: block; }
+  .reveal-content > *:first-child { margin-top: 18px; }
+  /* Lab placeholder card (Module 4) */
+  .lab-card {
+    margin: 28px 0;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, var(--accent-soft), transparent 80%);
+    border: 1px solid var(--accent-line);
+    border-radius: 10px;
+    display: flex; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+  }
+  .lab-card-icon {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-size: 36px; color: var(--accent); line-height: 1;
+  }
+  .lab-card-body { flex: 1; min-width: 240px; }
+  .lab-card-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .lab-card-meta { font-size: 13px; color: var(--text-muted); }
+  .lab-card-link {
+    display: inline-block;
+    padding: 9px 18px;
+    background: var(--accent); color: var(--bg);
+    font-weight: 500; font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none; border: none;
+    transition: background 0.15s ease;
+  }
+  .lab-card-link:hover { background: var(--accent-2); border-bottom: none; }
+  .lab-card-link.placeholder {
+    background: var(--bg-elev); color: var(--text-muted);
+    border: 1px dashed var(--border-strong); cursor: not-allowed;
+    pointer-events: none; font-style: italic;
+  }
+  /* Note callout (distinct from blockquote) */
+  .note {
+    margin: 22px 0;
+    padding: 14px 18px 14px 18px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  .note-label {
+    display: inline-block;
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); margin-right: 6px;
+    font-size: 14px;
+  }
+  /* Checklist (visual only) */
+  .checklist { list-style: none; padding-left: 0; margin: 14px 0 22px; }
+  .checklist li {
+    padding-left: 28px; position: relative; margin-bottom: 8px;
+  }
+  .checklist li::before {
+    content: ""; position: absolute; left: 0; top: 0.45em;
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--border-strong); border-radius: 3px;
+    background: var(--surface);
+  }
+  /* TOC at top of module pages (within-page only — no cross-page links) */
+  .toc {
+    margin: 28px 0 40px;
+    padding: 18px 22px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .toc-title {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    color: var(--accent); font-size: 14px; margin-bottom: 10px;
+  }
+  .toc ol { padding-left: 22px; margin: 0; font-size: 14px; }
+  .toc ol li { margin-bottom: 4px; }
+  .toc a { border-bottom: none; color: var(--text-muted); }
+  .toc a:hover { color: var(--accent); border-bottom: 1px solid var(--accent-line); }
+  /* Diagram (ASCII flow) */
+  .diagram {
+    margin: 24px 0;
+    padding: 22px;
+    background: var(--code-bg); color: var(--code-text);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  /* Figure (diagram image + caption) */
+  figure.fig { margin: 26px 0; }
+  figure.fig > a { display: block; border-bottom: none; }
+  figure.fig img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; box-shadow: var(--shadow-md);
+  }
+  figure.fig figcaption {
+    margin-top: 10px; font-size: 13px; color: var(--text-subtle);
+    font-style: italic; text-align: center;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    main { padding: 40px 20px 80px; }
+    .hero h1 { font-size: 32px; }
+    .hero-lede { font-size: 17px; }
+    article h2 { font-size: 24px; margin-top: 44px; }
+    article h3 { font-size: 18px; }
+    .meta { flex-direction: column; gap: 12px; padding: 14px 18px; }
+    .meta-item { border-right: none; padding-right: 0; margin-right: 0;
+      border-bottom: 1px solid var(--border-strong); padding-bottom: 12px;
+      margin-bottom: 0; }
+    .meta-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .module-row { grid-template-columns: 36px 1fr; gap: 14px; padding: 14px 18px; }
+    .module-format, .module-time { grid-column: 2; font-size: 12px; }
+    .quiz-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .lab-card { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<style>
+  /* Course navigation bar (shared) */
+  .course-nav {
+    z-index: 50;
+    background: rgba(12, 10, 22, 0.82);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .course-nav-inner {
+    max-width: 820px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 11px 28px;
+  }
+  .course-nav-brand {
+    display: flex; align-items: baseline; gap: 10px;
+    text-decoration: none; border-bottom: none; white-space: nowrap;
+  }
+  .course-nav-brand-mark {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic;
+    font-weight: 500; font-size: 18px; color: var(--accent);
+  }
+  .course-nav-brand-text {
+    font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.01em;
+  }
+  .course-nav-brand:hover .course-nav-brand-text { color: var(--accent); }
+  .course-nav-brand.is-active .course-nav-brand-text { color: var(--text); }
+  .course-nav-modules {
+    display: flex; align-items: center; gap: 6px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .course-nav-modules::-webkit-scrollbar { display: none; }
+  .course-nav-modules a {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 30px; height: 30px; padding: 0 9px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface);
+    transition: all 0.15s ease;
+  }
+  .course-nav-modules a:hover {
+    border-color: var(--accent-line); color: var(--accent); background: var(--accent-soft);
+  }
+  .course-nav-modules a.is-active {
+    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  }
+  .course-nav-home {
+    font-family: 'Mona Sans', sans-serif; font-weight: 600;
+    padding: 0 13px; margin-right: 8px;
+  }
+  /* Module footer navigation (prev / next) */
+  .module-footer-nav {
+    margin-top: 56px; padding-top: 28px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: stretch; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .mod-nav-prev, .mod-nav-next {
+    display: inline-flex; flex-direction: column; gap: 3px;
+    text-decoration: none; border-bottom: none; border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+  .mod-nav-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
+  }
+  .mod-nav-prev {
+    align-items: flex-start; padding: 10px 4px; color: var(--text-muted);
+  }
+  .mod-nav-prev .mod-nav-label { color: var(--text-subtle); }
+  .mod-nav-prev .mod-nav-title { font-weight: 500; font-size: 15px; color: var(--text); }
+  .mod-nav-prev:hover .mod-nav-title { color: var(--accent); }
+  .mod-nav-next {
+    margin-left: auto; align-items: flex-end; text-align: right;
+    padding: 12px 20px; background: var(--accent); color: var(--bg);
+  }
+  .mod-nav-next .mod-nav-label { color: var(--bg); opacity: 0.82; }
+  .mod-nav-next .mod-nav-title { font-weight: 600; font-size: 15px; color: var(--bg); }
+  .mod-nav-next:hover { background: var(--accent-2); }
+  @media (max-width: 600px) {
+    .course-nav-inner { padding: 10px 16px; }
+    .course-nav-brand-text { display: none; }
+    .module-footer-nav { gap: 12px; }
+    .mod-nav-next { padding: 10px 16px; }
+  }
+
+  /* ---------- Site-wide top bar (matches docs/index.html) ---------- */
+  .topstack { position: sticky; top: 0; z-index: 60; }
+  .sitebar {
+    background: rgba(12,10,22,0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .sitebar .sitebar-inner {
+    max-width: 960px; margin: 0 auto; padding: 0 22px;
+  }
+  header.site {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 12px 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header.site .brand { display: inline-flex; align-items: center; text-decoration: none; border-bottom: none; }
+  header.site .brand:hover { text-decoration: none; }
+  header.site img.logo { height: 26px; width: auto; opacity: .95; display: block; }
+  header.site .nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  header.site .nav a.nav-page {
+    color: var(--text-muted, #a3a0b5); font-size: 14px; text-decoration: none;
+    padding: 5px 13px; border: 1px solid transparent; border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+    border-bottom: none;
+  }
+  header.site .nav a.nav-page:hover { color: var(--text, #e9e7f2); text-decoration: none; }
+  header.site .nav a.nav-page[aria-current="page"] {
+    color: var(--accent-2, #c4b5fd); border-color: var(--border, rgba(167,139,250,0.20));
+    background: rgba(167,139,250,0.10);
+  }
+  header.site .nav a:focus-visible { outline: 2px solid var(--accent-2, #c4b5fd); outline-offset: 2px; }
+  header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border, rgba(167,139,250,0.20)); margin: 0 4px; }
+  header.site .nav a.nav-jump { color: var(--text-muted, #a3a0b5); font-size: 13px; padding: 5px 5px; text-decoration: none; border-bottom: none; }
+  header.site .nav a.nav-jump:hover { color: var(--text, #e9e7f2); }
+  @media (max-width: 720px) {
+    header.site { flex-wrap: wrap; gap: 10px; }
+    header.site .nav { gap: 4px; }
+    header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
+    header.site .nav .nav-sep { display: none; }
+  }
+</style>
+<div class="topstack">
+<div class="sitebar">
+  <div class="sitebar-inner">
+    <header class="site">
+      <a class="brand" href="../index.html" aria-label="SPECTRA — home">
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-page" href="../index.html">Home</a>
+        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
+        <a class="nav-page" href="../agents.html">Agents</a>
+        <a class="nav-page" href="index.html" aria-current="page">E-Learning</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a class="nav-jump" href="../index.html#install">Install</a>
+      </nav>
+    </header>
+  </div>
+</div>
+<nav class="course-nav">
+  <div class="course-nav-inner">
+    <a class="course-nav-brand" href="index.html">
+      <span class="course-nav-brand-mark">SPECTRA</span>
+      <span class="course-nav-brand-text">SDD Learning</span>
+    </a>
+    <div class="course-nav-modules">
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify" class="is-active">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
+    </div>
+  </div>
+</nav>
+</div>
+<main>
+  <header class="hero">
+    <div class="hero-eyebrow">Module 6</div>
+    <h1>Bug Fix &mdash; Assess, Fix, Verify</h1>
+    <p class="hero-lede">Take a real defect in the lab app from a support ticket to a verified, committed fix with Spec Kit&rsquo;s bug workflow. Diagnose it without touching code, fix only what the diagnosis covers, and don&rsquo;t call it done until someone has re-run the reproduction.</p>
+    <div class="meta">
+      <div class="meta-item">
+        <span class="meta-label">Time</span>
+        <span class="meta-value">75 min</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Format</span>
+        <span class="meta-value">Concepts + hands-on lab</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Prerequisites</span>
+        <span class="meta-value">Modules 1&ndash;4; SPECTRA installed</span>
+      </div>
+    </div>
+  </header>
+
+  <article>
+    <h3>Learning objectives</h3>
+    <p>By the end of this module, you will be able to:</p>
+    <ol>
+      <li>Decide whether work belongs in the bug workflow, the SDD loop, or an idea assessment.</li>
+      <li>Explain the trust boundary of each bug stage &mdash; <code>speckit.bug.assess</code>, <code>speckit.bug.fix</code>, <code>speckit.bug.test</code> &mdash; and why only one of them may edit code.</li>
+      <li>Review an assessment at the human gate, and approve it or send it back.</li>
+      <li>Check that a fix stayed inside its assessment.</li>
+      <li>Read <code>verified</code>, <code>partial</code> and <code>failed</code> honestly, and supply the evidence a <code>partial</code> is missing.</li>
+      <li>Know when to escalate to SPECTRA&rsquo;s <code>speckit.spectra.defect-rca</code>, and how to deliver a verified fix with <code>/speckit-spectra-create-pr</code>.</li>
+    </ol>
+    <p>Commands use the Claude Code / GitHub Copilot trigger form (<code>/speckit-bug-assess</code>); Module 1 has the spelling for other agents.</p>
+
+    <h2><span class="h2-num">1.</span>Is it a bug? Choosing the workflow</h2>
+    <p>Modules 3 and 4 ran the SDD loop. Module 5 decided whether an idea deserves the loop at all. This module covers the work most teams do most often: something that should work doesn&rsquo;t.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>The work in front of you</th><th>Use</th><th>Because</th></tr></thead>
+      <tbody>
+        <tr><td>Existing behaviour is broken &mdash; a crash, a wrong result, a regression</td><td>The bug workflow: assess &rarr; fix &rarr; test</td><td>You are restoring intended behaviour. You need evidence of what&rsquo;s wrong and a repair scoped to it.</td></tr>
+        <tr><td>A new capability, or a deliberate change in behaviour</td><td>The SDD loop (Modules 3 and 4)</td><td>Someone has to decide what the product should do. That&rsquo;s a spec.</td></tr>
+        <tr><td>An idea nobody has shown is worth building</td><td>Idea assessment (Module 5)</td><td>The question is <em>whether</em> to build, not how.</td></tr>
+      </tbody>
+    </table></div>
+    <p>The ticket&rsquo;s label won&rsquo;t always tell you which row you&rsquo;re in. &ldquo;I can&rsquo;t set a reminder on a task&rdquo;, filed as a bug, is a feature request. The bug workflow catches this: an assessment can come back <code>invalid</code> &mdash; expected behaviour, misuse, a duplicate, out of scope &mdash; and new behaviour goes to the SDD loop instead.</p>
+    <p>In SPECTRA&rsquo;s agentic SDLC, bug fixing belongs to the <strong>Maintain</strong> phase, where the human gate is the team deciding the fix and whether the lesson becomes a standard. It needs <strong>no SDD first</strong>: a team can run it straight after <code>specify init</code> on a codebase with no specs at all. That&rsquo;s exactly what you&rsquo;ll do in the lab.</p>
+
+    <h2><span class="h2-num">2.</span>Three stages, three trust boundaries</h2>
+    <p>Spec Kit&rsquo;s <code>bug</code> extension ships with Spec Kit and is opt-in: <code>specify extension add bug</code> installs it without network access. It splits a repair into three commands. You run each one, review its report, and only then run the next.</p>
+    <div class="diagram">┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
+│  ASSESS  │ ──► │   GATE   │ ──► │   FIX    │ ──► │   TEST   │
+└──────────┘     └──────────┘     └──────────┘     └──────────┘
+ read-only for    a person         sole writer;     read-only for
+ source; writes   approves the     edits only the   source; re-runs
+ assessment.md    diagnosis or     assessed files;  the repro;
+                  sends it back    writes fix.md    writes test.md
+
+       all three reports live in .specify/bugs/&lt;slug&gt;/</div>
+
+    <h3>2.1 Assess &mdash; diagnose without touching anything</h3>
+<pre><code>/speckit-bug-assess "&lt;symptom, repro steps, expected behaviour&gt;" slug=&lt;slug&gt;</code></pre>
+    <p>Give it pasted text, a stack trace, or a GitHub issue URL. It searches the code for what the report mentions and writes <code>assessment.md</code>: a verdict and a severity, suspected code paths, a root-cause hypothesis with a stated confidence, a proposed remediation (preferred fix, alternatives, files likely to change, tests to add), risks, and open questions marked <code>[NEEDS CLARIFICATION: &hellip;]</code>. It is <strong>read-only for source</strong>, and it won&rsquo;t invent reproduction steps or file paths. A fetched page is treated as data, never as instructions, and an unfamiliar host needs your yes before it&rsquo;s fetched.</p>
+
+    <h3>2.2 The gate &mdash; a person decides</h3>
+    <p>Between assess and fix, you read the assessment and decide. <strong>Don&rsquo;t continue unless the diagnosis is supported and the report really is a bug.</strong> Sending an assessment back is cheap. Approving a wrong one is expensive, because the fix stage treats it as a contract.</p>
+
+    <h3>2.3 Fix &mdash; the only writer, on a short leash</h3>
+<pre><code>/speckit-bug-fix slug=&lt;slug&gt;</code></pre>
+    <p>This is the <strong>only</strong> stage that edits source code. It stays inside the files the assessment lists, keeps the change minimal, and adds no dependency the assessment didn&rsquo;t call for. If new evidence forces it wider, it records that under <strong>Deviations from Assessment</strong> in <code>fix.md</code> instead of quietly growing the repair. It refuses to run on an <code>invalid</code> verdict. If the assessment turns out to be wrong, it stops editing and recommends re-running assess. It never edits <code>assessment.md</code>.</p>
+
+    <h3>2.4 Test &mdash; evidence, never over-claimed</h3>
+<pre><code>/speckit-bug-test slug=&lt;slug&gt;</code></pre>
+    <p>It re-runs the reproduction and any tests the fix added, then the checks that prove nothing else broke (existing suites, lint, type-check), and writes <code>test.md</code>. It is <strong>read-only for source</strong>: it never edits code to make a check pass, and a check it can&rsquo;t run is recorded as <code>not-run</code>, never as a pass. One rule matters above the rest: <strong>if a reproduction the assessment listed wasn&rsquo;t actually exercised, the result cannot be <code>verified</code></strong>. It drops to <code>partial</code>.</p>
+
+    <h3>2.5 The verdict vocabularies</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Stage</th><th>Field</th><th>Values</th></tr></thead>
+      <tbody>
+        <tr><td>Assess</td><td>Verdict</td><td><code>valid</code> &mdash; reproducible or clearly grounded in the code &middot; <code>likely valid, needs reproduction</code> &mdash; plausible but unverified &middot; <code>invalid</code> &mdash; misuse, expected behaviour, duplicate or out of scope; fix refuses to run</td></tr>
+        <tr><td>Assess</td><td>Severity</td><td><code>critical</code> &middot; <code>high</code> &middot; <code>medium</code> &middot; <code>low</code>, with a rationale (user impact, blast radius, data risk). Judge the rationale, not the label.</td></tr>
+        <tr><td>Fix</td><td>Status</td><td><code>applied</code> &middot; <code>partial</code> &middot; <code>not-applied</code> &mdash; how much of the remediation landed</td></tr>
+        <tr><td>Test</td><td>Result</td><td><code>verified</code> &mdash; symptom gone, critical checks pass: review the patch and evidence, then merge &middot; <code>partial</code> &mdash; some verification missing or inconclusive: supply the evidence and test again &middot; <code>failed</code> &mdash; symptom persists or something broke: revisit the diagnosis or fix, then test again. Each check reads <code>pass</code>, <code>fail</code>, <code>skipped</code> or <code>not-run</code>.</td></tr>
+      </tbody>
+    </table></div>
+    <p>A <code>partial</code> fix is incomplete work. A <code>partial</code> test result is incomplete <em>evidence</em> &mdash; often about a perfectly good fix.</p>
+
+    <h3>2.6 Slugs</h3>
+    <p>The slug names the folder <code>.specify/bugs/&lt;slug&gt;/</code> and is normalised to lowercase kebab-case. Leave it off and assess asks for one; fix and test reuse it from the same session or from the only candidate on disk. No report is overwritten without your confirmation. Pass <code>slug=</code> every time anyway &mdash; it removes a guess.</p>
+
+    <h3>2.7 Why a green suite isn&rsquo;t proof</h3>
+    <p>A test suite checks what somebody thought to test, and the bug exists because nobody thought of this case. A suite that was green before the fix and is green after it says nothing about the reported symptom. The only evidence about the report itself is the <strong>original reproduction, re-run on the fixed code</strong>. That is why the test stage downgrades to <code>partial</code> without it, however many other checks passed.</p>
+
+    <h3>2.8 Keep the three reports together</h3>
+    <p>The assessment says what broke and why. <code>fix.md</code> says what changed and where it departed from the plan. <code>test.md</code> says what was run, and by whom. Commit all three with the fix and a reviewer can follow the repair from the reported symptom through to the evidence without asking you anything.</p>
+
+    <h2><span class="h2-num">3.</span>Where SPECTRA fits</h2>
+    <p>The bug workflow is Spec Kit&rsquo;s, and everything in Section 2 works the same in a plain Spec Kit project. SPECTRA installs the toolchain (<code>spectra install</code>) and adds agents on either side of the fix: one goes deeper than triage, the other delivers the result.</p>
+
+    <h3>3.1 Triage or root cause?</h3>
+    <p>Four commands in this course sound alike and answer different questions:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Command</th><th>Question it answers</th><th>Writes</th></tr></thead>
+      <tbody>
+        <tr><td><code>speckit.assess.*</code> (Spec Kit <code>assess</code>)</td><td>Is this idea worth building?</td><td><code>.specify/assessments/&lt;slug&gt;/</code></td></tr>
+        <tr><td><code>speckit.bug.assess</code> (Spec Kit <code>bug</code>)</td><td>What is broken, and what is the smallest credible fix?</td><td><code>.specify/bugs/&lt;slug&gt;/assessment.md</code></td></tr>
+        <tr><td><code>speckit.spectra.impact</code> (SPECTRA)</td><td>What would this change actually touch in the codebase?</td><td><code>&lt;artifact-root&gt;/impact-analysis/</code></td></tr>
+        <tr><td><code>speckit.spectra.defect-rca</code> (SPECTRA)</td><td>Why did this defect happen, and what prevents it recurring?</td><td><code>&lt;artifact-root&gt;/defect-rca/</code></td></tr>
+      </tbody>
+    </table></div>
+    <p><code>speckit.bug.assess</code> is <strong>triage</strong>: a diagnosis that exists to drive an immediate, bounded fix. <code>speckit.spectra.defect-rca</code> is a <strong>durable root-cause record</strong>:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th></th><th><code>speckit.bug.assess</code></th><th><code>speckit.spectra.defect-rca</code></th></tr></thead>
+      <tbody>
+        <tr><td>Depth</td><td>Suspected code paths and one hypothesis, with a confidence</td><td>At least five hypothesis branches; each probe names its layer, from symptom down to systemic cause; ruled-out hypotheses stay in the record</td></tr>
+        <tr><td>History</td><td>Looks only at this report</td><td>Checks earlier analyses at intake and gives each of their preventive actions a verdict: completed or not completed (both need a citation), or undeterminable</td></tr>
+        <tr><td>Actions</td><td>A remediation for the fix stage</td><td>Corrective and preventive actions in separate sections, each with an owner and a way to verify it</td></tr>
+        <tr><td>Changes code?</td><td>No &mdash; fix does</td><td>Never. It fixes nothing and writes no tests.</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Escalate to defect-rca</strong> when a defect recurs, when it&rsquo;s serious, or when it reached production. Use both: fix the instance with the bug workflow, then write the RCA so the lesson outlives the ticket.</p>
+
+    <h3>3.2 Delivering the fix</h3>
+    <p>SPECTRA offers <code>/speckit-spectra-create-pr</code> through an <code>after_implement</code> hook. The bug extension <strong>registers no hooks</strong>, so nothing makes that offer after a bug fix. Once the fix is verified and you&rsquo;ve reviewed it, run it yourself. It works on any branch, builds a bug branch&rsquo;s PR body from its commits and diff, and asks before every commit, every push, and the PR itself.</p>
+
+    <h2><span class="h2-num">4.</span>Lab setup &mdash; a fresh copy (10 min)</h2>
+    <div class="lab-card">
+      <div class="lab-card-icon">&#9733;</div>
+      <div class="lab-card-body">
+        <div class="lab-card-title">Lab codebase &mdash; <code>lab-codebase.zip</code></div>
+        <div class="lab-card-meta">The same Next.js + TypeScript to-do app as Module 4. This lab needs it exactly as shipped, so start from a fresh copy.</div>
+      </div>
+      <a class="lab-card-link" href="lab-codebase.zip" download>Download</a>
+    </div>
+    <p>The app carries a real, latent defect. You&rsquo;ll take it from a support ticket to a verified, committed fix, stopping at a human gate after each agent runs.</p>
+
+    <h3>4.1 Unzip a new copy and take a baseline</h3>
+    <p>Don&rsquo;t reuse your Module 4 folder: its changes may hide or alter the defect. The zip ships no <code>.gitignore</code>, so add one before the baseline commit:</p>
+<pre><code>unzip lab-codebase.zip -d ~/sdd-bugfix-lab
+cd ~/sdd-bugfix-lab/lab-codebase
+npm install
+printf 'node_modules/\n.next/\nnext-env.d.ts\n' &gt; .gitignore
+git init &amp;&amp; git add -A &amp;&amp; git commit -m "baseline"</code></pre>
+
+    <h3>4.2 Install the toolchain</h3>
+<pre><code>spectra install
+specify extension add bug
+git add -A &amp;&amp; git commit -m "Add Spec Kit, SPECTRA and the bug extension"</code></pre>
+    <p><code>spectra install</code> offers to run <code>specify init --here --force</code>; accept, and pick your usual agent. <code>specify extension add bug</code> may print &ldquo;Configuration may be required&rdquo;. The extension has no configuration, so ignore it. Committing the toolchain separately keeps your fix commit readable. Then <strong>restart your agent</strong> in this folder. You don&rsquo;t need a constitution, a spec or a plan for this module.</p>
+    <ul class="checklist">
+      <li><code>specify extension list</code> shows the <code>bug</code> extension and SPECTRA.</li>
+      <li>Your agent offers <code>/speckit-bug-assess</code>, <code>/speckit-bug-fix</code> and <code>/speckit-bug-test</code>.</li>
+      <li><code>git status</code> is clean.</li>
+    </ul>
+
+    <h2><span class="h2-num">5.</span>The ticket, and your own reproduction (10 min)</h2>
+
+    <h3>5.1 Read the ticket</h3>
+    <blockquote>
+      <p><strong>#212 &mdash; To-do app won&rsquo;t load</strong></p>
+      <p>&ldquo;Pulled the to-do app this morning and all I get is &lsquo;Application error: a client-side exception has occurred&rsquo;. Every reload. I&rsquo;ve restarted the dev server, reinstalled <code>node_modules</code> and pulled again &mdash; no change. A colleague on the same commit says it works for her. Only other thing I can think of: yesterday I tried a different to-do tutorial, also on localhost:3000.&rdquo;</p>
+      <p>Follow-up: &ldquo;Someone told me to look in DevTools under Local Storage. For localhost:3000 there&rsquo;s one entry, <code>todos</code>, and its value is <code>{"legacy":true}</code>. No idea where that came from.&rdquo;</p>
+    </blockquote>
+    <p>A symptom, an environment detail, a clue &mdash; but no cause. Finding that is the assessment&rsquo;s job.</p>
+
+    <h3>5.2 Reproduce it yourself first</h3>
+    <p>See it before any agent does. You learn what &ldquo;fixed&rdquo; must look like, a working reproduction earns a firmer verdict, and the same steps will prove the fix later.</p>
+<pre><code>npm run dev</code></pre>
+    <p>Open <a href="http://localhost:3000">http://localhost:3000</a> and add a task to confirm the app works. Then, in DevTools &rarr; Console, put your browser into the reporter&rsquo;s state and reload:</p>
+<pre><code>localStorage.setItem("todos", '{"legacy":true}')</code></pre>
+    <p>If the console blocks pasting, type <code>allow pasting</code> first, or edit the value under Application &rarr; Local Storage instead.</p>
+    <p>Next.js&rsquo;s dev overlay reports a <strong>Runtime TypeError</strong>, <code>todos.map is not a function</code>, in <code>app/components/TodoList.tsx</code>. Behind it, the page reads &ldquo;Application error: a client-side exception has occurred&hellip;&rdquo;. The console shows <code>Uncaught TypeError: todos.map is not a function</code> at <code>TodoList</code>, just below the leftover <code>Loaded todos:</code> log. Reload, and you get the same again. The app never recovers.</p>
+    <p>Leave the dev server running and the bad value in place. To get a working app back at any time, run <code>localStorage.removeItem("todos")</code> and reload.</p>
+    <ul class="checklist">
+      <li>You&rsquo;ve seen the crash yourself.</li>
+      <li>You can write the reproduction as steps a stranger could follow.</li>
+      <li>You&rsquo;ve decided what the app <em>should</em> do when what&rsquo;s stored isn&rsquo;t usable.</li>
+    </ul>
+    <div class="note"><span class="note-label">Hands off.</span>You may already suspect where this lives. Don&rsquo;t fix it yourself. The point is to see whether the assessment finds the cause, and to practise reviewing what it says.</div>
+
+    <h2><span class="h2-num">6.</span>Assess &mdash; and stand at the gate (12 min)</h2>
+
+    <h3>6.1 Run the assessment</h3>
+    <p>Give the agent the symptom, your reproduction, and the expected behaviour:</p>
+<pre><code>/speckit-bug-assess
+Symptom: the to-do app shows "Application error: a client-side exception
+has occurred" on every load and never recovers. Console: Uncaught
+TypeError: todos.map is not a function, at TodoList. The reporter had
+been running a different to-do tutorial on localhost:3000.
+Reproduction:
+1. npm run dev, open http://localhost:3000
+2. In the console: localStorage.setItem("todos", '{"legacy":true}')
+3. Reload. The crash appears on this and every later reload.
+Expected: the app loads instead of crashing, showing an empty list if it
+cannot use what is stored.
+slug=corrupt-storage</code></pre>
+    <p>It writes <code>.specify/bugs/corrupt-storage/assessment.md</code> and suggests <code>/speckit-bug-fix slug=corrupt-storage</code> as the next step. Not yet. Run <code>git status</code>: nothing should have changed outside <code>.specify/bugs/</code>.</p>
+
+    <h3>6.2 Review the assessment</h3>
+    <p><strong>Human gate: approve the diagnosis before any code changes.</strong> Check each part:</p>
+    <ul class="checklist">
+      <li><strong>Verdict.</strong> Expect <code>valid</code>, since you supplied a working reproduction. If it says <code>likely valid, needs reproduction</code>, find out why.</li>
+      <li><strong>Severity.</strong> Anyone affected can&rsquo;t use the app at all, yet it takes foreign data under the app&rsquo;s key to trigger. High or medium? Judge the rationale &mdash; and ask whether it stays rare once a release changes what the app stores.</li>
+      <li><strong>Suspected code paths</strong> reach where the bad data <em>enters</em> &mdash; <code>loadTodos</code> in <code>lib/storage.ts</code> &mdash; not only <code>TodoList.tsx</code>, where it throws.</li>
+      <li><strong>Hypothesis</strong> is specific, states a confidence, and explains every fact in the ticket, including &ldquo;works for my colleague&rdquo;.</li>
+      <li><strong>Remediation</strong> puts the preferred fix in <code>lib/storage.ts</code>, with a short file list.</li>
+      <li><strong>Tests to add.</strong> There&rsquo;s no test runner. If the assessment proposes adding one, decide now; a follow-up is the better call, because a new dependency is a change in its own right. Settle open questions here: fix only stops for them when the verdict is <code>likely valid, needs reproduction</code>.</li>
+      <li><strong>Risks.</strong> Read them closely, then do 6.3.</li>
+    </ul>
+    <p><strong>Send it back</strong> if the preferred remediation guards <code>TodoList.tsx</code> or wraps the list in an error boundary. That hides the crash but lets the bad value into the page&rsquo;s state, and the next time someone adds a task, <code>[newTodo, ...prev]</code> in <code>app/page.tsx</code> throws. Fix where bad data enters, not where it explodes.</p>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample assessment</span> &mdash; an abridged version of what a sound one says</span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+<pre><code># Bug Assessment: Crash on load when stored todos are not a list
+
+- **Slug**: corrupt-storage
+- **Verdict**: valid
+- **Severity**: medium
+
+## Suspected Code Paths
+- `lib/storage.ts:15` - `JSON.parse(raw) as Todo[]` returns any valid
+  JSON as if it were a list; nothing checks its shape
+- `app/components/TodoList.tsx:23` - `todos.map` is where it throws
+
+## Root Cause Hypothesis
+loadTodos() guards against unparseable JSON, but not against parseable
+JSON of the wrong shape. Confidence: high.
+
+## Proposed Remediation
+**Preferred**: in loadTodos(), use the parsed value only if it is an
+array, keeping entries with the Todo shape; otherwise return [].
+**Alternatives**: a guard in TodoList or an error boundary - both hide
+the crash and leave the bad value in page state.
+**Files likely to change**: `lib/storage.ts`
+**Tests to add or update**: loadTodos with a non-array, a malformed
+entry and a valid list [NEEDS CLARIFICATION: no test runner exists]
+
+## Risks &amp; Considerations
+- After the fallback, the save effect (app/page.tsx:19-21) writes []
+  under "todos", replacing whatever was stored there</code></pre>
+        <p>Yours will be worded differently, and your severity may differ. Judge it on whether each section is specific, cites real code, and matches what you saw in the browser.</p>
+      </div>
+    </div>
+
+    <h3>6.3 The risk worth arguing about</h3>
+    <p>Lines 19&ndash;21 of <code>app/page.tsx</code> save on every change, including the render straight after loading. So once <code>loadTodos</code> falls back to an empty list, the page writes <code>[]</code> over the other app&rsquo;s <code>{"legacy":true}</code>. The fix quietly destroys another app&rsquo;s data. If Risks doesn&rsquo;t say so, raise it. Then decide:</p>
+    <ul>
+      <li><strong>Accept it and record it.</strong> The app owns its key on its origin, the value was unusable to it anyway, and the collision only happens on developer machines. Note the accepted risk under Risks.</li>
+      <li><strong>Reject it.</strong> The same fallback would silently wipe real users&rsquo; lists the day a release changes what&rsquo;s stored. Ask for a remediation that leaves unrecognised data alone until the user changes something, or copies it first. That adds <code>app/page.tsx</code> to <em>Files likely to change</em> &mdash; fine when the assessment says so, not when the fix decides alone.</li>
+    </ul>
+    <p>Either answer is defensible. Not deciding isn&rsquo;t. To send the assessment back, edit <code>assessment.md</code> yourself, or re-run <code>/speckit-bug-assess</code> with the constraint and the same slug and confirm the overwrite. <strong>Approve</strong> only when you&rsquo;d be happy for the fix to do exactly what the assessment says, and nothing more.</p>
+
+    <h2><span class="h2-num">7.</span>Fix &mdash; bounded by the assessment (8 min)</h2>
+
+    <h3>7.1 Branch, then fix</h3>
+<pre><code>git switch -c fix/corrupt-storage</code></pre>
+<pre><code>/speckit-bug-fix slug=corrupt-storage</code></pre>
+    <p>It starts by restating what it&rsquo;s about to change; check that against what you approved. Then it edits, runs the project&rsquo;s local checks, and writes <code>fix.md</code>.</p>
+
+    <h3>7.2 Review the diff</h3>
+    <p><strong>Human gate: engineers review every change.</strong></p>
+<pre><code>git status
+git diff</code></pre>
+    <ul class="checklist">
+      <li>Only the assessed source files changed &mdash; for most of you, just <code>lib/storage.ts</code>.</li>
+      <li>No drive-by clean-ups. Module 4&rsquo;s cruft &mdash; the leftover <code>console.log</code>, the repeated <code>"todos"</code> string, the <code>Date.now()</code> IDs &mdash; is untouched. A bug fix is not a tidy-up pass.</li>
+      <li><code>package.json</code> is unchanged.</li>
+      <li><code>fix.md</code> reports Status <code>applied</code>, and <em>Deviations from Assessment</em> is empty or justified.</li>
+      <li><em>Tests Added or Updated</em> is honest that there&rsquo;s no test runner, and <em>Local Verification</em> says what actually ran. A type-check proves only that the code compiles.</li>
+    </ul>
+    <div class="reveal">
+      <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample fix</span> &mdash; a bounded change to <code>lib/storage.ts</code></span><span class="reveal-trigger-icon">+</span></button>
+      <div class="reveal-content">
+        <p>The <code>Todo</code> type and <code>saveTodos</code> are untouched. A type guard goes above <code>loadTodos</code>, and <code>loadTodos</code> changes inside its existing <code>try</code>/<code>catch</code>:</p>
+<pre><code>function isTodo(value: unknown): value is Todo {
+  if (typeof value !== "object" || value === null) return false;
+  const item = value as Record&lt;string, unknown&gt;;
+  return (
+    typeof item.id === "string" &amp;&amp;
+    typeof item.text === "string" &amp;&amp;
+    typeof item.completed === "boolean" &amp;&amp;
+    typeof item.createdAt === "string"
+  );
+}
+
+export function loadTodos(): Todo[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem("todos");
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(isTodo) : [];
+  } catch {
+    return [];
+  }
+}</code></pre>
+        <ul>
+          <li>Typing the parsed value <code>unknown</code> makes the compiler insist on a check before use &mdash; the opposite of <code>as Todo[]</code>, which told it to trust whatever came out of storage.</li>
+          <li>The repeated <code>"todos"</code> string stays. Extracting a constant is a fair clean-up, but it isn&rsquo;t this bug.</li>
+          <li>Filtering drops malformed entries, and the save effect then persists the list without them &mdash; the same kind of trade-off as 6.3. If your assessment didn&rsquo;t mention it, it deserves a line under Risks.</li>
+        </ul>
+      </div>
+    </div>
+    <p>If the diff strays outside the assessment without a recorded deviation, don&rsquo;t approve it. <code>git restore .</code> resets the tracked files (the untracked reports stay); tighten the assessment if it left room for the overreach, and run fix again. It asks before overwriting <code>fix.md</code>.</p>
+
+    <h2><span class="h2-num">8.</span>Test &mdash; and close the gap yourself (10 min)</h2>
+
+    <h3>8.1 Run the verification</h3>
+<pre><code>/speckit-bug-test slug=corrupt-storage</code></pre>
+
+    <h3>8.2 Expect <code>partial</code> &mdash; and read why</h3>
+    <p>The most likely result is <code>partial</code>, and that&rsquo;s the stage working. There&rsquo;s no <code>test</code> script, so there&rsquo;s no suite to run. A type-check (<code>npx tsc --noEmit</code>) or a build passes &mdash; but both passed <em>before</em> the fix too, because <code>as Todo[]</code> told the compiler to trust the stored data. That&rsquo;s Section 2.7 in the flesh. The real proof is the reproduction, a browser step, and without browser tooling the agent can&rsquo;t run it. So that row reads <code>not-run</code> or <code>skipped</code>, and the result can&rsquo;t honestly be <code>verified</code>.</p>
+    <p>Got <code>verified</code>? Check how the reproduction was exercised. A Node snippet that calls <code>loadTodos</code> with a fake <code>window</code> tests a function, not the page the reporter saw. Whether that&rsquo;s enough is your call.</p>
+
+    <h3>8.3 Run the reproduction yourself</h3>
+    <p><strong>Human gate: QE decides what a finding means</strong> &mdash; and here, you are also the evidence. With the dev server still running:</p>
+    <ol>
+      <li>Set the bad value again (<code>localStorage.setItem("todos", '{"legacy":true}')</code>) and reload. The app shows its empty-list message: no overlay, no console error.</li>
+      <li>Run <code>localStorage.getItem("todos")</code>. With the sample fix it returns <code>"[]"</code> &mdash; the overwrite from 6.3, now visible. Confirm it matches what you decided.</li>
+      <li>Add two tasks, tick one, delete the other, reload. What&rsquo;s left persists.</li>
+      <li>Optional: store one good entry and one junk entry, reload, and note what your fix does. The sample fix keeps the good one.
+<pre><code>localStorage.setItem("todos", '[{"id":"1","text":"still here","completed":false,"createdAt":"2026-01-01T00:00:00.000Z"},{"oops":true}]')</code></pre></li>
+    </ol>
+
+    <h3>8.4 Supply the evidence and test again</h3>
+<pre><code>/speckit-bug-test slug=corrupt-storage
+I re-ran the reproduction by hand in the browser on the fixed code:
+after setting todos to {"legacy":true} and reloading, the app shows the
+empty list with no error, and todos now holds []. Add, toggle, delete
+and reload all behave as before.</code></pre>
+    <p>Confirm when it asks to overwrite <code>test.md</code>. The new report should carry your evidence, attributed to you. Some agents will now say <code>verified</code>; others keep <code>partial</code> because they still didn&rsquo;t run the reproduction themselves. Both are honest. A <code>verified</code> that nobody can trace to a reproduction someone actually ran is not.</p>
+    <ul class="checklist">
+      <li><code>test.md</code> lists every check, how it ran, and its result &mdash; including who ran the reproduction.</li>
+      <li><em>Residual Risks</em> names what wasn&rsquo;t covered, such as the missing automated regression test.</li>
+      <li>If the result was <code>failed</code>, you went back to assess with the new evidence. You didn&rsquo;t patch the code by hand.</li>
+    </ul>
+
+    <h2><span class="h2-num">9.</span>Deliver (5 min)</h2>
+
+    <h3>9.1 Commit the fix with its paper trail</h3>
+<pre><code>git add lib/storage.ts .specify/bugs/corrupt-storage
+git commit -m "Fix crash when stored todos are not a list"</code></pre>
+    <p>Add any other file your <code>fix.md</code> lists. With the reports in the same commit, a reviewer can follow symptom &rarr; diagnosis &rarr; change &rarr; evidence.</p>
+
+    <h3>9.2 The pull request &mdash; in a real repository</h3>
+    <p><strong>Human gate: a maintainer merges.</strong> With a GitHub <code>origin</code> and an authenticated <code>gh</code>, you would now run:</p>
+<pre><code>/speckit-spectra-create-pr</code></pre>
+    <p>It checks <code>gh</code> and the remote, works out the base branch, asks before pushing, drafts the body from your commits and diff, and asks once more before creating the PR. The lab has no remote, so skip it &mdash; or run it and watch it stop without changing anything.</p>
+
+    <h2><span class="h2-num">10.</span>Stretch: take it to root cause (20 min, optional)</h2>
+    <p>Ask SPECTRA&rsquo;s RCA agent the question the assessment didn&rsquo;t: why did this happen, and what stops it recurring? Stay on <code>fix/corrupt-storage</code>:</p>
+<pre><code>/speckit-spectra-defect-rca The to-do app crashed on every load with
+"Application error: a client-side exception has occurred" (console:
+Uncaught TypeError: todos.map is not a function, at TodoList) for a
+developer whose browser held {"legacy":true} under the localStorage key
+"todos", left there by another tutorial app on localhost:3000. A fix is
+in the latest commit on this branch.</code></pre>
+    <p>It names the channel it resolved (a plain description), then reads the constitution (still the unfilled template) and the code. It records the commit it analysed and asks which one users were running: answer that they had the baseline, and the fix isn&rsquo;t released. It searches <code>docs/defect-rca/</code> for earlier analyses and records that it found none. Then it shows a hypothesis tree and asks at most five questions the repository can&rsquo;t answer, each with a note on why it matters. Ask it to synthesise when you&rsquo;re satisfied. It writes <code>docs/defect-rca/001-&lt;slug&gt;.md</code> and an index, and nothing else.</p>
+    <p>Compare its document with <code>assessment.md</code>:</p>
+    <ul class="checklist">
+      <li>The root cause comes first, with the presenting symptom beside it, labelled as <em>not</em> the cause.</li>
+      <li><strong>Depth.</strong> &ldquo;<code>loadTodos</code> casts instead of validating&rdquo; is only the immediate technical cause. What let it ship? No tests, no rule for checking stored data, a cast that silenced the compiler. If the analysis stopped at the immediate cause, it should say so.</li>
+      <li>Ruled-out hypotheses are recorded, not just the survivor.</li>
+      <li><em>Related prior RCA</em> is filled in (none identified, corpus searched), never blank.</li>
+      <li>Preventive actions aren&rsquo;t the fix restated. &ldquo;Validate what <code>loadTodos</code> returns&rdquo; is corrective. &ldquo;Validate all persisted data at the boundary, and version the stored format before its shape next changes &mdash; as Module 4&rsquo;s due date did&rdquo; is preventive.</li>
+    </ul>
+    <p>That lesson is what SPECTRA&rsquo;s Maintain gate is for. A team might make it a constitution rule &mdash; &ldquo;data read from browser storage or the network is validated before use, never cast&rdquo; &mdash; so every future plan and review inherits it. defect-rca never writes that line; the team decides, through <code>/speckit-constitution</code>. And the next storage crash would match this RCA on <code>lib/storage.ts</code>, prompting the question of whether its preventive actions were ever done.</p>
+
+    <h2><span class="h2-num">11.</span>Optional: the orchestrated path</h2>
+    <p>Prefer to drive the stages from the terminal? Spec Kit&rsquo;s first-party <code>bugfix</code> bundle pairs the <code>bug</code> extension with a <code>bugfix</code> workflow. It needs Spec Kit 1.0.9 or later and network access. Read the bundle before you install it:</p>
+<pre><code>specify bundle info bugfix
+specify bundle install bugfix
+specify workflow run bugfix \
+  --input report="&lt;text or issue URL&gt;" --input slug="&lt;slug&gt;"</code></pre>
+    <p>The run pauses after assess at a gate named <code>review-assessment</code>. Approve, and fix then test run; reject, and the run aborts. <code>specify workflow status</code> lists runs, and <code>specify workflow resume &lt;run_id&gt;</code> continues a paused one.</p>
+    <p>It guarantees the gate that matters most &mdash; no code changes until someone approves the diagnosis &mdash; but it&rsquo;s the only gate. Fix and test run back to back, so you review the diff, <code>fix.md</code> and <code>test.md</code> together at the end. To try it, use a second fresh copy of the lab.</p>
+
+    <h2>Knowledge check</h2>
+    <div class="quiz">
+      <div class="quiz-header"><span class="quiz-title">Knowledge check</span><span class="quiz-progress">7 questions</span></div>
+
+      <div class="quiz-question" data-type="mc" data-correct="c">
+        <div class="quiz-q-prompt">1. A ticket filed as a bug says: &ldquo;I can&rsquo;t set a reminder on a task &mdash; please fix.&rdquo; The app has never had reminders. What&rsquo;s the right route?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>The bug workflow, because it was filed as a bug</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>Straight to <code>/speckit-bug-fix</code> &mdash; a missing feature needs no diagnosis</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Treat it as new behaviour: the SDD loop, or an idea assessment first if its value is unproven</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span><code>/speckit-spectra-defect-rca</code>, to find out why reminders are missing</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: c</div><div>Nothing is broken; reminders never existed. New behaviour needs someone to decide what the product should do, which is a spec. Run through assess, this would most likely come back <code>invalid</code>, and the fix stage refuses to run on that verdict.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">2. <code>/speckit-bug-test</code> ran a type-check and a build, and both pass. The assessment&rsquo;s reproduction is a browser step the agent couldn&rsquo;t run. What is the overall result?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span><code>verified</code></span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span><code>partial</code></span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span><code>failed</code></span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span><code>not-run</code></span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: b</div><div>A listed reproduction that wasn&rsquo;t exercised caps the result at <code>partial</code>, however green everything else is. It isn&rsquo;t <code>failed</code>, because nothing showed the symptom persisting. <code>not-run</code> describes a single check (the reproduction row), not the overall result.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="c">
+        <div class="quiz-q-prompt">3. Halfway through <code>/speckit-bug-fix</code>, the agent discovers the real cause is in a file the assessment never mentioned. What should it do?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>Fix it there &mdash; the goal is a working app</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>Add the file to <code>assessment.md</code>, then fix it</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>Stop changing code, record the finding under &ldquo;Deviations from Assessment&rdquo; in <code>fix.md</code>, and recommend re-running assess</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Finish the assessed change and let the test stage catch the problem</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: c</div><div>When the assessment proves wrong, the fix stage stops editing, records what it found in <code>fix.md</code>, and sends you back to assess. It never edits <code>assessment.md</code>: that is the contract a person approved. A new diagnosis needs a new trip through the gate.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="a">
+        <div class="quiz-q-prompt">4. An assessment comes back <code>valid</code> with an open <code>[NEEDS CLARIFICATION]</code> about whether to add a test runner as part of the fix. When should that be settled?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>At the gate, before running fix</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span>No need &mdash; the fix stage always stops and asks about open questions</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>During the test stage, which decides which tests should exist</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>Never &mdash; open questions are informational</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: a</div><div>With a <code>valid</code> verdict, the fix stage proceeds with the remediation as written; it only pauses on open questions when the verdict is <code>likely valid, needs reproduction</code>. The test stage records evidence and makes no scope decisions. The gate is where you settle it.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="b">
+        <div class="quiz-q-prompt">5. The same class of storage crash has now reached production twice. Which command adds what <code>speckit.bug.assess</code> doesn&rsquo;t?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span><code>speckit.spectra.impact</code></span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span><code>speckit.spectra.defect-rca</code></span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span><code>speckit.assess.intake</code></span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span><code>speckit.bug.test</code>, re-run with more checks</span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: b</div><div>Recurrence, severity and production are the cues to escalate. defect-rca checks earlier analyses and whether their preventive actions were done, digs past the first plausible code path, and records preventive actions separately from the fix. <code>impact</code> maps what a proposed change would touch; <code>assess.intake</code> starts an idea assessment.</div></div>
+      </div>
+
+      <div class="quiz-question" data-type="mc" data-correct="a">
+        <div class="quiz-q-prompt">6. Your test report says <code>verified</code> and you&rsquo;ve reviewed it. Why hasn&rsquo;t SPECTRA offered to open a pull request?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-choice="a"><span class="quiz-opt-letter">a</span><span>The offer hangs off SPECTRA&rsquo;s <code>after_implement</code> hook, and the bug extension registers no hooks &mdash; run <code>/speckit-spectra-create-pr</code> yourself</span></button>
+          <button class="quiz-opt" data-choice="b"><span class="quiz-opt-letter">b</span><span><code>create-pr</code> only works on spec branches</span></button>
+          <button class="quiz-opt" data-choice="c"><span class="quiz-opt-letter">c</span><span>A bug fix must go through <code>/speckit-implement</code> before it can be delivered</span></button>
+          <button class="quiz-opt" data-choice="d"><span class="quiz-opt-letter">d</span><span>The offer only appears after <code>/speckit-spectra-defect-rca</code></span></button>
+        </div>
+        <div class="quiz-feedback"><div class="quiz-feedback-title">Answer: a</div><div>The automatic offer fires after <code>/speckit-implement</code>, which a bug fix never runs. <code>create-pr</code> works on any branch &mdash; on a bug branch it drafts the body from your commits and diff &mdash; and nothing else has to run first.</div></div>
+      </div>
+
+      <div class="quiz-question">
+        <div class="quiz-q-prompt">7. In the lab, the fixed app writes <code>[]</code> over whatever was stored under <code>todos</code>. Make the case for accepting that, the case against, and say where the decision belongs.</div>
+        <button class="quiz-open-toggle">Reveal answer</button>
+        <div class="quiz-open-answer"><strong>For:</strong> the app owns that key on its origin, the stored value was already unusable, the collision only happens on developer machines, and it&rsquo;s the smallest fix. <strong>Against:</strong> data loss can&rsquo;t be undone; the same fallback would silently wipe real users&rsquo; lists the day a release changes the stored shape; and a safer remediation (don&rsquo;t save until the user changes something, or keep a copy first) is cheap. <strong>Where it belongs:</strong> in the assessment, before the fix runs &mdash; under Risks if accepted, in the remediation and file list if rejected. Then the fix is bounded by a decision a person made at the gate, and a reviewer can see it was deliberate rather than finding it as a surprise deviation.</div>
+      </div>
+    </div>
+
+    <hr>
+
+    <h3>What's next</h3>
+    <p>You&rsquo;ve now run Spec Kit&rsquo;s workflows as they ship: the SDD loop, idea assessment, and bug fixing. <strong>Module 7, Customization</strong>, shows how to make them your own with extensions, presets, overrides, workflows and bundles &mdash; including why restyling the bug reports you just read takes a command override or a preset rather than a template edit.</p>
+
+    <div class="module-footer-nav">
+      <a class="mod-nav-prev" href="assessment.html">
+        <span class="mod-nav-label">&larr; Previous &middot; Module 5</span>
+        <span class="mod-nav-title">Idea Assessment</span>
+      </a>
+      <a class="mod-nav-next" href="customization.html">
+        <span class="mod-nav-label">Next &middot; Module 7 &rarr;</span>
+        <span class="mod-nav-title">Customization</span>
+      </a>
+    </div>
+  </article>
+</main>
+<script>
+  // Auto-attach copy buttons to all <pre> blocks
+  document.querySelectorAll('pre').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-block';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', async () => {
+      const text = pre.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1400);
+    });
+    wrap.appendChild(btn);
+  });
+
+  // Reveal-on-click blocks
+  document.querySelectorAll('.reveal-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      trigger.parentElement.classList.toggle('open');
+    });
+  });
+
+  // Quiz logic — multiple choice
+  document.querySelectorAll('.quiz-question[data-type="mc"]').forEach((q) => {
+    const correct = q.dataset.correct;
+    const opts = q.querySelectorAll('.quiz-opt');
+    const feedback = q.querySelector('.quiz-feedback');
+    opts.forEach((opt) => {
+      opt.addEventListener('click', () => {
+        const choice = opt.dataset.choice;
+        opts.forEach((o) => {
+          o.disabled = true;
+          if (o.dataset.choice === correct) {
+            o.classList.add('correct');
+          } else if (o === opt) {
+            o.classList.add('incorrect');
+          } else {
+            o.classList.add('dim');
+          }
+        });
+        if (feedback) {
+          feedback.classList.add('show');
+          feedback.classList.add(choice === correct ? 'correct' : 'incorrect');
+        }
+      });
+    });
+  });
+
+  // Quiz logic — open-ended (just reveal)
+  document.querySelectorAll('.quiz-open-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const ans = btn.nextElementSibling;
+      if (ans && ans.classList.contains('quiz-open-answer')) {
+        ans.classList.toggle('show');
+        btn.textContent = ans.classList.contains('show') ? 'Hide answer' : 'Reveal answer';
+      }
+    });
+  });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
+</script>
+</body>
+</html>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<!-- Displayed as Module 9 in the course; the filename predates the renumbering. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module 6 &mdash; Quality, Testing &amp; Team Collaboration &middot; SDD with SPECTRA</title>
+<title>Module 9 &mdash; Quality, Testing &amp; Team Collaboration &middot; SDD with SPECTRA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Mona+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -630,23 +631,26 @@
       <span class="course-nav-brand-text">SDD Learning</span>
     </a>
     <div class="course-nav-modules">
-      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA — Learning">Home</a>
-      <a href="module-1.html" title="Module 1 — SDD Foundations">1</a>
-      <a href="module-2.html" title="Module 2 — Anatomy of a Good Spec">2</a>
-      <a href="module-3.html" title="Module 3 — Greenfield Lab — SPECTRA from Scratch">3</a>
-      <a href="module-4.html" title="Module 4 — Brownfield Lab — Add “Due Date” ★">4</a>
-      <a href="module-5.html" title="Module 5 — Best Practices &amp; Pitfalls">5</a>
-      <a href="module-6.html" title="Module 6 — Quality, Testing &amp; Team Collaboration" class="is-active">6</a>
-      <a href="AI-DLC.html" title="AI-DLC — From SDLC to AI-Driven Development">AI-DLC</a>
+      <a href="index.html" class="course-nav-home" title="SDD with SPECTRA &mdash; Learning">Home</a>
+      <a href="module-1.html" title="Module 1 &mdash; SDD Foundations">1</a>
+      <a href="module-2.html" title="Module 2 &mdash; Anatomy of a Good Spec">2</a>
+      <a href="module-3.html" title="Module 3 &mdash; Greenfield Lab &mdash; SPECTRA from Scratch">3</a>
+      <a href="module-4.html" title="Module 4 &mdash; Brownfield Lab &mdash; Add &ldquo;Due Date&rdquo; &#9733;">4</a>
+      <a href="assessment.html" title="Module 5 &mdash; Idea Assessment &mdash; Should We Build It?">5</a>
+      <a href="bugfix.html" title="Module 6 &mdash; Bug Fix &mdash; Assess, Fix, Verify">6</a>
+      <a href="customization.html" title="Module 7 &mdash; Customization &mdash; Make the Workflow Your Own">7</a>
+      <a href="module-5.html" title="Module 8 &mdash; Best Practices &amp; Pitfalls">8</a>
+      <a href="module-6.html" title="Module 9 &mdash; Quality, Testing &amp; Team Collaboration" class="is-active">9</a>
+      <a href="AI-DLC.html" title="Module 10 &mdash; AI-DLC &mdash; From SDLC to AI-Driven Development">AI-DLC</a>
     </div>
   </div>
 </nav>
 </div>
 <main>
   <header class="hero">
-    <div class="hero-eyebrow">Module 6</div>
+    <div class="hero-eyebrow">Module 9</div>
     <h1>Quality, Testing &amp; Team Collaboration</h1>
-    <p class="hero-lede">Why specs catch failures unit tests miss, the four quality mechanisms working together, the role split that makes SDD work as a team practice, and the review-bottleneck risk.</p>
+    <p class="hero-lede">Why specs catch failures unit tests miss, how the workflow&rsquo;s own gates and four quality mechanisms work together, the role split behind SPECTRA&rsquo;s human gates, and the review-bottleneck risk.</p>
     <div class="meta">
       <div class="meta-item">
         <span class="meta-label">Time</span>
@@ -658,7 +662,7 @@
       </div>
       <div class="meta-item">
         <span class="meta-label">Prerequisites</span>
-        <span class="meta-value">Modules 1&ndash;5</span>
+        <span class="meta-value">Modules 1&ndash;4 and 8</span>
       </div>
     </div>
   </header>
@@ -669,45 +673,60 @@
     <p>By the end of this module, you will be able to:</p>
     <ol>
       <li>Explain why specs catch failures that unit tests miss.</li>
-      <li>Use contract testing, BDD scenarios, property-based tests, and the SpecOps loop as four complementary quality mechanisms.</li>
-      <li>Describe the role split (Product / Architecture / Engineering / Quality) in an SDD-adopting team and identify which role you currently fill.</li>
-      <li>Anticipate the review-bottleneck risk that comes with parallel agent work, and the spec-anchored countermeasures.</li>
+      <li>Distinguish the workflow&rsquo;s gates, which test the artifacts, from contract, BDD, and property-based tests, which test the code &mdash; and use the SpecOps loop to improve both.</li>
+      <li>Place SPECTRA&rsquo;s testing agents where they genuinely help.</li>
+      <li>Connect the role split (Product / Architecture / Engineering / Quality) to the human gates each role owns, and identify which role you fill.</li>
+      <li>Anticipate the review-bottleneck risk that comes with parallel agent work, and its countermeasures.</li>
       <li>Lead a structured discussion with your team about how SDD would change your existing workflows.</li>
     </ol>
 
     <h2><span class="h2-num">1.</span>Why specs catch what unit tests miss</h2>
-    <p>The labs in Modules 3 and 4 produced working code with passing tests. That's necessary but not sufficient. Unit tests verify individual functions; they don't catch the failure modes that cause production incidents.</p>
-    <p>Three categories of failure that specs catch and unit tests don't:</p>
+    <p>The labs in Modules 3 and 4 produced working code with passing tests. That&rsquo;s necessary but not sufficient. Unit tests verify individual functions; they don&rsquo;t catch the failure modes that cause production incidents.</p>
+    <p>Three categories of failure that specs catch and unit tests don&rsquo;t:</p>
 
     <h3>1.1 Architectural violations</h3>
     <p>The function works correctly but is in the wrong place. Auth checks in route handlers instead of middleware. Business logic in database access modules. Direct service-to-service calls that should go through a message bus.</p>
-    <p>Each instance is fine in isolation. The codebase eroding over time isn't.</p>
-    <p>A spec can encode &ldquo;auth checks must run in middleware, not handlers&rdquo; as a CI-checkable constraint. Unit tests can't, because each individual handler &ldquo;works.&rdquo;</p>
+    <p>Each instance is fine in isolation. The codebase eroding over time isn&rsquo;t.</p>
+    <p>A constitution principle can state &ldquo;auth checks run in middleware, not handlers,&rdquo; and a CI rule can enforce it. <code>/speckit-analyze</code> treats a conflict with the constitution as critical before any code exists. Unit tests can&rsquo;t catch it at all, because each individual handler &ldquo;works.&rdquo;</p>
 
     <h3>1.2 API contract drift between services</h3>
-    <p>Service A's caller assumes a <code>userId</code> field. Service A's implementation now returns <code>user_id</code>. Both services have green CI; the integration is broken.</p>
-    <p>Tools like Specmatic and Pact validate that implementations match an OpenAPI or Pact spec in CI. A failing schema check fails the build before the broken contract reaches production. The Piskala paper cites a financial services case study where this approach reduced API integration cycle time by 75% &mdash; most of the integration time was being spent on debugging spec/implementation mismatches that were now caught at spec review.</p>
+    <p>Service A&rsquo;s caller assumes a <code>userId</code> field. Service A&rsquo;s implementation now returns <code>user_id</code>. Both services have green CI; the integration is broken.</p>
+    <p>Tools like Specmatic and Pact validate that implementations match an OpenAPI or Pact spec in CI. A failing schema check fails the build before the broken contract reaches production. The Piskala paper cites a financial services case study where this approach reduced API integration cycle time by 75% &mdash; most of the integration time had been spent debugging spec/implementation mismatches that were now caught at spec review.</p>
 
     <h3>1.3 Security anti-patterns that emerge across boundaries</h3>
-    <p>The single most-cited example in SDD literature: a payment endpoint without an idempotency key. Each individual function does its job correctly. Retry logic &mdash; also doing its job correctly &mdash; creates duplicate charges in production. The team patches the code. The next AI regeneration cycle reintroduces the same vulnerability because no specification encodes the constraint.</p>
-    <p>A spec encodes the constraint as a CI rule: &ldquo;all payment-modifying endpoints require an idempotency-key header.&rdquo; The build fails when an endpoint is added without one. The vulnerability stays fixed.</p>
-    <p>The pattern: vulnerabilities that emerge from interactions between correctly-functioning components are exactly the ones unit tests can't catch and specs can.</p>
+    <p>The single most-cited example in SDD literature: a payment endpoint without an idempotency key. Each individual function does its job correctly. Retry logic &mdash; also doing its job correctly &mdash; creates duplicate charges in production. The team patches the code. The next AI regeneration cycle reintroduces the same vulnerability because nothing written down encodes the constraint.</p>
+    <p>Write the constraint where every future change will read it &mdash; for a project-wide rule like &ldquo;all payment-modifying endpoints require an idempotency-key header,&rdquo; that&rsquo;s the constitution &mdash; and back it with a CI check that fails when an endpoint is added without one. The vulnerability stays fixed.</p>
+    <p>The pattern: vulnerabilities that emerge from interactions between correctly-functioning components are exactly the ones unit tests can&rsquo;t catch and specs can.</p>
 
     <h3>A note on the empirical case</h3>
-    <p>The pro-SDD literature cites strong numbers: Augment references benchmarks where LLMs generate vulnerable code at 9.8&ndash;42.1% rates and over 110,000 surviving AI-introduced issues found in production by early 2026; Piskala cites controlled studies showing &ldquo;error reductions of up to 50%&rdquo; with human-refined specs vs. raw prompts.</p>
-    <p>These numbers should be taken with calibrated trust. They come from contexts that overlap with SDD but aren't pure tests of it (contract-driven development has decades of history; AI-assisted code generation includes plenty of non-spec workflows). The directional claim &mdash; specs catch a category of failure that other testing doesn't &mdash; is solid. The exact percentages are weaker.</p>
-    <p>The honest framing for your team: <strong>SDD measurably improves quality on dimensions unit tests don't cover. The size of the improvement depends on your domain, your team practices, and what you were doing before.</strong></p>
+    <p>The pro-SDD literature cites strong numbers &mdash; Augment references benchmarks where LLMs generate vulnerable code at 9.8&ndash;42.1% rates; Piskala cites controlled studies showing &ldquo;error reductions of up to 50%&rdquo; with human-refined specs. Take them with calibrated trust: they come from contexts that overlap with SDD but aren&rsquo;t pure tests of it. The directional claim is solid; the exact percentages are weaker. The honest framing for your team: <strong>SDD measurably improves quality on dimensions unit tests don&rsquo;t cover. The size of the improvement depends on your domain, your team practices, and what you were doing before.</strong></p>
 
-    <h2><span class="h2-num">2.</span>The four quality mechanisms</h2>
-    <p>Each addresses a different failure mode. Use them together; none alone is sufficient.</p>
+    <h2><span class="h2-num">2.</span>The quality mechanisms</h2>
+    <p>Each mechanism below addresses a different failure mode. Use them together; none alone is sufficient. Start with the ones already built into the workflow, because they test something your test suite never will: the artifacts themselves.</p>
 
-    <h3>2.1 Contract testing</h3>
-    <p>A spec describes the contract between a service and its callers (or between an API and its consumers). A contract test verifies the implementation matches the spec. The contract is the source of truth; the implementation is what gets verified.</p>
-    <p>Tools: Specmatic (OpenAPI-based), Pact (consumer-driven contract testing). Both run in CI and fail builds where the implementation doesn't match the contract.</p>
-    <p>When this is most valuable: services with multiple consumers, public APIs, microservice boundaries. Less valuable for pure UI work or single-consumer internal tools.</p>
+    <h3>2.1 The workflow&rsquo;s own gates test the artifacts</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Gate</th><th>What it tests</th><th>What it can&rsquo;t tell you</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>speckit.checklist</code></td><td>Requirement quality &mdash; is the spec complete, clear, consistent? Unit tests for your requirements. A person ticks each custom checklist item; the command never does.</td><td>Whether the code works. It never looks at the code.</td></tr>
+          <tr><td><code>speckit.analyze</code></td><td>Whether spec, plan, and tasks agree &mdash; a task no requirement asked for, a plan choice the spec rules out, a conflict with the constitution. Read-only; each finding is fixed in the step that owns it.</td><td>Whether the spec describes what users actually need.</td></tr>
+          <tr><td><code>speckit.converge</code></td><td>Whether the code covers everything the spec, plan, and tasks call for. Append-only: it can add tasks, never edit code.</td><td>Whether the behavior is right at runtime, at the edges, under load. That takes tests.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>These are the cheap, early gates: each catches a whole class of problem before a single test runs. None of them executes anything, so they complement the mechanisms below rather than replacing them.</p>
+    <p>SPECTRA adds a bridge between the two layers. <code>speckit.spectra.test-plan</code> runs after <code>/speckit-specify</code> and before <code>/speckit-plan</code>, writing a <code>test-plan.md</code> beside the spec &mdash; risks, test conditions traced to acceptance criteria, exclusions, exit criteria &mdash; for stakeholders to approve before anything is designed. It is approved, not tracked, so it carries no checkboxes; the approved plan goes to the planning command so the tasks include its tests.</p>
 
-    <h3>2.2 BDD scenarios as executable acceptance tests</h3>
-    <p>Gherkin scenarios &mdash; <code>Given / When / Then</code> &mdash; are executable specs at the feature level. Cucumber, SpecFlow, and similar tools turn them into automated tests.</p>
+    <h3>2.2 Contract testing</h3>
+    <p>A spec describes the contract between a service and its callers (or between an API and its consumers). A contract test verifies the implementation matches it. The contract is the source of truth; the implementation is what gets verified.</p>
+    <p>Tools: Specmatic (OpenAPI-based), Pact (consumer-driven contract testing). Both run in CI and fail builds where the implementation doesn&rsquo;t match the contract.</p>
+    <p>When this is most valuable: services with multiple consumers, public APIs, microservice boundaries. Less valuable for pure UI work or single-consumer internal tools. Whether you need it is a project-level decision, which is why <code>speckit.spectra.test-strategy</code> (section 3) asks whether an external consumer exists and covers API contract testing as one of its layers.</p>
+
+    <h3>2.3 BDD scenarios as executable acceptance tests</h3>
+    <p>Gherkin scenarios &mdash; <code>Given / When / Then</code> &mdash; are executable specs at the feature level. Cucumber, SpecFlow, and similar tools turn them into automated tests. Spec Kit&rsquo;s spec template already writes each user story&rsquo;s acceptance scenarios in the same Given/When/Then shape, so the step from spec to scenario is short:</p>
 <pre><code>Feature: Adding a due date to a todo
 
 Scenario: Setting a due date on creation
@@ -720,125 +739,137 @@ Scenario: Overdue todos are visually distinct
   Given I have an uncompleted todo with due date "2025-12-01"
   When I view my todo list
   Then the todo should appear with the overdue treatment</code></pre>
-    <p>The killer property: PM and engineering agree on what &ldquo;done&rdquo; means before any code is written. A feature is done when all scenarios pass. There's no debate at the end of the sprint about whether the work matches what was asked for, because the scenarios <em>are</em> what was asked for.</p>
+    <p>The killer property: PM and engineering agree on what &ldquo;done&rdquo; means before any code is written. A feature is done when all scenarios pass. There&rsquo;s no debate at the end of the sprint about whether the work matches what was asked for, because the scenarios <em>are</em> what was asked for.</p>
     <p>When this is most valuable: features where business stakeholders care about behavior rather than implementation. UI features, business rules, customer-facing workflows. Less valuable for infrastructure, refactors, performance work.</p>
 
-    <h3>2.3 Property-based testing for spec invariants</h3>
+    <h3>2.4 Property-based testing for spec invariants</h3>
     <p>LLM-generated code is non-deterministic. The same spec can produce different code on different runs. Unit tests with hand-written examples may pass for one generation and fail for another.</p>
     <p>Property-based tests assert that something holds for <em>all</em> inputs of a given shape, not just hand-picked examples. Tools: QuickCheck (Haskell), Hypothesis (Python), fast-check (JavaScript).</p>
-    <p>For example, in the to-do app: &ldquo;for any todo with <code>due_date</code> in the past and <code>completed = false</code>, <code>isOverdue(todo)</code> returns true.&rdquo; That's an invariant &mdash; it must hold for any input matching the precondition. A property-based test generates hundreds of inputs and verifies the invariant for each.</p>
+    <p>For example, in the to-do app: &ldquo;for any todo with a due date in the past and <code>completed = false</code>, <code>isOverdue(todo)</code> returns true.&rdquo; That&rsquo;s an invariant &mdash; it must hold for any input matching the precondition. A property-based test generates hundreds of inputs and verifies the invariant for each.</p>
     <p>When this is most valuable: code with clear invariants, especially anything involving math, data transformations, or state machines. Less valuable for purely UI-driven features.</p>
 
-    <h3>2.4 The SpecOps feedback loop</h3>
-    <p>Introduced briefly in Modules 1 and 4. Restating it here because it's the mechanism that makes the other three improve over time.</p>
-    <p>When a bug surfaces, classify it:</p>
+    <h3>2.5 The SpecOps feedback loop</h3>
+    <p>Module 4 introduced this in a paragraph at the end of the lab. This is where it gets explained, because it is the mechanism that makes every other gate improve over time.</p>
+    <p>When a bug surfaces, first establish what actually happened. Spec Kit&rsquo;s <code>bug</code> workflow (Module 6) gives you a diagnosis backed by evidence; <code>speckit.spectra.defect-rca</code> goes further, to root cause and preventive actions. Then classify the bug:</p>
     <ul>
-      <li><strong>Spec-to-implementation gap:</strong> the spec was clear, the code diverged. The fix is to strengthen validation gates so this category of divergence gets caught.</li>
-      <li><strong>Intent-to-spec gap:</strong> the spec itself was incomplete or wrong. The fix is to improve elicitation patterns &mdash; what questions you ask, what templates you use, what cross-feature reviews you do &mdash; so this category of intent gets captured next time.</li>
+      <li><strong>Spec-to-implementation gap:</strong> the spec was clear, the code diverged. Strengthen the gates that should have caught it &mdash; a missing test, a contract check, a CI rule, a constitution principle that analyze and PR review can check against.</li>
+      <li><strong>Intent-to-spec gap:</strong> the spec itself was incomplete or wrong. Improve elicitation &mdash; the questions you push through clarify, the domains your checklists cover, the sections in your spec template (Module 7 shows how to override it for the whole team).</li>
     </ul>
-    <p>Both feed back into the harness. Future specs are stronger; future validation is stricter. Quality engineering's role evolves from validating implementations (PR review, test writing) to validating the harnesses that guide agent execution.</p>
-    <p>This is the mechanism that turns SDD from a one-time productivity bump into a compounding capability. Without it, you get the initial benefit and then plateau. With it, every bug strengthens the system.</p>
-    <p>A practical habit: in retros, classify recent bugs into the two categories. Track the ratio. If you have many spec-to-implementation gaps, your validation needs work. If you have many intent-to-spec gaps, your spec-writing process needs work. Each tells you a different thing to fix.</p>
+    <p>Both land back in the shared context. In SPECTRA&rsquo;s terms this is the Maintain gate: the team decides the fix, and whether the lesson becomes a standard. This is the mechanism that turns SDD from a one-time productivity bump into a compounding capability. Without it, you plateau. With it, every bug strengthens the system.</p>
+    <p>A practical habit: in retros, classify recent bugs into the two categories and track the ratio. Many spec-to-implementation gaps mean your validation needs work. Many intent-to-spec gaps mean your spec-writing process does. Each tells you a different thing to fix.</p>
 
     <h2><span class="h2-num">3.</span>Test coverage strategies under SDD</h2>
-    <p>Three patterns that come up across teams that have been doing SDD for a while:</p>
+    <p>Decide the strategy once. <code>speckit.spectra.test-strategy</code> runs once, alongside the constitution: it reads the project, asks only what the repository can&rsquo;t answer, and writes <code>&lt;artifact-root&gt;/test-strategy/TEST_STRATEGY.md</code> &mdash; unit, integration, API contract, and end-to-end testing, plus a coverage floor the codebase can actually hold. It drafts the constitution amendment that would make the strategy binding and hands it to <code>/speckit-constitution</code>, never editing the constitution itself. Architects and engineering leads approve it at the Foundation gate. Three patterns then come up feature by feature:</p>
 
     <h3>3.1 Test-first specs</h3>
-    <p>Include test requirements as part of the spec. The agent generates tests alongside the implementation. The spec defines the contract; the tests prove it.</p>
-    <p>This is TDD adapted for AI-generated code. The mental model: you don't trust the agent's implementation, but you trust the spec. So the tests should be derivable from the spec, not from the implementation.</p>
-    <p>If your spec is well-written (six elements, including verification criteria), your test suite is mostly already there. Just have the agent codify it.</p>
+    <p>Include test requirements as part of the spec. The agent generates tests alongside the implementation. The spec defines the contract; the tests prove it. When tests are requested, <code>/speckit-tasks</code> puts them inside each user story&rsquo;s phase, next to the code they prove.</p>
+    <p>This is TDD adapted for AI-generated code. The mental model: you don&rsquo;t trust the agent&rsquo;s implementation, but you trust the spec. So the tests should be derivable from the spec, not from the implementation &mdash; which is exactly what a test plan from <code>speckit.spectra.test-plan</code> records.</p>
+    <p>If your spec is well written (Module 2&rsquo;s six elements, including verification criteria), your test suite is mostly already there. Just have the agent codify it.</p>
 
     <h3>3.2 Edge cases in the spec, not discovered in implementation</h3>
-    <p>A bad pattern that's hard to break: write a happy-path spec, get a happy-path implementation, then discover an edge case during manual testing, then patch the code.</p>
-    <p>The edge case should have been in the spec. If you're discovering edge cases during implementation, your spec is incomplete. Update the spec, then update the code.</p>
-    <p>Practical exercise during spec writing: ask &ldquo;what would break this?&rdquo; for each requirement. Empty input. Maximum input. Concurrent operations. Network failures. Timezone changes. Rounding boundaries. Each potential break either becomes an explicit verification criterion or a deliberate out-of-scope decision. Both are fine; silence isn't.</p>
+    <p>A bad pattern that&rsquo;s hard to break: write a happy-path spec, get a happy-path implementation, discover an edge case during manual testing, patch the code.</p>
+    <p>The edge case should have been in the spec. If you&rsquo;re discovering edge cases during implementation, your spec is incomplete. Update the spec, then update the code.</p>
+    <p>Practical exercise during spec writing: ask &ldquo;what would break this?&rdquo; for each requirement. Empty input. Maximum input. Concurrent operations. Network failures. Timezone changes. Rounding boundaries. Each potential break either becomes an explicit verification criterion or a deliberate out-of-scope decision. Both are fine; silence isn&rsquo;t. <code>/speckit-clarify</code> with a focus area, and a checklist aimed at edge cases, are the workflow&rsquo;s tools for asking.</p>
 
     <h3>3.3 Validation gates in CI &mdash; the same gates, but stricter</h3>
-    <p>Whatever validation your team runs on human-written code, you should run on AI-generated code: minimum coverage thresholds, SAST, dependency scanning, secrets detection, integration tests, regression tests.</p>
-    <p>The honest reason: AI-generated code has higher baseline error rates than carefully-written human code. The data from Augment's guide is unambiguous on this. Treating AI-generated code as if it had human-equivalent quality skips the validation that made human-written code reliable.</p>
-    <p>If your CI doesn't have these gates today, the moment you start generating code with AI is the moment to add them. The gates aren't punishment; they're the safety net that lets you move fast without breaking things.</p>
+    <p>Whatever validation your team runs on human-written code, run on AI-generated code: minimum coverage thresholds, SAST, dependency scanning, secrets detection, integration tests, regression tests.</p>
+    <p>The honest reason: AI-generated code has higher baseline error rates than carefully written human code. Treating it as if it had human-equivalent quality skips the validation that made human-written code reliable. If your CI doesn&rsquo;t have these gates today, the moment you start generating code with AI is the moment to add them.</p>
+    <p>A gate only protects you while people believe it. Once a suite fails intermittently, the team re-runs instead of investigating, and real regressions hide in the noise. <code>speckit.spectra.flaky-test-detector</code> finds flaky tests by reading the test source &mdash; unconditional sleeps, un-awaited async calls, shared state, the real clock &mdash; without running anything, and with your explicit go-ahead fixes the cause. A retry, a skip, or a loosened assertion never counts as a fix.</p>
 
     <h2><span class="h2-num">4.</span>Team roles under SDD</h2>
-    <p>The cultural shift is the actual work. The InfoQ piece by Krishnan is the most explicit on this point: the most significant impact of SDD is <em>cultural, not technical</em>. The shift is from one-way instructions (&ldquo;do X&rdquo;) to dialogue (&ldquo;here's the intent &mdash; let's converge on what we're building&rdquo;). Specs become the <strong>shared interface</strong> where product, architecture, engineering, and quality collaborate.</p>
-    <p>If your team treats SDD as &ldquo;engineers write better prompts,&rdquo; you'll get token-usage improvements and not much else. If you treat it as a way to restructure how PM/architect/engineer collaborate, you unlock the bigger benefit: directing parallel agent work without losing coherence.</p>
+    <p>The cultural shift is the actual work. The InfoQ piece by Krishnan is the most explicit on this point: the most significant impact of SDD is <em>cultural, not technical</em>. The shift is from one-way instructions (&ldquo;do X&rdquo;) to dialogue (&ldquo;here&rsquo;s the intent &mdash; let&rsquo;s converge on what we&rsquo;re building&rdquo;). Specs become the <strong>shared interface</strong> where product, architecture, engineering, and quality collaborate.</p>
+    <p>If your team treats SDD as &ldquo;engineers write better prompts,&rdquo; you&rsquo;ll get token-usage improvements and not much else. Treat it as a way to restructure how PM, architect, and engineer collaborate, and you unlock the bigger benefit: directing parallel agent work without losing coherence. SPECTRA makes the split concrete. Its agentic SDLC has a human gate in every phase &mdash; agents draft, people decide &mdash; and each gate belongs to a role:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Role</th><th>Owns</th><th>Human gates it stands at</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Product</strong></td><td>What and why</td><td><strong>01 Plan</strong> &mdash; approves intent, scope, and business alignment. Answers clarify&rsquo;s questions, and decides whether an assessed idea goes ahead at all (Module 5).</td></tr>
+          <tr><td><strong>Architecture</strong></td><td>How</td><td><strong>00 Foundation</strong> &mdash; with engineering leads, approves every standard before it binds an agent. <strong>02 Design</strong> &mdash; approves the plan and the decisions it records.</td></tr>
+          <tr><td><strong>Engineering</strong></td><td>Tasks and code</td><td><strong>03 Implement</strong> &mdash; reviews every change; an agent&rsquo;s diff is read like a person&rsquo;s. <strong>05 Deploy</strong> &mdash; a maintainer merges.</td></tr>
+          <tr><td><strong>Quality</strong></td><td>The harness</td><td><strong>04 Test</strong> &mdash; decides what a finding means and whether a fix is safe to land.</td></tr>
+          <tr><td><strong>The whole team</strong></td><td>Lessons</td><td><strong>06 Maintain</strong> &mdash; decides the fix, and whether the lesson becomes a standard.</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <h3>4.1 Product owns &ldquo;what&rdquo;</h3>
-    <p>Business context, user value, acceptance criteria. Operates in the backlog (Jira, Linear, Azure DevOps), not in Git. The MCP integration with backlog tools is the practical bridge &mdash; PMs don't need to learn Git.</p>
-    <p>Product writes the <em>intent</em> layer of the spec: outcomes, in-scope behavior, business constraints. They don't write the technical sections. They review and challenge them.</p>
-    <p>Concretely: when a PM writes a Jira ticket today with acceptance criteria, that's most of the spec's first section already. They keep doing that; it just becomes the canonical input rather than advisory text.</p>
+    <p>Business context, user value, acceptance criteria. Product usually works in the backlog (Jira, Linear, Azure DevOps), not in Git &mdash; and doesn&rsquo;t have to move. SPECTRA&rsquo;s <code>speckit.spectra.brd</code> takes a raw requirement, typed or handed over as a document, and turns it into a specify-ready business requirements document.</p>
+    <p>Product writes the <em>intent</em> layer of the spec: outcomes, in-scope behavior, business constraints. They don&rsquo;t write the technical sections. They review and challenge them, and they are the person clarify&rsquo;s questions are really addressed to.</p>
+    <p>A PM&rsquo;s ticket with acceptance criteria is already most of the spec&rsquo;s first section; it just becomes the canonical input rather than advisory text.</p>
 
     <h3>4.2 Architecture owns &ldquo;how&rdquo;</h3>
-    <p>Technical approach, repository boundaries, integration patterns, cross-cutting constraints. Encodes these into a reusable harness &mdash; Spec Kit Constitution, Kiro Steering, OpenSpec custom profiles &mdash; rather than manually decomposing each story.</p>
-    <p>Architecture's biggest contribution under SDD isn't writing individual specs; it's curating the Constitution and the validation gates so that <em>every</em> spec inherits sound technical decisions. This is high-leverage work. A 50-line Constitution improvement cascades through every future spec.</p>
-    <p>If your team doesn't have a designated architect, this role still needs to exist. It might be a senior engineer rotating, or a tech lead, or a small &ldquo;tech council.&rdquo; But someone needs to own the cross-feature consistency. Without that role, every spec becomes a one-off, and architectural drift accelerates rather than decelerates under SDD.</p>
+    <p>Technical approach, repository boundaries, integration patterns, cross-cutting constraints. Architecture encodes these into a reusable harness &mdash; the constitution (SPECTRA calls the agent that writes it Guardrails) and architecture decision records from <code>speckit.spectra.adr</code> &mdash; rather than manually decomposing each story.</p>
+    <p>Architecture&rsquo;s biggest contribution under SDD isn&rsquo;t writing individual specs; it&rsquo;s curating the constitution and the validation gates so that <em>every</em> spec inherits sound technical decisions. A 50-line constitution improvement cascades through every future spec.</p>
+    <p>If your team doesn&rsquo;t have a designated architect, this role still needs to exist &mdash; a rotating senior engineer, a tech lead, a small &ldquo;tech council.&rdquo; Without it, every spec becomes a one-off, and architectural drift accelerates under SDD.</p>
 
     <h3>4.3 Engineering owns &ldquo;tasks&rdquo;</h3>
-    <p>Per-repository implementation tasks, tightly coupled to the codebase, lives with the code. This is what most engineers were doing before SDD; the change is that the <em>what</em> and the <em>how</em> are now explicit upstream artifacts rather than implicit assumptions.</p>
-    <p>The big shift for engineers: less time writing code, more time writing specs and reviewing artifacts at every phase. This feels uncomfortable to engineers who derive identity from typing code. The honest reframe: you're still doing engineering work; you're just doing it at a higher level of abstraction. The code is now an output, not the primary deliverable.</p>
-    <p>Worth saying explicitly: this isn't deskilling. Writing a precise, testable spec that an agent can implement correctly is a harder skill than writing the code yourself. Most engineers find it humbling at first. That's normal.</p>
+    <p>Per-repository implementation tasks, tightly coupled to the codebase, living with the code. This is what most engineers were doing before SDD; the change is that the <em>what</em> and the <em>how</em> are now explicit upstream artifacts rather than implicit assumptions.</p>
+    <p>The big shift for engineers: less time writing code, more time writing specs and reviewing artifacts at every phase. This feels uncomfortable to engineers who derive identity from typing code. The honest reframe: you&rsquo;re still doing engineering work, at a higher level of abstraction. The code is now an output, not the primary deliverable.</p>
+    <p>This isn&rsquo;t deskilling. Writing a precise, testable spec an agent can implement correctly is a harder skill than writing the code yourself.</p>
 
     <h3>4.4 Quality owns harness validation</h3>
-    <p>Krishnan's key shift: QA validates the <em>harnesses</em> and validation mechanisms, not the finished implementations.</p>
-    <p>In the old model, QA caught bugs at the end. In the SDD model, the validation gates and the spec templates are the QA artifact. QA's job is to make those better, so that a wider class of bugs can't reach production in the first place.</p>
-    <p>This doesn't eliminate manual QA work. Visual regressions, complex user flows, exploratory testing &mdash; these still happen. But the bulk-validation work shifts upstream into the harness.</p>
-    <p>A team's QA function is often the slowest to absorb this change because the role's identity has been &ldquo;find bugs late.&rdquo; Reframing it as &ldquo;make the harness catch more, sooner&rdquo; is genuinely a different mental model.</p>
+    <p>Krishnan&rsquo;s key shift: QA validates the <em>harnesses</em> and validation mechanisms, not the finished implementations.</p>
+    <p>In the old model, QA caught bugs at the end. In the SDD model, the validation gates and the spec templates are the QA artifact. In SPECTRA&rsquo;s terms, that means the test strategy, each feature&rsquo;s test plan, and often the reviewer&rsquo;s seat on the custom checklists &mdash; all settled before code exists. QA&rsquo;s job is to make those better, so that a wider class of bugs can&rsquo;t reach production in the first place.</p>
+    <p>Visual regressions, complex user flows, and exploratory testing still happen by hand, but the bulk-validation work shifts upstream. QA is often the slowest function to absorb this, because its identity has been &ldquo;find bugs late&rdquo;; &ldquo;make the harness catch more, sooner&rdquo; is a genuinely different mental model.</p>
 
     <h3>4.5 Specialised roles</h3>
-    <p>Security, performance, infrastructure: each layers its own context onto incoming stories via dedicated agents or harnesses, rather than serving as manual review gates.</p>
-    <p>Example: a security-focused agent has its own harness containing the security policies (auth requirements, data handling rules, encryption standards) and reviews each spec for security implications before implementation. If the spec is fine, security signs off without being a bottleneck. If it has issues, they're caught at spec review, not at PR time.</p>
-    <p>This is much more scalable than the old model where every PR needed a security reviewer. Specialised reviewers become consultants on the harness rather than gatekeepers in the workflow.</p>
+    <p>Security, performance, infrastructure: each layers its own context onto incoming stories through the harness, rather than serving as a manual review gate on every change.</p>
+    <p>Example: security writes its policies (auth requirements, data handling rules, encryption standards) into the constitution. <code>/speckit-analyze</code> then flags any spec, plan, or task list that conflicts with them before implementation, and <code>speckit.spectra.review-pr</code> checks each pull request against the same constitution. If the spec is fine, security signs off without being a bottleneck. If it has issues, they&rsquo;re caught at spec review, not at PR time.</p>
+    <p>This scales much better than the old model where every PR needed a security reviewer. Specialised reviewers become consultants on the harness rather than gatekeepers in the workflow.</p>
 
     <h2><span class="h2-num">5.</span>Multi-repo and multi-team coordination</h2>
-    <p>The single biggest gap in current SDD tooling. Most tools (Spec Kit included) assume one spec lives with one repo. Modern enterprise architectures span microservices, shared libraries, and infrastructure repos.</p>
-    <p>Krishnan's recommended pattern:</p>
+    <p>The single biggest gap in current SDD tooling. Spec Kit&rsquo;s conventions are per repository &mdash; even Module 8&rsquo;s spec-of-specs roadmap ties slices together inside one repo. Modern enterprise architectures span microservices, shared libraries, and infrastructure repos.</p>
+    <p>Krishnan&rsquo;s recommended pattern:</p>
     <ul>
       <li><strong>Business context</strong> (the &ldquo;what&rdquo;) lives at the backlog level, visible to the whole org.</li>
       <li><strong>Parent stories</strong> get decomposed into repository-specific sub-issues during the design phase. Each sub-issue becomes a spec in its own repo.</li>
       <li><strong>Technical implementation details</strong> live with the code in each repo.</li>
       <li><strong>Architects maintain repository-boundary documentation</strong> that agents can superimpose onto incoming stories to generate appropriate sub-issues per repo.</li>
     </ul>
-    <p>If your team is single-repo today, this is mostly a future concern. If you span multiple repos, plan for it now: the longer you wait, the more divergent each repo's specs and Constitutions become.</p>
+    <p>If your team is single-repo today, this is mostly a future concern. If you span multiple repos, plan for it now: the longer you wait, the more divergent each repo&rsquo;s specs and constitutions become.</p>
 
     <h2><span class="h2-num">6.</span>The review bottleneck</h2>
-    <p>The most counterintuitive risk in SDD adoption: it can make your team slower, not faster, if you don't address review capacity.</p>
+    <p>The most counterintuitive risk in SDD adoption: it can make your team slower, not faster, if you don&rsquo;t address review capacity.</p>
     <p>The Agoda study (10,000+ developers, 1,255 teams, March 2026) is sobering. High-AI-adoption teams completed <strong>21% more tasks</strong> and merged <strong>98% more PRs</strong> &mdash; but PR review time <strong>increased by 91%</strong>. From the InfoQ piece on the study:</p>
     <blockquote>If we keep ourselves preoccupied verifying AI output, the backlog is starved for fresh ideas. A review-based approach alone cannot scale.</blockquote>
-    <p>Why this happens: AI agents generate code far faster than humans can carefully review it. Each PR is bigger, more frequent, and (because the agent generated it) less internally familiar to the human reviewer. Review time per PR goes up; total volume goes up. Reviewers become the bottleneck.</p>
-    <p>SDD's countermeasures push validation upstream:</p>
+    <p>Why this happens: agents generate code far faster than humans can carefully review it. Each PR is bigger, more frequent, and less familiar to the reviewer. Reviewers become the bottleneck.</p>
+    <p>SDD&rsquo;s countermeasures push validation upstream:</p>
     <ol>
-      <li><strong>Spec review</strong> catches intent-level issues before code is written. Cheaper than catching them at PR.</li>
-      <li><strong>Plan and tasks review</strong> catches design issues before code is written. Same logic.</li>
-      <li><strong>Verifier agents</strong> (Module 5) check generated code against specs automatically. Reduces human review load on routine cases.</li>
-      <li><strong>Validation gates</strong> (CI checks tied to specs) catch divergence automatically. The reviewer can trust that gates passed and focus attention on judgment-level concerns.</li>
+      <li><strong>Spec review</strong> &mdash; clarify and the custom checklists &mdash; catches intent-level issues before code is written. Cheaper than catching them at PR.</li>
+      <li><strong>Plan and tasks review</strong>, with <code>/speckit-analyze</code> cross-checking them, catches design issues before code is written.</li>
+      <li><strong>Verifier passes</strong> (Module 8) &mdash; <code>/speckit-converge</code>, and an adversarial verifier for high-stakes work &mdash; check generated code against the artifacts before a person does.</li>
+      <li><strong>Validation gates</strong> (CI checks tied to specs) catch divergence automatically, so the reviewer can focus on judgment-level concerns.</li>
+      <li><strong>A conformance-aware first pass at the PR.</strong> <code>speckit.spectra.review-pr</code> reviews the pull request against the spec, plan, tasks, ADRs, and constitution it carries &mdash; catching a task marked done but never built, or a change no requirement authorized &mdash; and proposes only blockers and majors by default. The human reviewer decides what gets published.</li>
     </ol>
-    <p>Without these, AI adoption + manual PR review = the Agoda outcome. With them, review burden stays manageable while velocity goes up.</p>
-    <p>This is also why the role split matters. If quality engineering moves upstream into the harness, and architecture moves upstream into the Constitution, code review becomes a smaller fraction of the work &mdash; not because it's done less carefully, but because the upstream work makes it easier.</p>
+    <p>Without these, AI adoption plus manual PR review equals the Agoda outcome. This is also why the role split matters. If quality engineering moves upstream into the harness, and architecture moves upstream into the constitution, code review becomes a smaller fraction of the work &mdash; not because it&rsquo;s done less carefully, but because the upstream work makes it easier.</p>
 
     <h2><span class="h2-num">7.</span>Discussion prompts for your team</h2>
     <p>Spend 15 minutes on these in a team setting (or a Slack thread, or an async doc &mdash; whatever fits how your team operates). The goal is to surface the specific frictions your team will hit, not to produce a polished document.</p>
     <ol>
-      <li><strong>Where in our current workflow is the spec implicit?</strong> When a PM hands a Jira ticket to engineering, what's understood that isn't written down? Whose responsibility is it that those assumptions don't drift?</li>
-      <li><strong>Who would write the Constitution today?</strong> Realistically &mdash; a name, not a role. If you can't name someone, that's the first organizational gap to close before serious adoption.</li>
-      <li><strong>What's our current review bottleneck?</strong> PR review time, design review time, security review time? Of those, which would SDD push upstream, and what's the work to make that happen?</li>
-      <li><strong>What's our spec-rot risk?</strong> If we adopt SDD and the spec becomes part of every PR, what would actually keep specs current six months later? Who enforces it? What CI gate would catch it?</li>
+      <li><strong>Where in our current workflow is the spec implicit?</strong> When a PM hands a ticket to engineering, what&rsquo;s understood that isn&rsquo;t written down? Whose responsibility is it that those assumptions don&rsquo;t drift?</li>
+      <li><strong>Who would approve our constitution today?</strong> Realistically &mdash; a name, not a role. That person stands at the Foundation gate. If you can&rsquo;t name someone, that&rsquo;s the first organizational gap to close before serious adoption.</li>
+      <li><strong>What&rsquo;s our current review bottleneck?</strong> PR review time, design review time, security review time? Of those, which would SDD push upstream, and what&rsquo;s the work to make that happen?</li>
+      <li><strong>What&rsquo;s our spec-rot risk?</strong> If we adopt SDD and the spec becomes part of every PR, what would actually keep specs current six months later? Who enforces it? What gate would catch it?</li>
       <li><strong>Where would we hit the multi-repo problem?</strong> Are there features today that span repos? How do we coordinate them currently? How would SDD make that easier or harder?</li>
-      <li><strong>What's the smallest pilot we could run?</strong> Pick one team, one type of feature, four weeks. What would success look like? What would failure look like? What would we measure?</li>
+      <li><strong>What&rsquo;s the smallest pilot we could run?</strong> Pick one team, one type of feature, four weeks. What would success look like? What would failure look like? What would we measure?</li>
     </ol>
     <p>The last question is the most important. The next module shows what the lifecycle looks like once this way of working is the default &mdash; but the questions above need answers from your team specifically. No external framework can substitute for that judgment.</p>
 
     <hr>
 
     <h3>What's next</h3>
-    <p><strong>AI-DLC</strong> &mdash; the final module &mdash; is about the lifecycle itself. AWS's AI-Driven Development Life Cycle collapses the six SDLC phases into three, replaces sprints with bolts measured in hours, and puts humans and AI in the room together at every phase. The module maps all of it onto the Spec Kit commands you already know.</p>
-    <p>If Module 6 was about <em>how</em> SDD changes collaboration within the existing lifecycle, the final module is about what happens when the lifecycle itself catches up.</p>
+    <p><strong>Module 10, AI-DLC</strong> &mdash; the final module &mdash; is about the lifecycle itself. AWS&rsquo;s AI-Driven Development Life Cycle folds the SDLC into three stages, replaces sprints with bolts measured in hours or days, and puts humans and AI in the room together at every stage. The module maps SPECTRA&rsquo;s seven-phase agentic SDLC, and the commands you already know, onto it.</p>
+    <p>If this module was about <em>how</em> SDD changes collaboration within the existing lifecycle, the final module is about what happens when the lifecycle itself catches up.</p>
 
     <div class="module-footer-nav">
       <a class="mod-nav-prev" href="module-5.html">
-        <span class="mod-nav-label">← Previous · Module 5</span>
+        <span class="mod-nav-label">&larr; Previous &middot; Module 8</span>
         <span class="mod-nav-title">Best Practices &amp; Pitfalls</span>
       </a>
       <a class="mod-nav-next" href="AI-DLC.html">
-        <span class="mod-nav-label">Next · Module 7 →</span>
+        <span class="mod-nav-label">Next &middot; Module 10 &rarr;</span>
         <span class="mod-nav-title">AI-DLC</span>
       </a>
     </div>
@@ -920,6 +951,14 @@ Scenario: Overdue todos are visually distinct
       }
     });
   });
+  // Keep the current module visible in the course nav on narrow screens.
+  (function () {
+    const nav = document.querySelector('.course-nav-modules');
+    const active = nav && nav.querySelector('.is-active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const offset = active.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollLeft += offset - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>
