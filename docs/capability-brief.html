@@ -433,6 +433,48 @@
   .op-grid .gate{margin-top:auto;padding-top:11px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--text-dim);line-height:1.45}
   .op-grid .gate span{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:3px}
 
+  /* business value: AI-assisted vs AI-native team, and the four value deep-dives */
+  .bv-teams{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+  .bv-panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:20px 20px 16px}
+  .bv-panel.native{border-color:rgba(181,131,245,.38);background:linear-gradient(160deg,var(--purple-soft),transparent 55%),var(--panel)}
+  .bv-panel svg{width:100%;height:auto;display:block;margin-top:16px}
+  .bv-kicker{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint)}
+  .bv-panel.native .bv-kicker{color:var(--purple)}
+  .bv-panel p{font-size:13.5px;color:var(--text-dim);margin-top:8px}
+  .bv-tally{margin-top:12px;padding-top:11px;border-top:1px dashed var(--line);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--text-faint)}
+  .bv-panel.native .bv-tally{color:var(--text-dim)}
+  .bv-note{font-size:12.5px;color:var(--text-faint);font-style:italic;margin-top:12px}
+  .bv-head{display:flex;align-items:baseline;gap:14px;margin:72px 0 6px}
+  .bv-head .bv-num{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;color:var(--purple);flex:none}
+  .bv-head h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(19px,2.3vw,24px);color:var(--text);letter-spacing:-.01em}
+  .bv-head h3 span{color:var(--text-dim);font-weight:500}
+  .bv-head .rule{height:1px;background:var(--line-soft);flex:1;min-width:24px}
+  .bv-split{display:grid;grid-template-columns:1fr 1.08fr;gap:36px;align-items:center;margin-top:18px}
+  .bv-split.flip .bv-fig{order:-1}
+  .bv-split .lead{font-size:16px}
+  .bv-split .lead + .lead{margin-top:12px}
+  .bv-fig{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:18px}
+  .bv-fig svg{width:100%;height:auto;display:block}
+  .bv-points{list-style:none;margin-top:18px;display:grid;gap:9px}
+  .bv-points li{position:relative;padding-left:22px;font-size:14.5px;color:var(--text-dim)}
+  .bv-points li::before{content:"";position:absolute;left:4px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--purple)}
+  .bv-points li b{color:var(--text);font-weight:500}
+  .bv-shift{display:grid;gap:10px;margin-top:22px}
+  .bv-row{display:grid;grid-template-columns:150px 1fr 24px 1.15fr;gap:12px;align-items:center}
+  .bv-row.head span{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+  .bv-role{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--text)}
+  .bv-before{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px;color:var(--text-faint)}
+  .bv-arrow{color:var(--text-faint);text-align:center}
+  .bv-after{display:flex;align-items:center;gap:10px;border:1px solid rgba(143,217,87,.42);border-radius:10px;padding:10px 14px;font-size:13.5px;color:var(--text);background:rgba(143,217,87,.07)}
+  .bv-after svg{width:18px;height:18px;flex:none}
+  @media(max-width:760px){
+    .bv-teams,.bv-split{grid-template-columns:1fr}
+    .bv-split.flip .bv-fig{order:0}
+    .bv-row{grid-template-columns:1fr}
+    .bv-row.head,.bv-arrow{display:none}
+    .bv-row{padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+  }
+
   .cap-foot{margin-top:24px;padding-top:20px;border-top:1px solid var(--line-soft)}
   .cap-foot p{font-size:13.5px;color:var(--text-dim);max-width:80ch;margin-bottom:14px}
   .cap-foot .cf-label{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);margin-right:5px}
@@ -1040,15 +1082,386 @@
       </div>
     </div>
 
-    <!-- Layer 2 -->
-    <div style="margin-top:48px">
-      <div class="sec-head"><h1>Business outcomes</h1><span class="rule"></span></div>
+    <!-- Layer 2: business value -->
+    <!-- Icon sprite shared by the business-value illustrations below. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="bv-person" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="22" fill="#241B31" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="24" cy="19" r="6.5" fill="currentColor"/>
+          <path d="M12.5 37.5c0-7.4 5.1-11 11.5-11s11.5 3.6 11.5 11z" fill="currentColor"/>
+        </symbol>
+        <symbol id="bv-agent" viewBox="0 0 48 48">
+          <rect x="3" y="3" width="42" height="42" rx="12" fill="#1E1B3D" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="24" cy="10.5" r="2.2" fill="currentColor"/>
+          <rect x="11" y="16" width="26" height="13" rx="6.5" fill="currentColor"/>
+          <circle cx="18.5" cy="22.5" r="2.4" fill="#0F0A16"/>
+          <circle cx="29.5" cy="22.5" r="2.4" fill="#0F0A16"/>
+          <rect x="17" y="33" width="14" height="3.4" rx="1.7" fill="currentColor" opacity=".55"/>
+        </symbol>
+        <symbol id="bv-chip" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="11" fill="#0F0A16" stroke="#7E8BFF" stroke-width="1.4"/>
+          <rect x="6" y="8.5" width="12" height="7" rx="3.5" fill="#7E8BFF"/>
+          <circle cx="9.6" cy="12" r="1.3" fill="#0F0A16"/>
+          <circle cx="14.4" cy="12" r="1.3" fill="#0F0A16"/>
+        </symbol>
+        <symbol id="bv-gate" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10.5" fill="#0F0A16" stroke="#8FD957" stroke-width="1.6"/>
+          <path d="M7.4 12.2l3.2 3.1 5.9-6.4" fill="none" stroke="#8FD957" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+      </defs>
+    </svg>
+
+    <div style="margin-top:56px">
+      <div class="sec-head"><h1>Business value</h1><span class="rule"></span></div>
+      <p class="lead" style="margin-top:12px">Most teams already use AI &mdash; as <b>AI-assisted individuals</b>. The product owner has an assistant for stories, the analyst another for requirements, and the architect, the developers and the testers each have their own. Every assistant has its own prompts, its own partial picture of the work, and nobody else&rsquo;s rules. They speed up tasks; they don&rsquo;t carry the work. People still do &mdash; and people still re-explain the context at every hand-off.</p>
+      <p class="lead" style="margin-top:14px">SPECTRA makes the team <b>AI-native</b>. Specialized agents join it as members: they work from one shared context, follow the same standards, and pass the same human gates as everyone else. The work moves through the team instead of being re-told at every desk &mdash; and the team gets leaner.</p>
+
+      <div class="bv-teams">
+        <!-- A: AI-assisted team -->
+        <div class="bv-panel">
+          <span class="bv-kicker">AI-assisted team &middot; today</span>
+          <p>Every role has its own assistant, its own prompts, its own slice of context. The AI helps individuals; people still carry the work &mdash; and every hand-off.</p>
+          <svg viewBox="0 0 500 310" role="img" aria-label="An AI-assisted team of eight people in three tiers: product owner and business analyst; architect and tech lead; three developers and a QA tester. Each person has a separate AI assistant and a separate, fragmented piece of context, with dashed hand-offs between every tier.">
+            <defs>
+              <marker id="bv-arrA" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#7E6F90"/></marker>
+            </defs>
+            <!-- hand-offs -->
+            <g stroke="#7E6F90" stroke-width="1.2" stroke-dasharray="3 3" fill="none">
+              <line x1="198" y1="46" x2="300" y2="46" marker-end="url(#bv-arrA)"/>
+              <line x1="198" y1="146" x2="300" y2="146" marker-end="url(#bv-arrA)"/>
+              <line x1="170" y1="104" x2="170" y2="117" marker-end="url(#bv-arrA)"/>
+              <line x1="330" y1="104" x2="330" y2="117" marker-end="url(#bv-arrA)"/>
+              <line x1="170" y1="204" x2="170" y2="210"/>
+              <line x1="330" y1="204" x2="330" y2="210"/>
+              <line x1="70" y1="210" x2="430" y2="210"/>
+              <line x1="70" y1="210" x2="70" y2="218" marker-end="url(#bv-arrA)"/>
+              <line x1="190" y1="210" x2="190" y2="218" marker-end="url(#bv-arrA)"/>
+              <line x1="310" y1="210" x2="310" y2="218" marker-end="url(#bv-arrA)"/>
+              <line x1="430" y1="210" x2="430" y2="218" marker-end="url(#bv-arrA)"/>
+            </g>
+            <!-- people, each with a private assistant -->
+            <g style="color:#8C7FA0">
+              <use href="#bv-person" x="146" y="22" width="48" height="48"/>
+              <use href="#bv-person" x="306" y="22" width="48" height="48"/>
+              <use href="#bv-person" x="146" y="122" width="48" height="48"/>
+              <use href="#bv-person" x="306" y="122" width="48" height="48"/>
+              <use href="#bv-person" x="46" y="222" width="48" height="48"/>
+              <use href="#bv-person" x="166" y="222" width="48" height="48"/>
+              <use href="#bv-person" x="286" y="222" width="48" height="48"/>
+              <use href="#bv-person" x="406" y="222" width="48" height="48"/>
+            </g>
+            <g>
+              <use href="#bv-chip" x="180" y="14" width="22" height="22"/>
+              <use href="#bv-chip" x="340" y="14" width="22" height="22"/>
+              <use href="#bv-chip" x="180" y="114" width="22" height="22"/>
+              <use href="#bv-chip" x="340" y="114" width="22" height="22"/>
+              <use href="#bv-chip" x="80" y="214" width="22" height="22"/>
+              <use href="#bv-chip" x="200" y="214" width="22" height="22"/>
+              <use href="#bv-chip" x="320" y="214" width="22" height="22"/>
+              <use href="#bv-chip" x="440" y="214" width="22" height="22"/>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="11.5" fill="#B4A7C6" text-anchor="middle">
+              <text x="170" y="86">Product owner</text><text x="330" y="86">Business analyst</text>
+              <text x="170" y="186">Architect</text><text x="330" y="186">Tech lead</text>
+              <text x="70" y="286">Developer</text><text x="190" y="286">Developer</text>
+              <text x="310" y="286">Developer</text><text x="430" y="286">QA tester</text>
+            </g>
+            <!-- a separate slice of context under every person -->
+            <g fill="#E5484D" opacity=".8">
+              <rect x="148" y="94" width="44" height="6" rx="3"/><rect x="308" y="94" width="44" height="6" rx="3"/>
+              <rect x="148" y="194" width="44" height="6" rx="3"/><rect x="308" y="194" width="44" height="6" rx="3"/>
+              <rect x="48" y="294" width="44" height="6" rx="3"/><rect x="168" y="294" width="44" height="6" rx="3"/>
+              <rect x="288" y="294" width="44" height="6" rx="3"/><rect x="408" y="294" width="44" height="6" rx="3"/>
+            </g>
+          </svg>
+          <div class="bv-tally">8 people &middot; 8 private assistants &middot; 8 separate contexts</div>
+        </div>
+
+        <!-- B: AI-native team with SPECTRA -->
+        <div class="bv-panel native">
+          <span class="bv-kicker">AI-native team &middot; SPECTRA</span>
+          <p>Specialized agents join the team: same context, same rules, same gates. They draft and build; people own the decisions.</p>
+          <svg viewBox="0 0 500 310" role="img" aria-label="An AI-native team with SPECTRA: one band of standards and guardrails across the top; four people — product owner, architect, tech lead and QE lead — each at a human gate; a single shared-context bar that everyone connects to; and five specialized agents for requirements, design, build, test and delivery.">
+            <rect x="8" y="4" width="484" height="28" rx="8" fill="#B583F5" fill-opacity=".10" stroke="#B583F5" stroke-opacity=".55"/>
+            <text x="250" y="22.5" text-anchor="middle" fill="#B583F5" font-family="Space Grotesk, sans-serif" font-size="11.5" font-weight="600">Standards &amp; guardrails &mdash; one set, for people and agents</text>
+            <!-- connectors to the shared context -->
+            <g stroke="#19C2A8" stroke-opacity=".7" stroke-width="1.2" stroke-dasharray="3 3">
+              <line x1="95" y1="130" x2="95" y2="146"/><line x1="198" y1="130" x2="198" y2="146"/>
+              <line x1="302" y1="130" x2="302" y2="146"/><line x1="405" y1="130" x2="405" y2="146"/>
+              <line x1="62" y1="180" x2="62" y2="212"/><line x1="156" y1="180" x2="156" y2="212"/>
+              <line x1="250" y1="180" x2="250" y2="212"/><line x1="344" y1="180" x2="344" y2="212"/>
+              <line x1="438" y1="180" x2="438" y2="212"/>
+            </g>
+            <!-- people: decide -->
+            <g style="color:#B583F5">
+              <use href="#bv-person" x="71" y="60" width="48" height="48"/>
+              <use href="#bv-person" x="174" y="60" width="48" height="48"/>
+              <use href="#bv-person" x="278" y="60" width="48" height="48"/>
+              <use href="#bv-person" x="381" y="60" width="48" height="48"/>
+            </g>
+            <g>
+              <use href="#bv-gate" x="105" y="54" width="22" height="22"/>
+              <use href="#bv-gate" x="208" y="54" width="22" height="22"/>
+              <use href="#bv-gate" x="312" y="54" width="22" height="22"/>
+              <use href="#bv-gate" x="415" y="54" width="22" height="22"/>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="11.5" fill="#F3EFF8" text-anchor="middle">
+              <text x="95" y="124">Product owner</text><text x="198" y="124">Architect</text>
+              <text x="302" y="124">Tech lead</text><text x="405" y="124">QE lead</text>
+            </g>
+            <rect x="8" y="146" width="484" height="34" rx="8" fill="#19C2A8"/>
+            <text x="250" y="168" text-anchor="middle" fill="#06302B" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600">Shared context &mdash; one knowledge base</text>
+            <!-- agents: draft & build -->
+            <g style="color:#7E8BFF">
+              <use href="#bv-agent" x="38" y="212" width="48" height="48"/>
+              <use href="#bv-agent" x="132" y="212" width="48" height="48"/>
+              <use href="#bv-agent" x="226" y="212" width="48" height="48"/>
+              <use href="#bv-agent" x="320" y="212" width="48" height="48"/>
+              <use href="#bv-agent" x="414" y="212" width="48" height="48"/>
+            </g>
+            <g font-family="Space Grotesk, sans-serif" font-size="12" font-weight="600" fill="#F3EFF8" text-anchor="middle">
+              <text x="62" y="278">Requirements</text><text x="156" y="278">Design</text><text x="250" y="278">Build</text>
+              <text x="344" y="278">Test</text><text x="438" y="278">Delivery</text>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="10" fill="#7E6F90" text-anchor="middle">
+              <text x="62" y="293">agent</text><text x="156" y="293">agent</text><text x="250" y="293">agent</text>
+              <text x="344" y="293">agent</text><text x="438" y="293">agent</text>
+            </g>
+          </svg>
+          <div class="bv-tally">4 people + 5 agents &middot; 1 shared context &middot; a human gate on every hand-off</div>
+        </div>
+      </div>
+      <p class="bv-note">Illustrative team shapes, not a staffing formula &mdash; the point is where the work and the knowledge live.</p>
+
+      <!-- 01 Central knowledge base -->
+      <div class="bv-head"><span class="bv-num">01</span><h3>Central knowledge base <span>&mdash; shared context</span></h3><span class="rule"></span></div>
+      <div class="bv-split">
+        <div>
+          <p class="lead">In an AI-assisted team, what the project knows is scattered across people&rsquo;s heads and private chat histories. Close the tab and it&rsquo;s gone; hand the work on and it has to be retold.</p>
+          <p class="lead">SPECTRA keeps that knowledge in one place &mdash; the repository &mdash; as versioned files that every person and every agent reads from and writes to: the constitution and its standards, requirements and specs, plans and architecture decisions, tasks, test strategy and plans, and root-cause records. Documentation the team already has is brought in rather than left in a wiki nobody opens. Because it is just files under version control, it is reviewed like code and owned by the team &mdash; not by a tool, and not by whoever wrote the prompt.</p>
+          <ul class="bv-points">
+            <li><b>Same facts for everyone.</b> A new agent run and a new hire start from the same page.</li>
+            <li><b>Nothing trapped in a chat.</b> Decisions and their reasons outlive the session &mdash; and the person.</li>
+            <li><b>Onboarding is reading the repository.</b> Knowledge survives turnover instead of walking out with it.</li>
+          </ul>
+        </div>
+        <div class="bv-fig">
+          <svg viewBox="0 0 520 362" role="img" aria-label="A central knowledge base in the repository, stacked in layers — constitution and standards, requirements and specs, plans and decision records, tasks and code, test strategy and plans, root-cause records and lessons — versioned in Git. People on the left and agents on the right all read from and write to it. Before: one chat history per person. After: one knowledge base for everyone.">
+            <defs>
+              <marker id="bv-kbEnd" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#19C2A8"/></marker>
+              <marker id="bv-kbStart" markerWidth="7" markerHeight="7" refX="1.5" refY="3.5" orient="auto"><path d="M7,0 L0,3.5 L7,7 Z" fill="#19C2A8"/></marker>
+            </defs>
+            <text x="260" y="40" text-anchor="middle" fill="#19C2A8" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="2">KNOWLEDGE BASE</text>
+            <g stroke="#19C2A8" stroke-opacity=".55">
+              <rect x="160" y="54" width="200" height="32" rx="7" fill="#19C2A8" fill-opacity=".24"/>
+              <rect x="160" y="92" width="200" height="32" rx="7" fill="#19C2A8" fill-opacity=".20"/>
+              <rect x="160" y="130" width="200" height="32" rx="7" fill="#19C2A8" fill-opacity=".17"/>
+              <rect x="160" y="168" width="200" height="32" rx="7" fill="#19C2A8" fill-opacity=".14"/>
+              <rect x="160" y="206" width="200" height="32" rx="7" fill="#19C2A8" fill-opacity=".11"/>
+              <rect x="160" y="244" width="200" height="32" rx="7" fill="#19C2A8" fill-opacity=".08"/>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="11.5" fill="#F3EFF8" text-anchor="middle">
+              <text x="260" y="74.5">Constitution &amp; standards</text>
+              <text x="260" y="112.5">Requirements &amp; specs</text>
+              <text x="260" y="150.5">Plans &amp; decision records</text>
+              <text x="260" y="188.5">Tasks &amp; code</text>
+              <text x="260" y="226.5">Test strategy &amp; plans</text>
+              <text x="260" y="264.5">Root-cause records &amp; lessons</text>
+            </g>
+            <text x="260" y="298" text-anchor="middle" fill="#7E6F90" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1">versioned in Git &middot; reviewed like code</text>
+            <!-- read / write connectors -->
+            <g stroke="#19C2A8" stroke-width="1.4">
+              <line x1="88" y1="108" x2="154" y2="108" marker-start="url(#bv-kbStart)" marker-end="url(#bv-kbEnd)"/>
+              <line x1="88" y1="186" x2="154" y2="186" marker-start="url(#bv-kbStart)" marker-end="url(#bv-kbEnd)"/>
+              <line x1="88" y1="262" x2="154" y2="262" marker-start="url(#bv-kbStart)" marker-end="url(#bv-kbEnd)"/>
+              <line x1="366" y1="108" x2="432" y2="108" marker-start="url(#bv-kbStart)" marker-end="url(#bv-kbEnd)"/>
+              <line x1="366" y1="186" x2="432" y2="186" marker-start="url(#bv-kbStart)" marker-end="url(#bv-kbEnd)"/>
+              <line x1="366" y1="262" x2="432" y2="262" marker-start="url(#bv-kbStart)" marker-end="url(#bv-kbEnd)"/>
+            </g>
+            <g style="color:#B583F5">
+              <use href="#bv-person" x="40" y="86" width="44" height="44"/>
+              <use href="#bv-person" x="40" y="164" width="44" height="44"/>
+              <use href="#bv-person" x="40" y="240" width="44" height="44"/>
+            </g>
+            <g style="color:#7E8BFF">
+              <use href="#bv-agent" x="436" y="86" width="44" height="44"/>
+              <use href="#bv-agent" x="436" y="164" width="44" height="44"/>
+              <use href="#bv-agent" x="436" y="240" width="44" height="44"/>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="11" fill="#B4A7C6" text-anchor="middle">
+              <text x="62" y="144">Product owner</text><text x="62" y="222">Architect</text><text x="62" y="298">QE lead</text>
+              <text x="458" y="144">Requirements agent</text><text x="458" y="222">Build agent</text><text x="458" y="298">Test agent</text>
+            </g>
+            <!-- before / after -->
+            <rect x="12" y="322" width="236" height="28" rx="8" fill="#E5484D" fill-opacity=".10" stroke="#E5484D" stroke-opacity=".45"/>
+            <text x="130" y="340.5" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11">Before: one chat history per person</text>
+            <rect x="272" y="322" width="236" height="28" rx="8" fill="#19C2A8" fill-opacity=".12" stroke="#19C2A8" stroke-opacity=".5"/>
+            <text x="390" y="340.5" text-anchor="middle" fill="#F3EFF8" font-family="Inter, sans-serif" font-size="11">After: one knowledge base for everyone</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 02 More deterministic outcomes -->
+      <div class="bv-head"><span class="bv-num">02</span><h3>More deterministic AI outcomes</h3><span class="rule"></span></div>
+      <div class="bv-split flip">
+        <div>
+          <p class="lead">Ask two assistants &mdash; or the same one twice &mdash; for the same thing without shared context, and you get two different answers: different structure, different assumptions, different style. The model isn&rsquo;t broken; it is guessing at everything nobody told it.</p>
+          <p class="lead">Models stay probabilistic; SPECTRA narrows the spread. It fixes the inputs &mdash; standards encoded once, one shared context, templates that give every document the same shape &mdash; and it checks the outputs, with cross-artifact consistency and convergence checks and a person at every gate. The result is output that is more consistent, more repeatable, and far easier to review.</p>
+          <ul class="bv-points">
+            <li><b>Same request, same shape.</b> Every spec, plan and record follows the team&rsquo;s template, so reviewers know where to look.</li>
+            <li><b>Fewer surprises downstream.</b> Drift is caught by the checks and at the gates, not discovered in production.</li>
+            <li><b>Less re-verification.</b> When output is predictable, people review at the gate instead of redoing the work.</li>
+          </ul>
+        </div>
+        <div class="bv-fig">
+          <svg viewBox="0 0 520 322" role="img" aria-label="The same request run twelve times in two setups. With ad-hoc prompting the results scatter widely across the target. With SPECTRA they cluster tightly near the centre, narrowed by standards, shared context and templates going in, and by consistency checks and a human gate coming out.">
+            <g font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600" text-anchor="middle">
+              <text x="130" y="26" fill="#B4A7C6">Ad-hoc prompting</text>
+              <text x="390" y="26" fill="#B583F5">With SPECTRA</text>
+            </g>
+            <g font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing="1.2" fill="#7E6F90" text-anchor="middle">
+              <text x="130" y="42">SAME REQUEST &middot; 12 RUNS</text>
+              <text x="390" y="42">SAME REQUEST &middot; 12 RUNS</text>
+            </g>
+            <!-- targets -->
+            <g fill="none" stroke="#3A2E4A" stroke-width="1.2">
+              <circle cx="130" cy="150" r="90"/><circle cx="130" cy="150" r="60"/>
+              <circle cx="390" cy="150" r="90"/><circle cx="390" cy="150" r="60"/>
+            </g>
+            <circle cx="130" cy="150" r="30" fill="#241B31" stroke="#3A2E4A" stroke-width="1.2"/>
+            <circle cx="390" cy="150" r="30" fill="#241B31" stroke="#8FD957" stroke-opacity=".45" stroke-width="1.2"/>
+            <circle cx="130" cy="150" r="2.5" fill="#7E6F90"/><circle cx="390" cy="150" r="2.5" fill="#7E6F90"/>
+            <!-- scattered results -->
+            <g fill="#E5484D" fill-opacity=".85">
+              <circle cx="68" cy="112" r="4.5"/><circle cx="185" cy="90" r="4.5"/><circle cx="110" cy="220" r="4.5"/>
+              <circle cx="200" cy="185" r="4.5"/><circle cx="55" cy="170" r="4.5"/><circle cx="140" cy="72" r="4.5"/>
+              <circle cx="170" cy="212" r="4.5"/><circle cx="85" cy="85" r="4.5"/><circle cx="210" cy="135" r="4.5"/>
+              <circle cx="120" cy="175" r="4.5"/><circle cx="155" cy="120" r="4.5"/><circle cx="72" cy="208" r="4.5"/>
+            </g>
+            <!-- clustered results -->
+            <g fill="#8FD957" fill-opacity=".9">
+              <circle cx="384" cy="146" r="3.8"/><circle cx="395" cy="153" r="3.8"/><circle cx="388" cy="158" r="3.8"/>
+              <circle cx="398" cy="143" r="3.8"/><circle cx="381" cy="155" r="3.8"/><circle cx="393" cy="140" r="3.8"/>
+              <circle cx="400" cy="156" r="3.8"/><circle cx="386" cy="138" r="3.8"/><circle cx="390" cy="150" r="3.8"/>
+              <circle cx="402" cy="148" r="3.8"/><circle cx="379" cy="147" r="3.8"/><circle cx="394" cy="161" r="3.8"/>
+            </g>
+            <!-- captions -->
+            <g font-family="Inter, sans-serif" font-size="11" fill="#7E6F90" text-anchor="middle">
+              <text x="130" y="266">Different structure, assumptions</text>
+              <text x="130" y="282">and style on every run</text>
+            </g>
+            <text x="390" y="258" text-anchor="middle" fill="#7E6F90" font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing="1.2">NARROWED BY</text>
+            <g stroke-opacity=".5">
+              <rect x="263" y="266" width="70" height="22" rx="11" fill="#B583F5" fill-opacity=".12" stroke="#B583F5"/>
+              <rect x="339" y="266" width="98" height="22" rx="11" fill="#B583F5" fill-opacity=".12" stroke="#B583F5"/>
+              <rect x="443" y="266" width="74" height="22" rx="11" fill="#B583F5" fill-opacity=".12" stroke="#B583F5"/>
+              <rect x="285" y="294" width="120" height="22" rx="11" fill="#8FD957" fill-opacity=".10" stroke="#8FD957"/>
+              <rect x="411" y="294" width="84" height="22" rx="11" fill="#8FD957" fill-opacity=".10" stroke="#8FD957"/>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="10.5" fill="#F3EFF8" text-anchor="middle">
+              <text x="298" y="281">Standards</text><text x="388" y="281">Shared context</text><text x="480" y="281">Templates</text>
+              <text x="345" y="309">Consistency checks</text><text x="453" y="309">Human gate</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 03 Human-in-the-loop -->
+      <div class="bv-head"><span class="bv-num">03</span><h3>Human-in-the-loop <span>&mdash; safe to scale</span></h3><span class="rule"></span></div>
+      <div class="bv-split">
+        <div>
+          <p class="lead">Speed is only an asset if you can trust it. In SPECTRA, agents can take on more &mdash; several drafts, several phases, several features in parallel &mdash; but nothing enters the shared context until a named person approves it at a gate. Adding agent capacity never adds unreviewed change.</p>
+          <p class="lead">Accountability stays where it belongs: the product owner signs off intent, architects sign off design, engineers review every change, QE decides what a finding means, and a maintainer merges. Every decision leaves a record in commits and reviews &mdash; and SPECTRA itself runs inside your coding agent&rsquo;s existing permissions, with no new trust boundary (see <a href="#security" style="color:var(--purple)">section 06</a>).</p>
+          <ul class="bv-points">
+            <li><b>Scale the drafting, not the risk.</b> More agent capacity means more proposals, not more unreviewed merges.</li>
+            <li><b>Audit-ready by default.</b> Gates, enforced standards and traceability produce the evidence compliance asks for.</li>
+            <li><b>People stay accountable.</b> Every artifact that lands has a named approver.</li>
+          </ul>
+        </div>
+        <div class="bv-fig">
+          <svg viewBox="0 0 520 330" role="img" aria-label="Agents draft in parallel — a spec, a plan, a decision record, a code change, a test plan and a pull request — and every draft converges on a single human gate. Approved work lands in the shared context; rejected work is sent back with reasons. Every gate decision is recorded in an audit trail.">
+            <defs>
+              <marker id="bv-hilOk" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#8FD957"/></marker>
+              <marker id="bv-hilBack" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#B4A7C6"/></marker>
+            </defs>
+            <g font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing="1.2" text-anchor="middle">
+              <text x="85" y="28" fill="#7E8BFF">AGENTS DRAFT IN PARALLEL</text>
+              <text x="300" y="110" fill="#8FD957">A PERSON DECIDES</text>
+              <text x="455" y="110" fill="#19C2A8">ONLY IF APPROVED</text>
+            </g>
+            <!-- converging drafts -->
+            <g fill="none" stroke="#7E8BFF" stroke-opacity=".55" stroke-width="1.3">
+              <path d="M150,59 C215,59 225,159 266,159"/><path d="M150,103 C215,103 225,159 266,159"/>
+              <path d="M150,147 C215,147 225,159 266,159"/><path d="M150,191 C215,191 225,159 266,159"/>
+              <path d="M150,235 C215,235 225,159 266,159"/><path d="M150,279 C215,279 225,159 266,159"/>
+            </g>
+            <g fill="#7E8BFF" fill-opacity=".12" stroke="#7E8BFF" stroke-opacity=".5">
+              <rect x="20" y="44" width="130" height="30" rx="8"/><rect x="20" y="88" width="130" height="30" rx="8"/>
+              <rect x="20" y="132" width="130" height="30" rx="8"/><rect x="20" y="176" width="130" height="30" rx="8"/>
+              <rect x="20" y="220" width="130" height="30" rx="8"/><rect x="20" y="264" width="130" height="30" rx="8"/>
+            </g>
+            <g style="color:#7E8BFF">
+              <use href="#bv-agent" x="27" y="50" width="18" height="18"/><use href="#bv-agent" x="27" y="94" width="18" height="18"/>
+              <use href="#bv-agent" x="27" y="138" width="18" height="18"/><use href="#bv-agent" x="27" y="182" width="18" height="18"/>
+              <use href="#bv-agent" x="27" y="226" width="18" height="18"/><use href="#bv-agent" x="27" y="270" width="18" height="18"/>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="11" fill="#F3EFF8">
+              <text x="52" y="63">Spec draft</text><text x="52" y="107">Plan draft</text><text x="52" y="151">Decision record</text>
+              <text x="52" y="195">Code change</text><text x="52" y="239">Test plan</text><text x="52" y="283">Pull request</text>
+            </g>
+            <!-- the gate -->
+            <circle cx="300" cy="159" r="32" fill="#0F0A16" stroke="#8FD957" stroke-width="2"/>
+            <path d="M286,160 L296,170 L315,148" fill="none" stroke="#8FD957" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="300" y="212" text-anchor="middle" fill="#8FD957" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600">Human gate</text>
+            <text x="300" y="228" text-anchor="middle" fill="#7E6F90" font-family="Inter, sans-serif" font-size="10.5">named approver</text>
+            <!-- approved -->
+            <line x1="332" y1="159" x2="397" y2="159" stroke="#8FD957" stroke-width="1.6" marker-end="url(#bv-hilOk)"/>
+            <text x="365" y="150" text-anchor="middle" fill="#8FD957" font-family="Inter, sans-serif" font-size="10">approved</text>
+            <rect x="400" y="124" width="110" height="70" rx="10" fill="#19C2A8"/>
+            <g font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600" fill="#06302B" text-anchor="middle">
+              <text x="455" y="155">Shared</text><text x="455" y="172">context</text>
+            </g>
+            <!-- sent back -->
+            <path d="M288,190 C270,300 200,318 156,292" fill="none" stroke="#B4A7C6" stroke-width="1.3" stroke-dasharray="4 4" marker-end="url(#bv-hilBack)"/>
+            <text x="228" y="322" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="10.5">sent back, with reasons</text>
+            <!-- audit trail -->
+            <text x="455" y="232" text-anchor="middle" fill="#7E6F90" font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing="1.2">AUDIT TRAIL</text>
+            <line x1="400" y1="246" x2="510" y2="246" stroke="#3A2E4A" stroke-width="1.2"/>
+            <g fill="#B583F5">
+              <circle cx="406" cy="246" r="3"/><circle cx="426" cy="246" r="3"/><circle cx="446" cy="246" r="3"/>
+              <circle cx="466" cy="246" r="3"/><circle cx="486" cy="246" r="3"/><circle cx="506" cy="246" r="3"/>
+            </g>
+            <text x="455" y="266" text-anchor="middle" fill="#7E6F90" font-family="Inter, sans-serif" font-size="10.5">every decision, recorded</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 04 Leaner teams -->
+      <div class="bv-head"><span class="bv-num">04</span><h3>Leaner teams</h3><span class="rule"></span></div>
+      <p class="lead">Put the first three together and the shape of the team changes. When agents carry the drafting and the building &mdash; with the same context and the same rules &mdash; people stop spending their days producing artifacts and passing them along, and spend them deciding: approving intent, weighing design, steering implementation, judging quality. There are fewer hand-offs, far less re-explaining, and a smaller team can own the same scope. That is the picture at the top of this section.</p>
+      <div class="bv-shift" role="list" aria-label="How each role shifts from doing to deciding">
+        <div class="bv-row head" aria-hidden="true"><span>Role</span><span>AI-assisted &mdash; doing</span><span></span><span>With SPECTRA &mdash; deciding</span></div>
+        <div class="bv-row" role="listitem"><span class="bv-role">Product owner</span><span class="bv-before">Writes the stories</span><span class="bv-arrow" aria-hidden="true">&rarr;</span><span class="bv-after"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#bv-gate"/></svg>Approves intent and scope</span></div>
+        <div class="bv-row" role="listitem"><span class="bv-role">Business analyst</span><span class="bv-before">Transcribes the requirements</span><span class="bv-arrow" aria-hidden="true">&rarr;</span><span class="bv-after"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#bv-gate"/></svg>Validates them against the business</span></div>
+        <div class="bv-row" role="listitem"><span class="bv-role">Architect</span><span class="bv-before">Drafts the design documents</span><span class="bv-arrow" aria-hidden="true">&rarr;</span><span class="bv-after"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#bv-gate"/></svg>Approves the design and its decisions</span></div>
+        <div class="bv-row" role="listitem"><span class="bv-role">Developer</span><span class="bv-before">Types the code</span><span class="bv-arrow" aria-hidden="true">&rarr;</span><span class="bv-after"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#bv-gate"/></svg>Steers and reviews every change</span></div>
+        <div class="bv-row" role="listitem"><span class="bv-role">Tester</span><span class="bv-before">Writes the test cases</span><span class="bv-arrow" aria-hidden="true">&rarr;</span><span class="bv-after"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#bv-gate"/></svg>Decides what a finding means</span></div>
+      </div>
+      <ul class="bv-points" style="margin-top:22px">
+        <li><b>From doing to deciding.</b> Expertise is spent at the gates, where it matters most.</li>
+        <li><b>Fewer hand-offs.</b> Agents share one context, so work moves between phases without being re-explained.</li>
+        <li><b>Capacity without matching headcount.</b> Output can grow without the team growing at the same rate.</li>
+      </ul>
+
+      <!-- What it adds up to -->
+      <div class="bv-head"><h3>What it adds up to</h3><span class="rule"></span></div>
       <ul class="biz-list">
         <li><b>Net-faster delivery, not just faster typing.</b> Removing the re-establish-context tax at every hand-off turns per-phase speedups into real, end-to-end cycle-time reduction.</li>
         <li><b>Speed without a quality tax.</b> Rework stays flat or drops even as throughput rises, so faster never means flakier.</li>
-        <li><b>Safe to scale.</b> Human gates, enforced standards, and built-in traceability add up to auditable and compliant &mdash; what an enterprise like TELUS needs before scaling AI.</li>
-        <li><b>Less verification overhead.</b> Predictable output means people supervise at the gates instead of re-checking everything, so you keep the leverage AI was supposed to give.</li>
-        <li><b>Institutional knowledge that survives turnover.</b> The &ldquo;why&rdquo; lives in the system, not in people's heads &mdash; faster onboarding and more resilience.</li>
+        <li><b>Audit-ready, safe to scale.</b> Human gates, enforced standards, and built-in traceability &mdash; what an enterprise like TELUS needs before scaling AI.</li>
+        <li><b>Supervision at the gates, not re-checking everything.</b> Predictable output keeps the leverage AI was supposed to give.</li>
+        <li><b>Institutional knowledge that survives turnover.</b> The &ldquo;why&rdquo; lives in the system, not in people&rsquo;s heads &mdash; faster onboarding and more resilience.</li>
       </ul>
     </div>
 
