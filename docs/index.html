@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Spectra — Spec Kit extensions by TELUS Digital</title>
 <meta name="description" content="A curated catalog of Spec Kit extensions that enable full agentic development across the entire software development lifecycle. One uv command installs it." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23a78bfa' d='M12 2 2 7l10 5 10-5-10-5Z'/%3E%3Cpath fill='%23a78bfa' opacity='.55' d='m2 12 10 5 10-5M2 17l10 5 10-5'/%3E%3C/svg%3E" />
 <style>
   :root {
@@ -85,6 +88,47 @@
   header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
   header.site .nav a.nav-jump { color: var(--muted); font-size: 13px; padding: 5px 5px; }
   header.site .nav a.nav-jump:hover { color: var(--text); }
+
+  /* Site bar and section rail ride in one sticky container, as on the capability brief, so the
+     rail always sits directly under the bar without hard-coding the bar's height (it changes
+     when the header wraps at 720px). .sitebar's own sticky declaration is a no-op in here. */
+  .topstack { position: sticky; top: 0; z-index: 60; }
+  /* Section rail: this page's numbered sections, the current one lit by the script below.
+     Copied from the capability brief's rail so the two render identically. The colours and
+     fonts are the brief's, inlined as literals on purpose: this page defines --text and
+     friends with different values, so referencing the tokens would re-skin the rail. */
+  .secnav {
+    background: rgba(15,10,22,0.90); backdrop-filter: blur(8px);
+    border-bottom: 1px solid #241B31;
+    font-family: 'Inter', system-ui, sans-serif; line-height: 1.6;
+  }
+  .secnav-track {
+    display: flex; align-items: stretch; gap: 2px;
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth;
+  }
+  .secnav-track::-webkit-scrollbar { display: none; }
+  .secnav a.sn {
+    display: inline-flex; align-items: center; gap: 8px; flex: none;
+    padding: 11px 12px 9px; white-space: nowrap; text-decoration: none;
+    color: #7E6F90; border-bottom: 2px solid transparent;
+    transition: color .18s ease, border-color .18s ease;
+  }
+  .secnav a.sn .sn-num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em;
+    color: #7E6F90; transition: color .18s ease;
+  }
+  .secnav a.sn .sn-label { font-size: 13.5px; }
+  .secnav a.sn:hover { color: #F3EFF8; text-decoration: none; }
+  .secnav a.sn:hover .sn-num { color: #B583F5; }
+  .secnav a.sn[aria-current="true"] { color: #F3EFF8; border-bottom-color: #B583F5; }
+  .secnav a.sn[aria-current="true"] .sn-num { color: #B583F5; }
+  .secnav a.sn:focus-visible { outline: 2px solid #B583F5; outline-offset: -3px; border-radius: 7px; }
+  /* Anchor jumps land below both sticky bars; --stack-h is kept current by the script. */
+  section[id], #get-uv { scroll-margin-top: calc(var(--stack-h, 96px) + 14px); }
+  @media (max-width: 560px) {
+    .secnav a.sn { padding: 10px 10px 8px; gap: 6px; }
+    .secnav a.sn .sn-label { font-size: 12.5px; }
+  }
 
   .hero { padding: 56px 0 34px; text-align: center; }
   .eyebrow {
@@ -277,6 +321,7 @@
 </style>
 </head>
 <body>
+<div class="topstack">
 <div class="sitebar">
   <div class="wrap">
     <header class="site">
@@ -286,7 +331,7 @@
       <nav class="nav" aria-label="Primary">
         <a class="nav-page" href="index.html" aria-current="page">Home</a>
         <a class="nav-page" href="capability-brief.html">Capability Brief</a>
-        <a class="nav-page" href="agents.html">Agents</a>
+        <a class="nav-page" href="agents.html">Agent Roster</a>
         <a class="nav-page" href="e-learning/index.html">E-Learning</a>
         <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
         <span class="nav-sep" aria-hidden="true"></span>
@@ -294,6 +339,16 @@
       </nav>
     </header>
   </div>
+</div>
+<nav class="secnav" aria-label="Page sections">
+  <div class="wrap">
+    <div class="secnav-track">
+      <a class="sn" href="#prereqs"><span class="sn-num">01</span><span class="sn-label">Before you start</span></a>
+      <a class="sn" href="#install"><span class="sn-num">02</span><span class="sn-label">Install &amp; use</span></a>
+      <a class="sn" href="#agents"><span class="sn-num">03</span><span class="sn-label">Agents</span></a>
+    </div>
+  </div>
+</nav>
 </div>
 <div class="wrap">
 
@@ -771,7 +826,56 @@
       .catch(function () { /* leave the placeholder */ });
   })();
 
+  // Section rail: keep the sticky offset current and light the section being read — the same
+  // scroll-spy the capability brief uses.
+  (function () {
+    var stack = document.querySelector(".topstack");
+    var track = document.querySelector(".secnav-track");
+    var links = Array.prototype.slice.call(document.querySelectorAll(".secnav a.sn"));
+    if (!stack || !track || !links.length) return;
+    var targets = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
 
+    function measure() {
+      document.documentElement.style.setProperty("--stack-h", stack.offsetHeight + "px");
+    }
+    measure();
+
+    var current = -1;
+    function activate(i) {
+      if (i === current) return;
+      current = i;
+      links.forEach(function (a, k) {
+        if (k === i) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      });
+      // On narrow screens the rail scrolls sideways; keep the lit item in view.
+      if (i > -1 && track.scrollWidth > track.clientWidth + 1) {
+        var a = links[i];
+        track.scrollLeft = Math.max(0, a.offsetLeft - (track.clientWidth - a.offsetWidth) / 2);
+      }
+    }
+
+    function spy() {
+      // The section that has most recently passed just under the sticky stack.
+      var line = stack.offsetHeight + 24;
+      var idx = -1;
+      targets.forEach(function (t, i) { if (t && t.getBoundingClientRect().top <= line) idx = i; });
+      // At the very bottom the last section may never reach the line; keep it lit there.
+      if (window.innerHeight + window.pageYOffset >= document.documentElement.scrollHeight - 2) idx = targets.length - 1;
+      activate(idx);
+    }
+
+    var queued = false;
+    function schedule() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; spy(); });
+    }
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", function () { measure(); schedule(); });
+    window.addEventListener("load", function () { measure(); spy(); });
+    spy();
+  })();
 </script>
 </body>
 </html>
