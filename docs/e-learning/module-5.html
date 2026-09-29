@@ -582,14 +582,10 @@
     background: rgba(167,139,250,0.10);
   }
   header.site .nav a:focus-visible { outline: 2px solid var(--accent-2, #c4b5fd); outline-offset: 2px; }
-  header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border, rgba(167,139,250,0.20)); margin: 0 4px; }
-  header.site .nav a.nav-jump { color: var(--text-muted, #a3a0b5); font-size: 13px; padding: 5px 5px; text-decoration: none; border-bottom: none; }
-  header.site .nav a.nav-jump:hover { color: var(--text, #e9e7f2); }
   @media (max-width: 720px) {
     header.site { flex-wrap: wrap; gap: 10px; }
     header.site .nav { gap: 4px; }
     header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
-    header.site .nav .nav-sep { display: none; }
   }
 </style>
 <div class="topstack">
@@ -605,8 +601,6 @@
         <a class="nav-page" href="../agents.html">Agent Roster</a>
         <a class="nav-page" href="index.html" aria-current="page">E-Learning</a>
         <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
-        <span class="nav-sep" aria-hidden="true"></span>
-        <a class="nav-jump" href="../index.html#install">Install</a>
       </nav>
     </header>
   </div>

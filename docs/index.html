@@ -83,11 +83,6 @@
     background: rgba(167,139,250,0.10);
   }
   header.site .nav a:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
-  /* In-page jumps. Only meaningful on this page, so they stay visually secondary
-     and sit behind a divider rather than competing with the page links. */
-  header.site .nav .nav-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
-  header.site .nav a.nav-jump { color: var(--muted); font-size: 13px; padding: 5px 5px; }
-  header.site .nav a.nav-jump:hover { color: var(--text); }
 
   /* Site bar and section rail ride in one sticky container, as on the capability brief, so the
      rail always sits directly under the bar without hard-coding the bar's height (it changes
@@ -316,7 +311,6 @@
     header.site { flex-wrap: wrap; gap: 10px; }
     header.site .nav { gap: 4px; }
     header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
-    header.site .nav .nav-sep { display: none; }
   }
 </style>
 </head>
@@ -334,8 +328,6 @@
         <a class="nav-page" href="agents.html">Agent Roster</a>
         <a class="nav-page" href="e-learning/index.html">E-Learning</a>
         <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
-        <span class="nav-sep" aria-hidden="true"></span>
-        <a class="nav-jump" href="#install">Install</a>
       </nav>
     </header>
   </div>
