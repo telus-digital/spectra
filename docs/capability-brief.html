@@ -916,76 +916,86 @@
   <div class="wrap">
     <div class="sec-head"><span class="sec-num">03</span><span class="sec-kicker">AI-DLC process compatible</span></div>
     <h2 class="title">The agentic SDLC, mapped onto AI-DLC</h2>
-    <p class="lead"><b>AI-DLC</b> is AWS's AI-Driven Development Lifecycle &mdash; introduced to fix a structural limit of the traditional SDLC: it's built around <b>humans</b>, with AI bolted on at the edges. AI-DLC inverts that and puts <b>AI at the centre</b> &mdash; AI drafts the plan and does the heavy lifting, while humans review and approve at each gate. That is the agentic SDLC described above. Its seven phases fold straight into AI-DLC's three &mdash; <b>Inception, Construction, and Operation</b> &mdash; carrying the same shared context and the same human gates with them. SPECTRA is <b>ready for AI-DLC out of the box</b>, so adopting it is itself how a team makes the shift, without giving up the discipline that keeps quality high.</p>
+    <p class="lead"><b>AI-DLC</b> is AWS's AI-Driven Development Lifecycle &mdash; introduced to fix a structural limit of the traditional SDLC: it's built around <b>humans</b>, with AI bolted on at the edges. AI-DLC inverts that and puts <b>AI at the centre</b> &mdash; AI drafts the plan and does the heavy lifting, while humans review and approve at each gate. That is the agentic SDLC described above. Its seven phases fold straight into AI-DLC's three &mdash; <b>Inception, Construction, and Operation</b> &mdash; carrying the same shared context and the same human gates with them. Both are loops, not lines: work moves phase by phase, and what Operation teaches feeds straight back into the next Inception. SPECTRA is <b>ready for AI-DLC out of the box</b>, so adopting it is itself how a team makes the shift, without giving up the discipline that keeps quality high.</p>
     <div class="dlc-flow">
-      <svg class="ctx-svg" viewBox="0 0 1040 580" role="img" aria-label="SPECTRA's agentic SDLC phases on the left mapped to AI-DLC phases on the right: Foundation and Plan map to Inception; Design, Implement and Test map to Construction; Deploy and Maintain map to Operation.">
+      <svg class="ctx-svg" viewBox="0 0 1064 566" role="img" aria-label="SDLC phases on the left run in order — Foundation, Plan, Design, Implement, Test, Deploy, Maintain — and loop from Maintain back to Foundation for the next cycle. SPECTRA sits between them and AI-DLC as the bridge, carrying standards, shared context, human gates and the same agents across. Foundation and Plan map to Inception; Design, Implement and Test map to Construction; Deploy and Maintain map to Operation. AI-DLC runs Inception, Construction, Operation and loops from Operation back to Inception.">
         <defs>
-          <marker id="mapP" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#B583F5"/></marker>
-          <marker id="mapI" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#7E8BFF"/></marker>
-          <marker id="mapO" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#19C2A8"/></marker>
+          <marker id="mapSeq" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#7E6F90"/></marker>
+          <marker id="mapLoop" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#B4A7C6"/></marker>
+          <linearGradient id="mapBridge" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#0F0A16" stop-opacity=".55"/><stop offset="1" stop-color="#B583F5" stop-opacity=".18"/></linearGradient>
         </defs>
-        <text x="250" y="32" text-anchor="middle" fill="#B4A7C6" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="2">AGENTIC SDLC PHASES &mdash; SPECTRA</text>
-        <text x="800" y="32" text-anchor="middle" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="2">AI-DLC PHASES</text>
+        <text x="244" y="32" text-anchor="middle" fill="#B4A7C6" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="2">SDLC PHASES</text>
+        <text x="530" y="32" text-anchor="middle" fill="#F3EFF8" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="700" letter-spacing="2">SPECTRA</text>
+        <text x="805" y="32" text-anchor="middle" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="2">AI-DLC PHASES</text>
 
-        <!-- the seven agentic SDLC phases from section 02 -->
+        <!-- each group of phases becomes one AI-DLC stage: a band per stage, passing under SPECTRA -->
+        <g>
+          <rect x="50" y="50" width="964" height="138" rx="16" fill="#B583F5" fill-opacity=".16" stroke="#B583F5" stroke-opacity=".5"/>
+          <rect x="50" y="194" width="964" height="210" rx="16" fill="#7E8BFF" fill-opacity=".16" stroke="#7E8BFF" stroke-opacity=".5"/>
+          <rect x="50" y="410" width="964" height="138" rx="16" fill="#19C2A8" fill-opacity=".16" stroke="#19C2A8" stroke-opacity=".5"/>
+        </g>
+        <g fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M444 111 L452 119 L444 127 M592 111 L600 119 L592 127" stroke="#B583F5"/>
+          <path d="M444 291 L452 299 L444 307 M592 291 L600 299 L592 307" stroke="#7E8BFF"/>
+          <path d="M444 471 L452 479 L444 487 M592 471 L600 479 L592 487" stroke="#19C2A8"/>
+        </g>
+        <!-- the seven SDLC phases, run in order -->
         <g fill="#241B31" stroke="#3A2E4A">
-          <rect x="40" y="56"  width="420" height="62" rx="11"/>
-          <rect x="40" y="130" width="420" height="62" rx="11"/>
-          <rect x="40" y="204" width="420" height="62" rx="11"/>
-          <rect x="40" y="278" width="420" height="62" rx="11"/>
-          <rect x="40" y="352" width="420" height="62" rx="11"/>
-          <rect x="40" y="426" width="420" height="62" rx="11"/>
-          <rect x="40" y="500" width="420" height="62" rx="11"/>
+          <rect x="64" y="56" width="360" height="54" rx="11"/>
+          <rect x="64" y="128" width="360" height="54" rx="11"/>
+          <rect x="64" y="200" width="360" height="54" rx="11"/>
+          <rect x="64" y="272" width="360" height="54" rx="11"/>
+          <rect x="64" y="344" width="360" height="54" rx="11"/>
+          <rect x="64" y="416" width="360" height="54" rx="11"/>
+          <rect x="64" y="488" width="360" height="54" rx="11"/>
         </g>
         <g font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1">
-          <text x="64" y="91"  fill="#B583F5">00</text><text x="64" y="165" fill="#B583F5">01</text>
-          <text x="64" y="239" fill="#7E8BFF">02</text><text x="64" y="313" fill="#7E8BFF">03</text><text x="64" y="387" fill="#7E8BFF">04</text>
-          <text x="64" y="461" fill="#19C2A8">05</text><text x="64" y="535" fill="#19C2A8">06</text>
+          <text x="86" y="87" fill="#B583F5">00</text><text x="86" y="159" fill="#B583F5">01</text><text x="86" y="231" fill="#7E8BFF">02</text><text x="86" y="303" fill="#7E8BFF">03</text><text x="86" y="375" fill="#7E8BFF">04</text><text x="86" y="447" fill="#19C2A8">05</text><text x="86" y="519" fill="#19C2A8">06</text>
         </g>
         <g font-family="Space Grotesk, sans-serif" font-size="15" font-weight="600" fill="#F3EFF8" text-anchor="middle">
-          <text x="250" y="85">Foundation</text><text x="250" y="159">Plan</text><text x="250" y="233">Design</text>
-          <text x="250" y="307">Implement</text><text x="250" y="381">Test</text><text x="250" y="455">Deploy</text><text x="250" y="529">Maintain</text>
+          <text x="244" y="80">Foundation</text><text x="244" y="152">Plan</text><text x="244" y="224">Design</text><text x="244" y="296">Implement</text><text x="244" y="368">Test</text><text x="244" y="440">Deploy</text><text x="244" y="512">Maintain</text>
         </g>
         <g font-family="Inter, sans-serif" font-size="11" fill="#B4A7C6" text-anchor="middle">
-          <text x="250" y="103">standards &middot; strategy &middot; knowledge</text><text x="250" y="177">requirements &middot; impact</text>
-          <text x="250" y="251">plan &middot; decisions</text><text x="250" y="325">tasks &middot; code &middot; tests</text><text x="250" y="399">verify &middot; stabilize</text>
-          <text x="250" y="473">pull request &middot; review</text><text x="250" y="547">root cause &middot; learn</text>
+          <text x="244" y="97">standards &middot; strategy &middot; knowledge</text><text x="244" y="169">requirements &middot; impact</text><text x="244" y="241">plan &middot; decisions</text><text x="244" y="313">tasks &middot; code &middot; tests</text><text x="244" y="385">verify &middot; stabilize</text><text x="244" y="457">pull request &middot; review</text><text x="244" y="529">root cause &middot; learn</text>
         </g>
+        <!-- phase by phase -->
+        <g stroke="#7E6F90" stroke-width="1.4">
+          <line x1="244" y1="111" x2="244" y2="126" marker-end="url(#mapSeq)"/>
+          <line x1="244" y1="183" x2="244" y2="198" marker-end="url(#mapSeq)"/>
+          <line x1="244" y1="255" x2="244" y2="270" marker-end="url(#mapSeq)"/>
+          <line x1="244" y1="327" x2="244" y2="342" marker-end="url(#mapSeq)"/>
+          <line x1="244" y1="399" x2="244" y2="414" marker-end="url(#mapSeq)"/>
+          <line x1="244" y1="471" x2="244" y2="486" marker-end="url(#mapSeq)"/>
+          <line x1="805" y1="183" x2="805" y2="198" marker-end="url(#mapSeq)"/>
+          <line x1="805" y1="399" x2="805" y2="414" marker-end="url(#mapSeq)"/>
+        </g>
+        <!-- iterate: Maintain feeds the next Foundation -->
+        <path d="M64 515 H40 V83 H62" fill="none" stroke="#B4A7C6" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mapLoop)"/>
+        <text transform="translate(24 299) rotate(-90)" text-anchor="middle" fill="#B4A7C6" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.5">ITERATE &middot; LESSONS START THE NEXT CYCLE</text>
 
-        <!-- Foundation + Plan -> Inception -->
-        <g stroke="#B583F5" stroke-width="1.6" fill="none">
-          <line x1="460" y1="87"  x2="530" y2="87"/>
-          <line x1="460" y1="161" x2="530" y2="161"/>
-          <line x1="530" y1="87"  x2="530" y2="161"/>
-          <line x1="530" y1="124" x2="600" y2="124" marker-end="url(#mapP)"/>
-        </g>
-        <!-- Design + Implement + Test -> Construction -->
-        <g stroke="#7E8BFF" stroke-width="1.6" fill="none">
-          <line x1="460" y1="235" x2="530" y2="235"/>
-          <line x1="460" y1="309" x2="530" y2="309"/>
-          <line x1="460" y1="383" x2="530" y2="383"/>
-          <line x1="530" y1="235" x2="530" y2="383"/>
-          <line x1="530" y1="309" x2="600" y2="309" marker-end="url(#mapI)"/>
-        </g>
-        <!-- Deploy + Maintain -> Operation -->
-        <g stroke="#19C2A8" stroke-width="1.6" fill="none">
-          <line x1="460" y1="457" x2="530" y2="457"/>
-          <line x1="460" y1="531" x2="530" y2="531"/>
-          <line x1="530" y1="457" x2="530" y2="531"/>
-          <line x1="530" y1="494" x2="600" y2="494" marker-end="url(#mapO)"/>
+        <!-- SPECTRA: the bridge from SDLC to AI-DLC -->
+        <rect x="480" y="56" width="100" height="486" rx="14" fill="url(#mapBridge)" stroke="#B583F5" stroke-opacity=".6"/>
+        <g font-family="Inter, sans-serif" font-size="11" fill="#E4DAF0" text-anchor="middle">
+          <text x="530" y="84">one set of</text><text x="530" y="97">standards</text>
+          <text x="530" y="203">shared</text><text x="530" y="216">context</text>
+          <text x="530" y="383">human</text><text x="530" y="396">gates</text>
+          <text x="530" y="506">same</text><text x="530" y="519">agents</text>
         </g>
 
         <g text-anchor="middle">
-          <rect x="600" y="56"  width="400" height="136" rx="12" fill="rgba(181,131,245,.12)" stroke="#B583F5"/>
-          <text x="800" y="120" fill="#B583F5" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="600">Inception</text>
-          <text x="800" y="140" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11.5">Standards &amp; intent &rarr; requirements</text>
-          <rect x="600" y="204" width="400" height="210" rx="12" fill="rgba(126,139,255,.12)" stroke="#7E8BFF"/>
-          <text x="800" y="305" fill="#7E8BFF" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="600">Construction</text>
-          <text x="800" y="325" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11.5">Design &middot; code &middot; tests</text>
-          <rect x="600" y="426" width="400" height="136" rx="12" fill="rgba(25,194,168,.12)" stroke="#19C2A8"/>
-          <text x="800" y="490" fill="#19C2A8" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="600">Operation</text>
-          <text x="800" y="510" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11.5">Deploy &middot; operate &middot; improve</text>
+          <rect x="610" y="56"  width="390" height="126" rx="12" fill="rgba(181,131,245,.12)" stroke="#B583F5"/>
+          <text x="805" y="115" fill="#B583F5" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="600">Inception</text>
+          <text x="805" y="135" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11.5">Standards &amp; intent &rarr; requirements</text>
+          <rect x="610" y="200" width="390" height="198" rx="12" fill="rgba(126,139,255,.12)" stroke="#7E8BFF"/>
+          <text x="805" y="295" fill="#7E8BFF" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="600">Construction</text>
+          <text x="805" y="315" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11.5">Design &middot; code &middot; tests</text>
+          <rect x="610" y="416" width="390" height="126" rx="12" fill="rgba(25,194,168,.12)" stroke="#19C2A8"/>
+          <text x="805" y="475" fill="#19C2A8" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="600">Operation</text>
+          <text x="805" y="495" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11.5">Deploy &middot; operate &middot; improve</text>
         </g>
+        <!-- iterate: Operation feeds the next Inception -->
+        <path d="M1000 479 H1024 V119 H1002" fill="none" stroke="#B4A7C6" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mapLoop)"/>
+        <text transform="translate(1042 299) rotate(90)" text-anchor="middle" fill="#B4A7C6" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.5">ITERATE &middot; EVERY BOLT STARTS A NEW INCEPTION</text>
       </svg>
     </div>
 
