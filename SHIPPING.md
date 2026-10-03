@@ -25,6 +25,85 @@ That is the only way anything reaches `main`. Never `git push origin main`.
 
 # Part 1 — How the gate works
 
+## What is checked, and where
+
+Every quality and security check on this repository, grouped by when it fires. Everything here is
+live; [the commands at the end of this section](#confirming-the-settings) show it from the API.
+
+| When | Check | Kind | Blocks? | Defined in |
+| --- | --- | --- | --- | --- |
+| `ship.py` pre-flight, on your machine | Catalog drift checks | Quality | Yes, nothing is pushed | [`tools/checks.py`](tools/checks.py) |
+| | The full `unittest` suite | Quality | Yes, nothing is pushed | [`tests/`](tests/) |
+| Any push, including to `ci` | Secret scanning **push protection** | Security | Yes, the push is rejected | Repo settings |
+| CI on the `ci` branch, required by the ruleset | `CLI installs and runs (3.9)` and `(3.12)` | Quality | Yes | `ci.yml` → `cli` |
+| | `Catalog and package stay in sync` | Quality | Yes | `ci.yml` → `catalog` |
+| | `CodeQL finds no high-severity issues` | Security and quality | Yes for high and critical security findings; everything else is a warning | `ci.yml` → `codeql` |
+| A release tag is pushed | The tag equals `VERSION` | Release integrity | Yes, no Release is published | [`release.yml`](.github/workflows/release.yml) |
+| Continuously | Secret scanning, with **validity checks** | Security | No, raises an alert | Repo settings |
+| | Dependabot alerts and security updates | Security | No, raises an alert or a PR | Repo settings |
+| Whenever someone reports one | Private vulnerability reporting | Security intake | — | Repo settings, [`SECURITY.md`](SECURITY.md) |
+
+### What the required CI jobs assert
+
+- **`CLI installs and runs`**, on Python 3.9 (the floor in `pyproject.toml`) and 3.12. It installs
+  the package and runs the full test suite. It checks that the installed version and the bare
+  `spectra` banner both report `VERSION`, and that the removed flags and retired `cli` subcommands
+  name their replacements. It also checks that the wheel ships `spectra_cli/` only (never `tools/`,
+  `tests/` or `agents-list.json`), and that bare `spectra` writes nothing to the current directory.
+- **`Catalog and package stay in sync`** runs the four checks in `tools/checks.py`, the same code the
+  pre-flight runs: the generated listings match `agents-list.json`; `extension.yml`, `catalog.json`
+  and the zip agree; every published copy of the description agrees; and the zip matches `spectra/`.
+- **`CodeQL finds no high-severity issues`**: see [the CodeQL check](#the-codeql-check).
+
+### How the pipeline itself is hardened
+
+- **Every action is pinned to a commit**, with its version in a trailing comment. A tag can be moved
+  to different code; a commit cannot. Nothing updates the pins automatically. To move one, resolve
+  the new tag to its commit and replace the SHA and the comment:
+  ```bash
+  gh api repos/actions/checkout/git/ref/tags/v4.4.0 --jq .object
+  ```
+  If that prints `"type": "tag"`, it is an annotated tag; resolve it once more with
+  `gh api repos/<owner>/<repo>/git/tags/<sha> --jq .object.sha`.
+- **The workflow token is read-only by default.** `ci.yml` sets `contents: read`. Only the `codeql`
+  job widens it, to `security-events: write`, so it can upload to the Security tab. `release.yml`
+  holds `contents: write` because publishing a Release needs it.
+- **`main` is protected by [two rulesets](#the-two-rulesets)**, and nobody can bypass the one that
+  requires the checks.
+
+### Secret scanning
+
+Secret scanning, push protection and validity checks are on. Push protection is the part that
+blocks: it rejects a push containing a recognised secret before CI runs (see
+[what each rejection means](#what-each-rejection-means)). Validity checks ask the issuing service
+whether a detected token still works, so each alert in the Security tab says whether it is
+**active**, **inactive** or **unknown**. An active one means rotate first, clean up second.
+
+### Deliberately not in place
+
+Each of these was considered and left off on purpose. Turning one on is a decision, not a fix.
+
+- **CodeQL default setup.** It is built around pull requests, which this repository does not use,
+  and it conflicts with the CodeQL job in `ci.yml`: GitHub does not accept results from both. Leave
+  it at `not-configured`.
+- **Dependabot version updates** (there is no `.github/dependabot.yml`). They arrive as pull
+  requests, and the action pins are updated by hand instead.
+- **A dependency vulnerability check in CI.** The repository has no third-party dependencies, so
+  there would be nothing to scan.
+- **A linter.** It would have to be installed with pip, which the zero-dependency rule forbids.
+  CodeQL's quality queries cover this instead, as warnings.
+- **Secret scanning's non-provider patterns and AI detection.** They mostly find false positives,
+  and with one maintainer every alert is yours to triage.
+
+### Confirming the settings
+
+```bash
+gh api repos/telus-digital/spectra --jq '.security_and_analysis'
+gh api repos/telus-digital/spectra/private-vulnerability-reporting --jq .enabled
+gh api repos/telus-digital/spectra/code-scanning/default-setup --jq .state   # must be not-configured
+gh api 'repos/telus-digital/spectra/code-scanning/alerts?state=open' --jq length
+```
+
 ## Why there are no pull requests
 
 This repository has a single owner and maintainer, and Issues and Discussions are disabled. A pull
@@ -54,7 +133,7 @@ So a commit can earn its checks somewhere harmless and carry them to `main`:
 | Ruleset | Rules | Who can bypass | What it stops |
 | --- | --- | --- | --- |
 | **Protect main — structure** | `deletion`, `non_fast_forward` | `@alibahaloo` (always) | Accidental deletion and accidental force-push. Deliberate history rewrites stay possible. |
-| **Protect main — tested** | `required_status_checks` ×3 | **nobody** | Untested and failing code. This is the real gate. |
+| **Protect main — tested** | `required_status_checks` ×4 | **nobody** | Untested and failing code. This is the real gate. |
 
 They are split because bypass is per-ruleset, not per-rule. A single ruleset would force a choice
 between keeping admin powers and having a gate. Split, you keep every admin power **except** the
@@ -98,7 +177,12 @@ every quality finding, shows up as a warning on the run and in the Security tab,
 There is no local equivalent: `--dry-run` cannot run CodeQL, so a finding first shows up when
 `ship.py` waits on `ci`. Dismissing the alert in the Security tab does **not** unblock it, because the
 gate reads the scan, not the alert. For a false positive, either add a CodeQL suppression comment on
-the line or exclude the query in the job's `init` step, and say why in the commit.
+the line or exclude the query in the job's `init` step, and say why in the commit. One query is
+excluded today, `py/import-and-import-from`: `import unittest` beside `from unittest import mock` is
+the house style in `tests/`, not a defect.
+
+A finding you dismiss in the Security tab still appears as a warning in the job's log, for the same
+reason. That is harmless: it does not block.
 
 ## What each rejection means
 
