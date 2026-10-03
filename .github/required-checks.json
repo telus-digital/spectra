@@ -1,5 +1,6 @@
 [
   "CLI installs and runs (3.9)",
   "CLI installs and runs (3.12)",
-  "Catalog and package stay in sync"
+  "Catalog and package stay in sync",
+  "CodeQL finds no high-severity issues"
 ]

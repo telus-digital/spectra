@@ -58,7 +58,7 @@ python -m unittest discover -s tests
 ## How changes land
 
 **Never `git push origin main`.** `main` is gated: a branch ruleset accepts a push only when the
-commit already carries green runs of all three required CI checks, and nobody can bypass it.
+commit already carries green runs of every required CI check, and nobody can bypass it.
 
 ```bash
 python tools/ship.py             # checks + tests, earn CI on the `ci` branch, then push main

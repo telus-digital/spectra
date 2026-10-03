@@ -172,3 +172,31 @@ jobs:
         run: python3 tools/checks.py description-parity
       - name: The published zip matches the spectra/ folder
         run: python3 tools/checks.py zip-matches
+
+  codeql:
+    name: CodeQL finds no high-severity issues
+    # There are no pull requests here, so CodeQL's own PR check never runs and its findings would only
+    # reach the Security tab after the commit was already on main. Running it in this workflow puts it
+    # on the `ci` branch where tools/ship.py earns the gate, and the last step makes it able to fail:
+    # analyze is green whatever it finds. See tools/codeql_gate.py for what blocks and what only warns.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up CodeQL for Python and the workflows themselves
+        # `actions` scans these YAML files: script injection in a `run:` step is the likeliest real
+        # vulnerability in a repository whose shipped code has no dependencies.
+        uses: github/codeql-action/init@v4
+        with:
+          languages: python, actions
+          build-mode: none
+          queries: security-and-quality
+      - name: Analyse and upload to the Security tab
+        uses: github/codeql-action/analyze@v4
+        with:
+          output: codeql-results
+      - name: No high or critical finding
+        run: python3 tools/codeql_gate.py codeql-results

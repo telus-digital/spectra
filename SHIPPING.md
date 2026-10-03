@@ -41,11 +41,11 @@ The thing that makes this work: **check runs attach to a commit SHA, not to a br
 So a commit can earn its checks somewhere harmless and carry them to `main`:
 
 1. `ship.py` force-pushes your commit to the **`ci`** branch.
-2. `.github/workflows/ci.yml` triggers on that branch and runs the three required jobs.
+2. `.github/workflows/ci.yml` triggers on that branch and runs the four required jobs.
 3. Each job attaches a check run to **that SHA**.
-4. `ship.py` waits for all three to complete, and stops if any failed.
+4. `ship.py` waits for all four to complete, and stops if any failed.
 5. `ship.py` pushes **the same SHA** to `main`.
-6. The ruleset evaluates the pushed commit, finds three green required checks, and allows it.
+6. The ruleset evaluates the pushed commit, finds four green required checks, and allows it.
 
 `ci` is scratch space. It is force-pushed on every ship and nothing ever branches from it.
 
@@ -64,12 +64,13 @@ There is deliberately no `pull_request` rule. It was removed when the gate moved
 left in place it fired a bypassed violation on every push, which trains you to ignore bypass
 warnings. Now every bypass warning means something.
 
-## The three required checks
+## The four required checks
 
 ```
 CLI installs and runs (3.9)
 CLI installs and runs (3.12)
 Catalog and package stay in sync
+CodeQL finds no high-severity issues
 ```
 
 These strings are GitHub job names, and the ruleset matches them **literally**. The committed copy
@@ -86,15 +87,29 @@ the catalog-drift checks once so CI and `ship.py`'s pre-flight run the same code
 means registering it there *and* adding a step to `ci.yml`; the contract test fails if you do only
 one.
 
+### The CodeQL check
+
+`CodeQL finds no high-severity issues` scans the Python and the workflow files with the
+`security-and-quality` query suite. CodeQL's analyze step passes whatever it finds, so the job's last
+step, [`tools/codeql_gate.py`](tools/codeql_gate.py), reads the results and fails on any finding
+GitHub rates **high or critical** (security-severity 7.0 or above). Everything below that, including
+every quality finding, shows up as a warning on the run and in the Security tab, and never blocks.
+
+There is no local equivalent: `--dry-run` cannot run CodeQL, so a finding first shows up when
+`ship.py` waits on `ci`. Dismissing the alert in the Security tab does **not** unblock it, because the
+gate reads the scan, not the alert. For a false positive, either add a CodeQL suppression comment on
+the line or exclude the query in the job's `init` step, and say why in the commit.
+
 ## What each rejection means
 
 You will meet these as `remote:` lines on a rejected push.
 
 | Message | What happened | What to do |
 | --- | --- | --- |
-| `3 of 3 required status checks are expected` | The commit has never been through CI. | Use `python tools/ship.py`. |
+| `4 of 4 required status checks are expected` | The commit has never been through CI. | Use `python tools/ship.py`. |
 | `Required status check "X" is failing` | CI ran and X failed. | Read the run, fix, ship again. |
-| `N of 3 required status checks are in progress` | A run is in flight — **possibly on a different commit**, see below. | Wait for it to finish. `ship.py` already does. |
+| `N of 4 required status checks are in progress` | A run is in flight — **possibly on a different commit**, see below. | Wait for it to finish. `ship.py` already does. |
+| `GH013: Repository rule violations found` … `Push cannot contain secrets` | Push protection found a secret in a commit. It fires on the push to `ci`, before any CI runs. | Remove the secret from history and rotate it. Use the bypass link only for a confirmed false positive. |
 | `Cannot force-push to this branch` | The structure ruleset. You have bypass, so you will see this as a *bypassed* violation on a force-push, not a rejection. | Nothing — it is informational. |
 
 A push that succeeds but prints `Bypassed rule violations for refs/heads/main` is telling you a rule
@@ -262,7 +277,7 @@ So you can tell where it stopped:
 2. Reads the live ruleset and compares it to `.github/required-checks.json`.
 3. Runs `tools/checks.py --all`, then the full test suite. `--dry-run` stops here.
 4. Force-pushes `HEAD` to `ci`.
-5. Polls until all three required checks **complete** on that SHA, then asserts all three succeeded.
+5. Polls until every required check **completes** on that SHA, then asserts they all succeeded.
 6. Pushes the same SHA to `main`.
 
 ## When `ship.py` stops
