@@ -44,7 +44,9 @@ jobs:
       - name: Publish GitHub Release
         # Creates the Release object for this tag (no assets). The CLI's version check and the
         # landing page badge both rely on a published Release existing so /releases/latest resolves.
-        uses: softprops/action-gh-release@v2
+        # Pinned to a commit, not the movable `v2` tag: this third-party action runs with
+        # `contents: write`, so whoever controls the tag could otherwise write to this repository.
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2.6.2
         with:
           name: Spectra CLI ${{ github.ref_name }}
           generate_release_notes: true

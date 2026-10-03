@@ -9,6 +9,10 @@ on:
     # green. Check runs attach to a SHA, not a branch, which is what makes that work. See SHIPPING.md.
     branches: [main, ci]
 
+# Read-only by default. The codeql job widens this for itself, since it uploads to the Security tab.
+permissions:
+  contents: read
+
 jobs:
   cli:
     name: CLI installs and runs
@@ -194,6 +198,12 @@ jobs:
           languages: python, actions
           build-mode: none
           queries: security-and-quality
+          # `import unittest` beside `from unittest import mock` is the idiom across tests/, not a
+          # defect; flagging it on every new test file would only teach people to ignore warnings.
+          config: |
+            query-filters:
+              - exclude:
+                  id: py/import-and-import-from
       - name: Analyse and upload to the Security tab
         uses: github/codeql-action/analyze@v4
         with:

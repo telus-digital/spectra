@@ -14,7 +14,6 @@ Standard library only, like the rest of the suite.
 
 from __future__ import annotations
 
-import re
 import sys
 import unittest
 from pathlib import Path

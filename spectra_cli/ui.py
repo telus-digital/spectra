@@ -33,6 +33,7 @@ if hasattr(sys.stdout, "reconfigure"):
     try:
         sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
+        # Best effort: a stream that refuses keeps its own encoding, and output still works.
         pass
 
 USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None

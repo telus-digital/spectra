@@ -872,7 +872,7 @@ class Disclosure(unittest.TestCase):
             with mock.patch("sys.stdin.isatty", return_value=True), \
                  mock.patch.object(cli.ui, "confirm") as confirm:
                 confirm.side_effect = lambda prompt, default_yes=True: default_yes
-                code, out = run(["update"])
+                run(["update"])
         # The overwrite prompt is the second confirm (the first approves the plan); both must be asked
         # with the default at no for the overwrite.
         overwrite_call = confirm.call_args_list[-1]
@@ -1201,7 +1201,6 @@ class TheLoopCloses(unittest.TestCase):
     def test_the_command_named_by_version_is_the_one_that_fixes_it(self):
         """Told out of date, fixed in one command, and that command was named."""
         with stack("1.0.0", "1.3.1") as path:
-            manifest = path / ".specify" / "extensions" / "spectra" / "extension.yml"
             _, before = run(["version"])
             self.assertIn("spectra update", before)
 

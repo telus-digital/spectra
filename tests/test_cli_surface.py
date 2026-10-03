@@ -235,7 +235,7 @@ class TheSplitIsEvident(unittest.TestCase):
     def test_the_project_and_tool_command_names_do_not_collide_at_one_level(self):
         project_names = {name for name, _ in cli.PROJECT_COMMANDS}
         tool_names = {label.split()[1] for label, _ in cli.TOOL_COMMANDS}
-        self.assertTrue(tool_names <= {"version", "update", "uninstall"})
+        self.assertLessEqual(tool_names, {"version", "update", "uninstall"})
         # They deliberately share words — that is why the tool ones live one level down.
         self.assertTrue(tool_names & project_names)
 

@@ -240,11 +240,9 @@ def add_catalog(project_root=None, *, total_steps: int = 3) -> bool:
 
     print()
     if not pending:
-        for extension_id in present:
-            state = project.classify(project_root)
-            version = state.installed_version or "unknown version"
-            ui.ok(f"Spectra is already installed here ({ui.bold(version)}) — nothing to download.")
-            print(f"  Update it with: {ui.bold('spectra update')}")
+        version = project.classify(project_root).installed_version or "unknown version"
+        ui.ok(f"Spectra is already installed here ({ui.bold(version)}) — nothing to download.")
+        print(f"  Update it with: {ui.bold('spectra update')}")
         return True
 
     if len(pending) == 1:
