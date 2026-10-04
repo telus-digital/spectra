@@ -416,16 +416,21 @@
   .subsec-head h3{font-family:'Space Grotesk';font-weight:600;font-size:18px;color:var(--text);white-space:nowrap}
   .subsec-head .rule{height:1px;background:var(--line-soft);flex:1}
 
-  /* agentic SDLC: the operating model, phase by phase */
+  /* who works each Spec Kit step: roles per command, accent matches the ring diagram */
   .op-note{font-size:14.5px;color:var(--text-dim);max-width:82ch;margin:14px 0 0}
   .op-note b{color:var(--text)}
-  .op-grid{margin-top:22px}
-  .op-grid .cap{display:flex;flex-direction:column}
-  .op-grid .cap p{margin-bottom:16px}
-  .op-grid .cap.found{grid-column:1/-1}
-  .op-grid .cap.found p{max-width:92ch}
-  .op-grid .gate{margin-top:auto;padding-top:11px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--text-dim);line-height:1.45}
-  .op-grid .gate span{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:3px}
+  .who-grid{margin-top:22px}
+  .who-grid .cap{display:flex;flex-direction:column}
+  .who-grid .cap::before{background:var(--acc)}
+  .who-grid .cap .ci{color:var(--acc)}
+  .who-grid .cap p{margin-bottom:16px}
+  .who-grid .cap.found{grid-column:1/-1}
+  .who-grid .cap.found p{max-width:92ch}
+  .roles{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+  .role{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--text);background:var(--line-soft);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+  .role.bot{color:var(--indigo);background:var(--indigo-soft);border-color:rgba(126,139,255,.4)}
+  .who-grid .gate{margin-top:auto;padding-top:11px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--text-dim);line-height:1.45}
+  .who-grid .gate span{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:3px}
 
   /* business value: AI-assisted vs AI-native team, and the four value deep-dives */
   .bv-teams{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
@@ -642,8 +647,7 @@
       <a class="sn" href="#solution"><span class="sn-num">02</span><span class="sn-label">Agentic SDLC</span></a>
       <a class="sn" href="#ai-dlc"><span class="sn-num">03</span><span class="sn-label">AI-DLC</span></a>
       <a class="sn" href="#value"><span class="sn-num">04</span><span class="sn-label">Value</span></a>
-      <a class="sn" href="#differentiators"><span class="sn-num">05</span><span class="sn-label">How it works</span></a>
-      <a class="sn" href="#security"><span class="sn-num">06</span><span class="sn-label">Security</span></a>
+      <a class="sn" href="#security"><span class="sn-num">05</span><span class="sn-label">Security</span></a>
     </div>
   </div>
 </nav>
@@ -778,70 +782,189 @@
       <text x="40" y="228" fill="#7E6F90" font-family="Inter, sans-serif" font-size="12" font-style="italic">Agents do the work inside each phase; a person approves every hand-off; every phase reads and writes the same context.</text>
     </svg>
 
-    <div class="subsec-head"><h3>Who does the work</h3><span class="rule"></span></div>
-    <p class="op-note">Three kinds of work run side by side in every phase. Agentic doesn&rsquo;t mean replacing the other two &mdash; it means putting each kind of work where it belongs.</p>
-    <div class="cap-grid">
-      <div class="cap">
-        <div class="ci">CONVENTIONAL AUTOMATION</div>
-        <h4>Deterministic work stays deterministic</h4>
-        <p>Builds, tests, linters, scanners, and releases keep running exactly as they do today &mdash; rule-based, repeatable, and outside any agent&rsquo;s judgment. SPECTRA never puts an agent where a script already gets it right.</p>
+    <div style="margin-top:52px">
+      <div class="sec-head"><h1>How it works</h1><span class="rule"></span></div>
+    <div class="subsec-head" style="margin-top:20px"><h3>Spec-Driven Development</h3><span class="rule"></span></div>
+    <p class="lead">
+        SPECTRA is built on <b>GitHub Spec Kit</b> — the open-source toolkit that brings
+      <b>spec-driven development</b> to AI coding agents. That methodology is a proven discipline for turning intent into working software, and it
+      complements AI exceptionally well. </p>
+
+    <svg class="ctx-svg" viewBox="0 0 1040 760" role="img" aria-label="Two concentric layers. At the core is the GitHub Spec Kit loop, anchored on the project constitution: specify, clarify, plan, tasks, analyze, implement, and back to specify. Wrapped around it is SPECTRA, a Spec Kit extension that adds an outer layer of specialist agents, such as BRD generation, impact analysis, test strategy and planning, system ADRs, pull-request creation and review, defect root-cause analysis, flaky-test detection, and test automation and coverage analysis, that plug into the same loop and inherit the same constitution.">
+      <defs>
+        <radialGradient id="sddBand" cx="50%" cy="50%" r="50%">
+          <stop offset="70%" stop-color="#8E54DC" stop-opacity=".05"/>
+          <stop offset="100%" stop-color="#8E54DC" stop-opacity=".22"/>
+        </radialGradient>
+        <marker id="sddArr" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#7E6F90"/></marker>
+      </defs>
+
+      <!-- outer layer: SPECTRA, the Spec Kit extension -->
+      <circle cx="520" cy="334" r="256.0" fill="none" stroke="url(#sddBand)" stroke-width="88"/>
+      <circle cx="520" cy="334" r="300" fill="none" stroke="#B583F5" stroke-width="1.4" stroke-dasharray="7 5"/>
+      <circle cx="520" cy="334" r="212" fill="none" stroke="#B583F5" stroke-opacity=".35"/>
+      <path id="sddTop" d="M266.3,241.7 A270,270 0 0 1 773.7,241.7" fill="none"/>
+      <text fill="#B583F5" font-family="Space Grotesk, sans-serif" font-size="19" font-weight="700" letter-spacing="4"><textPath href="#sddTop" startOffset="50%" text-anchor="middle">SPECTRA</textPath></text>
+      <path id="sddTop2" d="M286.0,248.8 A249,249 0 0 1 754.0,248.8" fill="none"/>
+      <text fill="#B4A7C6" font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing="1"><textPath href="#sddTop2" startOffset="50%" text-anchor="middle">SPEC KIT EXTENSION &middot; SPECIALIST AGENTS</textPath></text>
+      <path d="M655.7,116.9 A256,256 0 1 1 384.3,116.9" fill="none" stroke="#B583F5" stroke-opacity=".4" stroke-width="1.2"/>
+      <g font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#F3EFF8">
+        <polyline points="684.6,137.9 724.4,90.4 854.0,90.4" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="684.6" cy="137.9" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="684.6" cy="137.9" r="5.5" fill="#B583F5"/>
+        <text x="861.0" y="94.9">BRD Generator</text>
+        <polyline points="764.8,259.2 824.1,241.0 854.0,241.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="764.8" cy="259.2" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="764.8" cy="259.2" r="5.5" fill="#B583F5"/>
+        <text x="861.0" y="245.5">Impact Analyzer</text>
+        <polyline points="764.8,408.8 824.1,427.0 854.0,427.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="764.8" cy="408.8" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="764.8" cy="408.8" r="5.5" fill="#B583F5"/>
+        <text x="861.0" y="431.5">Test Strategy &amp; Planner</text>
+        <polyline points="684.6,530.1 724.4,577.6 854.0,577.6" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="684.6" cy="530.1" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="684.6" cy="530.1" r="5.5" fill="#B583F5"/>
+        <text x="861.0" y="582.1">Systems ADRs</text>
+        <polyline points="355.4,137.9 315.6,90.4 186.0,90.4" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="355.4" cy="137.9" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="355.4" cy="137.9" r="5.5" fill="#B583F5"/>
+        <text x="179.0" y="94.9" text-anchor="end">Create / Review PRs</text>
+        <polyline points="275.2,259.2 215.9,241.0 186.0,241.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="275.2" cy="259.2" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="275.2" cy="259.2" r="5.5" fill="#B583F5"/>
+        <text x="179.0" y="245.5" text-anchor="end">Defect RCA</text>
+        <polyline points="275.2,408.8 215.9,427.0 186.0,427.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="275.2" cy="408.8" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="275.2" cy="408.8" r="5.5" fill="#B583F5"/>
+        <text x="179.0" y="431.5" text-anchor="end">Flaky Test Detector</text>
+        <polyline points="355.4,530.1 315.6,577.6 186.0,577.6" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
+        <circle cx="355.4" cy="530.1" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="355.4" cy="530.1" r="5.5" fill="#B583F5"/>
+        <text x="179.0" y="574.1" text-anchor="end">Test Automation &amp;</text>
+        <text x="179.0" y="590.1" text-anchor="end">Coverage Analyst</text>
+      </g>
+      <circle cx="555.6" cy="587.5" r="3" fill="none" stroke="#B583F5" stroke-opacity=".8"/>
+      <circle cx="520.0" cy="590.0" r="3" fill="none" stroke="#B583F5" stroke-opacity=".8"/>
+      <circle cx="484.4" cy="587.5" r="3" fill="none" stroke="#B583F5" stroke-opacity=".8"/>
+      <text x="520" y="618" text-anchor="middle" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.2">+ MORE AGENTS</text>
+
+      <!-- core: the GitHub Spec Kit loop -->
+      <circle cx="520" cy="334" r="190" fill="#0F0A16" stroke="#7E8BFF" stroke-opacity=".5"/>
+      <path d="M525.6,156.1 A178,178 0 0 1 671.3,240.2 L608.4,279.2 A104,104 0 0 0 523.3,230.1 Z" fill="#4FB37A" fill-opacity=".9"/>
+      <text x="590.5" y="207.9" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">1</text>
+      <text x="590.5" y="223.9" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/specify</text>
+      <path d="M676.9,249.9 A178,178 0 0 1 676.9,418.1 L611.7,383.1 A104,104 0 0 0 611.7,284.9 Z" fill="#E58A3A" fill-opacity=".9"/>
+      <text x="661.0" y="330.0" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">2</text>
+      <text x="661.0" y="346.0" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/clarify</text>
+      <path d="M671.3,427.8 A178,178 0 0 1 525.6,511.9 L523.3,437.9 A104,104 0 0 0 608.4,388.8 Z" fill="#E2574C" fill-opacity=".9"/>
+      <text x="590.5" y="452.1" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">3</text>
+      <text x="590.5" y="468.1" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/plan</text>
+      <path d="M514.4,511.9 A178,178 0 0 1 368.7,427.8 L431.6,388.8 A104,104 0 0 0 516.7,437.9 Z" fill="#E0609E" fill-opacity=".9"/>
+      <text x="449.5" y="452.1" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">4</text>
+      <text x="449.5" y="468.1" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/tasks</text>
+      <path d="M363.1,418.1 A178,178 0 0 1 363.1,249.9 L428.3,284.9 A104,104 0 0 0 428.3,383.1 Z" fill="#C760D6" fill-opacity=".9"/>
+      <text x="379.0" y="330.0" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">5</text>
+      <text x="379.0" y="346.0" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/analyze</text>
+      <path d="M368.7,240.2 A178,178 0 0 1 514.4,156.1 L516.7,230.1 A104,104 0 0 0 431.6,279.2 Z" fill="#8C6CF0" fill-opacity=".9"/>
+      <text x="449.5" y="207.9" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">6</text>
+      <text x="449.5" y="223.9" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/implement</text>
+      <path d="M504.0,150.7 A184,184 0 0 1 536.0,150.7" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
+      <path d="M670.7,228.5 A184,184 0 0 1 686.8,256.2" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
+      <path d="M686.8,411.8 A184,184 0 0 1 670.7,439.5" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
+      <path d="M536.0,517.3 A184,184 0 0 1 504.0,517.3" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
+      <path d="M369.3,439.5 A184,184 0 0 1 353.2,411.8" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
+      <path d="M353.2,256.2 A184,184 0 0 1 369.3,228.5" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
+      <circle cx="520" cy="334" r="96" fill="#191222" stroke="#F4B24C" stroke-opacity=".6"/>
+      <text x="520" y="316" text-anchor="middle" fill="#F4B24C" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="700">Constitution</text>
+      <text x="520" y="338" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11">Project guardrails,</text>
+      <text x="520" y="353" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11">principles &amp;</text>
+      <text x="520" y="368" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11">dev standards</text>
+
+      <!-- legend -->
+      <g font-family="Inter, sans-serif">
+        <rect x="40" y="664" width="470" height="76" rx="10" fill="#191222" stroke="#7E8BFF" stroke-opacity=".6"/>
+        <text x="60" y="690" fill="#7E8BFF" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.3">INNER LOOP &mdash; GITHUB SPEC KIT</text>
+        <text x="60" y="712" fill="#F3EFF8" font-size="12.5">The open-source spec-driven loop, anchored on</text>
+        <text x="60" y="729" fill="#F3EFF8" font-size="12.5">one constitution: specify &rarr; plan &rarr; tasks &rarr; implement.</text>
+        <rect x="530" y="664" width="470" height="76" rx="10" fill="#191222" stroke="#B583F5" stroke-dasharray="6 4"/>
+        <text x="550" y="690" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.3">OUTER LAYER &mdash; SPECTRA (SPEC KIT EXTENSION)</text>
+        <text x="550" y="712" fill="#F3EFF8" font-size="12.5">Specialist agents that plug into the same loop and</text>
+        <text x="550" y="729" fill="#F3EFF8" font-size="12.5">inherit the same constitution &mdash; core and add-on.</text>
+      </g>
+    </svg>
+
+    <div style="margin-top:52px">
+      <div class="sec-head"><h1>What sets SPECTRA apart</h1><span class="rule"></span></div>
+      <p class="lead">On that foundation, SPECTRA adds its
+        <b>multi-agent orchestration layer</b> — the layers that make it enterprise-grade.
+      </p>
+      <p class="lead" style="margin-top:14px">Instead of one generalist doing everything, SPECTRA comes with a roster of agents &mdash; each optimized for a single job and primed with the project&rsquo;s standards.</p>
+
+    <div class="subsec-head"><h3>Two types of agents</h3><span class="rule"></span></div>
+    <p class="lead">Every SPECTRA roster is built from two kinds of agents &mdash; a required <b>core</b> that runs the SDLC end-to-end, plus optional <b>add-ons</b> you switch on as the domain demands.</p>
+
+    <div class="tiers">
+      <div class="tier-card core">
+        <div class="tier-top"><span class="tier-badge core">Core</span><span class="tier-meta">Required for every implementation</span></div>
+        <h4>Core Agents</h4>
+        <p>The backbone of every SPECTRA implementation. Core agents run the spec-driven SDLC end-to-end &mdash; requirements, architecture, implementation, testing, and deployment. Every engagement ships with the full core roster.</p>
       </div>
-      <div class="cap">
-        <div class="ci">AGENTS</div>
-        <h4>Agents take the interpretive work</h4>
-        <p>Wherever the work needs judgment &mdash; reading a requirement, weighing a design, tracing a defect, reviewing a change &mdash; a purpose-built agent reads the project&rsquo;s real context and drafts the artifact. It cites what it read, flags what it couldn&rsquo;t find, and never invents a requirement to fill a gap.</p>
-      </div>
-      <div class="cap">
-        <div class="ci">PEOPLE</div>
-        <h4>People own every decision</h4>
-        <p>Product owners approve intent, architects approve design, engineers review code, QE signs off on quality, and a maintainer merges. Every agent output is a draft until a person accepts it &mdash; and only a person can change the standards the agents work to.</p>
+      <div class="tier-card addon">
+        <div class="tier-top"><span class="tier-badge addon">Add-on</span><span class="tier-meta">Optional &mdash; trigger as needed</span></div>
+        <h4>Add-on Agents</h4>
+        <p>Optional specialists you switch on as the work demands &mdash; they audit, validate, and add more to the context. Compliance, privacy, security, and quality checks layered onto the core flow; pick only the ones your project needs.</p>
       </div>
     </div>
 
-    <div class="subsec-head"><h3>How SPECTRA operates, phase by phase</h3><span class="rule"></span></div>
-    <p class="op-note">The same rhythm repeats in every phase: <b>the team validates the input, agents draft and build against the shared context, and the team reviews the output</b> before anything moves on. What changes from phase to phase is the work the agents take on.</p>
-    <div class="cap-grid op-grid">
-      <div class="cap found">
-        <div class="ci">00 &middot; FOUNDATION &mdash; BEFORE THE FIRST FEATURE</div>
-        <h4>Standards, set once</h4>
-        <p>Before anything is planned, SPECTRA writes down what &ldquo;correct&rdquo; means for the project: coding, security, and architecture standards encoded into the project constitution; a testing strategy with a coverage floor the codebase can actually hold; and the knowledge the team already has &mdash; decision records, methodology, UX standards &mdash; brought into the repository where every agent can read it. On an existing codebase, it reads the code first and proposes guardrails grounded in the domain it finds there.</p>
-        <div class="gate"><span>Human gate</span>Architects and engineering leads approve every standard before it binds a single agent.</div>
+    <div style="text-align:center;margin-top:32px">
+      <a class="cta-btn" href="agents.html" style="display:inline-flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;letter-spacing:.01em;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--purple-deep),var(--indigo));border:1px solid rgba(181,131,245,.5);padding:14px 30px;border-radius:12px;box-shadow:0 10px 32px rgba(181,131,245,.26);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease">Click here to see the full list of agents <span style="font-size:18px;line-height:1;transition:transform .2s ease">&rarr;</span></a>
+    </div>
+    </div>
+    </div>
+
+    <div class="subsec-head" style="margin-top:72px"><h3>Who does the work</h3><span class="rule"></span></div>
+    <p class="op-note">Every step of the Spec Kit loop has an owner. Agents draft; these roles drive each step and approve what it produces.</p>
+    <div class="cap-grid who-grid">
+      <div class="cap found" style="--acc:#F4B24C">
+        <div class="ci">FOUNDATION</div>
+        <h4>Constitution</h4>
+        <div class="roles"><span class="role">Architect</span><span class="role">QE Lead</span></div>
+        <p>Sets the design principles and development standards once &mdash; every step below inherits them.</p>
+        <div class="gate"><span>Human gate</span>The architect and QE lead approve every standard and the quality bar before it binds a single agent.</div>
       </div>
-      <div class="cap">
-        <div class="ci">01 &middot; PLAN</div>
-        <h4>From business ask to testable intent</h4>
-        <p>A raw requirement &mdash; typed, or handed over as a document &mdash; becomes a structured business requirements document, then user stories with testable acceptance criteria. Gaps come back as targeted questions rather than assumptions, the impact on the existing codebase is mapped with cited evidence, and the test plan is agreed before a design exists.</p>
-        <div class="gate"><span>Human gate</span>The product owner approves intent, scope, and business alignment.</div>
+      <div class="cap" style="--acc:#4FB37A">
+        <div class="ci">STEP 1</div>
+        <h4>/specify</h4>
+        <div class="roles"><span class="role">PM</span></div>
+        <p>Captures the what and the why: user needs and functional requirements, written as the spec.</p>
+        <div class="gate"><span>Human gate</span>The PM approves intent, scope, and acceptance criteria before any design starts.</div>
       </div>
-      <div class="cap">
-        <div class="ci">02 &middot; DESIGN</div>
-        <h4>A plan, and the reasons behind it</h4>
-        <p>The technical plan and stack decisions are drafted against the constitution, and every significant choice is captured as an architecture decision record grounded in the codebase and the decisions that came before it &mdash; so the &ldquo;why&rdquo; survives into every later phase.</p>
-        <div class="gate"><span>Human gate</span>Architects approve the design and the decisions it records.</div>
+      <div class="cap" style="--acc:#E58A3A">
+        <div class="ci">STEP 2</div>
+        <h4>/clarify</h4>
+        <div class="roles"><span class="role">PM</span><span class="role">Architect</span></div>
+        <p>Resolves the ambiguities before they become rework, keeping the spec, plan, and tasks aligned.</p>
+        <div class="gate"><span>Human gate</span>The PM and architect confirm the answers, and the spec is updated before planning begins.</div>
       </div>
-      <div class="cap">
-        <div class="ci">03 &middot; IMPLEMENT</div>
-        <h4>Tasks, code, and tests together</h4>
-        <p>The approved plan becomes an ordered, dependency-aware task list, cross-checked against the spec and the plan for drift before any code is written. The build then works through that list in order, writing tests alongside the code rather than after it.</p>
-        <div class="gate"><span>Human gate</span>Engineers review every change &mdash; an agent&rsquo;s diff is read like a person&rsquo;s.</div>
+      <div class="cap" style="--acc:#E2574C">
+        <div class="ci">STEP 3</div>
+        <h4>/plan</h4>
+        <div class="roles"><span class="role">Architect</span><span class="role">QE Lead</span></div>
+        <p>Decides the how &mdash; frameworks, libraries, data stores, infrastructure &mdash; and delivers a technical plan with research and a quick-start.</p>
+        <div class="gate"><span>Human gate</span>The architect approves the design and its decisions; the QE lead approves the test approach.</div>
       </div>
-      <div class="cap">
-        <div class="ci">04 &middot; TEST</div>
-        <h4>Verify intent, not just behavior</h4>
-        <p>Tests trace back to acceptance criteria, so a green run means the right thing was built &mdash; not merely that something passes. Unreliable tests are found by reading the test source and fixed at the cause, never papered over with a retry, a skip, or a deleted assertion.</p>
-        <div class="gate"><span>Human gate</span>QE decides what a finding means and whether a fix is safe to land.</div>
+      <div class="cap" style="--acc:#E0609E">
+        <div class="ci">STEP 4</div>
+        <h4>/tasks</h4>
+        <div class="roles"><span class="role">Developer</span><span class="role">Delivery lead</span></div>
+        <p>Breaks the technical plan into clear, actionable tasks that can be executed and traced.</p>
+        <div class="gate"><span>Human gate</span>The delivery lead approves the breakdown, sequencing, and scope before the build starts.</div>
       </div>
-      <div class="cap">
-        <div class="ci">05 &middot; DEPLOY</div>
-        <h4>Reviewed changes, human merges</h4>
-        <p>Finished work goes up as a correctly-targeted pull request, linked to its issue and described from the team&rsquo;s template. The review checks it against the spec, design decisions, and constitution it carries, and puts forward only the findings that should block a merge. Build and release stay on the organization&rsquo;s existing CI/CD.</p>
-        <div class="gate"><span>Human gate</span>A maintainer merges; release and rollback remain the team&rsquo;s call.</div>
+      <div class="cap" style="--acc:#C760D6">
+        <div class="ci">STEP 5</div>
+        <h4>/analyze</h4>
+        <div class="roles"><span class="role">Architect</span><span class="role">PM</span><span class="role">Developer</span></div>
+        <p>Checks the spec and plan against each other and against the standards, finding gaps and suggesting improvements.</p>
+        <div class="gate"><span>Human gate</span>The team decides which findings must be fixed before implementation begins.</div>
       </div>
-      <div class="cap">
-        <div class="ci">06 &middot; MAINTAIN</div>
-        <h4>Root causes, and a loop that learns</h4>
-        <p>A defect is taken down to its root cause with evidence read from the code, its history, and its tests &mdash; checking whether it has been analyzed before, and whether last time&rsquo;s preventive actions were ever carried out. What&rsquo;s learned lands back in the shared context, so the next plan starts from it instead of repeating it.</p>
-        <div class="gate"><span>Human gate</span>The team decides the fix, and whether the lesson becomes a standard.</div>
+      <div class="cap" style="--acc:#8C6CF0">
+        <div class="ci">STEP 6</div>
+        <h4>/implement</h4>
+        <div class="roles"><span class="role">Developer</span><span class="role bot">Coding agents</span></div>
+        <p>Builds from the defined tasks and plan, so work runs in parallel and progress stays predictable.</p>
+        <div class="gate"><span>Human gate</span>Developers review every change &mdash; an agent&rsquo;s diff is read like a person&rsquo;s.</div>
       </div>
     </div>
 
@@ -1490,146 +1613,10 @@
   </div>
 </section>
 
-<!-- 05 DIFFERENTIATORS -->
-<section class="alt reveal" id="differentiators">
+<!-- 05 SECURITY, POLICY & COMPLIANCE -->
+<section class="alt reveal" id="security">
   <div class="wrap">
-    <div class="sec-head"><span class="sec-num">05</span><span class="sec-kicker">How it works & DIFFERENTIATORS</span></div>
-    <h2 class="title">Spec-Driven Development</h2>
-    <p class="lead">
-        SPECTRA is built on <b>GitHub Spec Kit</b> — the open-source toolkit that brings
-      <b>spec-driven development</b> to AI coding agents. That methodology is a proven discipline for turning intent into working software, and it
-      complements AI exceptionally well. </p>
-
-    <svg class="ctx-svg" viewBox="0 0 1040 760" role="img" aria-label="Two concentric layers. At the core is the GitHub Spec Kit loop, anchored on the project constitution: specify, clarify, plan, tasks, analyze, implement, and back to specify. Wrapped around it is SPECTRA, a Spec Kit extension that adds an outer layer of specialist agents, such as BRD generation, impact analysis, test strategy and planning, system ADRs, pull-request creation and review, defect root-cause analysis, flaky-test detection, and test automation and coverage analysis, that plug into the same loop and inherit the same constitution.">
-      <defs>
-        <radialGradient id="sddBand" cx="50%" cy="50%" r="50%">
-          <stop offset="70%" stop-color="#8E54DC" stop-opacity=".05"/>
-          <stop offset="100%" stop-color="#8E54DC" stop-opacity=".22"/>
-        </radialGradient>
-        <marker id="sddArr" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#7E6F90"/></marker>
-      </defs>
-
-      <!-- outer layer: SPECTRA, the Spec Kit extension -->
-      <circle cx="520" cy="334" r="256.0" fill="none" stroke="url(#sddBand)" stroke-width="88"/>
-      <circle cx="520" cy="334" r="300" fill="none" stroke="#B583F5" stroke-width="1.4" stroke-dasharray="7 5"/>
-      <circle cx="520" cy="334" r="212" fill="none" stroke="#B583F5" stroke-opacity=".35"/>
-      <path id="sddTop" d="M266.3,241.7 A270,270 0 0 1 773.7,241.7" fill="none"/>
-      <text fill="#B583F5" font-family="Space Grotesk, sans-serif" font-size="19" font-weight="700" letter-spacing="4"><textPath href="#sddTop" startOffset="50%" text-anchor="middle">SPECTRA</textPath></text>
-      <path id="sddTop2" d="M286.0,248.8 A249,249 0 0 1 754.0,248.8" fill="none"/>
-      <text fill="#B4A7C6" font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing="1"><textPath href="#sddTop2" startOffset="50%" text-anchor="middle">SPEC KIT EXTENSION &middot; SPECIALIST AGENTS</textPath></text>
-      <path d="M655.7,116.9 A256,256 0 1 1 384.3,116.9" fill="none" stroke="#B583F5" stroke-opacity=".4" stroke-width="1.2"/>
-      <g font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#F3EFF8">
-        <polyline points="684.6,137.9 724.4,90.4 854.0,90.4" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="684.6" cy="137.9" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="684.6" cy="137.9" r="5.5" fill="#B583F5"/>
-        <text x="861.0" y="94.9">BRD Generator</text>
-        <polyline points="764.8,259.2 824.1,241.0 854.0,241.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="764.8" cy="259.2" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="764.8" cy="259.2" r="5.5" fill="#B583F5"/>
-        <text x="861.0" y="245.5">Impact Analyzer</text>
-        <polyline points="764.8,408.8 824.1,427.0 854.0,427.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="764.8" cy="408.8" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="764.8" cy="408.8" r="5.5" fill="#B583F5"/>
-        <text x="861.0" y="431.5">Test Strategy &amp; Planner</text>
-        <polyline points="684.6,530.1 724.4,577.6 854.0,577.6" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="684.6" cy="530.1" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="684.6" cy="530.1" r="5.5" fill="#B583F5"/>
-        <text x="861.0" y="582.1">Systems ADRs</text>
-        <polyline points="355.4,137.9 315.6,90.4 186.0,90.4" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="355.4" cy="137.9" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="355.4" cy="137.9" r="5.5" fill="#B583F5"/>
-        <text x="179.0" y="94.9" text-anchor="end">Create / Review PRs</text>
-        <polyline points="275.2,259.2 215.9,241.0 186.0,241.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="275.2" cy="259.2" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="275.2" cy="259.2" r="5.5" fill="#B583F5"/>
-        <text x="179.0" y="245.5" text-anchor="end">Defect RCA</text>
-        <polyline points="275.2,408.8 215.9,427.0 186.0,427.0" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="275.2" cy="408.8" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="275.2" cy="408.8" r="5.5" fill="#B583F5"/>
-        <text x="179.0" y="431.5" text-anchor="end">Flaky Test Detector</text>
-        <polyline points="355.4,530.1 315.6,577.6 186.0,577.6" fill="none" stroke="#B583F5" stroke-opacity=".45"/>
-        <circle cx="355.4" cy="530.1" r="11" fill="#B583F5" fill-opacity=".18"/><circle cx="355.4" cy="530.1" r="5.5" fill="#B583F5"/>
-        <text x="179.0" y="574.1" text-anchor="end">Test Automation &amp;</text>
-        <text x="179.0" y="590.1" text-anchor="end">Coverage Analyst</text>
-      </g>
-      <circle cx="555.6" cy="587.5" r="3" fill="none" stroke="#B583F5" stroke-opacity=".8"/>
-      <circle cx="520.0" cy="590.0" r="3" fill="none" stroke="#B583F5" stroke-opacity=".8"/>
-      <circle cx="484.4" cy="587.5" r="3" fill="none" stroke="#B583F5" stroke-opacity=".8"/>
-      <text x="520" y="618" text-anchor="middle" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.2">+ MORE AGENTS</text>
-
-      <!-- core: the GitHub Spec Kit loop -->
-      <circle cx="520" cy="334" r="190" fill="#0F0A16" stroke="#7E8BFF" stroke-opacity=".5"/>
-      <path d="M525.6,156.1 A178,178 0 0 1 671.3,240.2 L608.4,279.2 A104,104 0 0 0 523.3,230.1 Z" fill="#4FB37A" fill-opacity=".9"/>
-      <text x="590.5" y="207.9" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">1</text>
-      <text x="590.5" y="223.9" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/specify</text>
-      <path d="M676.9,249.9 A178,178 0 0 1 676.9,418.1 L611.7,383.1 A104,104 0 0 0 611.7,284.9 Z" fill="#E58A3A" fill-opacity=".9"/>
-      <text x="661.0" y="330.0" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">2</text>
-      <text x="661.0" y="346.0" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/clarify</text>
-      <path d="M671.3,427.8 A178,178 0 0 1 525.6,511.9 L523.3,437.9 A104,104 0 0 0 608.4,388.8 Z" fill="#E2574C" fill-opacity=".9"/>
-      <text x="590.5" y="452.1" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">3</text>
-      <text x="590.5" y="468.1" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/plan</text>
-      <path d="M514.4,511.9 A178,178 0 0 1 368.7,427.8 L431.6,388.8 A104,104 0 0 0 516.7,437.9 Z" fill="#E0609E" fill-opacity=".9"/>
-      <text x="449.5" y="452.1" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">4</text>
-      <text x="449.5" y="468.1" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/tasks</text>
-      <path d="M363.1,418.1 A178,178 0 0 1 363.1,249.9 L428.3,284.9 A104,104 0 0 0 428.3,383.1 Z" fill="#C760D6" fill-opacity=".9"/>
-      <text x="379.0" y="330.0" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">5</text>
-      <text x="379.0" y="346.0" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/analyze</text>
-      <path d="M368.7,240.2 A178,178 0 0 1 514.4,156.1 L516.7,230.1 A104,104 0 0 0 431.6,279.2 Z" fill="#8C6CF0" fill-opacity=".9"/>
-      <text x="449.5" y="207.9" text-anchor="middle" fill="#0B0712" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600">6</text>
-      <text x="449.5" y="223.9" text-anchor="middle" fill="#0B0712" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">/implement</text>
-      <path d="M504.0,150.7 A184,184 0 0 1 536.0,150.7" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
-      <path d="M670.7,228.5 A184,184 0 0 1 686.8,256.2" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
-      <path d="M686.8,411.8 A184,184 0 0 1 670.7,439.5" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
-      <path d="M536.0,517.3 A184,184 0 0 1 504.0,517.3" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
-      <path d="M369.3,439.5 A184,184 0 0 1 353.2,411.8" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
-      <path d="M353.2,256.2 A184,184 0 0 1 369.3,228.5" fill="none" stroke="#B4A7C6" stroke-width="1.6" marker-end="url(#sddArr)"/>
-      <circle cx="520" cy="334" r="96" fill="#191222" stroke="#F4B24C" stroke-opacity=".6"/>
-      <text x="520" y="316" text-anchor="middle" fill="#F4B24C" font-family="Space Grotesk, sans-serif" font-size="17" font-weight="700">Constitution</text>
-      <text x="520" y="338" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11">Project guardrails,</text>
-      <text x="520" y="353" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11">principles &amp;</text>
-      <text x="520" y="368" text-anchor="middle" fill="#B4A7C6" font-family="Inter, sans-serif" font-size="11">dev standards</text>
-
-      <!-- legend -->
-      <g font-family="Inter, sans-serif">
-        <rect x="40" y="664" width="470" height="76" rx="10" fill="#191222" stroke="#7E8BFF" stroke-opacity=".6"/>
-        <text x="60" y="690" fill="#7E8BFF" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.3">INNER LOOP &mdash; GITHUB SPEC KIT</text>
-        <text x="60" y="712" fill="#F3EFF8" font-size="12.5">The open-source spec-driven loop, anchored on</text>
-        <text x="60" y="729" fill="#F3EFF8" font-size="12.5">one constitution: specify &rarr; plan &rarr; tasks &rarr; implement.</text>
-        <rect x="530" y="664" width="470" height="76" rx="10" fill="#191222" stroke="#B583F5" stroke-dasharray="6 4"/>
-        <text x="550" y="690" fill="#B583F5" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.3">OUTER LAYER &mdash; SPECTRA (SPEC KIT EXTENSION)</text>
-        <text x="550" y="712" fill="#F3EFF8" font-size="12.5">Specialist agents that plug into the same loop and</text>
-        <text x="550" y="729" fill="#F3EFF8" font-size="12.5">inherit the same constitution &mdash; core and add-on.</text>
-      </g>
-    </svg>
-
-      <br>
-      
-      <div class="sec-head"><h1>What sets SPECTRA apart</h1><span class="rule"></span></div>
-      
-      <p class="lead">On that foundation, SPECTRA adds its
-        <b>multi-agent orchestration layer</b> — the layers that make it enterprise-grade.
-      </p>
-      <p class="lead" style="margin-top:14px">Instead of one generalist doing everything, SPECTRA comes with a roster of agents &mdash; each optimized for a single job and primed with the project&rsquo;s standards.</p>
-
-    <div class="subsec-head"><h3>Two types of agents</h3><span class="rule"></span></div>
-    <p class="lead">Every SPECTRA roster is built from two kinds of agents &mdash; a required <b>core</b> that runs the SDLC end-to-end, plus optional <b>add-ons</b> you switch on as the domain demands.</p>
-
-    <div class="tiers">
-      <div class="tier-card core">
-        <div class="tier-top"><span class="tier-badge core">Core</span><span class="tier-meta">Required for every implementation</span></div>
-        <h4>Core Agents</h4>
-        <p>The backbone of every SPECTRA implementation. Core agents run the spec-driven SDLC end-to-end &mdash; requirements, architecture, implementation, testing, and deployment. Every engagement ships with the full core roster.</p>
-      </div>
-      <div class="tier-card addon">
-        <div class="tier-top"><span class="tier-badge addon">Add-on</span><span class="tier-meta">Optional &mdash; trigger as needed</span></div>
-        <h4>Add-on Agents</h4>
-        <p>Optional specialists you switch on as the work demands &mdash; they audit, validate, and add more to the context. Compliance, privacy, security, and quality checks layered onto the core flow; pick only the ones your project needs.</p>
-      </div>
-    </div>
-
-    <div style="text-align:center;margin-top:32px">
-      <a class="cta-btn" href="agents.html" style="display:inline-flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;letter-spacing:.01em;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--purple-deep),var(--indigo));border:1px solid rgba(181,131,245,.5);padding:14px 30px;border-radius:12px;box-shadow:0 10px 32px rgba(181,131,245,.26);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease">Click here to see the full list of agents <span style="font-size:18px;line-height:1;transition:transform .2s ease">&rarr;</span></a>
-    </div>
-  </div>
-</section>
-
-<!-- 06 SECURITY, POLICY & COMPLIANCE -->
-<section class="reveal" id="security">
-  <div class="wrap">
-    <div class="sec-head"><span class="sec-num">06</span><span class="sec-kicker">Security, policy &amp; compliance</span></div>
+    <div class="sec-head"><span class="sec-num">05</span><span class="sec-kicker">Security, policy &amp; compliance</span></div>
     <h2 class="title">No new trust boundary</h2>
     <p class="lead">SPECTRA is not another AI vendor, another model, or another data path. It ships as <b>instructions</b> &mdash; command files that Spec Kit registers with the AI coding agent your organization has <b>already approved</b>, executed by that agent inside your existing environment. Whatever governs the agent therefore already governs SPECTRA.</p>
 
