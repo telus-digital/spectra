@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPECTRA — Case Study · One feature, three ways: Vibe, Plan and SPECTRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Palette, type and chrome follow docs/capability-brief.html so the two pages read as one set. */
+  :root{
+    --ink:#0B0712;
+    --ink-2:#0F0A16;
+    --panel:#191222;
+    --panel-2:#20172C;
+    --line:#3A2E4A;
+    --line-soft:#241B31;
+    --text:#F3EFF8;
+    --text-dim:#B4A7C6;
+    --text-faint:#7E6F90;
+    --purple:#B583F5;
+    --purple-deep:#8E54DC;
+    --purple-soft:rgba(181,131,245,.12);
+    --indigo:#7E8BFF;
+    --green:#8FD957;
+    --core:#F4B24C;
+    --maxw:1120px;
+    --r:14px;
+    /* Series colours: one per method, distinct in hue and readable on --ink. */
+    --vibe:#E8A04A;
+    --plan:#4CC3C7;
+    --spectra:#B583F5;
+    /* Phase colours for the cost and time breakdowns. */
+    --ph1:#8E54DC;
+    --ph2:#7E8BFF;
+    --ph3:#5FB8E8;
+    --ph4:#8FD957;
+    --ph5:#F4B24C;
+    /* Status */
+    --good:#8FD957;
+    --warn:#F4B24C;
+    --bad:#F07A7A;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    font-variant-numeric:tabular-nums;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  main a, footer a{color:var(--purple);text-decoration:none;border-bottom:1px solid rgba(181,131,245,.35)}
+  main a:hover, footer a:hover{border-bottom-color:var(--purple)}
+  code{font-family:'IBM Plex Mono',monospace;font-size:.84em;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:5px;padding:0 5px;color:var(--text)}
+  b, strong{font-weight:600}
+  .muted{color:var(--text-dim)}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--text-faint);
+  }
+  h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;letter-spacing:-.02em;line-height:1.08;font-weight:600}
+
+  /* ---------- site bar ---------- */
+  /* Copied from docs/capability-brief.html (itself a copy of docs/index.html). The colours
+     are inlined literals on purpose so the header renders identically on every page. */
+  .sitebar{
+    position:sticky;top:0;z-index:60;
+    background:rgba(12,10,22,0.82);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(167,139,250,0.20);
+  }
+  .sitebar .wrap{max-width:960px;padding:0 22px}
+  header.site{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:16px;padding:12px 0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  header.site .brand{display:inline-flex;align-items:center}
+  header.site .brand:hover{text-decoration:none}
+  header.site img.logo{height:26px;width:auto;opacity:.95;display:block}
+  header.site .nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  header.site .nav a.nav-page{
+    color:#a3a0b5;font-size:14px;text-decoration:none;
+    padding:5px 13px;border:1px solid transparent;border-radius:999px;
+    transition:color .15s ease,border-color .15s ease,background .15s ease;
+  }
+  header.site .nav a.nav-page:hover{color:#e9e7f2;text-decoration:none}
+  header.site .nav a.nav-page[aria-current="page"]{
+    color:#c4b5fd;border-color:rgba(167,139,250,0.20);
+    background:rgba(167,139,250,0.10);
+  }
+  header.site .nav a:focus-visible{outline:2px solid #c4b5fd;outline-offset:2px}
+  @media(max-width:720px){
+    header.site{flex-wrap:wrap;gap:10px}
+    header.site .nav{gap:4px}
+    header.site .nav a.nav-page{font-size:13px;padding:5px 10px}
+  }
+
+  /* ---------- sticky top stack: site bar + section rail ---------- */
+  .topstack{position:sticky;top:0;z-index:60}
+
+  /* ---------- section rail ---------- */
+  .secnav{
+    background:rgba(15,10,22,0.90);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .secnav .wrap{max-width:960px;padding:0 22px}
+  .secnav-track{
+    display:flex;align-items:stretch;gap:2px;
+    overflow-x:auto;overflow-y:hidden;
+    scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:smooth;
+  }
+  .secnav-track::-webkit-scrollbar{display:none}
+  .secnav a.sn{
+    display:inline-flex;align-items:center;gap:8px;flex:none;
+    padding:11px 12px 9px;white-space:nowrap;text-decoration:none;
+    color:var(--text-faint);border-bottom:2px solid transparent;
+    transition:color .18s ease,border-color .18s ease;
+  }
+  .secnav a.sn .sn-num{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;
+    color:var(--text-faint);transition:color .18s ease;
+  }
+  .secnav a.sn .sn-label{font-size:13.5px}
+  .secnav a.sn:hover{color:var(--text)}
+  .secnav a.sn:hover .sn-num{color:var(--purple)}
+  .secnav a.sn[aria-current="true"]{color:var(--text);border-bottom-color:var(--purple)}
+  .secnav a.sn[aria-current="true"] .sn-num{color:var(--purple)}
+  .secnav a.sn:focus-visible{outline:2px solid var(--purple);outline-offset:-3px;border-radius:7px}
+  section[id], [id].anchor{scroll-margin-top:calc(var(--stack-h, 96px) + 14px)}
+  @media(max-width:560px){
+    .secnav a.sn{padding:10px 10px 8px;gap:6px}
+    .secnav a.sn .sn-label{font-size:12.5px}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:68px 0 0;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(900px 380px at 18% -10%, rgba(181,131,245,.12), transparent 60%),
+               radial-gradient(800px 420px at 92% 8%, rgba(126,139,255,.10), transparent 60%);
+    pointer-events:none;
+  }
+  .hero .wrap{position:relative;z-index:2}
+  .hero-eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+  .hero-eyebrow .rule{height:1px;width:44px;background:linear-gradient(90deg,var(--purple),transparent)}
+  h1.headline{font-size:clamp(36px,6vw,68px);font-weight:700;max-width:18ch}
+  h1.headline .glow{color:var(--purple)}
+  .subhead{margin-top:24px;max-width:66ch;font-size:clamp(16px,1.7vw,19px);color:var(--text-dim)}
+  .subhead b{color:var(--text);font-weight:500}
+  .meta-strip{
+    margin-top:54px;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+    display:grid;grid-template-columns:repeat(4,1fr);
+  }
+  .meta-strip > div{padding:18px 24px;border-right:1px solid var(--line-soft)}
+  .meta-strip > div:first-child{padding-left:0}
+  .meta-strip > div:last-child{border-right:none}
+  .meta-strip .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+  .meta-strip .v{margin-top:5px;font-family:'Space Grotesk';font-size:15px;color:var(--text)}
+
+  /* ---------- generic section ---------- */
+  section{padding:84px 0}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:14px}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--purple);letter-spacing:.1em}
+  .sec-kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  h2.title{font-size:clamp(26px,3.6vw,40px);max-width:26ch;margin-bottom:18px}
+  .lead{font-size:clamp(16px,1.7vw,18px);color:var(--text-dim);max-width:72ch}
+  .lead b{color:var(--text);font-weight:500}
+  .alt{background:var(--ink-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+  .subsec-head{display:flex;align-items:center;gap:14px;margin:56px 0 6px}
+  .subsec-head h3{font-family:'Space Grotesk';font-weight:600;font-size:18px;color:var(--text);white-space:nowrap}
+  .subsec-head h3 .grp{color:var(--purple);font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.1em;margin-right:10px;font-weight:500}
+  .subsec-head .rule{height:1px;background:var(--line-soft);flex:1}
+  .note{color:var(--text-dim);max-width:80ch;font-size:15px;margin-top:6px}
+  .note b{color:var(--text)}
+  p.body{max-width:82ch;margin-top:12px;font-size:15.5px}
+  p.small, .small{font-size:13px;color:var(--text-dim)}
+  ul.body{padding-left:20px;max-width:90ch;margin-top:10px;font-size:15px}
+  ul.body li + li{margin-top:6px}
+  h4.minor{font-size:16px;margin:36px 0 4px;color:var(--text)}
+
+  /* method chips */
+  .who{display:inline-flex;align-items:center;gap:7px;font-weight:600}
+  .who::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--c);flex:none}
+  .who.vibe{--c:var(--vibe)} .who.plan{--c:var(--plan)} .who.spectra{--c:var(--spectra)}
+
+  /* ---------- workflow ---------- */
+  .stage{margin-top:30px}
+  .stage-title{font-family:'Space Grotesk';font-weight:600;font-size:16px;margin-bottom:14px}
+  .stage-title span{color:var(--text-faint);font-weight:400}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 8px}
+  .step{
+    display:flex;align-items:center;gap:10px;
+    background:var(--panel);border:1px solid var(--line-soft);border-left:3px solid var(--c, var(--ph1));
+    border-radius:10px;padding:10px 14px;font-weight:500;font-size:15px;
+  }
+  .step .n{font-family:'IBM Plex Mono',monospace;color:var(--text-faint);font-size:12px;min-width:1.6em}
+  .step small{display:block;color:var(--text-dim);font-weight:400;font-size:12.5px}
+  .step.only{border-color:rgba(181,131,245,.45);border-left-color:var(--c);background:linear-gradient(160deg,var(--purple-soft),transparent 70%),var(--panel)}
+  .arrow{color:var(--text-faint);font-size:1.1rem;padding:0 2px}
+  .loop{display:flex;flex-direction:column;align-items:center;color:var(--purple);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;line-height:1.1;padding:0 4px}
+  .loop b{font-size:1.3rem;font-weight:400}
+  .subflow{display:grid;grid-template-columns:7.5rem 1fr;gap:12px 14px;align-items:center}
+  .subflow > .label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+  .tag{
+    display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;
+    background:var(--purple-soft);border:1px solid rgba(181,131,245,.4);color:var(--purple);
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;font-weight:500;vertical-align:2px;
+  }
+
+  /* ---------- tables ---------- */
+  .tbl-wrap{overflow-x:auto;margin-top:22px;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r)}
+  table{width:100%;border-collapse:collapse}
+  th, td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top;font-size:14px}
+  tbody tr:last-child td{border-bottom:none}
+  thead th{
+    font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--text-faint);border-bottom:1px solid var(--line);white-space:nowrap;background:var(--panel-2);
+  }
+  thead th .who{font-family:'Inter',system-ui,sans-serif;font-size:13px;letter-spacing:0;text-transform:none;color:var(--text)}
+  td.c, th.c{text-align:center}
+  td.n, th.n{text-align:right;white-space:nowrap}
+  tr.grp-row td{
+    background:rgba(181,131,245,.05);font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--purple);
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding-top:12px;
+  }
+  tfoot td{font-weight:700;border-bottom:none;border-top:1px solid var(--line);font-size:15px;background:var(--panel-2)}
+  .y{color:var(--good)} .x{color:var(--bad)} .p{color:var(--warn)} .na{color:var(--text-faint)}
+  .k{color:var(--good);font-weight:600}
+  .s{color:var(--bad);font-weight:700}
+  .key{margin-top:10px}
+
+  /* ---------- cost & time ---------- */
+  .data-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;margin-top:26px;align-items:start}
+  .data-grid .tbl-wrap{margin-top:0}
+  table.ct th, table.ct td{text-align:right;white-space:nowrap}
+  table.ct th:first-child, table.ct td:first-child{text-align:left;white-space:normal}
+  table.ct td.phase{padding-left:34px;position:relative}
+  table.ct td.phase .swatch{position:absolute;left:14px;top:16px}
+  .col-spectra{background:var(--purple-soft)}
+  thead .col-spectra{color:var(--purple)}
+  .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;flex:none;background:var(--c)}
+  .cell-note{display:block;font-size:11.5px;color:var(--text-faint);font-weight:400;white-space:normal}
+  .seg.only, .swatch.only{
+    background-image:repeating-linear-gradient(135deg, rgba(11,7,18,.55) 0 3px, transparent 3px 7px);
+    background-color:var(--c);
+  }
+  .bars{display:flex;flex-direction:column;gap:22px;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:22px 22px 18px}
+  .bar-row .bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .bar-row .total{font-family:'Space Grotesk';font-weight:600;font-size:18px}
+  .track{height:28px;width:100%}
+  .stack{height:100%;display:flex;border-radius:6px;overflow:hidden;transform-origin:left}
+  .seg{height:100%;background:var(--c);border-right:2px solid var(--panel)}
+  .seg:last-child{border-right:none}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--text-dim);font-size:12.5px}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .chart-note{color:var(--text-faint);font-size:12.5px;margin-top:10px}
+  .takeaway{
+    margin-top:26px;border:1px solid var(--purple);background:var(--purple-soft);
+    border-radius:var(--r);padding:18px 22px;display:flex;gap:16px;align-items:flex-start;max-width:96ch;
+  }
+  .takeaway .q{font-family:'Space Grotesk';font-size:28px;color:var(--purple);line-height:1;margin-top:-2px}
+  .takeaway p{font-size:15px;color:var(--text-dim)}
+  .takeaway b{color:var(--text)}
+  @media(prefers-reduced-motion:no-preference){
+    .stack{animation:grow 900ms cubic-bezier(.2,.7,.2,1) both}
+    .bar-row:nth-child(2) .stack{animation-delay:120ms}
+    .bar-row:nth-child(3) .stack{animation-delay:240ms}
+    @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  }
+
+  /* qualitative compare */
+  table.compare td{width:50%;font-size:14.5px}
+  table.compare td:first-child{background:var(--purple-soft);color:var(--text)}
+  table.compare td:last-child{color:var(--text-dim)}
+
+  /* ---------- cards ---------- */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+  .cards.two{grid-template-columns:repeat(2,1fr)}
+  .card{position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:20px 20px 18px}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c, linear-gradient(180deg,var(--purple),var(--indigo)))}
+  .card.vibe{--c:var(--vibe)} .card.plan{--c:var(--plan)} .card.spectra{--c:var(--spectra)}
+  .card .ci{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--purple)}
+  .card h4{font-size:16px;margin:0 0 8px;color:var(--text);line-height:1.25}
+  .card .ci + h4{margin-top:10px}
+  .card p{font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .card ul{padding-left:18px;color:var(--text-dim);font-size:13.5px;line-height:1.55}
+  .card li + li{margin-top:6px}
+  .card li b, .card p b{color:var(--text)}
+
+  /* ---------- trend ---------- */
+  .trend-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--panel)}
+  .toggle button{
+    font:inherit;font-size:13.5px;font-weight:500;color:var(--text-dim);
+    background:transparent;border:0;border-radius:7px;padding:7px 14px;cursor:pointer;
+  }
+  .toggle button[aria-pressed="true"]{background:var(--purple-soft);color:var(--purple)}
+  .toggle button:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+  .chart-wrap{margin-top:24px;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:20px 16px 10px;position:relative}
+  .chart-wrap svg{width:100%;height:auto;display:block}
+  .chart-wrap svg text{font-family:'Inter',system-ui,sans-serif;fill:var(--text-dim);font-size:12px}
+  #trend-svg .end-label{font-size:13px;font-weight:600}
+  #trend-svg .annot{fill:var(--text);font-size:12px;font-weight:600}
+  #dots .glabel{fill:var(--text);font-size:13.5px;font-weight:600}
+  .chart-wrap .legend{margin:12px 4px 6px}
+  .legend i{display:inline-block;width:22px;height:10px;border-radius:2px}
+  .tip{
+    position:absolute;pointer-events:none;background:var(--ink-2);border:1px solid var(--line);border-radius:10px;
+    padding:9px 12px;font-size:13px;max-width:340px;opacity:0;transition:opacity 80ms;z-index:70;box-shadow:0 14px 40px rgba(0,0,0,.45);
+  }
+  .tip b{display:block;margin-bottom:2px}
+  .tip .t-muted{color:var(--text-dim)}
+
+  /* ---------- scorecard ---------- */
+  #scorecard td.score{text-align:center;font-family:'Space Grotesk';font-weight:600;font-size:16px;width:110px;cursor:default;position:relative}
+  #scorecard td.score:focus-visible{outline:2px solid var(--purple);outline-offset:-2px}
+  #scorecard td.lens{white-space:nowrap}
+  #scorecard td.lens .num{font-family:'IBM Plex Mono',monospace;color:var(--text-faint);display:inline-block;min-width:2em;font-size:12px}
+  #scorecard td.best::after{content:"▲";position:absolute;right:10px;top:13px;font-size:.6rem;color:var(--text);opacity:.75}
+  .scale{display:flex;align-items:center;gap:6px;color:var(--text-dim);font-size:12.5px;margin-top:12px;flex-wrap:wrap}
+  .scale i{display:inline-block;width:28px;height:16px;border-radius:3px;font-style:normal;text-align:center;font-size:.72rem;line-height:16px;color:var(--text);font-weight:700}
+
+  /* inline bars */
+  .ibar{display:flex;align-items:center;gap:8px}
+  .ibar span.ib{height:10px;border-radius:0 3px 3px 0;background:var(--c);min-width:2px}
+  .ibar span.v{font-size:13px;white-space:nowrap}
+  .bar8{display:inline-block;height:10px;border-radius:0 3px 3px 0;background:var(--c);vertical-align:0;margin-right:6px}
+  .tick{display:inline-block;min-width:1.4em;text-align:center;font-weight:700}
+  .pts{font-weight:700}
+
+  /* callouts */
+  .callout{margin-top:22px;padding:16px 20px;border:1px solid rgba(240,122,122,.35);border-left:3px solid var(--bad);background:rgba(240,122,122,.06);border-radius:var(--r);max-width:96ch;font-size:15px;color:var(--text-dim)}
+  .callout.info{border-color:rgba(126,139,255,.35);border-left-color:var(--indigo);background:rgba(126,139,255,.07)}
+  .callout b{color:var(--text)}
+  .callout p + p{margin-top:8px}
+  .callout ol, .callout ul{padding-left:20px;margin-top:8px}
+  .callout li + li{margin-top:5px}
+
+  /* defects */
+  .defects{counter-reset:d;list-style:none;margin-top:22px;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:4px 20px}
+  .defects li{counter-increment:d;position:relative;padding:14px 0 14px 46px;border-bottom:1px solid var(--line-soft);font-size:14.5px}
+  .defects li:last-child{border-bottom:none}
+  .defects li::before{
+    content:counter(d);position:absolute;left:0;top:13px;width:28px;height:28px;border-radius:50%;
+    background:var(--panel-2);border:1px solid var(--line);text-align:center;line-height:26px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--purple);
+  }
+  .sev{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;padding:1px 9px;border-radius:999px;margin-right:8px;vertical-align:1px}
+  .sev.high{background:rgba(240,122,122,.16);color:#F7A3A3;border:1px solid rgba(240,122,122,.45)}
+  .sev.med{background:rgba(244,178,76,.14);color:#F7C77A;border:1px solid rgba(244,178,76,.42)}
+  .sev.low{background:var(--panel-2);color:var(--text-dim);border:1px solid var(--line)}
+  .defects .repro{display:block;color:var(--text-dim);font-size:13px;margin-top:4px}
+  .verdict{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;padding:2px 10px;border-radius:999px;white-space:nowrap}
+  .verdict.mid{background:rgba(244,178,76,.14);color:#F7C77A}
+  .verdict.ok{background:rgba(143,217,87,.14);color:#B5E88E}
+
+  /* close */
+  .close{padding:96px 0;text-align:center;position:relative;overflow:hidden}
+  .close::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 300px at 50% 0%,rgba(181,131,245,.12),transparent 60%)}
+  .close .wrap{position:relative;z-index:2}
+  .close h2{font-size:clamp(26px,4vw,46px);max-width:22ch;margin:0 auto 18px}
+  .close h2 .glow{color:var(--purple)}
+  .close p{color:var(--text-dim);max-width:62ch;margin:0 auto;font-size:16px}
+  .cta-btn{display:inline-flex;align-items:center;gap:9px;margin-top:32px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;letter-spacing:.01em;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--purple-deep),var(--indigo));border:1px solid rgba(181,131,245,.5);padding:14px 30px;border-radius:12px;box-shadow:0 10px 32px rgba(181,131,245,.26);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease}
+  .cta-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(181,131,245,.4);filter:brightness(1.06)}
+
+  footer{border-top:1px solid var(--line-soft);padding:30px 0;color:var(--text-faint);font-size:12.5px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  footer .disclaimer{display:block;flex:0 0 100%;margin-top:18px;padding-top:16px;border-top:1px solid var(--line-soft);font-size:11px;line-height:1.6;color:var(--text-faint)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:900px){
+    .data-grid, .cards, .cards.two{grid-template-columns:1fr}
+    .meta-strip{grid-template-columns:repeat(2,1fr)}
+    .meta-strip > div{padding-left:0;border-right:none;border-bottom:1px solid var(--line-soft)}
+    .subflow{grid-template-columns:1fr;gap:8px}
+    th, td{padding:9px 9px}
+  }
+  @media(max-width:560px){
+    section{padding:60px 0}
+    .meta-strip{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    html,.secnav-track{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR + SECTION RAIL (one sticky stack) -->
+<div class="topstack">
+<div class="sitebar">
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="../index.html" aria-label="SPECTRA — home">
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-page" href="../index.html">Home</a>
+        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
+        <a class="nav-page" href="../agents.html">Agent Roster</a>
+        <a class="nav-page" href="../e-learning/index.html">E-Learning</a>
+        <a class="nav-page" href="vibe-plan-spectra.html" aria-current="page">Case Study</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
+      </nav>
+    </header>
+  </div>
+</div>
+
+<nav class="secnav" aria-label="Case study sections">
+  <div class="wrap">
+    <div class="secnav-track">
+      <a class="sn" href="#study"><span class="sn-num">01</span><span class="sn-label">The study</span></a>
+      <a class="sn" href="#cost-time"><span class="sn-num">02</span><span class="sn-label">Cost &amp; time</span></a>
+      <a class="sn" href="#over-time"><span class="sn-num">03</span><span class="sn-label">Over time</span></a>
+      <a class="sn" href="#findings"><span class="sn-num">04</span><span class="sn-label">Quality scorecard</span></a>
+      <a class="sn" href="#lenses"><span class="sn-num">05</span><span class="sn-label">Lens by lens</span></a>
+      <a class="sn" href="#defects"><span class="sn-num">06</span><span class="sn-label">Defects</span></a>
+      <a class="sn" href="#method"><span class="sn-num">07</span><span class="sn-label">Fact-check &amp; method</span></a>
+      <a class="sn" href="#conclusion"><span class="sn-num">08</span><span class="sn-label">Conclusion</span></a>
+    </div>
+  </div>
+</nav>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow"><span class="eyebrow">Case study</span><span class="rule"></span></div>
+    <h1 class="headline">One feature, three ways: <span class="glow">Vibe, Plan and SPECTRA</span></h1>
+    <p class="subhead">We built the same feature end to end with three approaches, then compared them twice: <b>what each one cost and how long it took</b>, and <b>what each one produced</b> &mdash; how strong the guardrails are, how well the work is specified, traced and audited, how good the code and tests are, and whether the rules still hold when a different AI agent does the work.</p>
+    <div class="meta-strip">
+      <div><div class="k">Feature</div><div class="v">Mandatory task description field</div></div>
+      <div><div class="k">Model &amp; effort</div><div class="v">Opus 5.5 &middot; Medium, same for all three</div></div>
+      <div><div class="k">Quality lenses</div><div class="v">19 in 7 groups &middot; 85 mutants run</div></div>
+      <div><div class="k">Agent sessions</div><div class="v">12 &middot; Claude Code &amp; Kiro CLI</div></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- 01 THE STUDY -->
+<section class="reveal" id="study">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><span class="sec-kicker">The study</span></div>
+    <h2 class="title">What we did</h2>
+    <p class="lead">Each approach ran the same end-to-end delivery. <b>Vibe</b> is prompting an AI agent directly; <b>Plan</b> is the same agent in plan mode; <b>SPECTRA</b> runs the spec-driven workflow. Steps marked <span class="tag" style="margin-left:0">SPECTRA only</span> were produced by SPECTRA alone.</p>
+
+    <div class="stage">
+      <p class="stage-title">Set up the project <span>(once)</span></p>
+      <div class="flow">
+        <div class="step" style="--c:var(--ph1)"><span class="n">01</span>Build guardrails</div>
+        <div class="loop" aria-label="feeds back into guardrails"><b>⇄</b>feeds back</div>
+        <div class="step" style="--c:var(--ph1)"><span class="n">02</span>Build test strategy</div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="step" style="--c:var(--ph1)"><span class="n">03</span><div>Build E2E suite<small>as per the test strategy</small></div></div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">Deliver the feature</p>
+      <div class="subflow">
+        <span class="label">Define</span>
+        <div class="flow">
+          <div class="step" style="--c:var(--ph2)"><span class="n">04</span>BRD</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step" style="--c:var(--ph2)"><span class="n">05</span>Impact analysis</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step only" style="--c:var(--ph4)"><span class="n">06</span><div>Spec<span class="tag">SPECTRA only</span><small>user stories + acceptance criteria</small></div></div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step only" style="--c:var(--ph4)"><span class="n">07</span><div>Clarify<span class="tag">SPECTRA only</span><small>Hardening requirements</small></div></div>
+        </div>
+        <span class="label">Build &amp; deploy</span>
+        <div class="flow">
+          <div class="step" style="--c:var(--ph5)"><span class="n">08</span>Plan</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step" style="--c:var(--ph5)"><span class="n">09</span>Tasks</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step" style="--c:var(--ph5)"><span class="n">10</span>Implement</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step only" style="--c:var(--ph5)"><span class="n">11</span>Create PR<span class="tag">SPECTRA only</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 COST & TIME -->
+<section class="alt reveal" id="cost-time">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><span class="sec-kicker">Cost &amp; time</span></div>
+    <h2 class="title">What each step cost and how long it took</h2>
+    <p class="lead">Spend per phase in USD and wall-clock time per phase, for all three approaches on the same settings.</p>
+
+    <div class="subsec-head anchor" id="cost"><h3>Cost</h3><span class="rule"></span></div>
+    <div class="data-grid">
+      <div class="tbl-wrap"><table class="ct" id="cost-table"></table></div>
+      <div>
+        <div class="bars" id="cost-chart"></div>
+        <div class="legend" id="cost-legend" style="margin-top:16px"></div>
+        <p class="chart-note">Hatched: produced by SPECTRA only. SPECTRA's build phase also deploys and creates the PR.</p>
+      </div>
+    </div>
+    <div class="takeaway"><span class="q">$</span><p><b>SPECTRA costs about $5–6 more per run, and delivers more for it.</b> That includes a specification with user stories and acceptance criteria, which Vibe and Plan never produced, and a build that goes end to end through deploy and the PR, where Vibe and Plan stopped at code.</p></div>
+
+    <div class="subsec-head anchor" id="time"><h3>Time</h3><span class="rule"></span></div>
+    <div class="data-grid">
+      <div class="tbl-wrap"><table class="ct" id="time-table"></table></div>
+      <div>
+        <div class="bars" id="time-chart"></div>
+        <div class="legend" id="time-legend" style="margin-top:16px"></div>
+        <p class="chart-note">Hatched: produced by SPECTRA only. SPECTRA's build phase also deploys and creates the PR.</p>
+      </div>
+    </div>
+    <div class="takeaway"><span class="q">⏱</span><p><b>Total time is in the same range for all three.</b> SPECTRA spends more time up front on test plan and spec, yet its build &amp; deploy phase, PR included, still finishes about 4–5 minutes faster than Vibe and Plan's build alone.</p></div>
+  </div>
+</section>
+
+<!-- 03 OVER TIME -->
+<section class="reveal" id="over-time">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-kicker">Beyond cost and time</span></div>
+    <h2 class="title">What you keep, and what happens as features add up</h2>
+
+    <div class="tbl-wrap">
+      <table class="compare">
+        <thead><tr><th><span class="who spectra">SPECTRA</span></th><th><span class="who vibe">Vibe</span> / <span class="who plan">Plan</span></th></tr></thead>
+        <tbody>
+          <tr><td>Guardrails work across AI tools</td><td>Specific to Claude</td></tr>
+          <tr><td>Context is persisted in the repo</td><td>Plans are lost</td></tr>
+          <tr><td>Audit trail: specs, plan and tasks are all persisted</td><td>Only the code remains once the task is completed</td></tr>
+          <tr><td>Produces artifacts the same templated way, stored in the right locations (customizable)</td><td>No consistency in docs and artifacts produced</td></tr>
+          <tr><td>Specification with user stories and acceptance criteria, by default</td><td>No specification produced</td></tr>
+          <tr><td>Runs end to end: build, deploy and create the PR, because it is context aware</td><td>Stops at code. No PR created</td></tr>
+          <tr><td>Aware of roles</td><td class="na">—</td></tr>
+          <tr><td>Asks clarifying questions</td><td>No clarifying questions</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note small">These claims were checked against the repos in the quality audit &mdash; see the <a href="#factcheck">fact-check</a>.</p>
+
+    <div class="cards two">
+      <div class="card"><div class="ci">GUARDRAILS</div><h4>One central place</h4><p>When asked to build guardrails, Vibe and Plan created a custom Python script to check things manually. With SPECTRA, all of it lives in one central place.</p></div>
+      <div class="card"><div class="ci">TEST STRATEGY</div><h4>Controlled lenses</h4><p>Without SPECTRA there was no control over which lenses the test strategy considered. It picked up a skill from the org level on its own.</p></div>
+    </div>
+
+    <div class="trend-head anchor" id="trend" style="margin-top:64px">
+      <div>
+        <div class="subsec-head" style="margin:0 0 6px"><h3>What happens as features add up</h3></div>
+        <p class="note">Per-feature effort after the one-time setup. Feature 1 is what we measured; everything after it is the expected trend.</p>
+      </div>
+      <div class="toggle" role="group" aria-label="Choose metric">
+        <button type="button" data-metric="cost" aria-pressed="true">Cost per feature</button>
+        <button type="button" data-metric="time" aria-pressed="false">Time per feature</button>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <svg id="trend-svg" viewBox="0 0 900 420" role="img" aria-labelledby="trend-desc">
+        <desc id="trend-desc">Expected per-feature effort. SPECTRA starts higher at feature 1, then drops and levels off as context builds up, crossing below Vibe and Plan. Vibe and Plan stay flat or rise slightly. SPECTRA's variability band narrows over time; Vibe and Plan's stays wide.</desc>
+      </svg>
+      <div class="legend">
+        <span><i style="background:linear-gradient(90deg,#8E54DC,#B583F5,#7E8BFF);height:4px"></i>SPECTRA</span>
+        <span><i style="background:repeating-linear-gradient(90deg,#E8A04A 0 6px,transparent 6px 10px);height:3px"></i>Vibe</span>
+        <span><i style="background:#4CC3C7;height:2px"></i>Plan</span>
+        <span><i style="background:rgba(181,131,245,.26)"></i>SPECTRA variability</span>
+        <span><i style="background:rgba(180,167,198,.16)"></i>Vibe / Plan variability</span>
+      </div>
+    </div>
+    <p class="note small" style="margin-top:12px">The per-feature figures for Feature 1 come from this run (BRD, test plan, spec and build, without the one-time setup). Values after Feature 1 are illustrative and show the expected direction, not measurements. All runs used Opus 5.5 at medium effort.</p>
+
+    <div class="cards">
+      <div class="card"><div class="ci">01</div><h4>Context compounds</h4><p>Every feature leaves behind specs, plans and tasks in the repo. The next feature starts from that, not from a blank page.</p></div>
+      <div class="card"><div class="ci">02</div><h4>Less figuring things out</h4><p>With full traceability of previous work, agents spend less time rediscovering decisions and more time building.</p></div>
+      <div class="card"><div class="ci">03</div><h4>More consistent outcomes</h4><p>The same templates, guardrails and context on every run narrow the spread of results. Vibe and Plan start over each time, so the spread stays wide.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 FINDINGS + SCORECARD -->
+<section class="alt reveal" id="findings">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><span class="sec-kicker">Quality audit</span></div>
+    <h2 class="title">What each method actually produced</h2>
+    <p class="lead">The audit scores each method on <b>19 lenses</b>, and every score is backed by evidence in the repos or from live agent sessions. Audited 4 Oct 2026.</p>
+
+    <div class="cards">
+      <div class="card"><h4>SPECTRA leads: 86 vs 65 and 63 (of 95)</h4><p>SPECTRA scores highest on guardrails, requirements, traceability, data safety, and how well its rules carry across AI agents. Vibe has the deepest tests. Plan matches SPECTRA on the API contract and has the leanest footprint.</p></div>
+      <div class="card"><h4>SPECTRA has the strongest guardrails</h4><p>ruff, strict mypy, type-aware oxlint, Prettier, axe in every UI test, a TDD guard, a 17-rule convention checker, one <code>./check.sh</code>, the highest floors, and a git pre-commit hook. Its TDD guard closes 5 bypasses that Vibe's guard leaves open.</p></div>
+      <div class="card"><h4>Under pressure, only enforcement held</h4><p>Asked to "skip the tests", Kiro edited production code untested in Vibe and Plan. In SPECTRA, Kiro had the rules in its context and <b>still tried</b>. The guard blocked it, and it then went test-first. Claude Code followed the written rules unprompted in SPECTRA and Vibe, but not in Plan.</p></div>
+      <div class="card"><h4>The constitution sets the rules; ordinary files carry them</h4><p>SPECTRA's rules reach every tested agent. They don't reach it through the constitution itself: Spec Kit integrations only add commands. They reach it through <code>AGENTS.md</code>, the same guard wired into each agent's hooks, and a git hook every agent goes through.</p></div>
+      <div class="card"><h4>The most serious defect is in Vibe and Plan</h4><p>On a database created before the feature, Vibe and Plan return <b>HTTP 500 on every request</b>. Plan's local <code>todo.db</code> in this checkout is still in the old shape. Only SPECTRA migrates the data in place. 100% coverage in both repos didn't catch it.</p></div>
+      <div class="card"><h4>SPECTRA still has gaps</h4><p>A <code>TDD_REFACTOR=1</code> commit is trusted, any red test unlocks every file, <code>--no-verify</code> skips the hook, and there is no CI.</p></div>
+    </div>
+
+    <div class="subsec-head anchor" id="scorecard-h"><h3>Scorecard</h3><span class="rule"></span></div>
+    <p class="note">Each lens is scored 1 (weak) to 5 (strong) per method. Hover over or focus a score to see why. ▲ marks the best score in a row. Darker cells mean higher scores, and every cell also shows the number. Lenses 18 and 19 are new.</p>
+    <div class="tbl-wrap">
+      <table id="scorecard">
+        <thead><tr><th>Lens</th><th class="c"><span class="who vibe">Vibe</span></th><th class="c"><span class="who plan">Plan</span></th><th class="c"><span class="who spectra">SPECTRA</span></th></tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+      </table>
+    </div>
+    <div class="scale" aria-hidden="true">Score <i data-s="1">1</i><i data-s="2">2</i><i data-s="3">3</i><i data-s="4">4</i><i data-s="5">5</i></div>
+
+    <div class="subsec-head"><h3>Average score per lens group</h3><span class="rule"></span></div>
+    <div class="chart-wrap">
+      <svg id="dots" viewBox="0 0 900 380" role="img" aria-labelledby="dots-desc"><desc id="dots-desc">Dot plot of average score per lens group for Vibe, Plan and SPECTRA on a 1 to 5 scale. The scorecard table above has the same data.</desc></svg>
+      <div class="legend"><span class="who vibe">Vibe</span><span class="who plan">Plan</span><span class="who spectra">SPECTRA</span></div>
+      <div class="tip" id="tip" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 LENS BY LENS -->
+<section class="reveal" id="lenses">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><span class="sec-kicker">Lens by lens</span></div>
+    <h2 class="title">The evidence behind every score</h2>
+    <p class="lead">Seven lens groups, from what each repo enforces mechanically to whether the rules still hold when a different AI agent does the work.</p>
+
+    <!-- A -->
+    <div class="subsec-head anchor" id="grpA"><h3><span class="grp">A</span>Guardrails, rules and process</h3><span class="rule"></span></div>
+    <p class="note">Lenses 1–3: what is actually enforced, how good the written rules are, and process adherence: whether the AI agent followed the process the repo's own rules define (for example, test-first if the rules say TDD), judged from the committed record. Steps a person skipped, and confirmed as their own error, don't count against the AI. Lens 19 tests the same thing live, with fresh agent sessions.</p>
+
+    <h4 class="minor">What each repo enforces mechanically</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Mechanism</th><th><span class="who vibe">Vibe</span></th><th><span class="who plan">Plan</span></th><th><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody>
+        <tr><td>Agent-time hooks</td><td class="p">TDD guard + convention check (Claude Code only)</td><td class="x">None</td><td class="y">TDD guard + convention check (Claude Code and Kiro)</td></tr>
+        <tr><td>One command for the full gate</td><td class="y"><code>./check.sh</code></td><td class="p">No. A hand-run list in CLAUDE.md</td><td class="y"><code>./check.sh</code>: conventions → guard tests → ruff → mypy → oxlint → Prettier → tsc → tests + floors</td></tr>
+        <tr><td>Back-end coverage floor</td><td>95%</td><td>95%</td><td>95%</td></tr>
+        <tr><td>Front-end coverage floor (stmt / branch / func / line)</td><td>98 / 92 / – / –</td><td>95 / 90 / – / –</td><td>98 / 92 / 98 / 98</td></tr>
+        <tr><td>Python lint and format</td><td class="y">ruff</td><td class="y">ruff</td><td class="y">ruff, also on <code>scripts/</code></td></tr>
+        <tr><td>Python type check</td><td class="x">None</td><td class="y">mypy strict + pydantic plugin</td><td class="y">mypy strict + pydantic plugin</td></tr>
+        <tr><td>Front-end lint and format</td><td class="x">tsc only</td><td class="y">oxlint type-aware + Prettier</td><td class="y">oxlint type-aware (warnings fail) + Prettier + <code>.editorconfig</code></td></tr>
+        <tr><td>Accessibility in unit tests</td><td class="y">axe</td><td class="x">None</td><td class="y">axe in every rendered-UI test file, plus WCAG 2.2 AA axe in a real browser</td></tr>
+        <tr><td>API contract check</td><td>OpenAPI snapshot</td><td>JSON fixtures, both sides</td><td>JSON fixtures, both sides</td></tr>
+        <tr><td>Git hooks</td><td class="x">None</td><td class="x">None</td><td class="y">pre-commit: refuses production-only commits, then runs <code>./check.sh</code>. Self-installing</td></tr>
+        <tr><td>CI</td><td class="x">None</td><td class="x">None</td><td class="x">None (no remote; recorded as deferred)</td></tr>
+        <tr><td>Where the rules live</td><td>CLAUDE.md, TESTING.md</td><td>CLAUDE.md + CONVENTIONS + TESTING</td><td>Constitution v1.3.0, reached through AGENTS.md (CLAUDE.md is a pointer)</td></tr>
+      </tbody>
+    </table></div>
+
+    <h4 class="minor">The two TDD guards, stress-tested</h4>
+    <p class="body muted">We sent the same tool calls to each guard, with tests green and no refactor declared. SPECTRA's guard covers every case Vibe's does, and more.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Attempt</th><th class="c"><span class="who vibe">Vibe's guard</span></th><th class="c"><span class="who spectra">SPECTRA's guard</span></th></tr></thead>
+      <tbody>
+        <tr><td>Edit <code>backend/app/schemas.py</code> directly</td><td class="c y">blocked</td><td class="c y">blocked</td></tr>
+        <tr><td><code>echo x &gt; backend/app/schemas.py</code></td><td class="c y">blocked</td><td class="c y">blocked</td></tr>
+        <tr><td><code>cd backend/app &amp;&amp; echo x &gt; schemas.py</code></td><td class="c x">allowed</td><td class="c y">blocked</td></tr>
+        <tr><td><code>git apply</code>, <code>patch</code>, <code>git checkout --</code>, <code>git restore</code>, <code>git stash pop</code></td><td class="c x">allowed</td><td class="c y">blocked</td></tr>
+        <tr><td><code>python3 scripts/tdd_guard.py off</code> from the agent</td><td class="c x">allowed</td><td class="c y">blocked</td></tr>
+        <tr><td>Write the guard's own state in <code>.tdd/</code></td><td class="c x">allowed</td><td class="c y">blocked</td></tr>
+        <tr><td>Refactor mode</td><td class="c x">never expires (and is still on)</td><td class="c y">30 min, or until a test is edited</td></tr>
+        <tr><td>An unrelated <code>sed -i</code> in the same command</td><td class="c">allowed</td><td class="c">allowed (correctly)</td></tr>
+        <tr><td>Kiro CLI hook payloads</td><td class="c na">not understood</td><td class="c y">handled</td></tr>
+        <tr><td>Check at commit time</td><td class="c na">none</td><td class="c y">pre-commit <code>commit-check</code></td></tr>
+        <tr><td>Any failing test unlocks every production file for 30 min</td><td class="c p">yes</td><td class="c p">yes</td></tr>
+        <tr><td>Self-tests</td><td class="c">51</td><td class="c">71</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="cards">
+      <div class="card vibe"><h4>Vibe · strength 4 · rules 4 · adherence 2</h4><ul>
+        <li><b>Real enforcement</b>, but only inside Claude Code, and with the bypasses above.</li>
+        <li>Floors agree across CLAUDE.md, README and TESTING. The rules aren't versioned.</li>
+        <li>The feature is uncommitted, and the guard was in refactor mode when production files changed.</li>
+      </ul></div>
+      <div class="card plan"><h4>Plan · strength 3 · rules 4 · adherence 2</h4><ul>
+        <li><b>Best standard tooling</b>, but no single gate, no hooks, and nothing that runs on its own.</li>
+        <li>A short, clear Definition of Done. The red-test output it requires wasn't recorded for this feature.</li>
+        <li>Feature and docs are uncommitted.</li>
+      </ul></div>
+      <div class="card spectra"><h4>SPECTRA · strength 5 · rules 5 · adherence 5</h4><ul>
+        <li><b>Strongest enforcement:</b> Vibe's and Plan's checks combined, a TDD guard for two agents, and a pre-commit hook. Gaps: no CI, and <code>--no-verify</code> or <code>TDD_REFACTOR=1</code> get past the hook.</li>
+        <li><b>Constitution v1.3.0:</b> versioned, with a sync report, covering testing, code standards, guardrails, agent governance and accessibility (WCAG 2.2 AA).</li>
+        <li><b>Adherence 5, against its own constitution:</b> test tasks come before code, every task records its red run (and any test that "passed on arrival"), <code>./check.sh</code> and e2e pass, and the PR descriptions list the tests and the screen-reader check. The constitution allows tests to land "together with" the code, so the large commits don't break a rule.</li>
+        <li><b>Plan before code:</b> specs 003 and 004 were each built through the Spec Kit steps in order (specify → plan → tasks → implement), each step run by the repo owner. Every test task was seen red before its code, including the TDD guard's own tests, and the PR descriptions record each red run and anything that passed on arrival, with a deliberate break proving each such test can fail.</li>
+        <li><b>Guard live on the agent's own edits:</b> spec 004's implementing session ran inside the repo, so the TDD guard checked every edit and shell command. It blocked twice (both times a proof break attempted under green, redone inside a red window). No <code>--no-verify</code>, and the guard was never switched off.</li>
+        <li><b>Minor deviations, recorded:</b> in 003, the 17 convention rules were written in one pass once all their tests had been seen failing, instead of one rule per cycle. Test-first, the constitution's core rule, held: no checker code existed before its failing tests. In 004, one proof run called Playwright directly instead of through <code>./test.sh --e2e</code> and wrote two test rows into the tracked <code>backend/todo.db</code>; the file was restored in a later commit and the incident recorded in the PR (see defects).</li>
+      </ul></div>
+    </div>
+
+    <!-- B -->
+    <div class="subsec-head anchor" id="grpB"><h3><span class="grp">B</span>Requirements and documentation</h3><span class="rule"></span></div>
+    <p class="note">Lenses 4–5: which requirement artefacts exist, how testable they are, and whether the docs match the code.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Artefact</th><th><span class="who vibe">Vibe</span></th><th><span class="who plan">Plan</span></th><th><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody>
+        <tr><td>BRD</td><td>FR-1–23, NFR-1–5. Status "Draft"</td><td>FR-1–20, NFR-1–4, with a revision log. Status "Draft" (untracked)</td><td>BR-01–11. Marked "Approved", but no approver is named</td></tr>
+        <tr><td>Impact analysis</td><td class="y">Yes. Its 6 findings were not fed back into the BRD</td><td class="y">Yes. Its gaps A1–A6 were added to the BRD</td><td class="y">Yes, with 3 clarifications</td></tr>
+        <tr><td>Spec with user stories</td><td class="x">No</td><td class="x">No</td><td class="y">5 user stories, FR-001–024, SC-001–007 (plus spec 003 for the guardrails)</td></tr>
+        <tr><td>Acceptance criteria</td><td class="p">10 in Given/When/Then, with no IDs</td><td class="y">AC-1–14 in a Given/When/Then table</td><td class="y">37 Given/When/Then scenarios</td></tr>
+        <tr><td>Clarifications</td><td class="p">Q-1–5 listed, answered by "proposed defaults"</td><td class="p">Q1–Q8 listed, no answers recorded</td><td class="y">A recorded session (3 questions and answers)</td></tr>
+        <tr><td>Test plan</td><td class="y">Test IDs mapped to FR/AC</td><td class="y">A full requirement-to-test matrix</td><td class="y">TP-T1–T59. Flags its own untestable FR-014</td></tr>
+        <tr><td>Decision record, plan, tasks</td><td class="p">Test plan decision table D1–D5</td><td class="x">None</td><td class="y">research R1–R10, plan, 53 tasks, baseline</td></tr>
+        <tr><td>PR description</td><td class="x">None (its own exit criteria require one)</td><td class="x">None</td><td class="y"><code>pr-description.md</code> (no PR opened; no remotes)</td></tr>
+      </tbody>
+    </table></div>
+
+    <h4 class="minor">Places where the docs don't match the code</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Repo</th><th>Statement</th><th>Reality</th></tr></thead>
+      <tbody>
+        <tr><td><span class="who spectra">SPECTRA</span></td><td><code>spec.md</code> quotes the error as "Description is mandatory"</td><td>The API returns "Value error, Description is mandatory"</td></tr>
+        <tr><td><span class="who vibe">Vibe</span></td><td>TESTING.md: "18 of 18 mutants caught"</td><td>No log or script for this anywhere in the repo. Our own run found a surviving mutant (B8)</td></tr>
+        <tr><td><span class="who vibe">Vibe</span></td><td>BRD and test plan: "Draft, awaiting answers"</td><td>Built and recorded as done in TESTING.md</td></tr>
+        <tr><td><span class="who plan">Plan</span></td><td>BRD §8: upgrading means deleting <code>todo.db</code></td><td>The README never says so, and the local (git-ignored) <code>todo.db</code> in this checkout is still pre-feature, so <code>./run.sh</code> returns 500</td></tr>
+        <tr><td><span class="who plan">Plan</span></td><td>BRD and test plan baseline "53 back-end / 55 front-end"; BRD Q5 cites a "known title bug"</td><td>The README said 54/56 at the time, and the bug was already fixed in <code>1e84c0c</code></td></tr>
+      </tbody>
+    </table></div>
+    <p class="note small">Checked and correct: README test counts (Vibe 91 / 101 / 20, Plan 80 / 76 / 3, SPECTRA 80 / 99 / 8) and coverage floors match collection and config in all three. Vibe's OpenAPI snapshot exactly matches the generated schema.</p>
+
+    <!-- C -->
+    <div class="subsec-head anchor" id="grpC"><h3><span class="grp">C</span>Traceability and auditability</h3><span class="rule"></span></div>
+    <p class="note">Lenses 6–7. The matrix follows each requirement to a requirement ID, an acceptance criterion, an automated test, and whether the link is committed to git.
+      Every row has implementing code in all three repos. <b>No repo puts requirement IDs in its tests</b>, so traceability goes one way only: from the docs to the tests.</p>
+    <div class="tbl-wrap"><table id="trace">
+      <thead><tr><th>#</th><th>Requirement</th><th class="c"><span class="who vibe">Vibe</span></th><th class="c"><span class="who plan">Plan</span></th><th class="c"><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="note small key">Key: <b>ID</b> requirement ID · <b>AC</b> acceptance criterion · <b>T</b> automated test · <b>G</b> committed to git. <span class="y">●</span> yes, <span class="p">◐</span> partial or manual only, <span class="x">○</span> no. Rows R10 and R13 are each repo's own decision.</p>
+
+    <div class="cards">
+      <div class="card vibe"><h4>Vibe: auditability 2</h4><ul>
+        <li>Only the BRD, impact analysis (<code>48f825d</code>) and test plan (<code>cf6a64e</code>) are in git. The 24 changed files and +1,180 lines of feature work are not.</li>
+        <li>No PR description. The mutation and manual-check results have no evidence.</li>
+        <li>Plus: test names exactly match the test plan's IDs.</li>
+      </ul></div>
+      <div class="card plan"><h4>Plan: auditability 2</h4><ul>
+        <li>Neither the feature nor its BRD, impact analysis or test plan is in git.</li>
+        <li>The earlier red, green and refactor commits are 15–30 s apart, which suggests they were made after the fact.</li>
+        <li>Plus: the BRD revision log shows how the requirements changed.</li>
+      </ul></div>
+      <div class="card spectra"><h4>SPECTRA: auditability 4</h4><ul>
+        <li>One commit per stage: BRD and impact, spec and clarifications, test plan, implementation, sign-off, guardrails.</li>
+        <li>Decisions with alternatives (R1–R10), a baseline with hashes, and a PR description that discloses which tests weren't written first.</li>
+        <li>Implementation commits are large. The pre-commit check ties every production commit to a test change.</li>
+      </ul></div>
+    </div>
+
+    <!-- D -->
+    <div class="subsec-head anchor" id="grpD"><h3><span class="grp">D</span>Code and tests</h3><span class="rule"></span></div>
+    <p class="note">Lenses 8–12. We ran every repo's own gates in throwaway copies, so the originals were not touched, and ran 29 matching mutants against each repo's unit suites.</p>
+
+    <h4 class="minor">Each repo's own gates, run from a clean copy</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Gate</th><th class="c"><span class="who vibe">Vibe</span></th><th class="c"><span class="who plan">Plan</span></th><th class="c"><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody>
+        <tr><td>Back-end tests and coverage</td><td class="c y">91 pass · 100%</td><td class="c y">80 pass · 100%</td><td class="c y">80 pass · 100%</td></tr>
+        <tr><td>Front-end tests and coverage (statements / branches)</td><td class="c y">101 pass · 100 / 98.8</td><td class="c y">76 pass · 100 / 100</td><td class="c y">82 pass · 100 / 92.75</td></tr>
+        <tr><td>Playwright e2e</td><td class="c y">20 / 20</td><td class="c y">3 / 3</td><td class="c y">2 / 2</td></tr>
+        <tr><td>e2e tests that touch the description</td><td class="c">8</td><td class="c p">2</td><td class="c p">2</td></tr>
+        <tr><td>Lint, type and format (as each repo configures them)</td><td class="c y">ruff ✓ · tsc ✓</td><td class="c y">ruff · mypy · oxlint · Prettier · tsc ✓</td><td class="c y">ruff · mypy · oxlint · Prettier · tsc ✓</td></tr>
+        <tr><td>Neutral check: Prettier on <code>frontend/src</code></td><td class="c p">5 files differ</td><td class="c y">clean</td><td class="c y">clean</td></tr>
+        <tr><td>Flaky tests (3 runs each)</td><td class="c y">none</td><td class="c y">none</td><td class="c y">none</td></tr>
+      </tbody>
+    </table></div>
+
+    <h4 class="minor">Feature diff size (setup and guardrail work excluded)</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th></th><th class="n">Prod files</th><th class="n">Prod lines +/−</th><th class="n">Test files</th><th class="n">Test lines +/−</th><th class="n">Test : prod</th><th class="n">Doc lines +</th></tr></thead>
+      <tbody>
+        <tr><td><span class="who vibe">Vibe</span></td><td class="n">9</td><td class="n">+207 / −55</td><td class="n">14</td><td class="n">+873 / −68</td><td class="n">4.2×</td><td class="n">832</td></tr>
+        <tr><td><span class="who plan">Plan</span></td><td class="n">9</td><td class="n">+181 / −69</td><td class="n">12</td><td class="n">+573 / −60</td><td class="n">3.2×</td><td class="n">677</td></tr>
+        <tr><td><span class="who spectra">SPECTRA</span></td><td class="n">11</td><td class="n">+310 / −69</td><td class="n">15</td><td class="n">+836 / −37</td><td class="n">2.7×</td><td class="n">2,720</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note small">SPECTRA's extra production lines are the in-place migration (26 lines) and the tooltip (about 60 lines).</p>
+
+    <h4 class="minor">Tests by layer</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Layer</th><th class="n"><span class="who vibe">Vibe</span></th><th class="n"><span class="who plan">Plan</span></th><th class="n"><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody>
+        <tr><td>Back-end schema / unit</td><td class="n">39</td><td class="n">36</td><td class="n">37</td></tr>
+        <tr><td>Back-end API / integration</td><td class="n">46</td><td class="n">32</td><td class="n">23</td></tr>
+        <tr><td>Back-end contract</td><td class="n">1 (snapshot)</td><td class="n">6</td><td class="n">9</td></tr>
+        <tr><td>Back-end startup / DB / migration</td><td class="n">5</td><td class="n">6</td><td class="n">11</td></tr>
+        <tr><td>Front-end API client + contract</td><td class="n">24</td><td class="n">16</td><td class="n">26</td></tr>
+        <tr><td>Front-end AddTaskModal</td><td class="n">42</td><td class="n">32</td><td class="n">35</td></tr>
+        <tr><td>Front-end TaskTable</td><td class="n">18</td><td class="n">13</td><td class="n">25</td></tr>
+        <tr><td>Front-end App</td><td class="n">17</td><td class="n">15</td><td class="n">13</td></tr>
+        <tr><td>e2e</td><td class="n">20</td><td class="n">3</td><td class="n">8</td></tr>
+        <tr><td>Tests on pre-feature data</td><td class="n x">0</td><td class="n x">0</td><td class="n y">8</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note small">SPECTRA's front-end counts include 7 axe tests and 13 tests named after the WCAG success criterion they check. Its e2e count includes 6 WCAG 2.2 AA browser checks.</p>
+
+    <h4 class="minor">Mutation testing</h4>
+    <p class="body muted">Each mutant injects one realistic bug, and we checked whether the existing unit suites fail. <span class="k">K</span> means killed (and by how many failing tests). <span class="s">SURVIVED</span> means no test noticed. N/A means the repo has no such code by design.</p>
+    <div class="tbl-wrap"><table id="mutants">
+      <thead><tr><th>#</th><th>Mutant</th><th class="c"><span class="who vibe">Vibe</span></th><th class="c"><span class="who plan">Plan</span></th><th class="c"><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody></tbody>
+      <tfoot><tr><td></td><td>Mutation score (applicable mutants)</td><td class="c">28/29 · 96.6%</td><td class="c">27/27 · 100%</td><td class="c">28/29 · 96.6%</td></tr></tfoot>
+    </table></div>
+    <p class="note small">Many mutants were killed by a single test, including the emoji / code-point rule on both sides in every repo. Vibe's survivor (B8) is a tautology: its tests import the message constant from production code and then assert against it. Vibe's and SPECTRA's tests pin the user-visible <code>"Value error, "</code> prefix. Plan explicitly asserts that the prefix is absent.</p>
+
+    <h4 class="minor">Behaviour comparison</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Behaviour / edge case</th><th><span class="who vibe">Vibe</span></th><th><span class="who plan">Plan</span></th><th><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody>
+        <tr><td>Missing, null or non-string description</td><td colspan="3" class="c">422 in all three</td></tr>
+        <tr><td>Blank or whitespace-only</td><td>422 "Value error, Description is mandatory"</td><td>422 "Description is mandatory"</td><td>422 "Value error, Description is mandatory"</td></tr>
+        <tr><td>Length limit</td><td colspan="3" class="c">1,000 code points after trimming. 1,000 emoji accepted, 1,001 rejected. Same on both sides in all three</td></tr>
+        <tr><td>BOM-only description</td><td colspan="3" class="c p">The UI rejects it as blank, the API accepts it (all three)</td></tr>
+        <tr><td>Database column</td><td><code>VARCHAR(1000) NOT NULL DEFAULT ''</code></td><td><code>VARCHAR(1000) NOT NULL</code></td><td><code>TEXT NOT NULL DEFAULT ''</code></td></tr>
+        <tr><td><b>Existing pre-feature <code>todo.db</code></b></td><td class="x"><b>500 on every request</b> (README says delete the DB)</td><td class="x"><b>500 on every request</b> (README says nothing)</td><td class="y">Migrated at startup. Old rows return <code>""</code></td></tr>
+        <tr><td>Long description in the table</td><td>Clamped to 2 lines. The rest can't be read</td><td>Full text, wrapped, line breaks kept</td><td>1 line with ellipsis plus a hover / focus tooltip that can be hovered and dismissed with Esc</td></tr>
+        <tr><td>Where a server 422 appears</td><td class="y">Under the field it's about</td><td>Banner above the form</td><td class="y">Under the field it's about; a form alert when no field is named</td></tr>
+        <tr><td>Markup in the description (XSS)</td><td colspan="3" class="c y">Rendered as text in all three. No <code>dangerouslySetInnerHTML</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="cards">
+      <div class="card vibe"><h4>Vibe · code 4 · contract 4</h4><ul><li>Clean <code>ApiError</code> and a typed alias. Title and description follow different trim rules.</li><li>The OpenAPI snapshot is current, including <code>maxLength: 1000</code>. Error messages aren't pinned.</li></ul></div>
+      <div class="card plan"><h4>Plan · code 4 · contract 5</h4><ul><li>The smallest diff, and one shared helper for title and description.</li><li>Fixtures for both new errors, used by back end and front end. No drift.</li></ul></div>
+      <div class="card spectra"><h4>SPECTRA · code 4 · contract 5</h4><ul><li>Clean under strict mypy, ruff, type-aware oxlint and Prettier. A named constant and a small, safe migration. A binary <code>todo.db</code> is tracked in git.</li><li>Spec 005: a fixture for every error a client can get (404, blank title, blank description, title too long, description too long, unknown status), used by both suites. Error bodies are compared exactly, messages included, and a test fails if a fixture has no request or the front end doesn't load it.</li><li>The published API states <code>maxLength: 1000</code> for the description (code points, after trimming), and a test reads <code>/openapi.json</code> to keep it there.</li><li>Checked by breaking it: changing the 404 text, the too-long message, a fixture's message, or dropping the published limit each fails the back-end suite.</li></ul></div>
+    </div>
+
+    <!-- E -->
+    <div class="subsec-head anchor" id="grpE"><h3><span class="grp">E</span>Security, robustness and accessibility</h3><span class="rule"></span></div>
+    <p class="note">Lenses 13–14.</p>
+    <div class="callout"><b>Reproduced:</b> we created a <code>tasks</code> table in the pre-feature shape, inserted one row, pointed each app at it with <code>TODO_DB_PATH</code>, and called <code>GET /api/tasks</code>.
+      Vibe: <b>500</b>. Plan: <b>500</b> (<code>no such column: tasks.description</code>). SPECTRA: <b>200</b>, with the old task returned and an empty description.
+      Plan's local <code>backend/todo.db</code> (git-ignored, never committed) doesn't have the column, so this checkout fails on its first request. A fresh clone starts with a new database and works.</div>
+    <div class="cards">
+      <div class="card vibe"><h4>Vibe: security 3 · a11y 4</h4><ul>
+        <li>The server enforces every limit. <code>server_default</code> only helps a new database, but the README does warn about upgrades.</li>
+        <li>Errors are tied to the right field, the focus trap includes the textarea, and axe runs in unit and e2e tests.</li>
+        <li>The 2-line clamp hides text with no way to see the rest.</li>
+      </ul></div>
+      <div class="card plan"><h4>Plan: security 2 · a11y 4</h4><ul>
+        <li>The server enforces every limit, but nothing handles upgrades: no default, no migration, no README warning.</li>
+        <li>The full text is always visible and there's no strike-through.</li>
+        <li>The form-level error banner isn't tied to a field. The <code>overflow-x</code> wrapper can't be reached by keyboard.</li>
+      </ul></div>
+      <div class="card spectra"><h4>SPECTRA: security 5 · a11y 5</h4><ul>
+        <li>The migration runs in a transaction, can run more than once safely, and stops startup if it fails. It is tested with real app subprocesses.</li>
+        <li><b>WCAG 2.2 AA is a constitutional principle</b> (VIII). axe runs in every UI test file and, with the <code>wcag2a</code>–<code>wcag22aa</code> tags, in Chromium on the list, the dialog and the error banner, so contrast is checked too.</li>
+        <li>Criteria axe can't see each have a test named after them: tooltip hoverable and Esc-dismissable (1.4.13), errors on the field they're about (3.3.1), required fields marked (3.3.2), focus kept in and returned from the dialog (2.4.3), status messages (4.1.3), input-border contrast (1.4.11), 24×24 targets (2.5.8).</li>
+        <li>Left: each description cell is a tab stop (that's how keyboard users reach the tooltip), and the manual screen-reader check for this work is still open in its PR description.</li>
+      </ul></div>
+    </div>
+
+    <!-- F -->
+    <div class="subsec-head anchor" id="grpF"><h3><span class="grp">F</span>Cost, maintainability and reproducibility</h3><span class="rule"></span></div>
+    <p class="note">Lenses 15–17. Repository footprint in lines. node_modules, .venv, caches and lock files are excluded. The base app has 180 doc lines, 552 lines of production code and 644 lines of tests. Guardrail tooling counts scripts, reporters, gate and hooks plus their tests, measured the same way in each repo.</p>
+    <div class="tbl-wrap"><table id="footprint">
+      <thead><tr><th>Measure (lines)</th><th><span class="who vibe">Vibe</span></th><th><span class="who plan">Plan</span></th><th><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div class="cards">
+      <div class="card vibe"><h4>Vibe · overhead 3 · upkeep 4 · repro 3</h4><ul>
+        <li>About 1.2k lines of custom guard tooling that only this team understands, in exchange for real enforcement and the deepest tests.</li>
+        <li>One CLAUDE.md and one <code>check.sh</code>. A <code>git clone</code> doesn't contain the feature.</li>
+      </ul></div>
+      <div class="card plan"><h4>Plan · overhead 4 · upkeep 4 · repro 2</h4><ul>
+        <li>The smallest footprint, with standard tools any developer knows.</li>
+        <li>A clone doesn't contain the feature, and <code>./run.sh</code> in this checkout returns 500 on its local, pre-feature <code>todo.db</code>.</li>
+      </ul></div>
+      <div class="card spectra"><h4>SPECTRA · overhead 3 · upkeep 4 · repro 4</h4><ul>
+        <li><b>Overhead 4:</b> about 5k doc lines, a 26k-line vendored framework (three agent integrations), 1.3k lines of guard tooling, and about $5–6 more on the first measured feature (<a href="#cost">cost breakdown</a>). It buys the audit trail, the only data-safe build, and the strongest enforcement.</li>
+        <li><b>Mostly paid once.</b> The framework, guard and constitution are one-time costs, so their share of each feature shrinks. Each feature's spec, plan and tasks stay in the repo as context for the next one. Vibe and Plan keep none, so they start from scratch every time. The cost-and-time comparison expects SPECTRA's cost per feature to fall below the others (<a href="#trend">expected trend</a>). That curve is a projection, so this score credits the structure, not the forecast. Measuring feature 2 in all three repos would settle it.</li>
+        <li><b>Upkeep 4:</b> one AGENTS.md for people and agents, one <code>check.sh</code>, and the constitution says how to add an agent. There's more framework to keep in step.</li>
+        <li><b>Repro 4:</b> a clone contains everything, and the git hook installs itself.</li>
+      </ul></div>
+    </div>
+
+    <!-- G -->
+    <div class="subsec-head anchor" id="grpG"><h3><span class="grp">G</span>Do the rules hold across AI agents?</h3><span class="rule"></span></div>
+    <p class="note">Lens 18 asks whether each repo's rules <em>reach</em> an agent other than Claude Code, and whether its enforcement still applies there. Lens 19 asks how well agents actually <em>read and follow</em> the rules when they change code. Both are backed by live, headless sessions of Claude Code (Opus 5.5) and Kiro CLI (Opus 5.5) on fresh copies of each repo.</p>
+
+    <h4 class="minor">Lens 18: what a fresh session of each agent gets, with no prompting</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Agent</th><th><span class="who vibe">Vibe</span></th><th><span class="who plan">Plan</span></th><th><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody>
+        <tr><td><b>Claude Code</b></td><td class="y">CLAUDE.md loaded · guard + convention hooks</td><td class="p">CLAUDE.md + CONVENTIONS + TESTING loaded · no hooks</td><td class="y">CLAUDE.md → AGENTS.md + constitution · guard + convention hooks</td></tr>
+        <tr><td><b>Kiro CLI</b></td><td class="x">Nothing loaded (found CLAUDE.md only by exploring) · no hooks</td><td class="x">Nothing loaded (found CONVENTIONS.md by exploring) · no hooks</td><td class="y">With <code>--agent todo_app</code>: AGENTS.md + constitution as resources · the same TDD guard before every write and shell command · <code>/speckit</code> prompts. No post-edit conventions hook (the gate and pre-commit run them)</td></tr>
+        <tr><td><b>Codex and other AGENTS.md readers</b> <span class="na">(not run live)</span></td><td class="x">Nothing · no hooks</td><td class="x">Nothing · no hooks</td><td class="p">AGENTS.md (native) · Spec Kit skills · no edit-time hook</td></tr>
+        <tr><td><b>Any agent or person, at commit</b></td><td class="x">Nothing</td><td class="x">Nothing</td><td class="y">pre-commit: TDD commit check + full <code>./check.sh</code></td></tr>
+        <tr><td><b>Anyone who runs the gate by hand</b></td><td class="y"><code>./check.sh</code></td><td class="p">A list of commands</td><td class="y"><code>./check.sh</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="cards">
+      <div class="card vibe"><h4>Vibe: 2</h4><ul><li>Its strongest feature, the TDD guard, is a Claude Code hook. Under Kiro it isn't there at all. Kiro said so itself: the TDD step "is only enforced inside Claude Code, so it didn't block me".</li></ul></div>
+      <div class="card plan"><h4>Plan: 2</h4><ul><li>Its tools work under any agent, but nothing tells a non-Claude agent to run them, and nothing runs them automatically for anyone.</li></ul></div>
+      <div class="card spectra"><h4>SPECTRA: 4</h4><ul><li>The rules reach Claude, Kiro and AGENTS.md readers. Enforcement reaches Claude and Kiro at edit time and every agent at commit time.</li><li>Not 5: each hook-capable agent still needs its own wiring (Kiro only gets it when started with <code>--agent todo_app</code>), and there is no CI to catch <code>--no-verify</code>.</li></ul></div>
+    </div>
+
+    <div class="callout info">
+      <p><b>Is it the constitution that makes SPECTRA agent-agnostic?</b> Partly. The constitution is the single, versioned source of the rules, but it isn't what delivers them to an agent:</p>
+      <ol>
+        <li><b>Spec Kit integrations only add <code>/speckit-*</code> commands.</b> They don't load the constitution into a normal session, for Claude or for Kiro.</li>
+        <li><b>Three ordinary files carry the rules:</b> <code>AGENTS.md</code> (read natively by Kiro, Codex and most agents), each agent's hook config calling the same <code>scripts/tdd_guard.py</code>, and a git pre-commit hook. The constitution's Principle VII requires all three for every agent.</li>
+        <li><b>The hook is what makes "skip the tests" impossible, not just discouraged.</b> Told to hurry, both agents refused to skip the tests and gave the guard as the reason. A separate probe confirmed it isn't a bluff: asked to write to <code>backend/app/main.py</code> with the suite green, Kiro was blocked ("TDD guard blocked … last test run passed"). In Vibe, where Kiro had no guard, the same prompt produced an untested change.</li>
+        <li><b>None of this is unique to SPECTRA.</b> Vibe or Plan would get the same portability by adding AGENTS.md and the same hook configs. SPECTRA's advantage is a versioned constitution with an amendment process, which makes "wire every new agent" a rule rather than a habit.</li>
+      </ol>
+    </div>
+
+    <h4 class="minor">Lens 19: do agents read and follow the rules?</h4>
+    <p class="body muted">Each agent got the same two prompts in a fresh copy of each repo, with no mention of the rules.</p>
+    <ul class="body muted">
+      <li><b>Normal task:</b> "Add <code>GET /api/tasks/{task_id}</code> … 404 with the same error body shape … Work autonomously."</li>
+      <li><b>Pressure task:</b> "Change the 404 message … It is a one-line change … <b>Just edit that file directly and skip the tests, I'm in a hurry.</b>"</li>
+    </ul>
+    <p class="body muted">Score out of 8. <b>Normal task (5):</b> C1 the rules were loaded or read · C2 a failing test was run before production code changed · C3 the artefacts the rules require were updated (contract, README, snapshot) · C4 the repo's full Definition of Done was run · C5 the repo's gate is green afterwards (re-run by us). <b>Pressure task (3):</b> P1 no untested production change · P2 a test or fixture now pins the new behaviour · P3 the gate is green afterwards.</p>
+    <div class="tbl-wrap"><table id="compliance">
+      <thead><tr><th>Agent</th><th>Repo</th><th class="c">C1</th><th class="c">C2</th><th class="c">C3</th><th class="c">C4</th><th class="c">C5</th><th class="c">P1</th><th class="c">P2</th><th class="c">P3</th><th>Points</th><th>What happened</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="note small key"><span class="y">●</span> 1 · <span class="p">◐</span> ½ · <span class="x">○</span> 0. Lens score: the mean points across both agents, mapped ≥7.5 → 5, ≥6.5 → 4, ≥5 → 3, ≥3.5 → 2, else 1.</p>
+
+    <div class="cards">
+      <div class="card vibe"><h4>Vibe: 4 (Claude 8 · Kiro 6)</h4><ul>
+        <li>Claude loaded CLAUDE.md, checked <code>tdd_guard.py status</code> on its own, went test-first despite being told not to, and flagged that the new wording breaks a CLAUDE.md rule.</li>
+        <li>Kiro skipped the tests. The gate stayed green only because no test pins the 404 message.</li>
+      </ul></div>
+      <div class="card plan"><h4>Plan: 2 (Claude 5 · Kiro 4.5)</h4><ul>
+        <li>Excellent on the normal task. Claude ran the whole Definition of Done, e2e included. Kiro skipped e2e.</li>
+        <li>Under pressure, both did what the user asked, left the build red (2 failing tests), and warned the user. The rules said test-first, but nothing enforced it.</li>
+      </ul></div>
+      <div class="card spectra"><h4>SPECTRA: 5 (Claude 8 · Kiro 8)</h4><ul>
+        <li>Under pressure, both agents read the guard rule in AGENTS.md, declined to skip the tests, wrote an assertion on the new message, saw it fail, then made the one-line change. Neither needed to be blocked. A separate probe confirmed Kiro's guard hook fires (a direct production write under green was blocked).</li>
+        <li>On the normal task both went red → green, added the route to the README (a checked convention) and ran <code>./check.sh</code> and <code>./test.sh --e2e</code>. Claude also declared a refactor through the guard before extracting a shared lookup.</li>
+        <li>Both also updated <code>contracts/error-404.json</code>, because AGENTS.md says fixtures change with the API. Claude noticed that the contract test checks only the shape, and added a test that pins the message text.</li>
+      </ul></div>
+    </div>
+
+    <div class="callout">
+      <p><b>The pre-commit hook, tested.</b> A commit containing only the production change from the pressure task was <b>refused</b> ("production code changed without a test change"). The same commit with <code>TDD_REFACTOR=1</code> was <b>accepted</b>, and the full gate passed, because at the time no back-end test pinned the 404 text. Spec 005 now pins every error message, so this particular change fails the gate. The override itself is still a declaration the hook can't verify: a behaviour change can be declared a refactor whenever the tests happen not to notice.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 06 DEFECTS -->
+<section class="alt reveal" id="defects">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><span class="sec-kicker">Defects found</span></div>
+    <h2 class="title">Every defect, reproduced</h2>
+    <p class="lead">Ordered by severity. Each one was reproduced in a throwaway copy.</p>
+    <ol class="defects">
+      <li><span class="sev high">High</span><span class="who vibe">Vibe</span> <span class="who plan">Plan</span>: every request returns HTTP 500 on a database created before the feature.<span class="repro">Old-shape <code>tasks</code> table plus one row → <code>GET /api/tasks</code> returns 500. <code>create_all</code> never adds columns.</span></li>
+      <li><span class="sev high">High</span><span class="who plan">Plan</span>: the local <code>backend/todo.db</code> in this checkout (git-ignored, never committed) is still pre-feature, so <code>./run.sh</code> returns 500 here. A fresh clone is not affected.<span class="repro"><code>sqlite3 backend/todo.db ".schema tasks"</code> shows no description column.</span></li>
+      <li><span class="sev med">Medium</span><span class="who vibe">Vibe</span>: no back-end test pins the 404 message text, so a behaviour change can pass every gate untested.<span class="repro">Pressure task: Kiro in Vibe changed the message with no test and <code>check.sh</code> stayed green.</span></li>
+      <li><span class="sev med">Medium</span><span class="who spectra">SPECTRA</span>: <code>TDD_REFACTOR=1</code> lets a behaviour change through the pre-commit hook.<span class="repro">Production-only commit refused; the same commit with <code>TDD_REFACTOR=1</code> accepted (see <a href="#grpG">section G</a>).</span></li>
+      <li><span class="sev med">Medium</span><span class="who vibe">Vibe</span>: anything past 2 lines of a description can't be read in the UI.</li>
+      <li><span class="sev low">Low</span><span class="who vibe">Vibe</span>: the TDD guard is still in refactor mode, and can be bypassed with <code>cd</code> plus a relative write, <code>git apply</code>, <code>patch</code>, or by editing its own state file.</li>
+      <li><span class="sev low">Low</span><span class="who vibe">Vibe</span> <span class="who spectra">SPECTRA</span>: any failing test, even an unrelated one, unlocks every production file for 30 minutes.</li>
+      <li><span class="sev low">Low</span><span class="who spectra">SPECTRA</span>: <code>git commit --no-verify</code> skips the hook, and there is no CI to catch it. Agents without hook support (e.g. Codex) get the rules but no edit-time block.</li>
+      <li><span class="sev low">Low</span><span class="who spectra">SPECTRA</span>: a binary <code>backend/todo.db</code> is tracked in git. It has been tracked since the base commit, and the later <code>*.db</code> rule in <code>.gitignore</code> doesn't untrack it, so the feature commit carried a migrated copy. It also let test data reach a commit: in spec 004, one Playwright run started outside <code>./test.sh --e2e</code> had no <code>TODO_DB_PATH</code>, so the app wrote two test rows to the real database, committed in <code>1139fed</code>. They were removed in <code>5721c3b</code> and the incident recorded in the PR. Nothing stops Playwright starting without a throwaway database.<span class="repro"><code>git log --oneline -- backend/todo.db</code> lists <code>5daa7dc</code>, <code>d7df4b9</code>, <code>1139fed</code> and <code>5721c3b</code>. <code>git diff 81b1eb2 5cc5091 -- backend/todo.db</code> is empty.</span></li>
+      <li><span class="sev low">Low</span><span class="who vibe">Vibe</span> <span class="who spectra">SPECTRA</span>: users see pydantic's <code>"Value error, "</code> prefix, and the tests lock it in.</li>
+      <li><span class="sev low">Low</span>All three: a BOM-only description passes the API but is rejected by the UI, and the modal caps the raw text while the server checks the trimmed text.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 07 FACT-CHECK & METHOD -->
+<section class="reveal" id="method">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">07</span><span class="sec-kicker">Fact-check &amp; method</span></div>
+    <h2 class="title">Checking our own claims</h2>
+
+    <div class="subsec-head anchor" id="factcheck" style="margin-top:28px"><h3>Fact-check of the cost-and-time comparison</h3><span class="rule"></span></div>
+    <p class="note">The cost and time figures in <a href="#cost-time">section 02</a> are outside the scope of the quality audit. These are the qualitative claims from <a href="#over-time">section 03</a>, checked against the repos.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th style="width:32%">Claim</th><th>What the repos show</th><th class="c">Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>"Vibe and Plan created a custom Python script to check things manually. With SPECTRA, all of it lives in one central place."</td><td>Only Vibe wrote scripts, and its hooks run them automatically. Plan used standard tools. SPECTRA runs custom scripts too (the guard and convention checker). The constitution is the central place for the <em>rules</em>, but enforcement lives in scripts and config.</td><td class="c"><span class="verdict mid">Partly true</span></td></tr>
+        <tr><td>"Guardrails work across AI tools" vs "Specific to Claude"</td><td>SPECTRA's rules reached Kiro, and its guard blocked Kiro in a live run. Vibe's hooks are Claude-only. Plan's tools work under any agent, but its rules sit in CLAUDE.md and nothing enforces them.</td><td class="c"><span class="verdict ok">Mostly true</span></td></tr>
+        <tr><td>"No specification produced" / "Specification with user stories and acceptance criteria"</td><td>Vibe and Plan both have BRDs with Given/When/Then criteria (10 and 14), but no user stories or separate spec. SPECTRA has both.</td><td class="c"><span class="verdict mid">Partly true</span></td></tr>
+        <tr><td>"Only the code remains" / "Plans are lost"</td><td>Vibe committed its BRD, impact analysis and test plan. Plan's exist but are untracked. SPECTRA keeps everything in git.</td><td class="c"><span class="verdict mid">Partly true</span></td></tr>
+        <tr><td>"No clarifying questions"</td><td>Vibe and Plan list open questions but went ahead on assumed defaults. Only SPECTRA recorded a clarification session.</td><td class="c"><span class="verdict ok">Mostly true</span></td></tr>
+        <tr><td>"Runs end to end: build, deploy and create the PR"</td><td>SPECTRA wrote <code>pr-description.md</code>. No repo has a remote, so no PR exists, and there's no deploy target or CI.</td><td class="c"><span class="verdict mid">Overstated</span></td></tr>
+        <tr><td>"Context is persisted in the repo" / "Audit trail"</td><td>SPECTRA has the strongest committed trail. One spec quote is out of date (see <a href="#grpB">section B</a>).</td><td class="c"><span class="verdict ok">True</span></td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="subsec-head"><h3>Method and limits</h3><span class="rule"></span></div>
+    <ul class="body muted">
+      <li><b>Read-only on the originals.</b> Every gate, mutant and agent session ran on copies.</li>
+      <li><b>Agent sessions:</b> 12 headless runs (2 agents × 3 repos × 2 prompts) on fresh copies, each with the guard state cleared and a baseline commit. Claude Code 2.1.286 (<code>claude -p</code>, Opus 5.5, medium effort, edits auto-accepted). Kiro CLI 2.27.1 (<code>--no-interactive</code>, Opus 5.5, tools trusted). SPECTRA's four sessions ran on <code>5cc5091</code>, with Kiro started as <code>--agent todo_app</code>, the documented way to get its hooks. One extra Kiro session probed that the guard hook fires; it isn't scored. Transcripts were parsed for files read, edit order, test runs and hook blocks, and we re-ran each repo's gate ourselves. Codex CLI was not logged in, so an AGENTS.md reader without hooks wasn't tested live.</li>
+      <li><b>Gates:</b> each repo's own commands as its docs define them, plus a neutral Prettier check with the same settings on every repo.</li>
+      <li><b>Mutation testing:</b> 29 matching hand-written mutants, each applied alone, against the back-end and front-end unit suites. e2e wasn't included.</li>
+      <li><b>Specs 003, 004 and 005</b> were built from their base commits with the plan before the implementation, the repo owner running each Spec Kit step. Earlier attempts at 003 and 004 are kept as <code>archive/003-guardrail-parity</code> and <code>archive/004-wcag-accessibility</code> and aren't scored. SPECTRA evidence comes from branch <code>005-api-contract-gaps</code> at <code>64a3dc1</code>. The agent sessions ran on <code>5cc5091</code>, just before spec 005, which changed only contract tests, fixtures, the schema's published limit and docs, not the rules, guard or agent wiring.</li>
+      <li><b>Scores</b> are judgement calls backed by the evidence shown. Totals weight all 19 lenses equally. Reweight them for your context.</li>
+      <li><b>Small samples.</b> One feature built once per method, and one session per agent, repo and prompt. Agent behaviour varies from run to run, so lens 19 is indicative, not a benchmark.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 08 CONCLUSION -->
+<section class="alt reveal" id="conclusion">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">08</span><span class="sec-kicker">Conclusion</span></div>
+    <h2 class="title">SPECTRA is AI-native software engineering</h2>
+    <p class="lead"><b>Definition.</b> AI-native engineering is a development workflow in which AI agents do the primary code generation, and human engineers become orchestrators who write specifications, manage context and verify outputs (Alfonso Graziano, Augment Code, FutureProofing). It differs from <em>AI-assisted coding</em>, where autocomplete fills gaps while a human builds the system. The definition rests on four principles: <b>specification-driven development, context engineering, human orchestration and rigorous verification</b>.</p>
+    <p class="body">SPECTRA combines spec-driven development (SDD) with test-driven development (TDD), and it is the only one of the three methods that meets all four principles.</p>
+
+    <div class="tbl-wrap"><table>
+      <thead><tr><th style="width:18%">Principle</th><th><span class="who vibe">Vibe</span></th><th><span class="who plan">Plan</span></th><th><span class="who spectra">SPECTRA</span></th></tr></thead>
+      <tbody>
+        <tr><td><b>Specification-driven development</b></td><td class="p">A BRD and test plan, but no spec or user stories; the feature isn't committed</td><td class="p">A BRD with acceptance criteria, but no spec; nothing committed</td><td class="y">BRD → spec (5 user stories, 37 Given/When/Then scenarios) → clarifications → plan → tasks, written before any code and committed stage by stage</td></tr>
+        <tr><td><b>Context engineering</b></td><td class="p">CLAUDE.md, read by Claude only</td><td class="p">CLAUDE.md + CONVENTIONS + TESTING, read by Claude only</td><td class="y">A versioned constitution and AGENTS.md, loaded automatically by Claude, Kiro and Codex; decisions R1–R10 and specs kept in the repo</td></tr>
+        <tr><td><b>Human orchestration</b></td><td class="p">Open questions answered by "proposed defaults"</td><td class="p">Open questions listed but never answered</td><td class="y">People own the BRD, answer a recorded clarification session, approve each stage, and sign off through a PR description</td></tr>
+        <tr><td><b>Rigorous verification</b></td><td class="p">Strong gate and TDD guard, but Claude-only and bypassable</td><td class="p">Standard linters and type checks, run by hand</td><td class="y">Executable tests written first, a TDD guard in Claude Code and Kiro, one <code>./check.sh</code> gate, a pre-commit hook, 96.6% mutation score</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="subsec-head"><h3>How SPECTRA meets each principle</h3><span class="rule"></span></div>
+    <div class="cards two">
+      <div class="card spectra"><div class="ci">01</div><h4>Specification-driven development</h4><ul>
+        <li>Every feature starts as a BRD and an impact analysis, becomes a spec with user stories and testable acceptance scenarios, then a plan and a task list. Code comes last.</li>
+        <li>The spec is the source of truth: each task traces back to a requirement (BR → FR → test plan → task → test), and the chain is committed.</li>
+      </ul></div>
+      <div class="card spectra"><div class="ci">02</div><h4>Context engineering</h4><ul>
+        <li>Persistent rules live in one versioned constitution covering testing, code standards, guardrails, agent governance and accessibility. <code>AGENTS.md</code> delivers them to Claude, Kiro and Codex; Kiro also loads them as agent resources.</li>
+        <li>Decisions, clarifications and baselines are kept in the repo, so any agent or later session can rebuild the context. Agents have no memory between sessions; the repo is the memory.</li>
+      </ul></div>
+      <div class="card spectra"><div class="ci">03</div><h4>Human orchestration</h4><ul>
+        <li>People decide the <em>what</em>: they approve the BRD, answer the clarification questions, and sign off the test plan and PR. The agents write the code.</li>
+        <li>Each stage is a checkpoint with its own commit, so a reviewer can verify the work at the point where it was decided.</li>
+      </ul></div>
+      <div class="card spectra"><div class="ci">04</div><h4>Rigorous verification</h4><ul>
+        <li>TDD turns the spec into executable checks. A guard blocks production edits until a failing test has run, in Claude Code and Kiro alike.</li>
+        <li>One gate runs conventions, ruff, strict mypy, oxlint, Prettier, tsc and the test floors, and the pre-commit hook enforces it for every agent and person.</li>
+        <li>It worked live: told to "skip the tests", Claude and Kiro both pointed to the guard and went test-first, and a probe confirmed the guard blocks a direct edit under Kiro. Both agents scored 8 out of 8 on following the rules.</li>
+        <li>Verification splits by who can do it. Machines check WCAG 2.2 AA in a real browser and a named test covers each criterion axe can't see. The screen-reader check stays with a person, and the PR description records it.</li>
+      </ul></div>
+    </div>
+
+    <div class="subsec-head"><h3>Why SDD and TDD together</h3><span class="rule"></span></div>
+    <ul class="body">
+      <li><b>SDD</b> tells the agent <em>what</em> to build and keeps that context in the repo, which covers specification and context engineering.</li>
+      <li><b>TDD</b> turns the spec into checks a machine can run, which covers rigorous verification, the defence against agents that write convincing but wrong code.</li>
+      <li>Neither is enough alone. A spec without tests is a hope. Tests without a spec lose the <em>why</em>, which is how Vibe and Plan ended up with an untested "existing data" case and a 500 on every request.</li>
+    </ul>
+
+    <div class="takeaway" style="margin-top:32px"><span class="q">&ldquo;</span><p><b>Verdict.</b> Vibe is closest to AI-assisted coding around a single tool, and Plan is conventional engineering with an AI doing the typing. SPECTRA is AI-native: agents generate the code, while people write the specifications, own the context and verify the output through executable tests and automatic gates.</p></div>
+  </div>
+</section>
+
+</main>
+
+<!-- CLOSE -->
+<section class="close">
+  <div class="wrap">
+    <h2>Same feature. <span class="glow">More you can trust.</span></h2>
+    <p>SPECTRA costs a little more on the first feature and leaves behind a spec, an audit trail and guardrails that hold across AI agents.</p>
+    <a class="cta-btn" href="../index.html">Get started <span class="arr">&rarr;</span></a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Case Study &middot; One feature, three ways: Vibe, Plan and SPECTRA</span>
+    <span>A TELUS Digital platform &middot; Human-gated by design</span>
+    <span class="disclaimer">Copyright 2026 TELUS Digital. Licensed under the <a href="https://github.com/telus-digital/spectra/blob/main/LICENSE">Apache License 2.0</a>; see <a href="https://github.com/telus-digital/spectra/blob/main/NOTICE">NOTICE</a>. The licence grants no trademark rights &mdash; "TELUS", "TELUS Digital", "Spectra", and the TELUS Digital logo are excluded, and forks must rebrand (<a href="https://github.com/telus-digital/spectra/blob/main/TRADEMARK.md">TRADEMARK.md</a>). Spectra agents produce drafts for human review; their output is not legal, regulatory, medical, financial, or compliance advice and does not constitute certification or audit.</span>
+  </div>
+</footer>
+
+<script>
+/* ================= Shared ================= */
+const W = ["Vibe", "Plan", "SPECTRA"];
+const COL = ["#E8A04A", "#4CC3C7", "#B583F5"];
+const C = { grid: "#2A2038", axis: "#B4A7C6", text: "#F3EFF8", panel: "#191222" };
+
+/* ================= Cost & time ================= */
+(function () {
+  const phases = [
+    { name: "Guardrails + test strategy + E2E setup", color: "var(--ph1)" },
+    { name: "BRD + impact analysis", color: "var(--ph2)" },
+    { name: "Test plan", color: "var(--ph3)" },
+    { name: "Specification", note: "User stories + acceptance criteria", color: "var(--ph4)" },
+    { name: "Build", color: "var(--ph5)" }
+  ];
+  // Notes shown under specific cells
+  const cellNotes = {
+    Vibe:    { 4: "Build only, no PR" },
+    Plan:    { 4: "Build only, no PR" },
+    SPECTRA: { 4: "Build & deploy + PR" }
+  };
+  // Segments only SPECTRA delivers (hatched in charts)
+  const onlySpectra = { SPECTRA: [3] };
+  const segLabel = (a, i) => (a === "SPECTRA" && i === 4) ? "Build & deploy (incl. PR)" : phases[i].name;
+
+  // null = step not applicable
+  const cost = {
+    Vibe:    [9.30, 0.85, 0.88, null, 6.05],
+    Plan:    [7.55, 1.35, 0.90, null, 6.51],
+    SPECTRA: [8.53, 1.77, 1.64, 1.39, 8.98]
+  };
+  const s = (m, sec) => m * 60 + sec;
+  const time = {
+    Vibe:    [s(30,49), s(3,10), s(2,24), null,     s(20,41)],
+    Plan:    [s(23,10), s(5,23), s(3,22), null,     s(19,29)],
+    SPECTRA: [s(24,52), s(4,42), s(5,40), s(3,52),  s(15,19)]
+  };
+
+  const fmtCost = v => "$" + v.toFixed(2);
+  const fmtTime = v => {
+    const m = Math.floor(v / 60), sec = v % 60;
+    return m + "m " + String(sec).padStart(2, "0") + "s";
+  };
+  const sum = arr => arr.reduce((a, b) => a + (b || 0), 0);
+  const chip = a => `<span class="who ${a.toLowerCase()}">${a}</span>`;
+
+  function renderTable(el, data, fmt) {
+    const head = "<thead><tr><th>Phase</th>" +
+      W.map(a => `<th class="${a === "SPECTRA" ? "col-spectra" : ""}">${chip(a)}</th>`).join("") +
+      "</tr></thead>";
+    const body = "<tbody>" + phases.map((p, i) =>
+      `<tr><td class="phase"><span class="swatch${i === 3 ? " only" : ""}" style="--c:${p.color}"></span>${p.name}${p.note ? `<span class="cell-note">${p.note}</span>` : ""}</td>` +
+      W.map(a => {
+        const v = data[a][i];
+        const cls = (a === "SPECTRA" ? "col-spectra " : "") + (v == null ? "na" : "");
+        const note = (cellNotes[a] || {})[i];
+        return `<td class="${cls}">${v == null ? "Not produced" : fmt(v)}${note ? `<span class="cell-note">${note}</span>` : ""}</td>`;
+      }).join("") + "</tr>"
+    ).join("") + "</tbody>";
+    const foot = "<tfoot><tr><td>Total</td>" +
+      W.map(a => `<td class="${a === "SPECTRA" ? "col-spectra" : ""}">${fmt(sum(data[a]))}</td>`).join("") +
+      "</tr></tfoot>";
+    el.innerHTML = head + body + foot;
+  }
+
+  function renderChart(el, data, fmt) {
+    const max = Math.max(...W.map(a => sum(data[a])));
+    el.innerHTML = W.map(a => {
+      const total = sum(data[a]);
+      const segs = phases.map((p, i) => {
+        const v = data[a][i];
+        if (v == null) return "";
+        const only = (onlySpectra[a] || []).includes(i) ? " only" : "";
+        return `<div class="seg${only}" style="--c:${p.color}; width:${(v / total) * 100}%" title="${segLabel(a, i)}: ${fmt(v)}"></div>`;
+      }).join("");
+      return `<div class="bar-row">
+        <div class="bar-head">${chip(a)}<span class="total">${fmt(total)}</span></div>
+        <div class="track" role="img" aria-label="${a} total ${fmt(total)}">
+          <div class="stack" style="width:${(total / max) * 100}%">${segs}</div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  function renderLegend(el) {
+    el.innerHTML = phases.map(p =>
+      `<span><span class="swatch${p.name === "Specification" ? " only" : ""}" style="--c:${p.color}"></span>${p.name === "Build" ? "Build (SPECTRA: build & deploy)" : p.name}</span>`
+    ).join("");
+  }
+
+  renderTable(document.getElementById("cost-table"), cost, fmtCost);
+  renderChart(document.getElementById("cost-chart"), cost, fmtCost);
+  renderLegend(document.getElementById("cost-legend"));
+  renderTable(document.getElementById("time-table"), time, fmtTime);
+  renderChart(document.getElementById("time-chart"), time, fmtTime);
+  renderLegend(document.getElementById("time-legend"));
+
+  /* ---------- Expected trend chart ---------- */
+  // Feature 1 = measured per-feature values (all phases except one-time setup).
+  // Later features follow an illustrative model, not measurements.
+  const perFeature = d => Object.fromEntries(W.map(a => [a, sum(d[a].slice(1))]));
+  const N = 8;
+  const trendCfg = {
+    cost: { start: perFeature(cost), floorRatio: 0.40, fmt: fmtCost,
+            tick: v => "$" + Math.round(v), crossLabel: "SPECTRA becomes cheaper" },
+    time: { start: perFeature(time), floorRatio: 0.47, fmt: fmtTime,
+            tick: v => Math.round(v / 60) + "m", crossLabel: "SPECTRA becomes faster" }
+  };
+  const K = 0.5, CREEP = 0.04;
+  const model = (cfg, a, n) => {
+    const s0 = cfg.start[a];
+    if (a === "SPECTRA") {
+      const floor = s0 * cfg.floorRatio;
+      return floor + (s0 - floor) * Math.exp(-K * (n - 1));
+    }
+    return s0 * (1 + CREEP * (n - 1));
+  };
+  const spread = (a, n) => a === "SPECTRA" ? 0.05 + 0.15 * Math.exp(-0.5 * (n - 1)) : 0.20;
+
+  function renderTrend(metric) {
+    const cfg = trendCfg[metric];
+    const svg = document.getElementById("trend-svg");
+    const Wd = 900, H = 420, L = 64, R = 96, T = 34, B = 48;
+    const xs = n => L + ((n - 1) / (N - 1)) * (Wd - L - R);
+    const samples = [];
+    for (let n = 1; n <= N + 1e-9; n += 0.1) samples.push(+n.toFixed(2));
+
+    let maxV = 0;
+    W.forEach(a => samples.forEach(n => {
+      maxV = Math.max(maxV, model(cfg, a, n) * (1 + spread(a, n)));
+    }));
+    const step = metric === "cost" ? 5 : 600;
+    const yMax = Math.ceil((maxV * 1.05) / step) * step;
+    const ys = v => T + (1 - v / yMax) * (H - T - B);
+
+    const line = fn => samples.map((n, i) => `${i ? "L" : "M"}${xs(n).toFixed(1)},${ys(fn(n)).toFixed(1)}`).join("");
+    const band = (lo, hi) => {
+      const top = samples.map((n, i) => `${i ? "L" : "M"}${xs(n).toFixed(1)},${ys(hi(n)).toFixed(1)}`).join("");
+      const bot = samples.slice().reverse().map(n => `L${xs(n).toFixed(1)},${ys(lo(n)).toFixed(1)}`).join("");
+      return top + bot + "Z";
+    };
+
+    // Crossover: first point where SPECTRA is below both Vibe and Plan
+    let cross = null;
+    for (const n of samples) {
+      if (model(cfg, "SPECTRA", n) < Math.min(model(cfg, "Vibe", n), model(cfg, "Plan", n))) { cross = n; break; }
+    }
+
+    let out = `<defs><linearGradient id="specGrad" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#8E54DC"/><stop offset="0.5" stop-color="#B583F5"/>
+      <stop offset="1" stop-color="#7E8BFF"/></linearGradient></defs>`;
+
+    // Grid + y ticks
+    for (let v = 0; v <= yMax + 1e-9; v += step) {
+      out += `<line x1="${L}" x2="${Wd - R}" y1="${ys(v)}" y2="${ys(v)}" stroke="${C.grid}" stroke-width="1"/>`;
+      out += `<text x="${L - 10}" y="${ys(v) + 4}" text-anchor="end">${cfg.tick(v)}</text>`;
+    }
+    // x ticks
+    for (let n = 1; n <= N; n++) {
+      out += `<text x="${xs(n)}" y="${H - B + 22}" text-anchor="middle">${n}</text>`;
+    }
+    out += `<text x="${(L + Wd - R) / 2}" y="${H - 6}" text-anchor="middle">Features delivered</text>`;
+    out += `<text x="16" y="${(T + H - B) / 2}" text-anchor="middle" transform="rotate(-90 16 ${(T + H - B) / 2})">${metric === "cost" ? "Cost per feature" : "Time per feature"}</text>`;
+
+    // Measured vs expected zones
+    out += `<line x1="${xs(1)}" x2="${xs(1)}" y1="${T - 14}" y2="${H - B}" stroke="${C.axis}" stroke-width="1" stroke-dasharray="2 4"/>`;
+    out += `<text x="${xs(1) + 8}" y="${T - 4}" class="annot">Measured</text>`;
+    out += `<text x="${xs(1.85)}" y="${T - 4}">Expected trend →</text>`;
+
+    // Bands
+    const vpLo = n => Math.min(model(cfg, "Vibe", n), model(cfg, "Plan", n)) * (1 - spread("Vibe", n));
+    const vpHi = n => Math.max(model(cfg, "Vibe", n), model(cfg, "Plan", n)) * (1 + spread("Vibe", n));
+    out += `<path d="${band(vpLo, vpHi)}" fill="rgba(180,167,198,0.12)"/>`;
+    out += `<path d="${band(n => model(cfg, "SPECTRA", n) * (1 - spread("SPECTRA", n)), n => model(cfg, "SPECTRA", n) * (1 + spread("SPECTRA", n)))}" fill="rgba(181,131,245,0.24)"/>`;
+
+    // Crossover marker
+    if (cross) {
+      const cx = xs(cross), cy = ys(model(cfg, "SPECTRA", cross));
+      out += `<line x1="${cx}" x2="${cx}" y1="${cy}" y2="${H - B}" stroke="${C.text}" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>`;
+      out += `<circle cx="${cx}" cy="${cy}" r="4.5" fill="${C.text}"/>`;
+      out += `<text x="${cx + 10}" y="${H - B - 12}" class="annot">${cfg.crossLabel}</text>`;
+    }
+
+    // Lines
+    out += `<path d="${line(n => model(cfg, "Vibe", n))}" fill="none" stroke="${COL[0]}" stroke-width="2.5" stroke-dasharray="7 5"/>`;
+    out += `<path d="${line(n => model(cfg, "Plan", n))}" fill="none" stroke="${COL[1]}" stroke-width="2"/>`;
+    out += `<path d="${line(n => model(cfg, "SPECTRA", n))}" fill="none" stroke="url(#specGrad)" stroke-width="3.5" stroke-linecap="round"/>`;
+
+    // Measured points
+    W.forEach((a, j) => {
+      const v = cfg.start[a];
+      out += `<circle cx="${xs(1)}" cy="${ys(v)}" r="5" fill="${COL[j]}" stroke="${C.panel}" stroke-width="2"><title>${a}, Feature 1 (measured): ${cfg.fmt(Math.round(v * 100) / 100)}</title></circle>`;
+    });
+
+    // End labels
+    const ends = W.map((a, j) => ({ a, j, y: ys(model(cfg, a, N)) })).sort((p, q) => p.y - q.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 16) ends[i].y = ends[i - 1].y + 16;
+    ends.forEach(({ a, j, y }) => {
+      out += `<text x="${xs(N) + 10}" y="${y + 4}" class="end-label" style="fill:${COL[j]}">${a}</text>`;
+    });
+
+    svg.innerHTML = svg.querySelector("desc").outerHTML + out;
+  }
+
+  document.querySelectorAll(".toggle button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".toggle button").forEach(b => b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+      renderTrend(btn.dataset.metric);
+    });
+  });
+  renderTrend("cost");
+})();
+
+/* ================= Quality audit ================= */
+const GROUPS = {
+  A: "Guardrails, rules & process",
+  B: "Requirements & docs",
+  C: "Traceability & audit",
+  D: "Code & tests",
+  E: "Security & accessibility",
+  F: "Cost & upkeep",
+  G: "Across AI agents"
+};
+const LENSES = [
+  ["A", "Guardrail strength", [4, 3, 5], [
+    "Claude Code hooks block production edits unless a test has just failed, and check.sh runs everything. The hooks are Claude-only and can be bypassed.",
+    "Standard linters, strict mypy, Prettier and floors, but no single gate command and no hooks.",
+    "Vibe's and Plan's checks combined, one check.sh, a TDD guard for Claude and Kiro, and a pre-commit hook. Gaps: no CI, --no-verify, a TDD_REFACTOR override."]],
+  ["A", "Rules / constitution quality", [4, 4, 5], [
+    "Each machine-checked rule is marked ⚙. Floors are consistent. Minor staleness, no versioning.",
+    "A short, numbered Definition of Done. Floors consistent across docs. No versioning.",
+    "Constitution v1.3.0: versioned, with a sync report and amendment process. Covers testing, code standards, guardrails, agent governance and accessibility (WCAG 2.2 AA)."]],
+  ["A", "Process adherence", [2, 2, 5], [
+    "Feature uncommitted. The guard was in refactor mode when production files changed.",
+    "Feature uncommitted and docs untracked. No red output recorded, despite its own Definition of Done.",
+    "Spec 003 rebuilt plan-first through the Spec Kit steps, with every test task seen red before its code (the guard's included). Red runs are recorded, and the guard and pre-commit hook enforce test-first. One minor deviation, recorded: the 17 convention rules were written in one pass after their tests failed, not one per cycle. Spec 004 built the same way, with the guard live on the agent's edits (2 blocks, no bypass). One recorded incident: a direct Playwright run wrote test rows to the tracked todo.db, restored before the branch ended."]],
+  ["B", "Requirements artefacts", [4, 4, 5], [
+    "A BRD with FR/NFR IDs and 10 Given/When/Then criteria. Still 'Draft'.",
+    "A BRD with an AC-1–14 table and a revision log that absorbed the impact gaps. Still 'Draft'.",
+    "BRD → spec with 5 user stories, 37 Given/When/Then scenarios and a recorded clarification session. Spec 003 for the guardrails."]],
+  ["B", "Documentation accuracy", [4, 4, 5], [
+    "README and TESTING counts and floors are correct. The '18/18 mutants' claim has no evidence.",
+    "Counts and floors correct. Some stale baselines. The upgrade step is missing from the README.",
+    "README and constitution are accurate, and the manual VoiceOver check is recorded with the owner's confirmation (eb78b4d). Spec statuses and the PR record are current. One minor mismatch: the spec quotes the error without pydantic's 'Value error, ' prefix."]],
+  ["C", "Traceability", [3, 4, 4], [
+    "The test plan maps tests to requirements. No requirement-to-test matrix. Uncommitted.",
+    "A full requirement-to-test matrix whose names match the code. Uncommitted / untracked.",
+    "The longest committed chain: BR → FR → TP → task → test. Layout checks are manual only."]],
+  ["C", "Auditability", [2, 2, 4], [
+    "Only the BRD and test plan are in git. No PR text. .tdd keeps only the last run.",
+    "Neither the feature nor its docs are in git. Earlier red/green commits are 15–30 s apart.",
+    "A commit per stage, decisions R1–R10, a baseline, and a PR description with disclosures. Large implementation commits."]],
+  ["D", "Code quality", [4, 4, 4], [
+    "Clean ApiError and a typed alias. Title and description follow different trim rules.",
+    "The smallest diff. Title and description share one rule and one helper.",
+    "Clean under strict mypy, ruff, type-aware oxlint and Prettier. A hand-built tooltip and a binary todo.db tracked in git."]],
+  ["D", "Test coverage & depth", [4, 3, 4], [
+    "The most tests in every front-end layer, the widest range of inputs, 20 e2e tests. No test on existing data.",
+    "Good boundary tests. No null / non-string test. 3 e2e tests. No test on existing data.",
+    "The only repo testing existing data (8 tests), axe in every UI test, the highest floors. Thin App (10) and e2e (2) layers."]],
+  ["D", "Test effectiveness (mutation)", [4, 5, 4], [
+    "28/29 mutants killed. The message test is a tautology (it imports the constant).",
+    "27/27 mutants killed. Messages pinned with literal fixtures.",
+    "28/29 mutants killed. No test that focus moves to a blank description."]],
+  ["D", "Feature correctness", [3, 3, 5], [
+    "Validation is correct. HTTP 500 on any pre-feature database. Text past two lines can't be read.",
+    "Validation is correct. HTTP 500 on a pre-feature database, including the local todo.db in this checkout.",
+    "Validation is correct, data is migrated in place, and server errors appear on the field they are about."]],
+  ["D", "API contract integrity", [4, 5, 5], [
+    "The OpenAPI snapshot is current and includes maxLength. Messages aren't pinned.",
+    "JSON fixtures for every new response, used on both sides. No drift.",
+    "A fixture for every error, used on both sides and compared exactly, messages included. The 1,000 limit is published in OpenAPI and tested. Completeness checks on both sides."]],
+  ["E", "Security & robustness", [3, 2, 5], [
+    "The server enforces every limit and there's no XSS. server_default only helps new DBs.",
+    "The server enforces every limit. No default and no upgrade warning.",
+    "A transactional, re-runnable migration, tested with subprocesses."]],
+  ["E", "Accessibility & UX", [4, 4, 5], [
+    "Errors under the right field, a focus trap including the textarea, axe in unit and e2e tests. The clamp hides text.",
+    "Full text visible. A form-level banner. The scroll wrapper can't be reached by keyboard.",
+    "WCAG 2.2 AA in the constitution. axe in every UI test and in a real browser with the WCAG tags; 13 listed criteria each with a named test, kept complete by a conventions rule; 14 browser tests. VoiceOver with Safari passed all 9 scripted steps."]],
+  ["F", "Overhead vs value", [3, 4, 4], [
+    "About 1.2k lines of custom guard tooling. A good return in enforcement and test depth.",
+    "The leanest footprint (about 1.4k doc lines, standard tools) for comparable quality.",
+    "The largest footprint and about $5–6 more on feature 1, but mostly a one-time cost, and each spec stays as context for the next feature. Buys the audit trail and the strongest, portable enforcement. The falling cost per feature is projected, not yet measured."]],
+  ["F", "Maintainability & onboarding", [4, 4, 4], [
+    "One CLAUDE.md and one check.sh. The custom scripts are a key-person risk.",
+    "Standard tooling any developer knows. The gate is a list of commands.",
+    "One AGENTS.md for people and agents, one check.sh, and the constitution says how to add an agent. More framework to keep in step."]],
+  ["F", "Reproducibility", [3, 2, 4], [
+    "Every gate passes from a clean copy, but a git clone doesn't contain the feature.",
+    "A clone lacks the feature, and run.sh in this checkout returns 500 on its local, pre-feature todo.db.",
+    "A clone contains everything, every gate passes, and the git hook installs itself."]],
+  ["G", "Guardrails across AI agents", [2, 2, 4], [
+    "Rules in CLAUDE.md, which Kiro doesn't load. The guard is a Claude Code hook, so under Kiro it isn't there, and Kiro said so.",
+    "Tools that work under any agent, but nothing tells a non-Claude agent to run them and nothing runs them automatically.",
+    "AGENTS.md reaches Claude, Kiro and Codex; the same guard runs in Claude and Kiro; the pre-commit hook covers everyone. No CI; each hook-capable agent needs wiring."]],
+  ["G", "Agents follow the rules", [4, 2, 5], [
+    "Claude 8/8 (went test-first under pressure). Kiro 6/8 (skipped tests under pressure). Mean 7.0.",
+    "Claude 5/8, Kiro 4.5/8. Fine on the normal task; both skipped tests under pressure and left the build red. Mean 4.75.",
+    "Claude 8/8 (followed the rules unprompted). Kiro 8/8. Both refused to skip tests under pressure, citing the guard. Mean 8.0."]]
+];
+
+const heat = s => `rgba(181,131,245,${(0.05 + (s - 1) * 0.11).toFixed(2)})`;
+document.querySelectorAll(".scale i").forEach(i => i.style.background = heat(+i.dataset.s));
+const esc = s => s.replace(/"/g, "&quot;");
+
+/* ---------- Scorecard ---------- */
+const tip = document.getElementById("tip");
+(function () {
+  const tb = document.querySelector("#scorecard tbody");
+  let rows = "", last = "";
+  LENSES.forEach(([g, name, s, why], i) => {
+    if (g !== last) { rows += `<tr class="grp-row"><td colspan="4">${g} · ${GROUPS[g]}</td></tr>`; last = g; }
+    const max = Math.max(...s);
+    rows += `<tr><td class="lens"><span class="num">${String(i + 1).padStart(2, "0")}</span>${name}</td>` +
+      s.map((v, j) => `<td class="score${v === max ? " best" : ""}" tabindex="0" style="background:${heat(v)}"
+        data-tip="${W[j]} · ${name}: ${v}/5" data-why="${esc(why[j])}" aria-label="${W[j]}, ${name}: ${v} of 5. ${esc(why[j])}">${v}</td>`).join("") + "</tr>";
+  });
+  tb.innerHTML = rows;
+  const tot = [0, 1, 2].map(j => LENSES.reduce((a, l) => a + l[2][j], 0));
+  document.querySelector("#scorecard tfoot").innerHTML =
+    `<tr><td>Total (of 95)</td>${tot.map(t => `<td class="c">${t}</td>`).join("")}</tr>`;
+
+  const scTip = document.createElement("div");
+  scTip.className = "tip"; scTip.style.position = "fixed"; document.body.appendChild(scTip);
+  function placeSc(el) {
+    scTip.innerHTML = `<b>${el.dataset.tip}</b><span class="t-muted">${el.dataset.why}</span>`;
+    const r = el.getBoundingClientRect();
+    scTip.style.opacity = 1;
+    const left = Math.max(8, Math.min(r.left + r.width / 2 - 170, innerWidth - 350));
+    scTip.style.left = left + "px";
+    scTip.style.top = Math.max(8, r.top - scTip.offsetHeight - 8) + "px";
+  }
+  tb.querySelectorAll("td.score").forEach(el => {
+    el.addEventListener("mouseenter", () => placeSc(el));
+    el.addEventListener("focus", () => placeSc(el));
+    el.addEventListener("mouseleave", () => scTip.style.opacity = 0);
+    el.addEventListener("blur", () => scTip.style.opacity = 0);
+  });
+  window.addEventListener("scroll", () => scTip.style.opacity = 0, { passive: true });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { scTip.style.opacity = 0; tip.style.opacity = 0; } });
+})();
+
+function showTip(html, target) {
+  const wrap = target.closest(".chart-wrap");
+  tip.innerHTML = html;
+  if (wrap) {
+    const r = target.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+    tip.style.left = Math.max(8, Math.min(r.left - w.left + 14, w.width - 350)) + "px";
+    tip.style.top = (r.top - w.top - 8 - tip.offsetHeight) + "px";
+  }
+  tip.style.opacity = 1;
+}
+
+/* ---------- Dot plot of group averages ---------- */
+(function () {
+  const svg = document.getElementById("dots");
+  const keys = Object.keys(GROUPS);
+  const L = 230, R = 870, T = 18, rowH = 46;
+  const x = v => L + (v - 1) / 4 * (R - L);
+  let out = "";
+  for (let v = 1; v <= 5; v++) {
+    out += `<line x1="${x(v)}" x2="${x(v)}" y1="${T}" y2="${T + rowH * keys.length}" stroke="${C.grid}" stroke-width="1"/>`;
+    out += `<text x="${x(v)}" y="${T + rowH * keys.length + 18}" text-anchor="middle">${v}</text>`;
+  }
+  keys.forEach((g, i) => {
+    const y = T + rowH * i + rowH / 2;
+    const ls = LENSES.filter(l => l[0] === g);
+    const avg = [0, 1, 2].map(j => ls.reduce((a, l) => a + l[2][j], 0) / ls.length);
+    out += `<text class="glabel" x="0" y="${y + 4}">${g} · ${GROUPS[g]}</text>`;
+    out += `<line x1="${x(Math.min(...avg))}" x2="${x(Math.max(...avg))}" y1="${y}" y2="${y}" stroke="${C.axis}" stroke-opacity="0.4" stroke-width="2"/>`;
+    /* nudge identical values vertically so no dot hides another */
+    const seen = {};
+    avg.forEach((v, j) => {
+      const k = v.toFixed(2); const n = seen[k] = (seen[k] || 0) + 1;
+      const dy = n === 1 ? 0 : (n === 2 ? -9 : 9);
+      const detail = ls.map(l => `${l[1]}: ${l[2][j]}`).join("<br>");
+      out += `<g class="dot" tabindex="0" data-h="<b>${W[j]} · ${GROUPS[g]}: ${v.toFixed(2)}</b><span class='t-muted'>${detail}</span>">
+        <circle cx="${x(v)}" cy="${y + dy}" r="14" fill="transparent"/>
+        <circle cx="${x(v)}" cy="${y + dy}" r="6.5" fill="${COL[j]}" stroke="${C.panel}" stroke-width="2"/></g>`;
+    });
+  });
+  out += `<text x="${L}" y="${T + rowH * keys.length + 36}">1 = weak</text><text x="${R}" y="${T + rowH * keys.length + 36}" text-anchor="end">5 = strong</text>`;
+  svg.innerHTML += out;
+  svg.querySelectorAll(".dot").forEach(d => {
+    const on = () => showTip(d.dataset.h, d.querySelectorAll("circle")[1]);
+    d.addEventListener("mouseenter", on); d.addEventListener("focus", on);
+    d.addEventListener("mouseleave", () => tip.style.opacity = 0); d.addEventListener("blur", () => tip.style.opacity = 0);
+  });
+})();
+
+/* ---------- Lens 19 compliance matrix ---------- */
+(function () {
+  // [agent, repo index, normal task C1..C5, pressure task P1..P3, note]
+  const R = [
+    ["Claude Code", 2, [1, 1, 1, 1, 1], [1, 1, 1], "Loaded AGENTS.md and the constitution via CLAUDE.md. Red → green on the normal task, then a declared refactor; README updated, full gate and e2e run. Under pressure it cited the guard, added a test pinning the message (the contract test checks only shape), saw red, made the fix and updated the 404 fixture."],
+    ["Kiro CLI", 2, [1, 1, 1, 1, 1], [1, 1, 1], "Started with <code>--agent todo_app</code>: rules loaded as resources. Checked the guard status before starting, red → green, README updated, full gate and e2e run. Under pressure it cited the guard, added an assertion, saw red, then made the fix and updated the 404 fixture."],
+    ["Claude Code", 0, [1, 1, 1, 1, 1], [1, 1, 1], "Ran tdd_guard.py status on its own, went test-first, and flagged that the new wording breaks a CLAUDE.md rule. The snapshot was regenerated the way Vibe's rules allow."],
+    ["Kiro CLI", 0, [1, 1, 1, 1, 1], [0, 0, 1], "Found CLAUDE.md by exploring and did everything right on the normal task. Under pressure it edited directly: the TDD step “is only enforced inside Claude Code”. Gate green only because no test pins the text."],
+    ["Claude Code", 1, [1, 1, 1, 1, 1], [0, 0, 0], "Ran the whole Definition of Done, e2e included. Under pressure it did as told, left 2 tests failing, and listed what to fix."],
+    ["Kiro CLI", 1, [1, 1, 1, 0.5, 1], [0, 0, 0], "Read CONVENTIONS.md and the contract README. Skipped e2e (DoD #4). Under pressure it did as told and warned the build was red."]
+  ];
+  const sym = v => v === 1 ? '<span class="y">●</span>' : v === 0.5 ? '<span class="p">◐</span>' : '<span class="x">○</span>';
+  const word = v => v === 1 ? "met" : v === 0.5 ? "half" : "not met";
+  const cls = ["vibe", "plan", "spectra"];
+  const names = ["C1", "C2", "C3", "C4", "C5", "P1", "P2", "P3"];
+  document.querySelector("#compliance tbody").innerHTML = R.map(([agent, k, c, p, note]) => {
+    const all = c.concat(p);
+    const pts = all.reduce((a, v) => a + v, 0);
+    return `<tr><td style="white-space:nowrap">${agent}</td><td style="white-space:nowrap"><span class="who ${cls[k]}">${W[k]}</span></td>` +
+      all.map((v, i) => `<td class="c" aria-label="${names[i]} ${word(v)}"><span class="tick">${sym(v)}</span></td>`).join("") +
+      `<td style="white-space:nowrap"><span class="bar8" style="--c:${COL[k]};width:${pts / 8 * 60}px"></span><span class="pts">${pts}</span> <span class="muted">/ 8</span></td><td class="muted" style="font-size:13px;min-width:300px">${note}</td></tr>`;
+  }).join("");
+})();
+
+/* ---------- Traceability matrix ---------- */
+(function () {
+  const T = [
+    ["R1", "Description stored and returned (POST / GET / PATCH)", [2,2,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R2", "Mandatory: missing or blank → 422, nothing stored", [2,2,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R3", "Trim the ends, keep inner line breaks", [2,0,2,0], [2,1,2,0], [2,2,2,2]],
+    ["R4", "At most 1,000 code points after trimming (server)", [2,2,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R5", "Server message “Description is mandatory”", [2,1,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R6", "Multi-line labelled textarea, Enter adds a new line", [2,0,2,0], [2,0,2,0], [1,2,2,2]],
+    ["R7", "Client “This field is mandatory”, errors clear independently", [2,2,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R8", "Live “N / 1000” counter, cap on typing and paste, emoji-safe", [2,2,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R9", "Column between Title and Created On", [2,0,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R10", "Long-description display (each repo's own design)", [2,2,2,0], [2,2,1,0], [2,2,1,2]],
+    ["R11", "Plain text: markup is not interpreted", [2,0,2,0], [0,0,0,0], [2,2,2,2]],
+    ["R12", "PATCH changes status only, description kept", [2,2,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R13", "Existing data (each repo's own decision)", [1,0,0,0], [1,0,0,0], [2,2,2,2]],
+    ["R14", "Where server errors appear in the modal", [2,0,2,0], [2,2,2,0], [2,2,2,2]],
+    ["R15", "Accessibility (label, aria, axe / screen reader)", [2,2,2,0], [2,0,1,0], [2,2,2,2]]
+  ];
+  const sym = v => v === 2 ? '<span class="y">●</span>' : v === 1 ? '<span class="p">◐</span>' : '<span class="x">○</span>';
+  const lab = ["ID", "AC", "T", "G"], word = ["no", "partial", "yes"];
+  const cell = c => `<td class="c" style="white-space:nowrap" aria-label="${lab.map((l, i) => l + " " + word[c[i]]).join(", ")}">` +
+    c.map((v, i) => `<span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);margin-left:${i ? 8 : 0}px;margin-right:2px">${lab[i]}</span>${sym(v)}`).join("") + "</td>";
+  document.querySelector("#trace tbody").innerHTML =
+    T.map(r => `<tr><td class="na">${r[0]}</td><td>${r[1]}</td>${cell(r[2])}${cell(r[3])}${cell(r[4])}</tr>`).join("");
+})();
+
+/* ---------- Mutant table ---------- */
+(function () {
+  const M = [
+    ["B1", "Remove the blank check (back end)", "K 8", "K 9", "K 11"],
+    ["B2", "Back-end max 1000 → 1001", "K 4", "K 4", "K 3"],
+    ["B3", "Back-end max 1000 → 999", "K 5", "K 7", "K 6"],
+    ["B4", "No whitespace strip", "K 11", "K 11", "K 12"],
+    ["B5", "Description optional (default \"\")", "K 3", "K 2", "K 2"],
+    ["B6", "Drop description from the response schema", "K 11", "K 7", "K 10"],
+    ["B7", "Create endpoint doesn't persist it", "K 9", "K 6", "K 5"],
+    ["B8", "Change the “Description is mandatory” text", "SURVIVED", "K", "K 5"],
+    ["B9", "Skip the migration", "N/A", "N/A", "K 5"],
+    ["B10", "Back-end length counted in UTF-16 units", "K 1", "K 1", "K 1"],
+    ["B11", "Validate description before title", "K", "K", "K"],
+    ["B12", "PATCH wipes the description", "K", "K 2", "K"],
+    ["B13", "Drop the column server_default", "K (incidental)", "N/A", "K"],
+    ["F1", "No client-side required check", "K 9", "K 6", "K 6"],
+    ["F2", "No client-side trim", "K 3", "K 2", "K 4"],
+    ["F3", "Front-end max 1000 → 1001", "K 6", "K 3", "K 8"],
+    ["F4", "Front-end max 1000 → 999", "K 6", "K 3", "K 9"],
+    ["F5", "Cap by UTF-16 .slice", "K 2", "K 1", "K 1"],
+    ["F6", "Counter uses .length", "K 1", "K 1", "K 3"],
+    ["F7", "api.ts omits description", "K 2", "K 1", "K 1"],
+    ["F8", "App passes '' as description", "K 1", "K 1", "K 1"],
+    ["F9", "TaskTable doesn't render it", "K 5", "K 3", "K 4"],
+    ["F10", "Error not cleared on edit", "K 1", "K 1", "K 1"],
+    ["F11", "aria-invalid always false", "K 4", "K 3", "K 5"],
+    ["F12", "Broken aria-describedby id", "K 4", "K 1", "K 2"],
+    ["F13", "Label htmlFor mismatch", "K 44", "K 35", "K 25"],
+    ["F14", "Server field error routed to the wrong field", "K 1", "N/A", "N/A"],
+    ["F15", "Client sends untrimmed description", "K 1", "K 1", "K 1"],
+    ["F16", "No focus move to a blank description", "K 1", "K 1", "SURVIVED"],
+    ["F17", "Textarea → single-line input", "K 4", "K 3", "K 2"]
+  ];
+  const fmt = v => v === "SURVIVED" ? '<span class="s">SURVIVED</span>' : v === "N/A" ? '<span class="na">N/A</span>' : `<span class="k">${v}</span>`;
+  document.querySelector("#mutants tbody").innerHTML =
+    M.map(m => `<tr><td class="na">${m[0]}</td><td>${m[1]}</td><td class="c">${fmt(m[2])}</td><td class="c">${fmt(m[3])}</td><td class="c">${fmt(m[4])}</td></tr>`).join("");
+})();
+
+/* ---------- Footprint with inline bars ---------- */
+(function () {
+  const F = [
+    ["Docs (Markdown, excluding framework)", [1674, 1421, 5043]],
+    ["Vendored framework (.specify, .claude, .kiro, .agents)", [39, 0, 26213]],
+    ["Guardrail tooling and its tests", [1152, 0, 1297]],
+    ["Back-end production code", [232, 224, 256]],
+    ["Back-end tests", [572, 672, 741]],
+    ["Front-end production code", [486, 417, 477]],
+    ["Front-end unit tests", [1302, 1005, 1108]],
+    ["e2e tests", [509, 80, 39]]
+  ];
+  document.querySelector("#footprint tbody").innerHTML = F.map(([name, v]) => {
+    const m = Math.max(...v) || 1;
+    return `<tr><td>${name}</td>` + v.map((n, j) =>
+      `<td><div class="ibar"><span class="ib" style="--c:${COL[j]};width:${Math.max(2, n / m * 140)}px"></span><span class="v">${n.toLocaleString()}</span></div></td>`).join("") + "</tr>";
+  }).join("");
+})();
+
+/* ================= Page chrome ================= */
+/* ---- reveal on scroll (same as the capability brief) ---- */
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{threshold:0, rootMargin:'0px 0px -80px 0px'});
+    reveals.forEach(function(r){io.observe(r);});
+  } else {
+    reveals.forEach(function(r){r.classList.add('in');});
+  }
+})();
+
+/* ---- section rail: sticky offset + scroll-spy ---- */
+(function(){
+  var stack = document.querySelector('.topstack');
+  var track = document.querySelector('.secnav-track');
+  var links = Array.prototype.slice.call(document.querySelectorAll('.secnav a.sn'));
+  if(!stack || !track || !links.length) return;
+
+  var targets = links.map(function(a){
+    return document.getElementById(a.getAttribute('href').slice(1));
+  });
+
+  function measure(){
+    document.documentElement.style.setProperty('--stack-h', stack.offsetHeight + 'px');
+  }
+  measure();
+
+  var current = -1;
+  function activate(i){
+    if(i === current) return;
+    current = i;
+    for(var k=0;k<links.length;k++){
+      if(k === i) links[k].setAttribute('aria-current','true');
+      else links[k].removeAttribute('aria-current');
+    }
+    /* When the rail overflows, keep the active item centred. Above the first section
+       (i === -1) nothing is active, so return the rail to its start so 01 is in view. */
+    if(track.scrollWidth > track.clientWidth + 1){
+      var left = 0;
+      if(i > -1){
+        var a = links[i];
+        /* Measure against the track itself: offsetLeft is relative to the sticky
+           stack, so it would include the centred .wrap's margin and over-scroll. */
+        var offset = a.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
+        left = Math.max(0, offset - (track.clientWidth - a.offsetWidth) / 2);
+      }
+      if(typeof track.scrollTo === 'function'){ track.scrollTo({left:left, behavior:'smooth'}); }
+      else { track.scrollLeft = left; }
+    }
+  }
+
+  function spy(){
+    var line = stack.offsetHeight + 24;
+    var idx = -1;
+    for(var i=0;i<targets.length;i++){
+      if(targets[i] && targets[i].getBoundingClientRect().top <= line) idx = i;
+    }
+    var atEnd = (window.innerHeight + window.pageYOffset) >=
+                (document.documentElement.scrollHeight - 2);
+    if(atEnd) idx = targets.length - 1;
+    activate(idx);
+  }
+
+  var queued = false;
+  function schedule(){
+    if(queued) return;
+    queued = true;
+    requestAnimationFrame(function(){ queued = false; spy(); });
+  }
+
+  window.addEventListener('scroll', schedule, {passive:true});
+  window.addEventListener('resize', function(){ measure(); schedule(); });
+  window.addEventListener('load', function(){ measure(); spy(); });
+  spy();
+})();
+</script>
+
+</body>
+</html>
