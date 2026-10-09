@@ -73,7 +73,7 @@ shell (`spectra install`, inspect, `exit`, re-launch for a fresh machine):
 | 4 | **Re-run idempotency** | complete a run, then run `spectra install` again | 2nd run: "already registered" for the catalog, no duplicate catalog entry |
 | 5 | **Self-management** | `spectra update` inside an installed project, then `spectra cli uninstall` | the Spectra CLI row reports up to date/ahead against the latest Release; uninstall prompts, then `uv tool list` no longer shows `spectra-cli` |
 | 6 | **Removed flags name their replacements** | `spectra --version`, `--update`, `--uninstall` | each exits 2 and names a live replacement — never a bare "unrecognized arguments" |
-| 6b | **Retired subcommands name their replacements** | `spectra cli version`, `spectra cli update` | each exits 2 and points at `spectra version` / `spectra update`; neither performs the old action |
+| 6b | **Tool commands work outside a project** | `cd /tmp && spectra cli version`, then `spectra cli update` | `cli version` exits 0 and reports the installed version (latest, or names `spectra cli update`); `cli update` reports current or offers the update; neither says "not a Spec Kit project" |
 | 7 | **The roster is data** | `spectra agent-list` from `/tmp` (not a Spec Kit project) | lists every agent grouped by SDLC phase, exit 0; no planned agent shows a command |
 | 8 | **Project state is distinguishable** | `spectra check` in `/tmp`, then in a fresh `specify init` project, then after `spectra install` | three different sentences: not a Spec Kit project (exit 5), not installed + offer, installed (exit 0) |
 | 9 | **The whole stack is reported** | `spectra version` after a successful install | four rows — Specify CLI, Core agents, Spectra CLI, Spectra agents; hand-edit `.specify/extensions/spectra/extension.yml` to an older version and that row reports both versions and the output names `spectra update`. Then hand-edit `.specify/integration.json` to an older version and the Core agents row flags it too |
@@ -158,14 +158,14 @@ win without moving anything is caught rather than echoed.
 and `spectra` into the same directory — dropping it from `PATH` would take the command under test with
 it.
 
-### The surface, after 6.0.0
+### The surface, after 6.4.0
 
 | Command | Expected |
 |---|---|
-| `spectra cli version` | exit 2, names `spectra version` |
-| `spectra cli update` | exit 2, names `spectra update` |
+| `spectra cli version` | exit 0 from any folder; the command's version only, names `spectra cli update` when newer (6.4.0) |
+| `spectra cli update` | updates the command only, from any folder (6.3.0) |
 | `spectra cli uninstall` | unchanged |
-| `spectra --help` | Tool commands panel has **one** row |
+| `spectra --help` | Tool commands panel has **three** rows: `cli version`, `cli update`, `cli uninstall` |
 | `cd /tmp && spectra version` | exit 5 — it needs a project, by design |
 | `cd /tmp && spectra` | the banner's `cli vX.Y.Z`, from anywhere, touching nothing |
 

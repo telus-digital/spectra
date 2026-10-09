@@ -192,7 +192,8 @@ class Verdicts(unittest.TestCase):
         self.assertIn("You can update by running", behind)
         self.assertNotIn("You can update by running", current)
 
-    def test_the_retired_tool_command_is_no_longer_advertised(self):
+    def test_in_project_version_does_not_advertise_cli_version(self):
+        """The four-row report already covers the tool; the pointer is for outside a project only."""
         with stack("1.3.1", "1.3.1"):
             _, out = run(["version"])
         self.assertNotIn("spectra cli version", out)
@@ -481,7 +482,9 @@ class CannotAnswer(unittest.TestCase):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_PROJECT_STATE)
         self.assertIn("not a Spec Kit project", out)
-        self.assertEqual(h.plain_lines(out)[-2:], list(h.NOT_A_PROJECT_LINES))
+        # Spec 030 FR-015: `version` adds a pointer to the tool-only check after the shared lines.
+        self.assertEqual(h.plain_lines(out)[-3:], list(h.NOT_A_PROJECT_LINES)
+                         + ["  Check just the spectra command: spectra cli version"])
         self.assertNotIn("specify init", out)
 
     def test_an_incomplete_install_exits_five_and_points_at_the_repair(self):
@@ -1191,7 +1194,7 @@ class BadStates(unittest.TestCase):
         self.assertNotIn("specify init", out)
 
     def test_only_update_points_at_cli_update_outside_a_project(self):
-        """Spec 029 FR-016: `version` keeps feature 028's two lines; the pointer is `update`'s alone."""
+        """Spec 029 FR-016: the `cli update` pointer is `update`'s alone; `version` has its own (spec 030)."""
         with h.temp_project(is_project=False) as path, h.cwd(path):
             _, out = run(["version"])
         self.assertNotIn("spectra cli update", out)

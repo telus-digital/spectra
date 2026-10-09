@@ -374,10 +374,11 @@ scenarios() {
     spectra version                  four rows; exit 0 for every verdict
     spectra update                   one prompt, then updates in canonical order
     spectra update --yes             no prompt
-    spectra cli version              retired -> exit 2, names its replacement
-    spectra cli update               retired -> exit 2
+    spectra cli version              the command's version only; names `spectra cli update` if newer
+    spectra cli update               updates the command only, from any folder
     spectra cli uninstall            still here, unchanged
-    spectra --help                   Tool commands panel has ONE row now
+    spectra --help                   Tool commands panel has THREE rows
+    cd /tmp && spectra cli version   exit 0: works outside a project
     cd /tmp && spectra version       exit 5: needs a project (this is intended)
     cd /tmp && spectra               the banner's `cli vX.Y.Z` works anywhere
 

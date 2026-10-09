@@ -46,8 +46,8 @@ fi
 c "Installing the Spectra CLI from: $SOURCE"
 uv tool install spectra-cli --from "$SOURCE" --force
 echo
-# Bare `spectra` carries the version in its banner and works from any directory. `--version` was
-# removed in 5.0.0 and `spectra cli version` was retired in 6.0.0, so this is the way to read it.
+# Bare `spectra` carries the version in its banner and works from any directory, offline and without
+# side effects — which is why this reads the banner rather than `spectra cli version`.
 dim "Installed: $(cd /tmp && spectra 2>/dev/null | grep -o 'cli v[0-9.]*' || echo 'unknown')"
 
 # Scenario helpers, available in every interactive shell this container starts.

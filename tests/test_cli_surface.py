@@ -61,11 +61,13 @@ class RemovedFlags(unittest.TestCase):
             for replacement in replacements:
                 self.assertIn(replacement, out, flag)
 
-    def test_no_removed_flag_points_at_a_retired_command(self):
+    def test_every_named_replacement_is_a_live_command(self):
         """A replacement that does not exist is worse than no replacement at all."""
-        for flag in ("--version", "-V", "--update"):
-            _, out = run([flag])
-            self.assertNotIn("spectra cli version", out, flag)
+        live = {f"spectra {name}" for name, _ in cli.PROJECT_COMMANDS}
+        live |= {f"spectra {label}" for label, _ in cli.TOOL_COMMANDS}
+        for flag, replacements in cli.REMOVED_FLAGS.items():
+            for replacement in replacements:
+                self.assertIn(replacement, live, flag)
 
     def test_no_removed_flag_survives_as_an_alias(self):
         parser = cli.build_parser()
@@ -93,77 +95,9 @@ class RemovedFlags(unittest.TestCase):
         self.assertNotIn("was removed", out)
 
 
-class RetiredToolSubcommands(unittest.TestCase):
-    """`cli version` was retired in 6.0.0, absorbed by `spectra version`.
-
-    Hard-removed, following the 5.0.0 pattern for the removed flags: the action is gone, and running it
-    names its replacement rather than emitting argparse's "invalid choice". `cli update` was retired
-    alongside it and reinstated in 6.3.0 as a tool-only update (spec 029; see `test_cli_update.py`).
-    """
-
-    RETIRED = {"version": "spectra version"}
-
-    def test_each_retired_subcommand_exits_with_a_usage_error(self):
-        for subcommand in self.RETIRED:
-            with self.subTest(subcommand=subcommand):
-                code, _ = run(["cli", subcommand])
-                self.assertEqual(code, cli.EXIT_USAGE)
-
-    def test_each_retired_subcommand_says_it_was_retired(self):
-        for subcommand in self.RETIRED:
-            with self.subTest(subcommand=subcommand):
-                _, out = run(["cli", subcommand])
-                self.assertIn("retired", out)
-
-    def test_each_retired_subcommand_names_its_replacement(self):
-        for subcommand, replacement in self.RETIRED.items():
-            with self.subTest(subcommand=subcommand):
-                _, out = run(["cli", subcommand])
-                self.assertIn(replacement, out)
-
-    def test_it_does_not_perform_its_old_action(self):
-        """A retirement that still did the work would be an alias, not a removal."""
-        from spectra_cli import version as tool_version
-        with mock.patch.object(tool_version, "resolve_latest") as resolve, \
-             mock.patch.object(tool_version, "perform_update") as perform, \
-             mock.patch.object(tool_version, "check_update") as checked:
-            run(["cli", "version"])
-        resolve.assert_not_called()
-        perform.assert_not_called()
-        checked.assert_not_called()
-
-    def test_it_does_not_reach_the_network_or_spawn_a_subprocess(self):
-        """The substantive form of "responds within a second": it does no work at all."""
-        import subprocess
-        with mock.patch.object(subprocess, "run") as spawned, \
-             mock.patch.object(subprocess, "call") as called:
-            run(["cli", "version"])
-        spawned.assert_not_called()
-        called.assert_not_called()
-
-    def test_it_is_absent_from_the_advertised_tool_commands(self):
-        advertised = " ".join(label for label, _ in cli.TOOL_COMMANDS)
-        self.assertNotIn("cli version", advertised)
-        # Reinstated in 6.3.0, so it is advertised again.
-        self.assertIn("cli update", advertised)
-
-    def test_the_help_describes_version_and_update_as_whole_stack_commands(self):
-        """FR-019: the descriptions have to reflect what the commands now cover.
-
-        Leaving them saying "the agents installed here" would understate them by three components.
-        """
-        described = dict(cli.PROJECT_COMMANDS)
-        for verb in ("version", "update"):
-            with self.subTest(verb=verb):
-                self.assertIn("stack", described[verb].lower(), verb)
-        # `version` names what it checks, so a reader knows before running it.
-        self.assertIn("Spec Kit CLI", described["version"])
-        self.assertIn("core agents", described["version"].lower())
-
-
 class TheToolGroup(unittest.TestCase):
     def test_the_committed_version_matches_what_the_package_reports(self):
-        """Moved off `cli version` when that retired; this asserts the same parity CI enforces."""
+        """The same parity CI enforces, read the way `spectra cli version` reads it."""
         from spectra_cli import version as tool_version
         self.assertEqual(tool_version.read_installed_version(),
                          h.repo_file("VERSION").read_text().strip())
@@ -174,15 +108,13 @@ class TheToolGroup(unittest.TestCase):
             run(["cli", "uninstall"])
         handler.assert_called_once()
 
-    def test_update_and_uninstall_are_the_tool_commands(self):
-        """`cli uninstall` is unchanged; `cli update` was reinstated ahead of it in 6.3.0 (spec 029)."""
-        self.assertEqual([label for label, _ in cli.TOOL_COMMANDS], ["cli update", "cli uninstall"])
+    def test_version_update_and_uninstall_are_the_tool_commands(self):
+        """`cli update` was reinstated in 6.3.0 (spec 029) and `cli version` ahead of it in 6.4.0 (spec 030)."""
+        self.assertEqual([label for label, _ in cli.TOOL_COMMANDS],
+                         ["cli version", "cli update", "cli uninstall"])
 
     def test_every_tool_handler_takes_one_argument(self):
-        """The dispatch table holds plain references; a wrapper would mean they had drifted apart.
-
-        The retirement handler included — it defaults `args` so it can be called either way.
-        """
+        """The dispatch table holds plain references; a wrapper would mean they had drifted apart."""
         import inspect
         for name, handler in cli.TOOL_DISPATCH.items():
             parameters = list(inspect.signature(handler).parameters)

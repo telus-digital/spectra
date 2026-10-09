@@ -395,12 +395,18 @@ installed rather than failing, and repairs the coverage:
 > `specify integration use <your-original-default>`, or just run `spectra install` again, which reports the
 > current default as it works.
 
-Managing the **tool itself** takes two verbs, and both work from any folder — Spec Kit project or not:
+Managing the **tool itself** takes three verbs, and all work from any folder — Spec Kit project or not:
 
 ```bash
+spectra cli version     # show the spectra command's version, and whether a newer one exists
 spectra cli update      # update the spectra command itself, from any folder
 spectra cli uninstall   # remove the spectra command from this machine
 ```
+
+> **Changed in 6.4.0.** `spectra cli version` is back too, as the read-only partner to `spectra cli update`:
+> it reports the `spectra` command's own version and whether a newer release exists, from any folder, and
+> tells you to run `spectra cli update` when there is one. It never checks your agents — `spectra version`
+> still does that, inside a project. `--no-update-check` keeps it offline; it then shows just the version.
 
 > **Changed in 6.3.0.** `spectra cli update` is back, with a narrower meaning than it had before 6.0.0:
 > it updates the `spectra` command and nothing else, and it works anywhere. `spectra update` is still
@@ -409,8 +415,9 @@ spectra cli uninstall   # remove the spectra command from this machine
 > `spectra install`. It asks before updating; `--yes` skips the question.
 
 > **Changed in 6.0.0.** `spectra cli version` and `spectra cli update` were retired, and
-> `spectra version` and `spectra update` absorbed them to cover all four components. `spectra cli version`
-> is still retired and tells you to use `spectra version`; `spectra cli update` returned in 6.3.0 (above).
+> `spectra version` and `spectra update` absorbed them to cover all four components. Both have since
+> returned with narrower, tool-only meanings: `spectra cli update` in 6.3.0 and `spectra cli version` in
+> 6.4.0 (above).
 
 > **Changed in 5.0.0.** `--version`, `--update`, and `--uninstall` were removed. They reported on the
 > *tool*, which is the number you're least likely to care about. Run one and it tells you which
@@ -516,6 +523,7 @@ Spectra ships two things, and they carry **two different version numbers on purp
 |---|---|---|
 | What it is | the uv tool that sets everything up | the agents your AI assistant runs |
 | You install it with | `uv tool install spectra-cli --from git+…` | `specify extension add spectra` |
+| You check it with | `spectra cli version` from any folder, or `spectra version` in a project | `spectra version` |
 | You update it with | `spectra update`, or `spectra cli update` from any folder (`spectra cli uninstall` to remove it) | `spectra update` (or `specify extension update spectra`) |
 | Its version comes from | the latest [GitHub Release](https://github.com/telus-digital/spectra/releases) | `version` in [`catalog.json`](catalog.json) |
 

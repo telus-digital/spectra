@@ -47,8 +47,8 @@ live; [the commands at the end of this section](#confirming-the-settings) show i
 
 - **`CLI installs and runs`**, on Python 3.9 (the floor in `pyproject.toml`) and 3.12. It installs
   the package and runs the full test suite. It checks that the installed version and the bare
-  `spectra` banner both report `VERSION`, and that the removed flags and retired `cli` subcommands
-  name their replacements. It also checks that the wheel ships `spectra_cli/` only (never `tools/`,
+  `spectra` banner both report `VERSION`, that the removed flags name their replacements, and that
+  `spectra cli version` and `spectra cli update` run outside a Spec Kit project. It also checks that the wheel ships `spectra_cli/` only (never `tools/`,
   `tests/` or `agents-list.json`), and that bare `spectra` writes nothing to the current directory.
 - **`Catalog and package stay in sync`** runs the four checks in `tools/checks.py`, the same code the
   pre-flight runs: the generated listings match `agents-list.json`; `extension.yml`, `catalog.json`

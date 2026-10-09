@@ -37,11 +37,10 @@ jobs:
         # whole repository, so CI installs nothing beyond the package itself.
         run: python -m unittest discover -s tests -v
       - name: The command runs and reports the committed version
-        # Asserts the installed distribution reports the committed VERSION. This used to read
-        # `spectra cli version | head -1`, but that command was retired in 6.0.0 — and its replacement,
-        # `spectra version`, requires a Spec Kit project with Spectra installed, which this job has no
-        # reason to build. Reading importlib.metadata tests the same parity closer to the source: it is
-        # exactly what `version.read_installed_version()` reads.
+        # Asserts the installed distribution reports the committed VERSION. Reading importlib.metadata
+        # tests the parity closest to the source: it is exactly what `version.read_installed_version()`
+        # reads. (`spectra version` requires a Spec Kit project, which this job has no reason to build;
+        # `spectra cli version`, reinstated in 6.4.0, is checked by its own step below.)
         env:
           SPECTRA_NO_UPDATE_CHECK: '1'
         run: |
@@ -55,7 +54,7 @@ jobs:
           fi
           echo "spectra-cli reports $REPORTED."
           # Bare `spectra` prints `cli vX.Y.Z` and works from any directory, so it is what the release
-          # smoke test and the clean-room matrix use now that `cli version` is gone. Constitution
+          # smoke test and the clean-room matrix use. Constitution
           # Principle VI makes that line a MUST; this is what enforces it.
           # Captured to a file first: `grep | head` under `set -o pipefail` can fail on SIGPIPE when
           # head closes the pipe early, which would be a flake rather than a real failure.
@@ -89,41 +88,46 @@ jobs:
           done
           echo "All three removed flags name their replacements."
 
-      - name: The retired cli subcommand names its replacement; the tool commands survive
-        # `cli version` was retired in 6.0.0 (`spectra version` absorbed it). Same contract as the
-        # removed flags — the action is gone, and the message says what to run instead. `cli update`
-        # was retired alongside it and reinstated in 6.3.0 as a tool-only update (spec 029).
+      - name: '`spectra cli version` reports the committed version outside a Spec Kit project'
+        # Spec 030: `cli version` was retired in 6.0.0 and reinstated in 6.4.0 as a tool-only check that
+        # works where `spectra version` refuses. With the update check opted out it is offline and
+        # deterministic, so it must name exactly the committed VERSION, exit 0, and touch nothing.
         env:
           SPECTRA_NO_UPDATE_CHECK: '1'
         run: |
           set -euo pipefail
-          if spectra cli version > /tmp/retired.txt 2>&1; then
-            echo "::error::spectra cli version still succeeds; it was supposed to be retired." >&2
+          FILE_VERSION="$(tr -d '[:space:]' < VERSION)"
+          HERE="$(mktemp -d)"
+          ( cd "$HERE" && spectra cli version > /tmp/cli-version.txt 2>&1 ) \
+            || { cat /tmp/cli-version.txt; echo "::error::spectra cli version exited non-zero." >&2; exit 1; }
+          cat /tmp/cli-version.txt
+          grep -qF "spectra $FILE_VERSION" /tmp/cli-version.txt \
+            || { echo "::error::spectra cli version did not report '$FILE_VERSION'." >&2; exit 1; }
+          for wrong in 'not a Spec Kit project' 'retired'; do
+            if grep -q "$wrong" /tmp/cli-version.txt; then
+              echo "::error::spectra cli version said '$wrong' outside a project." >&2
+              exit 1
+            fi
+          done
+          if [ -n "$(ls -A "$HERE")" ]; then
+            echo "::error::spectra cli version wrote into the current directory." >&2
             exit 1
           fi
-          grep -q 'retired' /tmp/retired.txt \
-            || { echo "::error::spectra cli version did not say it was retired." >&2; exit 1; }
-          grep -q 'spectra version' /tmp/retired.txt \
-            || { echo "::error::spectra cli version did not name its replacement." >&2; exit 1; }
           # `spectra cli` with no subcommand prints its group help and exits 2 by design, so its output
           # is captured first — piping it under `set -o pipefail` would fail the step on that
           # intentional exit code even when the grep matches.
           spectra cli > /tmp/cli-group.txt 2>&1 || true
-          for kept in update uninstall; do
+          for kept in version update uninstall; do
             grep -q "$kept" /tmp/cli-group.txt \
               || { echo "::error::spectra cli no longer advertises $kept." >&2; exit 1; }
           done
-          if grep -q 'cli version' /tmp/cli-group.txt; then
-            echo "::error::spectra cli still advertises 'cli version'." >&2
-            exit 1
-          fi
-          echo "cli version names its replacement; update and uninstall are advertised."
+          echo "cli version reports $FILE_VERSION; version, update and uninstall are advertised."
 
       - name: '`spectra cli update` runs outside a Spec Kit project'
         # Spec 029: the tool-only update must work where `spectra update` refuses. This is a pip
         # install, so it can never reach uv here — it reports current, explains it is not a uv tool,
         # or (offline / rate-limited) says the check failed. What it must never do is refuse for want
-        # of a project, or still claim to be retired.
+        # of a project.
         run: |
           set -euo pipefail
           mkdir -p /tmp/no-project && cd /tmp/no-project
