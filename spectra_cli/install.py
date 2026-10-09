@@ -214,6 +214,26 @@ def register_catalog() -> bool:
     return False
 
 
+def _report_already_installed(project_root) -> None:
+    """Say the extension is already here, and whether the published one is newer.
+
+    Only an extension that is verifiably behind is told to update. A check that could not be made says
+    so rather than claiming up to date, and still names `spectra update`, which re-checks on its own.
+    """
+    state = project.classify(project_root)
+    version = ui.bold(state.installed_version or "unknown version")
+    status = health.get_spectra_extension_status(state)
+    if status.status in (health.UP_TO_DATE, health.AHEAD):
+        ui.ok(f"SPECTRA is already installed here ({version}) and up to date.")
+    elif status.status == health.NEEDS_UPDATING:
+        ui.ok(f"SPECTRA is already installed here ({version}).")
+        latest = f" ({ui.bold(status.latest)})" if status.latest else ""
+        print(f"  An update is available{latest} — run: {ui.bold('spectra update')}")
+    else:
+        ui.ok(f"SPECTRA is already installed here ({version}).")
+        print(f"  Couldn't check for updates — run {ui.bold('spectra update')} to check.")
+
+
 def add_catalog(project_root=None, *, total_steps: int = 3) -> bool:
     """Register the Spectra catalog, then install every extension it advertises.
 
@@ -238,9 +258,7 @@ def add_catalog(project_root=None, *, total_steps: int = 3) -> bool:
 
     print()
     if not pending:
-        version = project.classify(project_root).installed_version or "unknown version"
-        ui.ok(f"SPECTRA is already installed here ({ui.bold(version)}) — nothing to download.")
-        print(f"  Update it with: {ui.bold('spectra update')}")
+        _report_already_installed(project_root)
         return True
 
     if len(pending) == 1:
@@ -433,6 +451,7 @@ def run_install() -> int:
         return coverage_code
 
     print(f"{ui.GREEN}{ui.BOLD}All set!{ui.RESET} {ui.PURPLE}SPECTRA is ready to use.{ui.RESET}")
+    print(f"To manage coding agent integrations, use: {ui.bold('specify integration --help')}")
     print()
     print("Restart your AI agent to pick up the new commands.")
     return EXIT_OK

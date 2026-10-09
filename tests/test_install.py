@@ -30,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import helpers as h  # noqa: E402
-from spectra_cli import coverage, install, project  # noqa: E402
+from spectra_cli import coverage, install, net, project  # noqa: E402
 
 
 def seed(root, *, installed, default, covered):
@@ -55,6 +55,11 @@ def captured():
     buffer = io.StringIO()
     with contextlib.redirect_stdout(buffer):
         yield buffer
+
+
+def published(version):
+    """Pin the published extension version, so the already-installed path never touches the network."""
+    return mock.patch.object(install.health.extension, "published_version", return_value=version)
 
 
 def cover(root, **kwargs):
@@ -293,16 +298,50 @@ class AlreadyInstalledIsAState(unittest.TestCase):
             log = Path(root) / "argv.log"
             with h.fake_specify(argv_log=log), \
                     mock.patch.object(install, "catalog_extension_ids", return_value=["spectra"]), \
-                    mock.patch.object(install, "register_catalog", return_value=True):
+                    mock.patch.object(install, "register_catalog", return_value=True), \
+                    published("1.3.1"):
                 with captured() as out:
                     ok = install.add_catalog(root, total_steps=4)
             self.assertTrue(ok)
             self.assertIn("already installed here", out.getvalue())
-            self.assertIn("spectra update", out.getvalue())
             # The decisive assertion: `specify` was not invoked at all — no add, no download, no
             # overwrite (FR-023). The log is absent precisely because nothing ran, which is the point.
             self.assertEqual(h.read_argv_log(log), [])
             self.assertFalse(log.exists())
+
+    def already_installed_output(self, publisher):
+        with h.temp_project() as root:
+            seed(root, installed=["kiro-cli"], default="kiro-cli", covered=["kiro-cli"])
+            with h.fake_specify(), \
+                    mock.patch.object(install, "catalog_extension_ids", return_value=["spectra"]), \
+                    mock.patch.object(install, "register_catalog", return_value=True), \
+                    publisher:
+                with captured() as out:
+                    self.assertTrue(install.add_catalog(root, total_steps=3))
+        return h.plain_lines(out.getvalue())
+
+    def test_a_current_extension_says_up_to_date_and_does_not_suggest_updating(self):
+        text = "\n".join(self.already_installed_output(published("1.3.1")))
+        self.assertIn("already installed here (1.3.1) and up to date", text)
+        self.assertNotIn("spectra update", text)
+
+    def test_a_published_version_older_than_the_installed_one_is_still_up_to_date(self):
+        text = "\n".join(self.already_installed_output(published("1.2.0")))
+        self.assertIn("and up to date", text)
+        self.assertNotIn("spectra update", text)
+
+    def test_a_newer_published_extension_offers_the_update(self):
+        lines = self.already_installed_output(published("1.4.0"))
+        self.assertIn("  An update is available (1.4.0) — run: spectra update", lines)
+        self.assertNotIn("up to date", "\n".join(lines))
+
+    def test_an_unreachable_catalog_does_not_claim_up_to_date(self):
+        unreachable = mock.patch.object(install.health.extension, "published_version",
+                                        side_effect=net.FetchError("offline"))
+        text = "\n".join(self.already_installed_output(unreachable))
+        self.assertIn("Couldn't check for updates", text)
+        self.assertIn("spectra update", text)
+        self.assertNotIn("up to date", text)
 
     def test_the_decision_comes_from_project_state_not_from_message_text(self):
         """FR-021. The presence check is a filesystem question, asked before anything is attempted."""
@@ -339,6 +378,31 @@ class AlreadyInstalledIsAState(unittest.TestCase):
             self.assertEqual([argv for argv in h.read_argv_log(log)
                               if argv[:2] == ["extension", "add"]], [["extension", "add", "spectra"]])
 
+
+class FinalMessage(unittest.TestCase):
+    """A successful run ends by pointing at Spec Kit for integrations — first install and re-run alike."""
+
+    def run_install(self, add_catalog_result=True):
+        with h.temp_project() as root, h.cwd(root), \
+                mock.patch.object(install.ui, "intro_note"), \
+                mock.patch.object(install, "coverage_expected", return_value=False), \
+                mock.patch.object(install, "ensure_specify_installed"), \
+                mock.patch.object(install, "check_in_specify_project", return_value=Path(root)), \
+                mock.patch.object(install, "add_catalog", return_value=add_catalog_result):
+            with captured() as out:
+                code = install.run_install()
+        return code, h.plain_lines(out.getvalue())
+
+    def test_the_integrations_pointer_follows_all_set(self):
+        code, lines = self.run_install()
+        self.assertEqual(code, 0)
+        index = next(i for i, line in enumerate(lines) if line.startswith("All set!"))
+        self.assertEqual(lines[index + 1],
+                         "To manage coding agent integrations, use: specify integration --help")
+
+    def test_a_failed_install_does_not_show_it(self):
+        _, lines = self.run_install(add_catalog_result=False)
+        self.assertNotIn("specify integration --help", "\n".join(lines))
 
 
 class DecliningInitialization(unittest.TestCase):

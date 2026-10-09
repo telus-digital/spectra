@@ -386,8 +386,7 @@ Landed in a half-covered project? Run `spectra install` again. It reports the ex
 installed rather than failing, and repairs the coverage:
 
 ```text
-✓ Spectra is already installed here (1.5.0) — nothing to download.
-  Update it with: spectra update
+✓ SPECTRA is already installed here (1.5.0) and up to date.
 ```
 
 > **If a run was killed mid-rotation** — the terminal closed, the machine slept — your project may be left
