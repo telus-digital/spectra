@@ -7,7 +7,7 @@ The command surface has one organizing rule: **a top-level verb acts on the stac
 only `spectra cli …` acts on the machine's copy of the tool.**
 
     spectra install | check | version | update | uninstall | agent-list   the project's stack
-    spectra cli uninstall                                                 the spectra command
+    spectra cli update | uninstall                                        the spectra command
 
 Bare `spectra` stays informational — it prints the banner and points at `--help`, the way the
 `specify` CLI does, and never touches the current folder. Because the banner carries the CLI's own
@@ -21,7 +21,12 @@ the replacement, which argparse cannot do for an argument it no longer defines.
 `spectra cli version` and `spectra cli update` were retired in 6.0.0 for the same reason, one level
 down: `spectra version` and `spectra update` now cover all four parts of the stack — Spec Kit's CLI, the
 core agents, this command, and Spectra's agents — so a separate tool-scoped pair had nothing left to
-mean. Both remain registered so typing one names its replacement.
+mean. `cli version` remains registered so typing it names its replacement.
+
+`spectra cli update` came back in 6.3.0 with a narrower meaning than it had before 6.0.0: it updates the
+spectra command alone, from any folder. `spectra update` is a project command and refuses to run outside
+a Spec Kit project, which left no way to update the tool there — the one place a tool-scoped update
+still means something `spectra update` cannot.
 
 Flags shared by more than one subcommand are declared once and attached to each, with `SUPPRESS`
 defaults on the subcommand copies so that `spectra --yes install` and `spectra install --yes` mean the
@@ -64,13 +69,15 @@ PROJECT_COMMANDS = [
 ]
 
 TOOL_COMMANDS = [
+    ("cli update", "Update the spectra command itself to the newest release. Works from any "
+                   "folder; never touches the agents in your projects."),
     ("cli uninstall", "Remove the spectra command from this machine. Extensions in your projects "
                       "are left untouched."),
 ]
 
 # Registered with the parser but retired: dispatching to a handler that names the replacement is more
 # useful than argparse's "invalid choice". Kept out of TOOL_COMMANDS so they vanish from help.
-RETIRED_TOOL_SUBCOMMAND_NAMES = ("version", "update")
+RETIRED_TOOL_SUBCOMMAND_NAMES = ("version",)
 
 # Removed in 5.0.0. argparse cannot name a replacement for an argument it no longer defines — it emits
 # "unrecognized arguments" and stops — so these are matched in argv before parsing.
@@ -199,14 +206,15 @@ def print_help() -> None:
 def print_cli_group_help() -> None:
     """`spectra cli` with no subcommand: say what lives here, and what does not.
 
-    One row now. `version` and `update` moved up to the top level in 6.0.0, where they cover the whole
-    stack instead of just the tool — so this group is down to the one action that is genuinely about the
-    machine's copy of the command rather than about any project.
+    Two rows: the actions about the machine's copy of the command rather than about any project. Both
+    work from any folder. `update` here updates the command alone; the whole-stack update stays at the
+    top level, so the intro names it for anyone who came looking for that.
     """
     ui.plain(f"{ui.BOLD}Usage:{ui.RESET} {ui.BOLD}spectra cli{ui.RESET} SUBCOMMAND")
     ui.plain()
-    ui.plain("  Manage the spectra command itself. To check or update your stack — including this")
-    ui.plain("  command's own version — use the top-level commands instead (see `spectra --help`).")
+    ui.plain("  Manage the spectra command itself. These work from any folder. To check or")
+    ui.plain("  update your whole stack — Spec Kit, the core agents, and your agents too —")
+    ui.plain("  use `spectra version` and `spectra update` (see `spectra --help`).")
     ui.plain()
     ui.panel("Tool commands",
              [(f"{ui.CYAN}{label.split()[1]}{ui.RESET}", desc) for label, desc in TOOL_COMMANDS])
@@ -242,14 +250,14 @@ def _update_check_disabled(args) -> bool:
 # --------------------------------------------------------------------------- #
 # Retired tool subcommands
 # --------------------------------------------------------------------------- #
-# Retired in 6.0.0. Their jobs were absorbed by the top-level commands: `spectra version` now reports
-# the CLI's own version alongside the other three components, and `spectra update` updates it alongside
-# them. Unlike the *flags* removed in 5.0.0 — which had to be caught in argv, because argparse cannot
-# name a replacement for an argument it no longer defines — these stay registered with the parser so
-# that typing one gets a message naming its replacement rather than a bare "invalid choice".
+# Retired in 6.0.0. Its job was absorbed by `spectra version`, which reports the CLI's own version
+# alongside the other three components. Unlike the *flags* removed in 5.0.0 — which had to be caught in
+# argv, because argparse cannot name a replacement for an argument it no longer defines — it stays
+# registered with the parser so that typing it gets a message naming its replacement rather than a bare
+# "invalid choice". (`cli update` was retired alongside it and reinstated in 6.3.0; see the module
+# docstring.)
 RETIRED_TOOL_SUBCOMMANDS = {
     "version": "spectra version",
-    "update": "spectra update",
 }
 
 
@@ -269,9 +277,64 @@ def cmd_cli_version(args=None) -> int:
     return _report_retired_subcommand("version")
 
 
-def cmd_cli_update(args=None) -> int:
-    """Retired in 6.0.0; absorbed into `spectra update`."""
-    return _report_retired_subcommand("update")
+# --------------------------------------------------------------------------- #
+# cli update (the tool updates itself)
+# --------------------------------------------------------------------------- #
+def cmd_cli_update(args) -> int:
+    """Update the spectra command, and only it, to the newest release — from any folder (spec 029).
+
+    Never classifies the current folder and never touches the Spec Kit CLI, the core agents, or
+    Spectra's agents: that isolation is what lets it run where `spectra update` correctly refuses.
+    `--no-update-check` is deliberately not honoured — it opts out of checks nobody asked for, and this
+    command is the ask. The version is checked before the install kind, so a no-op run spawns nothing and
+    a manual command printed for a missing uv can be pinned to the release tag.
+    """
+    result = version.check_update()
+    installed = result.get("installed") or "unknown"
+    latest = result.get("latest")
+    status = result.get("status")
+
+    if status not in ("up_to_date", "update_available", "ahead") or not latest:
+        ui.fail("Could not check for a newer spectra command — the latest release could not be "
+                "fetched.")
+        ui.plain("  Nothing was changed. Check your network connection and try again.")
+        return EXIT_UNREACHABLE
+    if status != "update_available":
+        # `ahead` lands here too: a pre-release or local build is never offered a downgrade.
+        ui.ok(f"The spectra command is up to date ({installed}).")
+        return EXIT_OK
+
+    ui.info(f"A new version {ui.bold(latest)} is available (you have {installed}).")
+
+    kind = version.classify_uninstall()
+    if kind in (version.NOT_INSTALLED, version.PIP_OR_SOURCE):
+        ui.info("spectra is not installed as a uv tool, so it cannot update itself.")
+        ui.plain(ui.dim("  Source checkout: pull the latest changes. pip install: reinstall with the "
+                        "tool you used."))
+        return EXIT_OK
+    if kind == version.UNKNOWN_UV_ABSENT:
+        ui.fail("uv was not found on PATH, so spectra cannot update itself automatically.")
+        ui.plain("  Update manually with:\n    " + ui.bold(
+            f"uv tool install {version.DIST_NAME} --from '{version.git_source(latest)}' --force"))
+        return EXIT_DELEGATION
+
+    ui.plain("  This updates the spectra command only. Your projects and their agents are not touched.")
+    if not getattr(args, "yes", False):
+        if not sys.stdin.isatty():
+            ui.plain("  Re-run with " + ui.bold("--yes") + " to update without being asked.")
+            return EXIT_DECLINED
+        if not ui.confirm("Update the spectra command now?", default_yes=False):
+            ui.info("Nothing was changed.")
+            return EXIT_DECLINED
+
+    try:
+        version.perform_update(latest)
+    except version.UpdateError as e:
+        ui.fail(f"Update failed: {e}")
+        return EXIT_DELEGATION
+    ui.ok(f"Updated the spectra command: {installed} → {ui.bold(latest)}.")
+    ui.plain("  The new version takes effect the next time you run " + ui.bold("spectra") + ".")
+    return EXIT_OK
 
 
 # --------------------------------------------------------------------------- #
@@ -1018,7 +1081,10 @@ def cmd_update(args) -> int:
     """
     state = project.classify()
     if state.state == project.NOT_A_PROJECT:
-        return _say_not_a_project()
+        code = _say_not_a_project()
+        # Only here, not in the shared helper: `update` is the one command whose intent this answers.
+        ui.plain("  Update just the spectra command: " + ui.bold("spectra cli update"))
+        return code
     if state.state == project.NOT_INSTALLED:
         return _say_not_installed(state)
     # An INCOMPLETE install deliberately falls through: the extension check reports it as needing an
@@ -1262,8 +1328,8 @@ PROJECT_DISPATCH = {
 }
 
 # Handlers are looked up here rather than branched on, so adding a subcommand means adding a row.
-# `version` and `update` point at retirement handlers rather than being absent, so that typing one gets
-# a named replacement instead of argparse's "invalid choice".
+# `version` points at a retirement handler rather than being absent, so that typing it gets a named
+# replacement instead of argparse's "invalid choice".
 TOOL_DISPATCH = {
     "version": cmd_cli_version,
     "update": cmd_cli_update,

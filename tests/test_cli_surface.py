@@ -45,8 +45,9 @@ class RemovedFlags(unittest.TestCase):
     def test_each_removed_flag_names_a_live_replacement(self):
         """The ambiguity between two readings is why the flags went away in 5.0.0.
 
-        6.0.0 settled that ambiguity by retiring the tool-scoped pair, so `--version` and `--update`
-        now have exactly one answer each. `--uninstall` still has two, because removing a project's
+        6.0.0 settled that ambiguity by folding the tool into the whole-stack commands, so `--version`
+        and `--update` now have exactly one answer each (`cli update` returned in 6.3.0 as a tool-only
+        update, but `--update` was always the stack-wide reading). `--uninstall` still has two, because removing a project's
         agents and removing the machine's command remain genuinely different actions.
         """
         expected = {
@@ -65,7 +66,6 @@ class RemovedFlags(unittest.TestCase):
         for flag in ("--version", "-V", "--update"):
             _, out = run([flag])
             self.assertNotIn("spectra cli version", out, flag)
-            self.assertNotIn("spectra cli update", out, flag)
 
     def test_no_removed_flag_survives_as_an_alias(self):
         parser = cli.build_parser()
@@ -94,13 +94,14 @@ class RemovedFlags(unittest.TestCase):
 
 
 class RetiredToolSubcommands(unittest.TestCase):
-    """`cli version` and `cli update` were retired in 6.0.0, absorbed by the top-level commands.
+    """`cli version` was retired in 6.0.0, absorbed by `spectra version`.
 
-    Hard-removed, following the 5.0.0 pattern for the removed flags: the action is gone, and running one
-    names its replacement rather than emitting argparse's "invalid choice".
+    Hard-removed, following the 5.0.0 pattern for the removed flags: the action is gone, and running it
+    names its replacement rather than emitting argparse's "invalid choice". `cli update` was retired
+    alongside it and reinstated in 6.3.0 as a tool-only update (spec 029; see `test_cli_update.py`).
     """
 
-    RETIRED = {"version": "spectra version", "update": "spectra update"}
+    RETIRED = {"version": "spectra version"}
 
     def test_each_retired_subcommand_exits_with_a_usage_error(self):
         for subcommand in self.RETIRED:
@@ -120,32 +121,31 @@ class RetiredToolSubcommands(unittest.TestCase):
                 _, out = run(["cli", subcommand])
                 self.assertIn(replacement, out)
 
-    def test_neither_performs_its_old_action(self):
+    def test_it_does_not_perform_its_old_action(self):
         """A retirement that still did the work would be an alias, not a removal."""
         from spectra_cli import version as tool_version
         with mock.patch.object(tool_version, "resolve_latest") as resolve, \
              mock.patch.object(tool_version, "perform_update") as perform, \
              mock.patch.object(tool_version, "check_update") as checked:
             run(["cli", "version"])
-            run(["cli", "update"])
         resolve.assert_not_called()
         perform.assert_not_called()
         checked.assert_not_called()
 
-    def test_neither_reaches_the_network_or_spawns_a_subprocess(self):
+    def test_it_does_not_reach_the_network_or_spawn_a_subprocess(self):
         """The substantive form of "responds within a second": it does no work at all."""
         import subprocess
         with mock.patch.object(subprocess, "run") as spawned, \
              mock.patch.object(subprocess, "call") as called:
             run(["cli", "version"])
-            run(["cli", "update"])
         spawned.assert_not_called()
         called.assert_not_called()
 
-    def test_they_are_absent_from_the_advertised_tool_commands(self):
+    def test_it_is_absent_from_the_advertised_tool_commands(self):
         advertised = " ".join(label for label, _ in cli.TOOL_COMMANDS)
         self.assertNotIn("cli version", advertised)
-        self.assertNotIn("cli update", advertised)
+        # Reinstated in 6.3.0, so it is advertised again.
+        self.assertIn("cli update", advertised)
 
     def test_the_help_describes_version_and_update_as_whole_stack_commands(self):
         """FR-019: the descriptions have to reflect what the commands now cover.
@@ -174,14 +174,14 @@ class TheToolGroup(unittest.TestCase):
             run(["cli", "uninstall"])
         handler.assert_called_once()
 
-    def test_uninstall_is_the_only_surviving_tool_command(self):
-        """FR-015: it is unchanged, and it is now alone."""
-        self.assertEqual([label for label, _ in cli.TOOL_COMMANDS], ["cli uninstall"])
+    def test_update_and_uninstall_are_the_tool_commands(self):
+        """`cli uninstall` is unchanged; `cli update` was reinstated ahead of it in 6.3.0 (spec 029)."""
+        self.assertEqual([label for label, _ in cli.TOOL_COMMANDS], ["cli update", "cli uninstall"])
 
     def test_every_tool_handler_takes_one_argument(self):
         """The dispatch table holds plain references; a wrapper would mean they had drifted apart.
 
-        Retirement handlers included — they default `args` so they can be called either way.
+        The retirement handler included — it defaults `args` so it can be called either way.
         """
         import inspect
         for name, handler in cli.TOOL_DISPATCH.items():

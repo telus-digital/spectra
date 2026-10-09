@@ -1185,8 +1185,16 @@ class BadStates(unittest.TestCase):
                 code, out = run(["update"])
         delegated.assert_not_called()
         self.assertEqual(code, cli.EXIT_PROJECT_STATE)
-        self.assertEqual(h.plain_lines(out)[-2:], list(h.NOT_A_PROJECT_LINES))
+        # Spec 029 FR-016: `update` alone adds a pointer to the tool-only update after the shared lines.
+        self.assertEqual(h.plain_lines(out)[-3:], list(h.NOT_A_PROJECT_LINES)
+                         + ["  Update just the spectra command: spectra cli update"])
         self.assertNotIn("specify init", out)
+
+    def test_only_update_points_at_cli_update_outside_a_project(self):
+        """Spec 029 FR-016: `version` keeps feature 028's two lines; the pointer is `update`'s alone."""
+        with h.temp_project(is_project=False) as path, h.cwd(path):
+            _, out = run(["version"])
+        self.assertNotIn("spectra cli update", out)
 
     def test_an_incomplete_install_is_repaired_rather_than_refused(self):
         """The one component this command can fix outright, so it is not gated away."""

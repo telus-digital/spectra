@@ -395,16 +395,22 @@ installed rather than failing, and repairs the coverage:
 > `specify integration use <your-original-default>`, or just run `spectra install` again, which reports the
 > current default as it works.
 
-Managing the **tool itself** is down to one verb, since `version` and `update` now cover it:
+Managing the **tool itself** takes two verbs, and both work from any folder — Spec Kit project or not:
 
 ```bash
+spectra cli update      # update the spectra command itself, from any folder
 spectra cli uninstall   # remove the spectra command from this machine
 ```
 
-> **Changed in 6.0.0.** `spectra cli version` and `spectra cli update` were retired. They reported on
-> and updated the `spectra` command alone, which is only a quarter of what has to be current — so
-> `spectra version` and `spectra update` absorbed them and now cover all four components. Run either
-> retired command and it tells you which replacement you want. `spectra cli uninstall` is unchanged.
+> **Changed in 6.3.0.** `spectra cli update` is back, with a narrower meaning than it had before 6.0.0:
+> it updates the `spectra` command and nothing else, and it works anywhere. `spectra update` is still
+> the command that brings your whole stack current, but it needs a Spec Kit project to run in — so on a
+> fresh machine or in a new folder, `spectra cli update` is how you get the latest command before
+> `spectra install`. It asks before updating; `--yes` skips the question.
+
+> **Changed in 6.0.0.** `spectra cli version` and `spectra cli update` were retired, and
+> `spectra version` and `spectra update` absorbed them to cover all four components. `spectra cli version`
+> is still retired and tells you to use `spectra version`; `spectra cli update` returned in 6.3.0 (above).
 
 > **Changed in 5.0.0.** `--version`, `--update`, and `--uninstall` were removed. They reported on the
 > *tool*, which is the number you're least likely to care about. Run one and it tells you which
@@ -510,7 +516,7 @@ Spectra ships two things, and they carry **two different version numbers on purp
 |---|---|---|
 | What it is | the uv tool that sets everything up | the agents your AI assistant runs |
 | You install it with | `uv tool install spectra-cli --from git+…` | `specify extension add spectra` |
-| You update it with | `spectra update` (or `spectra cli uninstall` to remove it) | `spectra update` (or `specify extension update spectra`) |
+| You update it with | `spectra update`, or `spectra cli update` from any folder (`spectra cli uninstall` to remove it) | `spectra update` (or `specify extension update spectra`) |
 | Its version comes from | the latest [GitHub Release](https://github.com/telus-digital/spectra/releases) | `version` in [`catalog.json`](catalog.json) |
 
 They are **not** expected to match, and a bump to one does not imply a bump to the other. Adding a new

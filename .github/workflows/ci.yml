@@ -89,36 +89,57 @@ jobs:
           done
           echo "All three removed flags name their replacements."
 
-      - name: The retired cli subcommands name their replacements
-        # Retired in 6.0.0: `spectra version` and `spectra update` absorbed them. Same contract as the
-        # removed flags — the action is gone, and the message says what to run instead.
+      - name: The retired cli subcommand names its replacement; the tool commands survive
+        # `cli version` was retired in 6.0.0 (`spectra version` absorbed it). Same contract as the
+        # removed flags — the action is gone, and the message says what to run instead. `cli update`
+        # was retired alongside it and reinstated in 6.3.0 as a tool-only update (spec 029).
         env:
           SPECTRA_NO_UPDATE_CHECK: '1'
         run: |
           set -euo pipefail
-          for verb in version update; do
-            if spectra cli "$verb" > /tmp/retired.txt 2>&1; then
-              echo "::error::spectra cli $verb still succeeds; it was supposed to be retired." >&2
-              exit 1
-            fi
-            grep -q 'retired' /tmp/retired.txt \
-              || { echo "::error::spectra cli $verb did not say it was retired." >&2; exit 1; }
-            grep -q "spectra $verb" /tmp/retired.txt \
-              || { echo "::error::spectra cli $verb did not name its replacement." >&2; exit 1; }
-          done
-          # The one that stays must stay. `spectra cli` with no subcommand prints its group help and
-          # exits 2 by design, so its output is captured first — piping it under `set -o pipefail`
-          # would fail the step on that intentional exit code even when the grep matches.
+          if spectra cli version > /tmp/retired.txt 2>&1; then
+            echo "::error::spectra cli version still succeeds; it was supposed to be retired." >&2
+            exit 1
+          fi
+          grep -q 'retired' /tmp/retired.txt \
+            || { echo "::error::spectra cli version did not say it was retired." >&2; exit 1; }
+          grep -q 'spectra version' /tmp/retired.txt \
+            || { echo "::error::spectra cli version did not name its replacement." >&2; exit 1; }
+          # `spectra cli` with no subcommand prints its group help and exits 2 by design, so its output
+          # is captured first — piping it under `set -o pipefail` would fail the step on that
+          # intentional exit code even when the grep matches.
           spectra cli > /tmp/cli-group.txt 2>&1 || true
-          grep -q 'uninstall' /tmp/cli-group.txt \
-            || { echo "::error::spectra cli no longer advertises uninstall." >&2; exit 1; }
-          for gone in 'cli version' 'cli update'; do
-            if grep -q "$gone" /tmp/cli-group.txt; then
-              echo "::error::spectra cli still advertises '$gone'." >&2
+          for kept in update uninstall; do
+            grep -q "$kept" /tmp/cli-group.txt \
+              || { echo "::error::spectra cli no longer advertises $kept." >&2; exit 1; }
+          done
+          if grep -q 'cli version' /tmp/cli-group.txt; then
+            echo "::error::spectra cli still advertises 'cli version'." >&2
+            exit 1
+          fi
+          echo "cli version names its replacement; update and uninstall are advertised."
+
+      - name: '`spectra cli update` runs outside a Spec Kit project'
+        # Spec 029: the tool-only update must work where `spectra update` refuses. This is a pip
+        # install, so it can never reach uv here — it reports current, explains it is not a uv tool,
+        # or (offline / rate-limited) says the check failed. What it must never do is refuse for want
+        # of a project, or still claim to be retired.
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/no-project && cd /tmp/no-project
+          spectra cli update < /dev/null > /tmp/cli-update.txt 2>&1 || true
+          cat /tmp/cli-update.txt
+          for wrong in 'not a Spec Kit project' 'retired'; do
+            if grep -q "$wrong" /tmp/cli-update.txt; then
+              echo "::error::spectra cli update said '$wrong' outside a project." >&2
               exit 1
             fi
           done
-          echo "Both retired cli subcommands name their replacements; uninstall survives."
+          if [ -n "$(ls -A /tmp/no-project)" ]; then
+            echo "::error::spectra cli update wrote into the current directory." >&2
+            exit 1
+          fi
+          echo "spectra cli update runs from a folder with no Spec Kit project."
 
       - name: Neither tools/ nor tests/ ships in the wheel
         # FR-023: the generator is maintainer tooling and must never reach a user's machine. Today
