@@ -37,12 +37,13 @@ class States(unittest.TestCase):
         self.assertIn("installed here", out)
         self.assertIn("1.3.1", out)
 
-    def test_not_a_spec_kit_project_names_specify_init(self):
+    def test_not_a_spec_kit_project_points_only_at_spectra_install(self):
         with h.temp_project(is_project=False) as path, h.cwd(path):
             code, out = run(["check"])
         self.assertEqual(code, cli.EXIT_PROJECT_STATE)
-        self.assertIn("not a Spec Kit project", out)
-        self.assertIn("specify init", out)
+        self.assertEqual(h.plain_lines(out)[-2:], list(h.NOT_A_PROJECT_LINES))
+        self.assertNotIn("Then add Spectra", out)
+        self.assertNotIn("specify init", out)
 
     def test_an_incomplete_install_is_named_as_such_and_points_at_update(self):
         with h.temp_project(incomplete=True) as path, h.cwd(path):

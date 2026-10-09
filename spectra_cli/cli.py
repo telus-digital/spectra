@@ -371,8 +371,8 @@ def _say_not_a_project() -> int:
     "a Spec Kit project without Spectra". Conflating the two would send the user to the wrong fix.
     """
     ui.fail("This is not a Spec Kit project — no .specify/ directory here or in any parent folder.")
-    ui.plain("  Initialize one:   " + ui.bold("specify init"))
-    ui.plain("  Then add Spectra: " + ui.bold("spectra install"))
+    # One remedy, not two: `spectra install` offers to run `specify init` itself.
+    ui.plain("  Initialize Specify and add Spectra: " + ui.bold("spectra install"))
     return EXIT_PROJECT_STATE
 
 

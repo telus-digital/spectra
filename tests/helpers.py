@@ -22,6 +22,7 @@ import copy
 import http.server
 import json
 import os
+import re
 import sys
 import tempfile
 import threading
@@ -34,6 +35,24 @@ UNREACHABLE_BASE = "http://127.0.0.1:9"
 
 # The line every published copy of the extension description must carry (FR-051).
 DESCRIPTION = "TELUS Digital - Agentic software engineering across the entire SDLC."
+
+# What every project-scoped command prints when no `.specify/` exists anywhere up the tree. One line of
+# remedy, not two: `spectra install` offers `specify init` itself, so naming it separately is a detour.
+NOT_A_PROJECT_LINES = (
+    "✗ This is not a Spec Kit project — no .specify/ directory here or in any parent folder.",
+    "  Initialize Specify and add Spectra: spectra install",
+)
+
+_ANSI = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def plain_lines(out: str) -> list[str]:
+    """`out` split into lines with ANSI styling removed.
+
+    `ui.USE_COLOR` is decided once at import from the real stdout, so a suite run from a terminal still
+    gets colour codes in redirected output. Exact-line assertions compare against this instead.
+    """
+    return _ANSI.sub("", out).splitlines()
 
 
 # --------------------------------------------------------------------------- #

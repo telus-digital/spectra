@@ -126,6 +126,8 @@ class Idempotence(unittest.TestCase):
         delegated.assert_not_called()
         self.assertEqual(code, cli.EXIT_PROJECT_STATE)
         self.assertIn("not a Spec Kit project", out)
+        self.assertEqual(h.plain_lines(out)[-2:], list(h.NOT_A_PROJECT_LINES))
+        self.assertNotIn("specify init", out)
 
 
 class Failures(unittest.TestCase):

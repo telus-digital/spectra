@@ -481,6 +481,8 @@ class CannotAnswer(unittest.TestCase):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_PROJECT_STATE)
         self.assertIn("not a Spec Kit project", out)
+        self.assertEqual(h.plain_lines(out)[-2:], list(h.NOT_A_PROJECT_LINES))
+        self.assertNotIn("specify init", out)
 
     def test_an_incomplete_install_exits_five_and_points_at_the_repair(self):
         with h.temp_project(incomplete=True) as path, h.cwd(path):
@@ -1180,9 +1182,11 @@ class BadStates(unittest.TestCase):
     def test_not_a_project_exits_five_rather_than_delegating(self):
         with h.temp_project(is_project=False) as path, h.cwd(path):
             with mock.patch.object(extension, "delegate_update") as delegated:
-                code, _ = run(["update"])
+                code, out = run(["update"])
         delegated.assert_not_called()
         self.assertEqual(code, cli.EXIT_PROJECT_STATE)
+        self.assertEqual(h.plain_lines(out)[-2:], list(h.NOT_A_PROJECT_LINES))
+        self.assertNotIn("specify init", out)
 
     def test_an_incomplete_install_is_repaired_rather_than_refused(self):
         """The one component this command can fix outright, so it is not gated away."""
