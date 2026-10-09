@@ -306,18 +306,18 @@ Both check **four** things, because all four have to be current for Spectra to w
 
 | Component | What it is |
 |---|---|
-| Specify CLI | Spec Kit's own `specify` command |
+| Spec Kit CLI | Spec Kit's own `specify` command |
 | Core agents | the Spec Kit integration installed in `.specify/` |
-| Spectra CLI | the `spectra` command itself |
-| Spectra agents | the Spectra extension installed in this project |
+| SPECTRA CLI | the `spectra` command itself |
+| SPECTRA agents | the SPECTRA extension installed in this project |
 
 ```text
-Specify CLI:     ✓ up to date (0.16.5)
+Spec Kit CLI:    ✓ up to date (0.16.5)
 Core agents:     ! needs updating (0.15.1 -> 0.16.5) — kiro-cli, claude
                    kiro-cli: ✓ up to date (0.16.5)
                    claude:   ! needs updating (0.15.1 -> 0.16.5)
-Spectra CLI:     ✓ up to date (6.1.0)
-Spectra agents:  ✓ up to date (1.3.1)
+SPECTRA CLI:     ✓ up to date (6.1.0)
+SPECTRA agents:  ✓ up to date (1.3.1)
 
   You can update by running: spectra update
 ```

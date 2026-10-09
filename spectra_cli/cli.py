@@ -59,17 +59,17 @@ OPTIONS = [
 ]
 
 PROJECT_COMMANDS = [
-    ("install", "Install Spectra into the Spec Kit project in this folder. Installs the "
+    ("install", "Install SPECTRA into the Spec Kit project in this folder. Installs the "
                 "Spec Kit CLI and initializes the project first if needed."),
-    ("check", "Report whether Spectra is installed in this project, and offer to install it "
+    ("check", "Report whether SPECTRA is installed in this project, and offer to install it "
               "when it is not."),
-    ("version", "Check every part of the Spectra stack: the Spec Kit CLI, the core agents, the "
+    ("version", "Check every part of the SPECTRA stack: the Spec Kit CLI, the core agents, the "
                 "spectra command, and the agents installed here."),
-    ("update", "Bring every out-of-date part of the Spectra stack current, after one "
+    ("update", "Bring every out-of-date part of the SPECTRA stack current, after one "
                "confirmation."),
-    ("uninstall", "Remove Spectra's agents from this project. Leaves the spectra command "
+    ("uninstall", "Remove SPECTRA's agents from this project. Leaves the spectra command "
                   "installed on this machine."),
-    ("agent-list", "List every agent Spectra offers, grouped by SDLC phase. Reads the published "
+    ("agent-list", "List every agent SPECTRA offers, grouped by SDLC phase. Reads the published "
                    "roster, so it works from anywhere."),
 ]
 
@@ -145,7 +145,7 @@ def _add_shared(parser, *, suppress: bool = False) -> None:
 def build_parser() -> argparse.ArgumentParser:
     ap = _Parser(
         prog="spectra",
-        description="Install and manage Spectra's agents in this project.",
+        description="Install and manage SPECTRA's agents in this project.",
         add_help=False,  # `--help` is handled in _dispatch so the banner prints above it.
     )
     _add_shared(ap)
@@ -192,9 +192,9 @@ def print_help() -> None:
     """
     ui.plain(f"{ui.BOLD}Usage:{ui.RESET} {ui.BOLD}spectra{ui.RESET} [OPTIONS] COMMAND [ARGS]...")
     ui.plain()
-    ui.plain("  Install and manage Spectra's agents in this project.")
+    ui.plain("  Install and manage SPECTRA's agents in this project.")
     ui.plain()
-    ui.panel("Project commands — act on the Spectra stack you are standing in",
+    ui.panel("Project commands — act on the SPECTRA stack you are standing in",
              [(f"{ui.CYAN}{name}{ui.RESET}", desc) for name, desc in PROJECT_COMMANDS])
     ui.panel("Tool commands — act on the spectra command itself",
              [(f"{ui.CYAN}{name}{ui.RESET}", desc) for name, desc in TOOL_COMMANDS])
@@ -470,19 +470,19 @@ def _say_not_a_project() -> int:
     """
     ui.fail("This is not a Spec Kit project — no .specify/ directory here or in any parent folder.")
     # One remedy, not two: `spectra install` offers to run `specify init` itself.
-    ui.plain("  Initialize Specify and add Spectra: " + ui.bold("spectra install"))
+    ui.plain("  Initialize Spec Kit and add SPECTRA agents: " + ui.bold("spectra install"))
     return EXIT_PROJECT_STATE
 
 
 def _say_not_installed(state) -> int:
-    ui.warn(f"Spectra is not installed in this project ({state.project_root}).")
+    ui.warn(f"SPECTRA is not installed in this project ({state.project_root}).")
     ui.plain("  Install it with: " + ui.bold("spectra install"))
     return EXIT_PROJECT_STATE
 
 
 def _say_incomplete(state) -> int:
     """The folder is present but tells us nothing — an interrupted or partially written install."""
-    ui.fail("Spectra's extension folder is here but unusable — this looks like an interrupted "
+    ui.fail("SPECTRA's extension folder is here but unusable — this looks like an interrupted "
             "install.")
     ui.plain(ui.dim(f"  Folder: {state.extension_dir}"))
     ui.plain("  Repair it with: " + ui.bold("spectra update"))
@@ -501,20 +501,20 @@ def cmd_check(args) -> int:
     if state.state == project.INCOMPLETE:
         return _say_incomplete(state)
     if state.state == project.INSTALLED:
-        ui.ok(f"Spectra is installed here (extension {ui.bold(state.installed_version)}).")
+        ui.ok(f"SPECTRA is installed here (extension {ui.bold(state.installed_version)}).")
         ui.plain(ui.dim(f"  Project: {state.project_root}"))
         ui.plain(ui.dim("  Check whether the agents are current with: spectra version"))
         return EXIT_OK
 
     # NOT_INSTALLED — the one state this command can fix, so offer rather than just report.
-    ui.warn(f"Spectra is not installed in this project ({state.project_root}).")
+    ui.warn(f"SPECTRA is not installed in this project ({state.project_root}).")
     ui.plain()
     if not args.yes:
         if not sys.stdin.isatty():
             ui.plain("  Install it with: " + ui.bold("spectra install"))
             ui.plain(ui.dim("  Re-run with --yes to install without being asked."))
             return EXIT_DECLINED
-        if not ui.confirm("Install Spectra into this project now?"):
+        if not ui.confirm("Install SPECTRA into this project now?"):
             ui.info("Nothing was changed.")
             ui.plain("  Install it later with: " + ui.bold("spectra install"))
             return EXIT_DECLINED
@@ -642,9 +642,9 @@ def _show_coverage_advisory(state, report) -> None:
         return
 
     have = ", ".join(sorted(covered)) or "no agent"
-    ui.warn(f"Spectra commands are registered for {have} only.")
+    ui.warn(f"SPECTRA commands are registered for {have} only.")
     for key in missing:
-        ui.plain(ui.dim(f"  {key} is installed here but has no Spectra commands."))
+        ui.plain(ui.dim(f"  {key} is installed here but has no SPECTRA commands."))
     ui.plain(ui.dim("  Add them with: spectra install"))
     ui.plain()
 
@@ -684,7 +684,7 @@ def cmd_version(args) -> int:
         ui.plain(ui.dim(f"  Unverified: {names}"))
         ui.plain()
     else:
-        ui.ok("Your whole Spectra stack is up to date.")
+        ui.ok("Your whole SPECTRA stack is up to date.")
         ui.plain()
     _show_coverage_advisory(state, report)
     return EXIT_OK
@@ -1016,7 +1016,7 @@ def _coverage_consent(args, plan) -> bool:
     files", which coverage never does (FR-009, FR-049).
     """
     ui.plain()
-    ui.warn("Spectra's commands are missing for: " + ", ".join(plan.uncovered_keys))
+    ui.warn("SPECTRA's commands are missing for: " + ", ".join(plan.uncovered_keys))
     if plan.moves_default:
         ui.plain("  Adding them means making each agent the project's default for a moment,")
         ui.plain(f"  then setting the default back to {ui.bold(plan.default_key)}, where it is now.")
@@ -1030,7 +1030,7 @@ def _coverage_consent(args, plan) -> bool:
         ui.plain("  Re-run with " + ui.bold("--yes") + " to register them without being asked.")
         ui.plain()
         return False
-    return ui.confirm("Register Spectra's commands for these agents?", default_yes=False)
+    return ui.confirm("Register SPECTRA's commands for these agents?", default_yes=False)
 
 
 def _run_coverage(args, state):
@@ -1060,7 +1060,7 @@ def _run_coverage(args, state):
 
     def announce(key):
         ui.plain()
-        ui.info(f"Registering Spectra's commands for {ui.bold(key)} …")
+        ui.info(f"Registering SPECTRA's commands for {ui.bold(key)} …")
 
     try:
         return coverage.apply(plan, announce=announce)
@@ -1098,13 +1098,13 @@ def _coverage_only(args, state) -> int:
         ui.plain()
         return EXIT_DELEGATION
     if result.left_uncovered:
-        ui.warn("Spectra's commands are still missing for: " + ", ".join(result.left_uncovered))
+        ui.warn("SPECTRA's commands are still missing for: " + ", ".join(result.left_uncovered))
         ui.plain("  Add them with: " + ui.bold("spectra install"))
         ui.plain()
     if result.failed:
         return EXIT_DELEGATION
     if result.newly_covered:
-        ui.ok("Spectra's commands are now registered for every agent in this project.")
+        ui.ok("SPECTRA's commands are now registered for every agent in this project.")
         ui.plain(ui.dim("  Restart your AI agent so it picks up the new commands."))
         ui.plain()
     return EXIT_OK
@@ -1211,7 +1211,7 @@ def cmd_update(args) -> int:
                  + ui.bold(f"specify integration use {coverage_result.original_default}"))
         ui.plain()
     elif coverage_result is not None and coverage_result.left_uncovered:
-        ui.warn("Spectra's commands are still missing for: "
+        ui.warn("SPECTRA's commands are still missing for: "
                 + ", ".join(coverage_result.left_uncovered))
         ui.plain("  Add them with: " + ui.bold("spectra install"))
         ui.plain()
@@ -1264,14 +1264,14 @@ def cmd_uninstall(args) -> int:
     if state.state == project.NOT_A_PROJECT:
         return _say_not_a_project()
     if state.state == project.NOT_INSTALLED:
-        ui.info(f"Spectra is not installed in this project ({state.project_root}), so there is "
+        ui.info(f"SPECTRA is not installed in this project ({state.project_root}), so there is "
                 "nothing to remove.")
         return EXIT_OK
 
     if state.state == project.INCOMPLETE:
-        ui.warn("Spectra's extension folder is here but unusable; removing it anyway.")
+        ui.warn("SPECTRA's extension folder is here but unusable; removing it anyway.")
     else:
-        ui.info(f"Removing Spectra's agents from {state.project_root} "
+        ui.info(f"Removing SPECTRA's agents from {state.project_root} "
                 f"(extension {ui.bold(state.installed_version)}).")
     ui.plain(ui.dim("  The spectra command stays installed on this machine."))
     ui.plain()
@@ -1289,7 +1289,7 @@ def cmd_uninstall(args) -> int:
     ui.plain()
     after = project.classify()
     if after.state == project.NOT_INSTALLED:
-        ui.ok("Spectra's agents were removed from this project.")
+        ui.ok("SPECTRA's agents were removed from this project.")
         ui.plain(ui.dim("  Restart your AI agent so it drops the commands."))
         return EXIT_OK
     if code != 0:
@@ -1328,7 +1328,7 @@ def cmd_agent_list(args) -> int:
     ui.agent_list(published, installed=installed)
 
     if published.newer_minor:
-        ui.info(f"This roster (schema {published.schema_version}) is newer than your Spectra CLI, "
+        ui.info(f"This roster (schema {published.schema_version}) is newer than your SPECTRA CLI, "
                 "so some details may not be shown.")
         ui.plain(ui.dim("  Update the command with: " + ui.bold("spectra update")))
     return 0

@@ -7,7 +7,7 @@ Four things have to be current for Spectra to work, and until now the CLI could 
 them. This module answers the whole question — *is my stack current?* — by resolving each component to
 the **same** :class:`ComponentStatus` shape no matter how differently it has to be detected:
 
-``Specify CLI``
+``Spec Kit CLI``
     Spec Kit's own CLI. Detected by running `specify self check` and **parsing its stdout**, because
     that command exits 0 on every path it takes, including its failure paths. See
     :func:`parse_self_check`.
@@ -61,10 +61,10 @@ SPECTRA_CLI = "spectra_cli"
 SPECTRA_EXTENSION = "spectra_extension"
 
 LABELS = {
-    SPECIFY_CLI: "Specify CLI",
+    SPECIFY_CLI: "Spec Kit CLI",
     INTEGRATION: "Core agents",
-    SPECTRA_CLI: "Spectra CLI",
-    SPECTRA_EXTENSION: "Spectra agents",
+    SPECTRA_CLI: "SPECTRA CLI",
+    SPECTRA_EXTENSION: "SPECTRA agents",
 }
 
 # Canonical order. This is *also* the update order, so `HealthReport.outdated` is directly walkable and
@@ -298,7 +298,7 @@ def worst_outcome(outcomes):
 
 
 # --------------------------------------------------------------------------- #
-# 1 · Specify CLI
+# 1 · Spec Kit CLI
 # --------------------------------------------------------------------------- #
 
 # The exact strings `specify self check` prints, from specify_cli/_version.py::self_check.
@@ -369,7 +369,7 @@ def parse_self_check(text):
 
     # 5 - nothing recognized. Keep the first line so the user sees what we actually got.
     first = present[0] if present else ""
-    detail = (f"`specify self check` printed something this version of Spectra does not "
+    detail = (f"`specify self check` printed something this version of SPECTRA does not "
               f"recognize: {first!r}") if first else "`specify self check` printed nothing."
     return {"status": UNKNOWN, "installed": None, "latest": None, "detail": detail}
 
@@ -380,7 +380,7 @@ def specify_available() -> bool:
 
 
 def get_specify_cli_status(timeout: int = SELF_CHECK_TIMEOUT) -> ComponentStatus:
-    """Resolve the Specify CLI by running `specify self check`. Never raises."""
+    """Resolve the Spec Kit CLI by running `specify self check`. Never raises."""
     if not specify_available():
         return ComponentStatus(
             SPECIFY_CLI, UNKNOWN,
@@ -524,23 +524,23 @@ def _integration_verdict(recorded, specify_status, key=None):
     """
     if specify_status.status == UNKNOWN:
         return (UNKNOWN, None,
-                "the Specify CLI version is unknown, so there is nothing to compare against.")
+                "the Spec Kit CLI version is unknown, so there is nothing to compare against.")
     if recorded is None:
         where = (f"the manifest for '{key}'" if key
                  else f".specify/{INTEGRATION_FILE}")
         return UNKNOWN, None, f"no usable version in {where}."
     if specify_status.status == NEEDS_UPDATING:
         return (NEEDS_UPDATING, specify_status.latest,
-                "the Specify CLI is behind, and the integration tracks it.")
+                "the Spec Kit CLI is behind, and the integration tracks it.")
 
     installed_cli = specify_status.installed
     comparison = cli_version.compare_versions(recorded, installed_cli or "")
     if comparison < 0:
         return (NEEDS_UPDATING, installed_cli,
-                "the Specify CLI was upgraded but the integration was not re-run.")
+                "the Spec Kit CLI was upgraded but the integration was not re-run.")
     if comparison > 0:
         return (AHEAD, installed_cli,
-                "the integration is newer than the Specify CLI installed here.")
+                "the integration is newer than the Spec Kit CLI installed here.")
     return UP_TO_DATE, installed_cli, None
 
 
@@ -634,7 +634,7 @@ def aggregate_integration_status(states, specify_status) -> ComponentStatus:
 
 
 def get_integration_status(project_root, specify_status: ComponentStatus) -> ComponentStatus:
-    """Resolve the integration component, given the already-resolved Specify CLI status.
+    """Resolve the integration component, given the already-resolved Spec Kit CLI status.
 
     Cannot be evaluated independently. A recorded version means "the Spec Kit that installed this", so it
     is only meaningful against a known CLI version — hence an unknown CLI forces an unknown integration

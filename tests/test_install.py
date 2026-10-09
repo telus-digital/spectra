@@ -73,13 +73,13 @@ class CoverageStepOutput(unittest.TestCase):
             with h.fake_specify(use_effect=root):
                 code, out = cover(root)
         self.assertEqual(code, 0)
-        self.assertIn("claude is installed here but has no Spectra commands", out)
+        self.assertIn("claude is installed here but has no SPECTRA commands", out)
         self.assertIn("This run will do that for", out)
         self.assertIn("set the default back to", out)
         self.assertIn("kiro-cli", out)
         # The disclosure precedes the work: the user is told before anything moves.
         self.assertLess(out.index("set the default back to"),
-                        out.index("Registering Spectra's commands for"))
+                        out.index("Registering SPECTRA's commands for"))
 
     def test_it_reports_what_was_covered_and_that_the_default_came_back(self):
         with h.temp_project() as root:
@@ -87,7 +87,7 @@ class CoverageStepOutput(unittest.TestCase):
             with h.fake_specify(use_effect=root):
                 code, out = cover(root)
         self.assertEqual(code, 0)
-        self.assertIn("claude — Spectra's commands registered", out)
+        self.assertIn("claude — SPECTRA's commands registered", out)
         self.assertIn("default restored to", out)
 
     def test_the_step_costs_at_most_one_line_per_integration_plus_two(self):
@@ -111,7 +111,7 @@ class CoverageStepOutput(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertNotIn("set the default back to", out)
         self.assertNotIn("default restored", out)
-        self.assertIn("Registering Spectra's commands for", out)
+        self.assertIn("Registering SPECTRA's commands for", out)
 
 
 class SilenceForTheMajority(unittest.TestCase):
@@ -335,10 +335,24 @@ class AlreadyInstalledIsAState(unittest.TestCase):
                 with captured() as out:
                     ok = install.add_catalog(root, total_steps=3)
             self.assertTrue(ok)
-            self.assertIn("Installing the Spectra extension", out.getvalue())
+            self.assertIn("Installing the SPECTRA extension", out.getvalue())
             self.assertEqual([argv for argv in h.read_argv_log(log)
                               if argv[:2] == ["extension", "add"]], [["extension", "add", "spectra"]])
 
+
+
+class DecliningInitialization(unittest.TestCase):
+    """Declining `specify init` points back at Spectra's own command, not at Spec Kit's."""
+
+    def test_the_remedy_is_spectra_install(self):
+        with h.temp_project(is_project=False) as root, h.cwd(root):
+            with mock.patch.object(install.ui, "confirm", return_value=False), captured() as out:
+                with self.assertRaises(SystemExit) as raised:
+                    install.check_in_specify_project()
+        self.assertEqual(raised.exception.code, 1)
+        remedy = out.getvalue().split("A Spec Kit project is required to continue.", 1)[1]
+        self.assertIn("Re-run `spectra install`", remedy)
+        self.assertNotIn("specify init", remedy)
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()

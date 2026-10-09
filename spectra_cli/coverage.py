@@ -63,11 +63,11 @@ RESTORED = "restored"        # it moved and was put back
 NOT_RESTORED = "not_restored"  # it moved and could not be put back
 
 # Skip reasons. Fixed wording: the tests assert on these, and a user reads them (data-model.md).
-REASON_ALL_COVERED = "every integration already has Spectra's commands"
+REASON_ALL_COVERED = "every integration already has SPECTRA's commands"
 REASON_UNKNOWN = "the registration state could not be read"
 REASON_NO_DEFAULT = "no default integration is recorded, so there would be nothing to restore"
 REASON_NO_INTEGRATIONS = "no installed integrations are recorded for this project"
-REASON_NOT_INSTALLED = "Spectra is not installed in this project"
+REASON_NOT_INSTALLED = "SPECTRA is not installed in this project"
 
 # Verification wording for the one case a delegated success does not prove anything.
 DETAIL_NO_REGISTRATION = "the activation reported success but no commands were registered"

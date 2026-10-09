@@ -40,7 +40,7 @@ DESCRIPTION = "TELUS Digital - Agentic software engineering across the entire SD
 # remedy, not two: `spectra install` offers `specify init` itself, so naming it separately is a detour.
 NOT_A_PROJECT_LINES = (
     "✗ This is not a Spec Kit project — no .specify/ directory here or in any parent folder.",
-    "  Initialize Specify and add Spectra: spectra install",
+    "  Initialize Spec Kit and add SPECTRA agents: spectra install",
 )
 
 _ANSI = re.compile(r"\x1b\[[0-9;]*m")

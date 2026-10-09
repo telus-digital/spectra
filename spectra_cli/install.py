@@ -106,13 +106,12 @@ def ensure_specify_installed(*, total: int = 3) -> None:
         return
 
     ui.warn("Spec Kit's `specify` CLI isn't installed or isn't on your PATH.")
-    print("  Spectra extensions install into a Spec Kit project, so it's required.")
+    print("  SPECTRA extensions install into a Spec Kit project, so it's required.")
     print()
     if not ui.confirm("Install Spec Kit now?"):
         ui.die(
             "Spec Kit is required to continue.",
-            f"Install it yourself: {SPECKIT_INSTALL_URL}",
-            "Then re-run `spectra`.",
+            "Re-run `spectra install` to install Spec Kit and add SPECTRA agents.",
         )
 
     # uv is present by construction — it is what installed this command — but a source or pip
@@ -129,7 +128,7 @@ def ensure_specify_installed(*, total: int = 3) -> None:
     if not install_speckit(uv):
         ui.die(
             "Spec Kit installation didn't complete.",
-            "If `specify` was installed but isn't found, open a new terminal and re-run,",
+            "If `specify` was installed but isn't found, open a new terminal and re-run `spectra install`,",
             "or ensure uv's tool bin directory is on PATH (`uv tool update-shell`).",
         )
 
@@ -149,15 +148,14 @@ def check_in_specify_project(*, total: int = 3) -> Path:
             return candidate
 
     ui.warn("This folder isn't a Spec Kit project (no .specify/ directory found).")
-    print("  Spectra installs extensions into a Spec Kit project, so this folder")
+    print("  SPECTRA installs extensions into a Spec Kit project, so this folder")
     print("  needs Spec Kit initialized first. I can do that here for you — it runs")
     print(f"  `specify init` in {ui.bold(str(here))} and won't touch anything outside it.")
     print()
     if not ui.confirm("Initialize Spec Kit in this folder now?"):
         ui.die(
             "A Spec Kit project is required to continue.",
-            "Run `specify init` here (or cd into an existing project), then re-run `spectra`.",
-            f"See {SPECKIT_INSTALL_URL}",
+            "Re-run `spectra install` to initialize Spec Kit here and add SPECTRA agents.",
         )
 
     ui.info("Initializing Spec Kit — pick your coding agent if prompted…")
@@ -166,7 +164,7 @@ def check_in_specify_project(*, total: int = 3) -> Path:
     if code != 0 or not (here / ".specify").is_dir():
         ui.die(
             "Spec Kit initialization didn't complete.",
-            "Try running `specify init --here` yourself, then re-run `spectra`.",
+            "Try running `specify init --here` yourself, then re-run `spectra install`.",
         )
     ui.ok(f"Spec Kit project initialized at {here}.")
     return here
@@ -196,7 +194,7 @@ def catalog_extension_ids():
 
 def register_catalog() -> bool:
     """Register the Spectra catalog with Spec Kit. Returns True when it is registered."""
-    ui.info("Adding the Spectra catalog…")
+    ui.info("Adding the SPECTRA catalog…")
     add = ui.run(
         [
             "specify", "extension", "catalog", "add", CATALOG_URL,
@@ -205,10 +203,10 @@ def register_catalog() -> bool:
     )
     combined = (add.stdout + add.stderr).lower()
     if add.returncode == 0:
-        ui.ok("Spectra catalog registered.")
+        ui.ok("SPECTRA catalog registered.")
         return True
     if "already" in combined or "exists" in combined:
-        ui.ok("Spectra catalog was already registered.")
+        ui.ok("SPECTRA catalog was already registered.")
         return True
     ui.warn("Could not register the catalog automatically:")
     print(textwrap.indent((add.stdout + add.stderr).strip(), "  "))
@@ -229,7 +227,7 @@ def add_catalog(project_root=None, *, total_steps: int = 3) -> bool:
     sat on disk" — both leave the folder there. Deciding first removes the ambiguity, and removes any need
     to match the dependency's message text (FR-021, research R6).
     """
-    ui.step(3, "Registering the Spectra catalog and installing Spectra", total=total_steps)
+    ui.step(3, "Registering the SPECTRA catalog and installing SPECTRA", total=total_steps)
     if not register_catalog():
         return False
 
@@ -241,14 +239,14 @@ def add_catalog(project_root=None, *, total_steps: int = 3) -> bool:
     print()
     if not pending:
         version = project.classify(project_root).installed_version or "unknown version"
-        ui.ok(f"Spectra is already installed here ({ui.bold(version)}) — nothing to download.")
+        ui.ok(f"SPECTRA is already installed here ({ui.bold(version)}) — nothing to download.")
         print(f"  Update it with: {ui.bold('spectra update')}")
         return True
 
     if len(pending) == 1:
-        ui.info("Installing the Spectra extension…")
+        ui.info("Installing the SPECTRA extension…")
     else:
-        ui.info(f"Installing {len(pending)} Spectra extensions: "
+        ui.info(f"Installing {len(pending)} SPECTRA extensions: "
                 + ", ".join(ui.bold(e) for e in pending))
 
     installed_all = True
@@ -298,16 +296,16 @@ def _disclose(plan) -> None:
     covered = [state.key for state in plan.states if state.covered]
     uncovered = list(plan.uncovered_keys)
     if covered:
-        ui.info(f"Spectra's commands are registered for {', '.join(covered)} only.")
+        ui.info(f"SPECTRA's commands are registered for {', '.join(covered)} only.")
     for key in uncovered:
-        print(f"  {key} is installed here but has no Spectra commands.")
+        print(f"  {key} is installed here but has no SPECTRA commands.")
     print()
     if plan.moves_default:
         print("  To add them, each agent has to be made the project's default for a moment.")
         print(f"  This run will do that for: {ui.bold(', '.join(plan.targets))}")
         print(f"  Then it will set the default back to {ui.bold(plan.default_key)}, where it is now.")
     else:
-        print(f"  Registering Spectra's commands for {ui.bold(plan.default_key)}…")
+        print(f"  Registering SPECTRA's commands for {ui.bold(plan.default_key)}…")
     print()
 
 
@@ -315,7 +313,7 @@ def _report(result) -> None:
     """One line per integration, then the restoration — the whole cost of the step (SC-011)."""
     for child in result.parts:
         if child.outcome == coverage.NEWLY_COVERED:
-            ui.ok(f"{child.key} — Spectra's commands registered")
+            ui.ok(f"{child.key} — SPECTRA's commands registered")
         elif child.outcome == coverage.FAILED:
             ui.fail(f"{child.key} — not registered ({child.detail})")
         elif child.outcome == coverage.SKIPPED:
@@ -349,17 +347,17 @@ def cover_agents(project_root, *, extension_present: bool = True, step: int = 4,
         if plan.skip_reason in (coverage.REASON_ALL_COVERED, coverage.REASON_UNKNOWN):
             # Nothing happened and nothing is wrong — or nothing is knowable. Either way, say nothing.
             return EXIT_OK
-        ui.step(step, "Registering Spectra with your other agents", total=total)
+        ui.step(step, "Registering SPECTRA with your other agents", total=total)
         ui.info(f"Skipped — {plan.skip_reason}.")
         if plan.skip_reason == coverage.REASON_NO_DEFAULT and plan.uncovered_keys:
-            print(f"  Without Spectra's commands: {', '.join(plan.uncovered_keys)}")
+            print(f"  Without SPECTRA's commands: {', '.join(plan.uncovered_keys)}")
         return EXIT_OK
 
-    ui.step(step, "Registering Spectra with your other agents", total=total)
+    ui.step(step, "Registering SPECTRA with your other agents", total=total)
     _disclose(plan)
 
     def announce(key):
-        ui.info(f"Registering Spectra's commands for {ui.bold(key)}…")
+        ui.info(f"Registering SPECTRA's commands for {ui.bold(key)}…")
 
     try:
         result = coverage.apply(plan, announce=announce)
@@ -369,14 +367,14 @@ def cover_agents(project_root, *, extension_present: bool = True, step: int = 4,
         ui.fail("Interrupted; the agents that were not reached were left alone.")
         return EXIT_INTERRUPTED
     except extension_delegation_error() as exc:
-        ui.fail(f"Could not register Spectra's commands ({exc}).")
+        ui.fail(f"Could not register SPECTRA's commands ({exc}).")
         return EXIT_DELEGATION
 
     _report(result)
     if result.failed:
         print()
         left = ", ".join(result.left_uncovered)
-        ui.warn(f"Spectra's commands are still missing for: {left}")
+        ui.warn(f"SPECTRA's commands are still missing for: {left}")
         print(f"  Try again with: {ui.bold('spectra install')}")
         return EXIT_DELEGATION
     return EXIT_OK
@@ -429,12 +427,12 @@ def run_install() -> int:
         print()
         return EXIT_DECLINED
     if coverage_code != EXIT_OK:
-        print(f"{ui.YELLOW}{ui.BOLD}Partly done.{ui.RESET} Spectra is installed, but not every agent "
+        print(f"{ui.YELLOW}{ui.BOLD}Partly done.{ui.RESET} SPECTRA is installed, but not every agent "
               "here has its commands.")
         print()
         return coverage_code
 
-    print(f"{ui.GREEN}{ui.BOLD}All set!{ui.RESET} {ui.PURPLE}Spectra is ready to use.{ui.RESET}")
+    print(f"{ui.GREEN}{ui.BOLD}All set!{ui.RESET} {ui.PURPLE}SPECTRA is ready to use.{ui.RESET}")
     print()
     print("Restart your AI agent to pick up the new commands.")
     return EXIT_OK

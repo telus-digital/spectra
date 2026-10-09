@@ -754,7 +754,7 @@ class Results(unittest.TestCase):
 
     def test_a_result_carries_its_display_label(self):
         self.assertEqual(health.UpdateResult(health.SPECIFY_CLI, health.UPDATED).label,
-                         "Specify CLI")
+                         "Spec Kit CLI")
 
 
 # --------------------------------------------------------------------------- #

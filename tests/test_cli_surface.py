@@ -144,7 +144,7 @@ class TheSplitIsEvident(unittest.TestCase):
 
     def test_the_panel_titles_say_what_each_group_acts_on(self):
         _, out = run(["--help"])
-        self.assertIn("act on the Spectra stack you are standing in", out)
+        self.assertIn("act on the SPECTRA stack you are standing in", out)
         self.assertIn("act on the spectra command itself", out)
 
     def test_every_project_command_is_listed_in_the_project_panel(self):

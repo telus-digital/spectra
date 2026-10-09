@@ -249,7 +249,7 @@ class Isolation(unittest.TestCase):
             after = snapshot(path)
         self.assertTrue(before)
         self.assertEqual(before, after)
-        for other in ("Specify CLI", "Spec Kit CLI", "Core agents", "Spectra agents"):
+        for other in ("Spec Kit CLI", "Spec Kit CLI", "Core agents", "SPECTRA agents"):
             self.assertNotIn(other, out)
 
 

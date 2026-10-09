@@ -159,8 +159,8 @@ def _delegate(argv, *, feed: str | None = None) -> int:
     """
     if not specify_available():
         raise DelegationError(
-            "Spec Kit's `specify` CLI was not found on PATH, and Spectra delegates this to it.\n"
-            "  Install Spec Kit, then try again: https://github.com/github/spec-kit")
+            "Spec Kit's `specify` CLI was not found on PATH, and SPECTRA delegates this to it.\n"
+            "  Run `spectra install` to set it up, then try again.")
     try:
         if feed is None:
             return subprocess.call(argv)

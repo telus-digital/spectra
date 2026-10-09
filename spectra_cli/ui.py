@@ -153,9 +153,9 @@ def intro_note() -> None:
     """Remind the user this runs inside the target project folder."""
     line = "─" * 72
     print(f"{PURPLE_DIM}┌{line}{RESET}")
-    print(f"{PURPLE_DIM}│{RESET} {BOLD}Run this from inside the project you want Spectra in.{RESET}")
+    print(f"{PURPLE_DIM}│{RESET} {BOLD}Run this from inside the project you want SPECTRA in.{RESET}")
     print(f"{PURPLE_DIM}│{RESET} That means a Spec Kit project — a folder containing a {BOLD}.specify/{RESET} directory.")
-    print(f"{PURPLE_DIM}│{RESET} Not initialized yet? Spectra can set it up for you (step 2).")
+    print(f"{PURPLE_DIM}│{RESET} Not initialized yet? SPECTRA can set it up for you (step 2).")
     print(f"{PURPLE_DIM}└{line}{RESET}")
 
 
@@ -206,7 +206,7 @@ def panel(title: str, rows) -> None:
 AVAILABLE_GLYPH = "✅"
 PLANNED_GLYPH = "🚧"
 
-PROVIDER_LABELS = {"spectra": "Spectra", "speckit": "Spec Kit"}
+PROVIDER_LABELS = {"spectra": "SPECTRA", "speckit": "Spec Kit"}
 
 
 def agent_list(roster, installed=None) -> None:
@@ -250,10 +250,10 @@ def agent_list(roster, installed=None) -> None:
     print()
     print(dim(f"  {len(roster.agents)} agents · {available} available today · "
               f"{len(roster.agents) - available} under development"))
-    print(dim("  Spec Kit agents come with Spec Kit itself — Spectra builds on them but does not "
+    print(dim("  Spec Kit agents come with Spec Kit itself — SPECTRA builds on them but does not "
               "install or version them."))
     if installed is False:
-        print(dim("  Spectra is not installed in this project. Add it with: spectra install"))
+        print(dim("  SPECTRA is not installed in this project. Add it with: spectra install"))
     print()
 
 

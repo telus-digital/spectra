@@ -61,7 +61,7 @@ class Listing(unittest.TestCase):
              h.temp_project(is_project=False) as path, h.cwd(path):
             _, out = run(["agent-list"])
         self.assertIn("Spec Kit", out)
-        self.assertIn("Spectra", out)
+        self.assertIn("SPECTRA", out)
 
     def test_type_is_evident_per_agent(self):
         with h.serve_roster() as base, h.raw_base(base), \
@@ -164,7 +164,7 @@ class SchemaTolerance(unittest.TestCase):
             code, out = run(["agent-list"])
         self.assertEqual(code, 0)
         self.assertIn("Guardrails", out)
-        self.assertIn("newer than your Spectra CLI", out)
+        self.assertIn("newer than your SPECTRA CLI", out)
         self.assertIn("spectra update", out)
 
     def test_a_newer_major_schema_lists_nothing_and_names_the_remedy(self):

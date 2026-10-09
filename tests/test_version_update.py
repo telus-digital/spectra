@@ -50,7 +50,7 @@ def _spectra_cli(status=health.UP_TO_DATE, installed="5.0.0", latest="5.0.0", de
                                   latest=latest, detail=detail)
 
 
-COMPONENT_LABELS = ("Specify CLI", "Core agents", "Spectra CLI", "Spectra agents")
+COMPONENT_LABELS = ("Spec Kit CLI", "Core agents", "SPECTRA CLI", "SPECTRA agents")
 
 
 def _is_component_row(line: str) -> bool:
@@ -141,14 +141,14 @@ class Verdicts(unittest.TestCase):
         with stack("1.3.1", "1.3.1"):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
-        for label in ("Specify CLI", "Core agents", "Spectra CLI", "Spectra agents"):
+        for label in ("Spec Kit CLI", "Core agents", "SPECTRA CLI", "SPECTRA agents"):
             self.assertIn(label, out)
 
     def test_the_rows_are_in_canonical_order(self):
         with stack("1.3.1", "1.3.1"):
             _, out = run(["version"])
         positions = [out.index(label) for label in
-                     ("Specify CLI", "Core agents", "Spectra CLI", "Spectra agents")]
+                     ("Spec Kit CLI", "Core agents", "SPECTRA CLI", "SPECTRA agents")]
         self.assertEqual(positions, sorted(positions))
 
     def test_an_all_current_stack_says_so(self):
@@ -208,7 +208,7 @@ class MultiIntegrationRows(unittest.TestCase):
         with stack("1.3.1", "1.3.1", integrations=self.TWO, default_integration="kiro-cli"):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
-        labels = ("Specify CLI", "Core agents", "Spectra CLI", "Spectra agents")
+        labels = ("Spec Kit CLI", "Core agents", "SPECTRA CLI", "SPECTRA agents")
         for label in labels:
             self.assertIn(label, out)
         # Four component rows, whatever the integrations do beneath them (FR-011). A component row is
@@ -313,7 +313,7 @@ class CoverageAdvisory(unittest.TestCase):
                    registered_agents=["kiro-cli"]):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
-        self.assertIn("claude is installed here but has no Spectra commands", out)
+        self.assertIn("claude is installed here but has no SPECTRA commands", out)
         self.assertIn("Add them with: spectra install", out)
         self.assertNotIn("specify integration use", out)
         self.assertNotIn("changes the project's default integration", out)
@@ -323,26 +323,26 @@ class CoverageAdvisory(unittest.TestCase):
                    registered_agents=["kiro-cli", "claude"]):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
-        self.assertNotIn("has no Spectra commands", out)
+        self.assertNotIn("has no SPECTRA commands", out)
 
     def test_an_unreadable_registry_says_nothing(self):
         with stack("1.3.1", "1.3.1", integrations=self.BOTH, default_integration="kiro-cli",
                    registered_agents=h.BAD_JSON):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
-        self.assertNotIn("has no Spectra commands", out)
+        self.assertNotIn("has no SPECTRA commands", out)
 
     def test_an_absent_registry_says_nothing(self):
         with stack("1.3.1", "1.3.1", integrations=self.BOTH, default_integration="kiro-cli"):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
-        self.assertNotIn("has no Spectra commands", out)
+        self.assertNotIn("has no SPECTRA commands", out)
 
     def test_a_single_integration_project_never_shows_it(self):
         with stack("1.3.1", "1.3.1", integration="0.16.4", registered_agents=["kiro-cli"]):
             code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
-        self.assertNotIn("has no Spectra commands", out)
+        self.assertNotIn("has no SPECTRA commands", out)
 
     def test_it_is_rendered_outside_the_four_rows_and_changes_no_state(self):
         with stack("1.3.1", "1.3.1", integrations=self.BOTH, default_integration="kiro-cli",
@@ -361,7 +361,7 @@ class CoverageAdvisory(unittest.TestCase):
                    registered_agents=["kiro-cli"]):
             _, out = run(["version"])
         self.assertIn("up to date", out)
-        self.assertIn("has no Spectra commands", out)
+        self.assertIn("has no SPECTRA commands", out)
 
 
 class TheSpecifyCliRow(unittest.TestCase):
@@ -428,7 +428,7 @@ class WhenDataIsUnreachable(unittest.TestCase):
                 code, out = run(["version"])
         self.assertEqual(code, cli.EXIT_OK)
         self.assertIn("could not be verified", out)
-        self.assertNotIn("whole Spectra stack is up to date", out)
+        self.assertNotIn("whole SPECTRA stack is up to date", out)
 
     def test_a_partially_known_stack_names_what_it_could_not_check(self):
         with stack("1.3.1", "1.3.1", integration=h.BAD_JSON):
@@ -456,7 +456,7 @@ class NoUpdateCheck(unittest.TestCase):
             with h.temp_project("1.3.1", integration_version="0.16.4") as path, h.cwd(path):
                 _, out = run(["version", "--no-update-check"])
         # Spec Kit's own check is Spec Kit's to manage; it still runs and still yields a verdict.
-        self.assertIn("Specify CLI", out)
+        self.assertIn("Spec Kit CLI", out)
         self.assertIn("0.16.4", out)
 
     def test_the_environment_variable_behaves_the_same_way(self):
@@ -497,7 +497,7 @@ class CannotAnswer(unittest.TestCase):
         for kwargs in (dict(is_project=False), dict(installed_version=None)):
             with h.temp_project(**kwargs) as path, h.cwd(path):
                 _, out = run(["version"])
-            self.assertNotIn("Specify CLI", out)
+            self.assertNotIn("Spec Kit CLI", out)
 
     def test_the_bad_state_messages_all_differ(self):
         lines = []
@@ -578,7 +578,7 @@ class Confirmation(unittest.TestCase):
                 code, out = run(["update"])
         confirm.assert_called_once()
         self.assertIn("need updating", out)
-        self.assertIn("Spectra agents", out)
+        self.assertIn("SPECTRA agents", out)
         self.assertEqual(code, cli.EXIT_DECLINED)
 
     def test_declining_changes_nothing_and_exits_one(self):
@@ -607,7 +607,7 @@ class Confirmation(unittest.TestCase):
                  mock.patch.object(cli.ui, "confirm", return_value=False):
                 _, out = run(["update"])
         listed = out.split("need updating:")[1].split("Proceed")[0]
-        self.assertIn("Spectra agents", listed)
+        self.assertIn("SPECTRA agents", listed)
         self.assertNotIn("Core agents", listed)
 
 
@@ -1170,7 +1170,7 @@ class TheWalk(unittest.TestCase):
                                    side_effect=moving_manifest(path)):
                 _, out = run(["update", "--yes"])
         tail = out.split("Updating Spectra agents")[-1]
-        for label in ("Specify CLI", "Core agents", "Spectra CLI", "Spectra agents"):
+        for label in ("Spec Kit CLI", "Core agents", "SPECTRA CLI", "SPECTRA agents"):
             self.assertIn(label, tail)
 
 
@@ -1209,7 +1209,7 @@ class BadStates(unittest.TestCase):
                     code, out = run(["update", "--yes"])
         delegated.assert_called_once()
         self.assertEqual(code, cli.EXIT_OK)
-        self.assertIn("Spectra agents", out)
+        self.assertIn("SPECTRA agents", out)
 
 
 class TheLoopCloses(unittest.TestCase):
@@ -1247,7 +1247,7 @@ class CoverageInTheUpdate(unittest.TestCase):
                 code, out = run(["update"])
             self.assertEqual(confirm.call_count, 1)
             self.assertFalse(confirm.call_args.kwargs.get("default_yes", True))
-            self.assertIn("Spectra's commands are missing for: claude", out)
+            self.assertIn("SPECTRA's commands are missing for: claude", out)
             self.assertIn("the project's default for a moment", out)
             self.assertIn("kiro-cli", out)
             self.assertEqual(use_calls(path), [])
