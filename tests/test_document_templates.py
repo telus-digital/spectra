@@ -39,6 +39,7 @@ DOCUMENT_COMMANDS = {
     "impact.md": "impact-analysis-template",
     "kb-vault.md": "kb-document-template",
     "test-strategy.md": "test-strategy-template",
+    "deployment-strategy.md": "deployment-strategy-template",
     "test-plan.md": "test-plan-template",
 }
 

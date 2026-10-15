@@ -98,8 +98,8 @@ And "document the architecture" with nothing attached gets you a request for mat
 documentation reverse-engineered from your source code.
 
 **It joins your existing sets instead of starting new ones.** Where a supplied document is a kind
-Spectra already produces — an ADR, a BRD, an impact analysis, a test strategy, a defect RCA — it adopts
-that agent's folder, numbering and template. Without that rule, a PDF of past architecture decisions
+Spectra already produces — an ADR, a BRD, an impact analysis, a test strategy, a deployment strategy, a
+defect RCA — it adopts that agent's folder, numbering and template. Without that rule, a PDF of past architecture decisions
 would land in a folder of its own beside the one the ADR agent maintains: two decision records, two
 numbering schemes, and no rule for which is authoritative.
 
@@ -295,6 +295,56 @@ only** — there is no hook — since a reviewer should not be the author.
   /speckit-spectra-review-pr
   /speckit-spectra-review-pr https://github.com/acme/api/pull/142
   /speckit-spectra-review-pr 142 --since 4a9f2c1
+  ```
+
+<!-- SPECTRA:AGENT id=deployment-strategy -->
+### Deployment Strategist ✅
+
+**`speckit.spectra.deployment-strategy`** — Decide how this project gets from a merged change to
+something running or published. It reads the repository — CI workflows, container and orchestration
+files, infrastructure code, migrations, specs, ADRs, and any test strategy or domain analysis already
+written — plus any local document you point it at, such as a client's hosting standard or an ops runbook.
+Then it writes one strategy to `docs/DEPLOYMENT_STRATEGY.md`, or your declared artifact root, and drafts
+the constitution amendment that would make the strategy's lasting rules binding.
+
+It starts by working out **what ships**, from evidence rather than by asking: a running service, a static
+site, a library, a CLI or desktop tool, a mobile app, or infrastructure on its own. That classification
+changes what every lens means. For a library, "deploy" means publish, environments are release channels,
+and rollback is yank-or-supersede; for a mobile app, store review is a gate your team does not control. It
+will not recommend a cluster rollback to a package that has no cluster.
+
+Six lenses, every one addressed or marked not applicable with a reason: **environments and promotion**
+(with a Mermaid promotion diagram drawn only from the environments it lists), **pipeline, artifact and
+traceability**, **release and versioning**, **data and schema change**, **rollback and recovery**, and
+**operability and configuration**. On an established project each lens reports what happens today before
+proposing anything. Every claim carries one of four provenances — `verified` from what the repository
+does, `claimed` from what a document says, `stated` from an answer you gave, or `convention` — because
+deployment docs drift from deployment reality faster than almost anything else, and you should be able to
+tell the workflow from the wiki.
+
+Before it writes, it asks five things the repository cannot settle, once for the whole project and one at
+a time, each with a recommendation and the evidence behind it: where it is hosted, who approves a
+production deploy, whether a pre-release environment exists or is wanted, availability and recovery
+targets, and release cadence. Say "use your defaults" and it takes every recommendation. It **never
+invents a value only the client or ops owner can supply** — account IDs, cluster names, domains, who gets
+paged, recovery targets nobody set. Those go in an open-questions section with the role that can answer
+them. Operability stays at the level of what should be monitored and who owns it; ask in the session if
+you want to go deeper.
+
+It **never writes your constitution**. It checks whether the constitution already carries a deployment
+policy, drafts only durable invariants — same artifact promoted unchanged, explicit production approval,
+no floating tags, compatible migrations, a documented rollback path — and ends with a link to the file
+and a ready-to-paste `/speckit-constitution` line. It never edits source, CI, manifests, or infrastructure
+code, runs nothing, and makes no network request. Like the test strategy, it is a singleton, rewritten in
+place on a re-run, with your previous answers offered back for confirmation.
+
+- **Arguments** — none required. Optionally a focus, paths to local documents, and `--non-interactive`.
+- **Use it when** — a project is about to ship its first release, or an established project's deployment
+  practice has grown by accretion and needs writing down as one policy.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-deployment-strategy
+  /speckit-spectra-deployment-strategy ./client/hosting-standard.md focus on the pre-release gate
   ```
 
 <!-- SPECTRA:AGENT id=brd -->

@@ -1,26 +1,21 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version: 1.8.0 → 1.9.0
+Version: 1.9.0 → 1.10.0
 Bump type: MINOR — materially expanded guidance in an existing principle. No principle added, removed,
-  or renamed. A MUST (subfolder + `NNN` sequence) is relaxed for a defined, closed class of artifact.
-Rationale: Two agents produce a standing policy rather than a series — `test-strategy` and
-  `domain-analyzer`. The first wrote `docs/test-strategy/TEST_STRATEGY.md` against Principle VII's
-  numbering MUST (a deviation argued in specs/020 Complexity Tracking); the second wrote
-  `.specify/memory/domain-analysis.md` under the Spec Kit carve-out, though an SME reviews and edits it
-  before handoff, which makes it a deliverable. Both now land flat at the artifact root under a fixed
-  uppercase name, so the 020 deviation is retired rather than carried, and domain analysis sits next
-  to every other document a human reviews.
+  or renamed.
+Rationale: A third agent produces a standing policy rather than a series — `deployment-strategy`
+  (spec 031). Principle VII says a new singleton MUST be named by amendment and a command MUST NOT
+  declare itself one, so the name lands here before the command ships. It is the first singleton with
+  no pre-singleton past, so the principle now says a singleton without an earlier location has nothing
+  to read and needs no migration.
 
 Modified principles:
   - VII. Document Artifacts Live Under One Declared Root (title unchanged)
-    - added: standing-policy singletons are `<artifact-root>/<UPPER_SNAKE_NAME>.md`, no subfolder, no
-      sequence number, rewritten in place; the two shipped singletons named; new ones by amendment only
-    - changed: Spec Kit carve-out example is now flaky-test-detector's `.specify/memory/` task list;
-      added that a document a human reviews before handoff is a deliverable
-    - added: `docs/test-strategy/TEST_STRATEGY.md` and `.specify/memory/domain-analysis.md` to the
-      earlier locations a command reads, reports, and leaves alone; canonical file wins over earlier
-    - rationale extended for the singleton exception
+    - changed: "two shipped singletons" → three; added `<artifact-root>/DEPLOYMENT_STRATEGY.md`
+      (`speckit.spectra.deployment-strategy`)
+    - added: a singleton with no earlier location has nothing to read and needs no migration
+    - unchanged: the list of earlier locations a command reads, reports, and leaves alone
 
 Added sections: none
 Removed sections: none
@@ -29,12 +24,10 @@ Templates requiring updates:
   - .specify/templates/plan-template.md ✅ no change (Constitution Check is generic)
   - .specify/templates/spec-template.md ✅ no change
   - .specify/templates/tasks-template.md ✅ no change
-  - spectra/commands/test-strategy.md ⚠ pending — write target `<artifact-root>/TEST_STRATEGY.md`
-  - spectra/commands/domain-analyzer.md ⚠ pending — write target `<artifact-root>/DOMAIN_ANALYSIS.md`,
-    root resolution, publication check, template (Principle VIII), handoff
-  - spectra/commands/test-plan.md, kb-vault.md ⚠ pending — locate the strategy at its new path
-  - tests/test_doc_output_paths.py ⚠ pending — canonical targets and carve-out docstring
-  - README.md, spectra/README.md, AGENTS_LIST.md, docs/ ⚠ pending — output paths
+  - spectra/commands/deployment-strategy.md ✅ added in the same change (spec 031)
+  - spectra/commands/kb-vault.md ✅ reserved map gains DEPLOYMENT_STRATEGY.md
+  - tests/test_doc_output_paths.py ✅ SINGLETON accepts an entry with no earlier location
+  - CONTRIBUTING.md ✅ singleton list
 
 Follow-up TODOs: (none)
 -->
@@ -220,9 +213,11 @@ top-level folder of its own.
 exactly **one** current answer per project — a policy that a re-run replaces rather than adds to, as the
 constitution is — the command MUST write it as a single file directly in the artifact root, named
 `<artifact-root>/<UPPER_SNAKE_NAME>.md`: no subfolder, no sequence number. A re-run MUST rewrite that file
-in place and MUST NOT create a second one; Git carries the history. The two shipped singletons are
-`<artifact-root>/TEST_STRATEGY.md` (`speckit.spectra.test-strategy`) and `<artifact-root>/DOMAIN_ANALYSIS.md`
-(`speckit.spectra.domain-analyzer`). Everything else in this principle still binds a singleton — the
+in place and MUST NOT create a second one; Git carries the history. The three shipped singletons are
+`<artifact-root>/TEST_STRATEGY.md` (`speckit.spectra.test-strategy`), `<artifact-root>/DOMAIN_ANALYSIS.md`
+(`speckit.spectra.domain-analyzer`), and `<artifact-root>/DEPLOYMENT_STRATEGY.md`
+(`speckit.spectra.deployment-strategy`). A singleton that never had an earlier location has nothing to
+read under the rule below and needs no migration. Everything else in this principle still binds a singleton — the
 declared root, the publication check, the non-publishing fallback, the lowercase project-relative
 directory path, and the read-report-leave-alone rule for earlier locations. Only the filename is
 uppercase, which is what marks it as the one standing document rather than an entry in a series. A
@@ -469,4 +464,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.9.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-15
+**Version**: 1.10.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-15

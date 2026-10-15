@@ -22,6 +22,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 | `speckit.spectra.defect-rca` | Take a defect from a ticket, an issue, or a description down to its root cause — with evidence read from the code, not asked for. |
 | `speckit.spectra.create-pr` | Open a correctly-targeted GitHub PR for the current spec branch and return its URL. |
 | `speckit.spectra.review-pr` | Review a GitHub pull request against the spec, plan, tasks, ADRs, and constitution it carries, then publish a single human-curated review containing only the findings the reviewer selected. |
+| `speckit.spectra.deployment-strategy` | Decide how this project gets from a merged change to something running or published — environments, gates, releases, rollback, and who owns what — grounded in what it already does. |
 <!-- SPECTRA:GENERATED END id=spectra-readme-commands -->
 
 ## Install
@@ -212,6 +213,7 @@ and template:
 | an impact analysis | `<artifact-root>/impact-analysis/` | `impact-analysis-template` |
 | a test strategy | `<artifact-root>/TEST_STRATEGY.md` | `test-strategy-template` |
 | a domain analysis | `<artifact-root>/DOMAIN_ANALYSIS.md` | `domain-analysis-template` |
+| a deployment strategy | `<artifact-root>/DEPLOYMENT_STRATEGY.md` | `deployment-strategy-template` |
 | a defect root cause analysis | `<artifact-root>/defect-rca/` | `defect-rca-template` |
 | anything else | `<artifact-root>/<category>/` | `<category>-template`, else `kb-document-template` |
 
@@ -701,6 +703,50 @@ Usage (Claude):
 No arguments required. Optionally pass a focus to weight the analysis — it never narrows the four
 mandatory lenses — or `--non-interactive` to declare that no answer can be taken in this session. The
 document's ten sections are overridable at `.specify/templates/overrides/test-strategy-template.md`.
+
+## `speckit.spectra.deployment-strategy` — Deployment Strategist
+
+A Deployment & Operations command that decides **how this project gets from a merged change to something
+running or published**. It:
+
+1. Reads your project — constitution, specs, ADRs, docs, CI workflows, container and orchestration files,
+   infrastructure code, migrations, release configuration, and any `TEST_STRATEGY.md` or
+   `DOMAIN_ANALYSIS.md` already written — plus any local document you reference.
+2. **Classifies what ships from evidence**, never by asking: a service, a static site, a library, a CLI
+   or desktop tool, a mobile app, or infrastructure. Every lens adapts — for a library, environments are
+   release channels and rollback is yank-or-supersede.
+3. **Asks you five things it cannot read** — hosting, who approves a production deploy, a pre-release
+   environment, availability and recovery targets, release cadence — once per project and one at a time,
+   each with a recommendation and the evidence behind it.
+4. Works six lenses — environments and promotion, pipeline and artifact traceability, release and
+   versioning, data and schema change, rollback and recovery, operability and configuration — each
+   reporting today's state before recommending, or marked not applicable with a reason.
+5. Writes one document to `docs/DEPLOYMENT_STRATEGY.md`, or `DEPLOYMENT_STRATEGY.md` at your declared
+   artifact root, with a Mermaid promotion diagram drawn only from the environments it lists.
+6. Checks your constitution, drafts an amendment carrying only durable invariants, and ends with a link
+   and a ready-to-paste `/speckit-constitution` line.
+
+**Every claim is `verified`, `claimed`, `stated`, or `convention`** — what the repository does, what a
+document says, what you answered, or a default with nothing behind it — so you can tell the workflow from
+the wiki. **It never invents a value only your client or ops owner can supply**: account IDs, cluster
+names, domains, who is paged, and recovery targets nobody set go to an open-questions section with the
+role that can answer them. Operability stays at the level of what should be monitored and who owns it;
+ask in the session to go deeper.
+
+It **never writes your constitution**, never edits source, CI, manifests, or infrastructure code, runs
+nothing, and makes no network request. Like the test strategy it is a **singleton**, rewritten in place,
+with your previous answers offered back on a re-run.
+
+Usage (Claude):
+
+```
+/speckit-spectra-deployment-strategy
+/speckit-spectra-deployment-strategy ./client/hosting-standard.md
+```
+
+No arguments required. Optionally pass a focus, paths to local documents, or `--non-interactive`. The
+document's twelve sections are overridable at
+`.specify/templates/overrides/deployment-strategy-template.md`.
 
 ## `speckit.spectra.test-plan` — Test Plan
 

@@ -465,6 +465,16 @@
       "command": "speckit.spectra.review-pr"
     },
     {
+      "id": "deployment-strategy",
+      "title": "Deployment Strategist",
+      "description": "Decide how this project gets from a merged change to something running or published — environments, gates, releases, rollback, and who owns what — grounded in what it already does.",
+      "status": "available",
+      "phase": "deployment-operations",
+      "type": "add-on",
+      "provider": "spectra",
+      "command": "speckit.spectra.deployment-strategy"
+    },
+    {
       "id": "operations-monitor",
       "title": "Operations Monitor",
       "description": "Analyze logs, latency, and error signals post-deployment, surfacing anomalies and predicting SLA breaches.",

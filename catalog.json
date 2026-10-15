@@ -10,7 +10,7 @@
       "category": "workflow",
       "effect": "read-write",
       "author": "TELUS Digital",
-      "version": "1.19.0",
+      "version": "1.20.0",
       "repository": "https://github.com/telus-digital/spectra",
       "homepage": "https://github.com/telus-digital/spectra/tree/main/spectra",
       "documentation": "https://github.com/telus-digital/spectra/blob/main/spectra/README.md",
@@ -20,7 +20,7 @@
         "speckit_version": ">=0.11.0"
       },
       "provides": {
-        "commands": 11
+        "commands": 12
       },
       "tags": [
         "documentation",
@@ -53,7 +53,11 @@
         "rca",
         "knowledge-base",
         "ingestion",
-        "onboarding"
+        "onboarding",
+        "deployment",
+        "deployment-strategy",
+        "release",
+        "operations"
       ],
       "verified": false,
       "downloads": 0,

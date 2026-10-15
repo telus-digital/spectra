@@ -41,10 +41,12 @@ CANONICAL = {
 
 # Standing-policy singletons, per Principle VII: one flat file directly in the artifact root, no subfolder
 # and no sequence number, rewritten in place on a re-run. Each maps to its default write target and to
-# the location an earlier version wrote, which the command must still read and leave alone.
+# the location an earlier version wrote, which the command must still read and leave alone — or to
+# `None` for a singleton that was born one and has no earlier location to read (spec 031, research R6).
 SINGLETON = {
     "test-strategy.md": ("docs/TEST_STRATEGY.md", "docs/test-strategy/TEST_STRATEGY.md"),
     "domain-analyzer.md": ("docs/DOMAIN_ANALYSIS.md", ".specify/memory/domain-analysis.md"),
+    "deployment-strategy.md": ("docs/DEPLOYMENT_STRATEGY.md", None),
 }
 
 # Commands whose output folder is *computed per document* rather than fixed, so `CANONICAL`'s
@@ -149,8 +151,10 @@ class CanonicalOutputPaths(unittest.TestCase):
 class SingletonOutputPaths(unittest.TestCase):
     """Principle VII singletons: one flat file in the artifact root, at a stable path.
 
-    A test strategy and a domain analysis are standing documents with exactly one current version, so
-    each is written as `<artifact-root>/<UPPER_SNAKE_NAME>.md` and rewritten in place. A subfolder or a
+    A test strategy, a domain analysis, and a deployment strategy are standing documents with exactly one
+    current version, so each is written as `<artifact-root>/<UPPER_SNAKE_NAME>.md` and rewritten in place.
+    The first two had an earlier location they must still read; the deployment strategy was born a
+    singleton, so its entry carries `None` and it says it has no earlier location instead. A subfolder or a
     sequence number reappearing would mean the singleton rule was quietly reverted and every inbound link
     breaks on each run; the target vanishing would mean it drifted somewhere else entirely.
     """
@@ -180,6 +184,9 @@ class SingletonOutputPaths(unittest.TestCase):
         for name, (_, earlier) in SINGLETON.items():
             with self.subTest(command=name):
                 text = (COMMANDS_DIR / name).read_text(encoding="utf-8")
+                if earlier is None:
+                    self.assertIn("no earlier location", text, f"{name} does not say it has no past to read")
+                    continue
                 self.assertIn(earlier, text, f"{name} no longer reads its earlier location {earlier}")
                 self.assertIn("leave it alone", text, f"{name} no longer promises to leave {earlier} alone")
 
@@ -353,6 +360,7 @@ class TheOutputFolderIsComputedPerDocument(unittest.TestCase):
         "<artifact-root>/impact-analysis/",
         "| `<artifact-root>/` | `TEST_STRATEGY.md` |",
         "| `<artifact-root>/` | `DOMAIN_ANALYSIS.md` |",
+        "| `<artifact-root>/` | `DEPLOYMENT_STRATEGY.md` |",
         "<artifact-root>/defect-rca/",
     )
 

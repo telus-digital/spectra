@@ -288,6 +288,7 @@ second set.
 | an impact analysis | `<artifact-root>/impact-analysis/` | `NNN-<kebab-title>.md` | `impact-analysis-template` |
 | a test strategy | `<artifact-root>/` | `TEST_STRATEGY.md` | `test-strategy-template` |
 | a domain analysis / guardrail proposal | `<artifact-root>/` | `DOMAIN_ANALYSIS.md` | `domain-analysis-template` |
+| a deployment strategy | `<artifact-root>/` | `DEPLOYMENT_STRATEGY.md` | `deployment-strategy-template` |
 | a defect root cause analysis | `<artifact-root>/defect-rca/` | `NNN-<kebab-title>.md` | `defect-rca-template` |
 | anything else | `<artifact-root>/<category>/` | `NNN-<kebab-title>.md` | `<category>-template`, else `kb-document-template` |
 

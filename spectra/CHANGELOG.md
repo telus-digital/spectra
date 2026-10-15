@@ -3,6 +3,33 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.20.0] - 2026-10-15
+
+### Added
+- **`speckit.spectra.deployment-strategy`** — the Deployment Strategist, in the Deployment & Operations
+  phase. It reads the project and any local documents you reference, classifies what ships (service,
+  static site, library, CLI or desktop tool, mobile app, or infrastructure), and writes one strategy to
+  `<artifact-root>/DEPLOYMENT_STRATEGY.md` — by default `docs/DEPLOYMENT_STRATEGY.md` — covering six
+  lenses: environments and promotion, pipeline and artifact traceability, release and versioning, data and
+  schema change, rollback and recovery, and operability and configuration. Every claim is marked
+  `verified`, `claimed`, `stated`, or `convention`; values only the client or ops owner can supply go to
+  an open-questions section instead of being invented. Five questions — hosting, production approval, a
+  pre-release environment, recovery targets, release cadence — are asked once per project and one at a
+  time, each with a recommendation and its evidence. It drafts a constitution amendment carrying only
+  durable invariants and ends with a ready-to-paste `/speckit-constitution` line; it never writes the
+  constitution, edits nothing else, runs nothing, and makes no network request.
+- **`deployment-strategy-template`**, registered and resolved through Spec Kit's template stack. Override
+  at `.specify/templates/overrides/deployment-strategy-template.md`.
+
+### Changed
+- **`kb-vault` routes a supplied deployment strategy to the singleton.** Its reserved map gains
+  `DEPLOYMENT_STRATEGY.md` beside the test strategy and domain analysis, so an ingested strategy joins the
+  file the Deployment Strategist rewrites rather than landing in a category folder beside it.
+
+### Governance
+- Spectra's own constitution (1.10.0) names `<artifact-root>/DEPLOYMENT_STRATEGY.md` as the third
+  standing-policy singleton, as Principle VII requires before a command may write one.
+
 ## [1.19.0] - 2026-10-15
 
 ### Changed
