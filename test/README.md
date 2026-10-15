@@ -247,7 +247,7 @@ On Claude the triggers are dash-form skills:
 
 (Other agents keep the dots, e.g. kiro-cli: `/speckit.spectra.adr`.) Confirm each command runs, reads
 real project context, and writes to the expected place — `docs/adr/` for `adr`, `docs/brd/` for `brd`,
-`.specify/memory/domain-analysis.md` for `domain-analyzer`, and a PR/branch action for `create-pr`.
+`docs/DOMAIN_ANALYSIS.md` for `domain-analyzer`, and a PR/branch action for `create-pr`.
 
 Worth one extra pass on the artifact root, since it is the part that varies per project: add
 `Artifact root: documents/` to the throwaway project's constitution and confirm `adr` and `brd` write to

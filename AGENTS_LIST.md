@@ -50,8 +50,9 @@ any constitution update the decision implies.
 
 **`speckit.spectra.domain-analyzer`** — Scan the existing codebase, docs, and ADRs to infer the
 project's business domain, then write an opt-in proposal of candidate guardrails to
-`.specify/memory/domain-analysis.md` for SME review and handoff to `/speckit-constitution`. It never
-edits the constitution or source — you choose which guardrails to adopt.
+`docs/DOMAIN_ANALYSIS.md` — or your declared artifact root — for SME review. It ends by handing you a
+ready-to-paste `/speckit-constitution` prompt that links the file. It never edits the constitution or
+source — you choose which guardrails to adopt.
 
 - **Arguments** — none required. Optionally pass a focus or a domain hint to steer the analysis.
 - **Use it when** — bootstrapping constitution guardrails for a brownfield project (no args — it infers
@@ -127,7 +128,7 @@ numbering schemes, and no rule for which is authoritative.
 
 **`speckit.spectra.test-strategy`** — Decide how this project tests itself, once, at the start. It reads
 the repository, works out for itself whether this is greenfield or brownfield, and writes one strategy to
-`docs/test-strategy/TEST_STRATEGY.md` — or your declared artifact root — covering unit, integration, API
+`docs/TEST_STRATEGY.md` — or your declared artifact root — covering unit, integration, API
 contract, and end-to-end testing plus a coverage floor. Then it drafts the constitution amendment that
 would hold every future work session to it, and hands that to `/speckit-constitution`.
 

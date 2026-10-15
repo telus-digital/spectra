@@ -207,7 +207,7 @@ highest priority first, and take the first readable, non-empty layer:
 `<name>` depends on the category (Step 5):
 
 - A category in the **reserved map** uses that agent's template — `adr-template`, `brd-template`,
-  `impact-analysis-template`, `test-strategy-template`, `defect-rca-template`.
+  `impact-analysis-template`, `test-strategy-template`, `domain-analysis-template`, `defect-rca-template`.
 - Any other category resolves `<category>-template` — so a project that drops
   `.specify/templates/overrides/ux-ui-standards-template.md` into its repository shapes every UX/UI
   standards document from then on, for everyone, permanently.
@@ -238,7 +238,7 @@ refused later.
 
 | Row | Destination |
 |---|---|
-| Create | `<artifact-root>/<category>/` — and nowhere else |
+| Create | `<artifact-root>/<category>/` — and nowhere else, except a singleton from the reserved map, which is one file directly in `<artifact-root>` |
 | Update | The existing document's own path, wherever it is, including outside the artifact root |
 | Index | `<artifact-root>/<category>/README.md`, for a category folder you own |
 
@@ -286,7 +286,8 @@ second set.
 | an architecture decision | `<artifact-root>/adr/` | `ADR-NNN-<kebab-title>.md` | `adr-template` |
 | a business requirements document | `<artifact-root>/brd/` | `NNN-<kebab-title>.md` | `brd-template` |
 | an impact analysis | `<artifact-root>/impact-analysis/` | `NNN-<kebab-title>.md` | `impact-analysis-template` |
-| a test strategy | `<artifact-root>/test-strategy/` | the project's existing name | `test-strategy-template` |
+| a test strategy | `<artifact-root>/` | `TEST_STRATEGY.md` | `test-strategy-template` |
+| a domain analysis / guardrail proposal | `<artifact-root>/` | `DOMAIN_ANALYSIS.md` | `domain-analysis-template` |
 | a defect root cause analysis | `<artifact-root>/defect-rca/` | `NNN-<kebab-title>.md` | `defect-rca-template` |
 | anything else | `<artifact-root>/<category>/` | `NNN-<kebab-title>.md` | `<category>-template`, else `kb-document-template` |
 

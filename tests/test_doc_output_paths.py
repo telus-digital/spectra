@@ -37,7 +37,14 @@ CANONICAL = {
     "brd.md": "docs/brd/",
     "defect-rca.md": "docs/defect-rca/",
     "impact.md": "docs/impact-analysis/",
-    "test-strategy.md": "docs/test-strategy/",
+}
+
+# Standing-policy singletons, per Principle VII: one flat file directly in the artifact root, no subfolder
+# and no sequence number, rewritten in place on a re-run. Each maps to its default write target and to
+# the location an earlier version wrote, which the command must still read and leave alone.
+SINGLETON = {
+    "test-strategy.md": ("docs/TEST_STRATEGY.md", "docs/test-strategy/TEST_STRATEGY.md"),
+    "domain-analyzer.md": ("docs/DOMAIN_ANALYSIS.md", ".specify/memory/domain-analysis.md"),
 }
 
 # Commands whose output folder is *computed per document* rather than fixed, so `CANONICAL`'s
@@ -93,7 +100,7 @@ PUBLICATION_SIGNALS = (
     "docs/index.html",
     "docs/conf.py",
 )
-DOCUMENT_COMMANDS = tuple(CANONICAL) + tuple(MULTI_CATEGORY)
+DOCUMENT_COMMANDS = tuple(CANONICAL) + tuple(SINGLETON) + tuple(MULTI_CATEGORY)
 
 
 def command_files() -> list[Path]:
@@ -137,34 +144,58 @@ class CanonicalOutputPaths(unittest.TestCase):
             "brd.md no longer shows the default write target docs/brd/NNN-<kebab-title>.md",
         )
 
-    def test_the_test_strategy_write_target_is_the_canonical_path(self):
-        text = (COMMANDS_DIR / "test-strategy.md").read_text(encoding="utf-8")
-        self.assertTrue(
-            "docs/test-strategy/TEST_STRATEGY.md" in text,
-            "test-strategy.md no longer shows the default write target "
-            "docs/test-strategy/TEST_STRATEGY.md",
-        )
 
-    def test_the_test_strategy_target_carries_no_sequence_number(self):
-        """Spec 020 FR-042a: the one deliberate deviation from Principle VII, pinned.
 
-        A test strategy is a standing policy with exactly one current version, not a decision log, so
-        its filename is fixed and a re-run rewrites it in place. That is a departure from VII's
-        "filenames MUST carry a zero-padded three-digit sequence number", justified in
-        specs/020-test-strategy-agent/plan.md under Complexity Tracking.
+class SingletonOutputPaths(unittest.TestCase):
+    """Principle VII singletons: one flat file in the artifact root, at a stable path.
 
-        This asserts it in both directions. Numbering appearing here would mean the deviation was
-        quietly reverted and every inbound link to the strategy now breaks on each run; the write
-        target vanishing would mean it drifted somewhere else entirely. Either way a human should be
-        made to look at the Complexity Tracking entry again.
-        """
-        text = (COMMANDS_DIR / "test-strategy.md").read_text(encoding="utf-8")
-        numbered = re.compile(r"docs/test-strategy/(?:NNN|\d{3})[-_]")
-        self.assertIsNone(
-            numbered.search(text),
-            "test-strategy.md numbers its output; spec 020 FR-042a makes this artifact a singleton "
-            "at a stable path, and the deviation is recorded in the plan's Complexity Tracking",
-        )
+    A test strategy and a domain analysis are standing documents with exactly one current version, so
+    each is written as `<artifact-root>/<UPPER_SNAKE_NAME>.md` and rewritten in place. A subfolder or a
+    sequence number reappearing would mean the singleton rule was quietly reverted and every inbound link
+    breaks on each run; the target vanishing would mean it drifted somewhere else entirely.
+    """
+
+    def test_each_singleton_names_its_root_level_target(self):
+        for name, (target, _) in SINGLETON.items():
+            filename = target.split("/")[-1]
+            with self.subTest(command=name):
+                text = (COMMANDS_DIR / name).read_text(encoding="utf-8")
+                self.assertIn(target, text, f"{name} no longer shows the default write target {target}")
+                self.assertIn(
+                    f"<artifact-root>/{filename}",
+                    text,
+                    f"{name} no longer writes {filename} directly into the artifact root",
+                )
+
+    def test_no_singleton_target_carries_a_sequence_number(self):
+        for name, (target, _) in SINGLETON.items():
+            stem = target.split("/")[-1].removesuffix(".md")
+            numbered = re.compile(rf"(?:NNN|\d{{3}})[-_]{stem}")
+            with self.subTest(command=name):
+                text = (COMMANDS_DIR / name).read_text(encoding="utf-8")
+                self.assertIsNone(numbered.search(text), f"{name} numbers its singleton output")
+
+    def test_each_singleton_reads_its_earlier_location(self):
+        """The earlier file may hold prior answers or an SME's ticks, so it is read, never ignored."""
+        for name, (_, earlier) in SINGLETON.items():
+            with self.subTest(command=name):
+                text = (COMMANDS_DIR / name).read_text(encoding="utf-8")
+                self.assertIn(earlier, text, f"{name} no longer reads its earlier location {earlier}")
+                self.assertIn("leave it alone", text, f"{name} no longer promises to leave {earlier} alone")
+
+    def test_the_constitution_names_every_singleton(self):
+        """A command MUST NOT declare itself a singleton; the constitution names each one."""
+        constitution = CONSTITUTION.read_text(encoding="utf-8")
+        for target, _ in SINGLETON.values():
+            filename = target.split("/")[-1]
+            with self.subTest(singleton=filename):
+                self.assertIn(f"<artifact-root>/{filename}", constitution)
+
+    def test_the_domain_analyzer_hands_off_with_a_ready_prompt(self):
+        text = (COMMANDS_DIR / "domain-analyzer.md").read_text(encoding="utf-8")
+        self.assertIn("/speckit-constitution Adopt only the checked", text)
+        self.assertIn("[DOMAIN_ANALYSIS.md](docs/DOMAIN_ANALYSIS.md)", text)
+        self.assertIn("Do not invoke `/speckit-constitution` yourself", text)
 
     def test_no_write_instruction_names_a_legacy_folder(self):
         """Mentioning `Docs/ADR/` is required; being told to write there is the regression."""
@@ -320,7 +351,8 @@ class TheOutputFolderIsComputedPerDocument(unittest.TestCase):
         "<artifact-root>/adr/",
         "<artifact-root>/brd/",
         "<artifact-root>/impact-analysis/",
-        "<artifact-root>/test-strategy/",
+        "| `<artifact-root>/` | `TEST_STRATEGY.md` |",
+        "| `<artifact-root>/` | `DOMAIN_ANALYSIS.md` |",
         "<artifact-root>/defect-rca/",
     )
 
@@ -473,7 +505,7 @@ class TheConstitutionStatesTheRule(unittest.TestCase):
         self.assertIn("### VII. Document Artifacts Live Under One Declared Root", self.full)
 
     def test_principle_vii_carves_out_spec_kit_locations(self):
-        """`domain-analyzer` writes `.specify/memory/domain-analysis.md` and stays compliant."""
+        """`flaky-test-detector`'s task list in `.specify/memory/` is context, not a deliverable."""
         self.assertIn(".specify/", self.principle)
         self.assertIn("specs/", self.principle)
 

@@ -293,7 +293,10 @@ class TheVocabularyIsInherited(unittest.TestCase):
     """FR-013, FR-035, FR-036 — the project's own words win."""
 
     def test_it_looks_for_the_strategy_document(self):
-        self.assertIn("docs/test-strategy/TEST_STRATEGY.md", command_text())
+        self.assertIn("docs/TEST_STRATEGY.md", command_text())
+
+    def test_it_falls_back_to_the_earlier_strategy_location(self):
+        self.assertIn("<artifact-root>/test-strategy/TEST_STRATEGY.md", command_text())
 
     def test_it_resolves_the_declared_artifact_root_to_find_it(self):
         self.assertIn("Artifact root:", command_text())

@@ -1,457 +1,40 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version: 1.7.4 → 1.8.0
-Bump type: MINOR — one new obligation in an existing section. No principle added, removed, or
-  redefined, but `main` acquires a gate that did not exist, so this is more than a clarification.
-Rationale: Yesterday's amendment corrected the *description* of how changes land; it left the
-  mechanism itself untouched, and the mechanism was nothing. `main` accepted any push. The "Protect
-  main" ruleset did evaluate required status checks on a direct push — the 1.7.4 force-push printed
-  "3 of 3 required status checks are expected" — but the sole maintainer held an always-bypass, so
-  every gate was advisory. With no second reader and no PR, a broken or untested commit had nothing
-  standing between it and the default branch.
-
-  The gate is now real: required status checks with no bypass actors. Measured against a throwaway
-  ruleset on 2026-09-20 rather than assumed — a green SHA whose checks were earned on another branch
-  is accepted, a failing SHA is rejected by name, and a never-tested SHA is rejected three times out
-  of three. So the rule enforces "CI ran and passed", not merely "CI is not currently red".
-
-  Two things are written into the rule because they are what makes it workable rather than a trap.
-  Check runs attach to a commit, not a branch, which is the whole reason a staging branch can earn
-  them and `main` can accept them — stating that stops the two-push sequence looking arbitrary. And
-  the new obligation is explicitly *separate* from one-branch-per-spec: the branching rule governs
-  spec work, this one governs every change. The 1.7.4 amendment itself is the counterexample — a
-  large documentation change with no spec branch at all, which the branching rule never reached.
-
-  Bypass is per-ruleset rather than per-rule, so a single ruleset would force a choice between
-  keeping admin powers and having a gate. Split in two, the maintainer keeps deletion and
-  force-push bypass — deliberate history rewrites stay possible — and keeps no power to land
-  untested code. The `pull_request` rule is dropped rather than left inert: behind a bypass it fired
-  a violation on every push, which trains a reader to ignore bypass warnings, and a warning nobody
-  reads is worse than no warning.
-
-Modified principles: (none)
-Modified sections:
-  Version Control & Branching Strategy → new subsection: nothing lands on `main` whose commit has
-    not passed CI on its own SHA; enforced by ruleset, no actor may bypass; stated as a separate
-    obligation from one-branch-per-spec
-  Development Workflow step 6 → publishing runs `tools/ship.py`; a direct push to `main` is rejected
-Added sections: (none)
-Removed sections: (none)
-
-Templates & docs in sync:
-  - SHIPPING.md ✅ — new: the standing reference. How the gate works, the measured evidence, every
-    rejection message, the three release paths, and the break-glass procedure
-  - CLAUDE.md ✅ — a "How changes land" section above the agent-context marker, so an agent that
-    reads nothing else still knows not to push to `main`
-  - CONTRIBUTING.md ✅ — states the build-vs-land boundary; "How to cut a release" and
-    "Test, then publish" now point at SHIPPING.md rather than carrying a second copy
-  - tools/checks.py ✅ — new: the catalog-drift checks defined once, run by CI and by the pre-flight
-  - tools/ship.py ✅ — new: the only sanctioned path to `main`
-  - .github/workflows/ci.yml ✅ — push trigger widened to the `ci` staging branch; the catalog job's
-    four inline shell steps now call `tools/checks.py`
-  - .github/required-checks.json ✅ — new: the committed copy of the ruleset's required contexts
-  - tests/test_ci_contract.py ✅ — new: fails when the workflow, the checks registry, and the
-    required contexts disagree, so a renamed job cannot silently make `main` unpushable
-  - .specify/templates/*.md ✅ — the Constitution Check gate is generic; no principle names cited
-
-Deliberately unchanged:
-  - The `pull_request` trigger in ci.yml — harmless, and still correct if a PR is ever opened
-  - VERSION / spectra_cli/ — the CLI channel did not change (Principle VI)
-  - spectra/extension.yml, catalog.json — no shipped file changed (Principle V)
-
-Supersedes: the 1.7.4 report below lists the "Protect main" ruleset under *Deliberately unchanged*.
-  That is no longer true as of this amendment.
-
-Follow-up TODOs: (none)
-
-SYNC IMPACT REPORT
-==================
-Version: 1.7.3 → 1.7.4
-Bump type: PATCH — a factual correction to Governance. No principle added, removed, or redefined; no
-  obligation changed — only the mechanism the obligations were described as flowing through.
-Rationale: Two passages described a contribution model this repository no longer has. Governance said
-  amendments are "proposed via a normal change (PR)" and spoke of "reviewers" in the plural; the Version
-  Control & Branching rationale cited "PRs, issue links" as the automation a spec-named branch stays
-  traceable to. Issues and Discussions are disabled on `telus-digital/spectra`, the repository has a
-  single owner and maintainer, and it accepts no outside contributions — so a constitution asserting a
-  multi-reviewer PR flow was describing something that cannot happen.
-
-  The correction is deliberately not a relaxation. Where a second reader used to be the backstop for a
-  skipped principle, there is none, so the amendment states explicitly that every gate is self-applied
-  and that a deviation MUST be written down rather than settled privately. One-branch-per-spec is
-  untouched: it is about keeping `main` releasable and each spec reviewable in isolation, which does not
-  depend on who opens the change.
-
-Modified principles: (none)
-Modified sections:
-  Version Control & Branching Strategy → rationale no longer cites PRs and issue links as the
-    downstream automation
-  Governance → "approved before merge" restated as accepted before the change lands on `main`
-  Governance → Amendment procedure no longer names a PR; a new paragraph records the single-maintainer
-    reality and what it costs
-  Governance → Compliance review addresses the reviewer including the maintainer reviewing their own
-    change
-Added sections: (none)
-Removed sections: (none)
-
-Templates & docs in sync:
-  - .specify/templates/*.md ✅ — the Constitution Check gate is generic; no principle names cited
-  - SECURITY.md ✅ — GitHub private vulnerability reporting is now the sole inbound channel
-  - README.md ✅ — "Support and compatibility" states no channel exists; contributor on-ramp removed
-  - CONTRIBUTING.md ✅ — retitled as maintainer notes; the "Issues are open to everyone" claim removed
-  - TRADEMARK.md, spectra/TRADEMARK.md ✅ — the "open an issue" pointer replaced
-  - .github/workflows/release.yml ✅ — the version bump is described on `main`, not in a PR
-
-Deliberately unchanged:
-  - Principle VII's legacy-folder rules, which govern what the shipped agents read in a *consumer's*
-    project and have nothing to do with this repository's own removed folder
-  - The `pull_request` trigger in ci.yml and the "Protect main" ruleset, which still route the
-    maintainer's own changes
-  - VERSION / spectra_cli/ — the CLI channel did not change (Principle VI)
-
-Follow-up TODOs: (none)
-
-SYNC IMPACT REPORT
-==================
-Version: 1.7.2 → 1.7.3
-Bump type: PATCH — a factual correction. No principle added, removed, or redefined; no obligation
-  changed — only the addresses those obligations point at.
-Rationale: The repository moved from the `xavient` organisation to `telus-digital`, and three
-  normative passages named the old owner in a URL: the distribution statement under Principle V, the
-  CLI install command under Principle VI, and the "No silent drift" rule that CI enforces literally.
-  The Pages address in the first of those was already dead — GitHub does not redirect Pages across an
-  organisation rename — so the constitution was pointing at a 404 while asserting where the site is
-  served. Leaving the raw URLs stale is the worse problem of the two: they are the install path, they
-  currently resolve only through GitHub's rename redirect, and that redirect lasts only as long as the
-  freed `xavient` name goes unclaimed.
-
-Modified principles: (none)
-Modified sections:
-  V. The Catalog and Package Are Maintained in Sync — the Pages address is now
-    <https://telus-digital.github.io/spectra/>
-  VI. Two Channels, Two Version Numbers — the CLI install command names the new git URL
-  Publishing & Distribution Standards → No silent drift — the required raw URL form is now
-    `raw.githubusercontent.com/telus-digital/spectra/main/...`
-Added sections: (none)
-Removed sections: (none)
-Templates requiring updates: (none — no plan/spec/tasks template carries a repository URL)
-Follow-up TODOs: (none)
-
-SYNC IMPACT REPORT
-==================
-Version: 1.7.1 → 1.7.2
-Bump type: PATCH — a clarification. No new obligation beyond a file the extension already had to
-  carry in spirit; no principle added, removed, or redefined.
-Rationale: Apache-2.0 §6 withholds trademark rights, but the extension shipped no statement of which
-  marks that covers. The repository carries a TELUS Digital logo under a blanket permissive licence,
-  and "Spectra" is used as a product mark, so a reader with only the installed package in front of
-  them had no way to tell what the grant excludes. `TRADEMARK.md` now says so, and — like `LICENSE`
-  and `NOTICE` — it ships inside the package rather than living only at the repository root, so the
-  carve-out travels to every consumer's `.specify/` directory instead of dangling as a reference.
-
-Modified principles: (none)
-Modified sections:
-  Publishing & Distribution Standards → Authorship & license — names TRADEMARK.md alongside LICENSE
-    and NOTICE as a file the extension carries and ships
-Added sections: (none)
-Removed sections: (none)
-Templates requiring updates: (none — no plan/spec/tasks template references the notice files)
-Follow-up TODOs: (none)
-
-SYNC IMPACT REPORT
-==================
-Version: 1.7.0 → 1.7.1
-Bump type: PATCH — a clarification. No new obligation; no principle added, removed, or redefined.
-Rationale: Principle VIII requires a template for "every command that produces a durable Markdown
-  deliverable". Applying it to `speckit.spectra.create-pr` exposed an ambiguity: a pull request body is a
-  Markdown document a human reads, but it is emitted to GitHub rather than written into the artifact root.
-  A literal reader could argue VIII does not reach it, which would leave PR bodies as the one document
-  Spectra composes with no template and no override — exactly the gap VIII exists to close.
-
-  The clarification says the obvious thing explicitly: a deliverable is the document, not the destination.
-  A file in `docs/adr/` is one; so is a PR body, a review comment, or an issue description. Only Principle
-  VII's *location* rules are limited to files on disk.
+Version: 1.8.0 → 1.9.0
+Bump type: MINOR — materially expanded guidance in an existing principle. No principle added, removed,
+  or renamed. A MUST (subfolder + `NNN` sequence) is relaxed for a defined, closed class of artifact.
+Rationale: Two agents produce a standing policy rather than a series — `test-strategy` and
+  `domain-analyzer`. The first wrote `docs/test-strategy/TEST_STRATEGY.md` against Principle VII's
+  numbering MUST (a deviation argued in specs/020 Complexity Tracking); the second wrote
+  `.specify/memory/domain-analysis.md` under the Spec Kit carve-out, though an SME reviews and edits it
+  before handoff, which makes it a deliverable. Both now land flat at the artifact root under a fixed
+  uppercase name, so the 020 deviation is retired rather than carried, and domain analysis sits next
+  to every other document a human reviews.
 
 Modified principles:
-  VIII — one paragraph added stating that emitted documents count as deliverables
-Added sections: (none)
-Removed sections: (none)
+  - VII. Document Artifacts Live Under One Declared Root (title unchanged)
+    - added: standing-policy singletons are `<artifact-root>/<UPPER_SNAKE_NAME>.md`, no subfolder, no
+      sequence number, rewritten in place; the two shipped singletons named; new ones by amendment only
+    - changed: Spec Kit carve-out example is now flaky-test-detector's `.specify/memory/` task list;
+      added that a document a human reviews before handoff is a deliverable
+    - added: `docs/test-strategy/TEST_STRATEGY.md` and `.specify/memory/domain-analysis.md` to the
+      earlier locations a command reads, reports, and leaves alone; canonical file wins over earlier
+    - rationale extended for the singleton exception
 
-Templates & docs in sync:
-  - spectra/templates/pr-template.md ✅ — new: the PR body structure, overridable like adr/brd
-  - spectra/commands/create-pr.md ✅ — resolves pr-template through the stack and reports the path
-  - spectra/extension.yml, catalog.json, spectra/CHANGELOG.md, docs/packages/spectra.zip ✅ — 1.8.0
-  - spectra/README.md, AGENTS_LIST.md, docs/index.html, test/README.md ✅ — the override documented
-  - tests/test_document_templates.py ✅ — pr-template joins the guarded set
-  - specs/014-create-pr-template/ ✅ — spec, plan, tasks
+Added sections: none
+Removed sections: none
 
-Follow-up TODOs: (none)
-
---- Previous report ---
-Version: 1.6.0 → 1.7.0
-Bump type: MINOR — one new principle. No existing principle redefined or removed.
-Rationale: Principle VII settled *where* a produced document goes. Nothing said anything about *how it
-  is shaped*, and the two shipped document agents had drifted into opposite answers. `brd` loaded a
-  shipped asset — `spectra/templates/brd-template.md` — from a hard-coded path. `adr` carried its
-  structure as a fenced literal inside the command file, introduced by "use **exactly** this template …
-  do not add, rename, or reorder sections". One was an asset a team could in principle change; the other
-  could not be changed at all.
-
-  Neither was actually overridable in a way that survives. Spec Kit already resolves templates through a
-  four-layer stack — project override, presets, extension, core — but `brd` read layer 3 directly, so an
-  override at `.specify/templates/overrides/brd-template.md` was silently ignored. That left editing the
-  installed copy as the only route, and measurement against Spec Kit 0.16.5 confirmed it is a trap: an
-  edit inside `.specify/extensions/spectra/templates/` survives a no-op update but is destroyed by the
-  tree-replace that any version bump performs, while `.specify/.gitignore` tracks the edit — so it is
-  committed, looks durable, and is reverted later as noise in an unrelated diff.
-
-  Principle VIII fixes the shape question the way VII fixed the location question: one rule, stated once,
-  inherited by every future document agent. A document's structure comes from a registered template
-  resolved through the stack, with an inline last-resort skeleton; the command reports which template won,
-  honours what the resolved template says rather than repairing it, and never hard-codes a path.
-
-  Two constraints are written in because they are easy to violate with good intentions. Resolution MUST be
-  prompt-expressed: `resolve_template()` is a Bash function in core's script tree, so calling it breaks
-  PowerShell-only setups (Principle III), and shipping our own resolver script would break the
-  Markdown-only supply-chain promise the README makes and the security review depends on. And a resolved
-  template MUST be honoured as authored — a command that quietly re-adds a section the team deleted has
-  turned their override into a suggestion.
-
-Modified principles: (none)
-Added sections:
-  VIII — Documents Are Shaped by Overridable Templates
-Removed sections: (none)
-Other edits: Development Workflow step 2 cites Principle VIII alongside VII in the Constitution Check gate.
-
-Templates & docs in sync:
-  - spectra/templates/adr-template.md ✅ — new: today's ADR structure, verbatim, in the house style of
-    brd-template.md. No new sections, so no existing user's output changes.
-  - spectra/templates/brd-template.md ✅ — content unchanged
-  - spectra/commands/adr.md ✅ — Step 4 resolves the template through the stack; the former literal is now
-    the inline last-resort skeleton at the end of the file; reports the resolved path
-  - spectra/commands/brd.md ✅ — the hard-coded read is replaced by the same resolution block; same
-    reporting, fall-through, and honour-don't-repair rules
-  - spectra/extension.yml ✅ — provides.templates declares adr-template and brd-template; version 1.7.0
-  - catalog.json ✅ — version and updated_at (the catalog schema carries a command count only)
-  - spectra/CHANGELOG.md ✅ — [1.7.0]
-  - docs/packages/spectra.zip ✅ — rebuilt; contains both templates
-  - spectra/README.md, AGENTS_LIST.md, docs/index.html, test/README.md ✅ — the override path is
-    documented as the supported customization point, and stated to survive extension updates
-  - CONTRIBUTING.md ✅ — a new document agent ships a registered template and resolves it through the stack
-  - tests/test_document_templates.py ✅ — new: registration completeness both ways, heading parity between
-    each shipped template and its command's inline skeleton, four-layer coverage in both commands, no
-    hard-coded template path, and no script or binary in the package
-  - .specify/templates/*.md ✅ — the Constitution Check gate is generic; no principle names cited
-  - specs/013-overridable-templates/ ✅ — spec, plan, tasks, incl. the Phase 0 measurements
-
-Deliberately unchanged:
-  - the ADR template's section list — enriching it is now every project's own call
-  - VERSION / spectra_cli/ — the CLI channel did not change (Principle VI)
-
-Follow-up TODOs: (none)
-
---- Previous report ---
-Version: 1.5.0 → 1.6.0
-Bump type: MINOR — one new principle. No existing principle was redefined or removed.
-Rationale: Spectra's two document-producing agents each invented their own output location. `adr` wrote
-  `Docs/ADR/ADR-NNN-*.md`; `brd` wrote `/brds/NNN-*.md`. Nothing in the constitution said where a
-  deliverable belongs, so each command answered the question independently and gave two different
-  answers — differing in parent folder, in case, and in whether the path was even project-relative
-  (`/brds` names the filesystem root when read literally).
-
-  The roster is 44 agents, many of them document producers still under development (threat model, API
-  design, Article 30 records, PIAs). Left unstated, that convention would be re-invented 20 more times
-  and a consumer's project root would accumulate an unrelated top-level folder per agent. Principle VII
-  settles it once: `<artifact-root>/<artifact>/`, lowercase kebab-case slug, one artifact type per
-  folder, created on demand. `adr` → `docs/adr/`, `brd` → `docs/brd/`, and every future agent inherits
-  the answer instead of choosing.
-
-  The root is **declarable rather than fixed**, defaulting to `docs/`. `docs/` is GitHub Pages' only
-  non-root branch source and the default source directory for MkDocs and Docusaurus, so for a minority of
-  projects writing there publishes the artifact to the public web or breaks a docs build — and a BRD
-  carries revenue targets, named stakeholders, and competitive rationale. Whether `docs/` is safe is a
-  fact about the project, unknowable when the command is authored, so a project overrides it with one
-  line in its constitution (`Artifact root: documents/`) that every document agent honours. Commands must
-  check for the publication signal before defaulting into `docs/`, recommend `documents/` when they find
-  one, and take the non-publishing option when the choice cannot be obtained: a misplaced private file
-  moves with one command, a published BRD cannot be recalled from caches or forks. Commands offer the
-  declaration line and never write it themselves — producing a document is not a licence to edit
-  governance.
-
-  Two details are recorded because they are correctness, not style. Paths MUST be lowercase and
-  project-relative: `Docs/ADR/` is a distinct directory on Linux but silently aliases into an existing
-  `docs/` on a case-insensitive macOS filesystem, so the same command produced different layouts on
-  different machines. And a command MUST read the locations earlier versions wrote to for numbering while
-  never relocating them — without that, updating the extension gives a team a second `ADR-001` and splits
-  one decision log across two folders, while moving files for them would exceed a documentation agent's
-  write scope.
-
-  Spec Kit's own locations are carved out. `.specify/` and `specs/` are Spec Kit's, and a command
-  writing there — as `domain-analyzer` does with `.specify/memory/domain-analysis.md` — is writing
-  context for another command to consume, not a deliverable for a human to read.
-
-Modified principles: (none)
-Added sections:
-  VII — Document Artifacts Live Under One Declared Root
-Removed sections: (none)
-Other edits: Development Workflow step 2 now cites Principle VII in the Constitution Check gate.
-
-Templates & docs in sync:
-  - spectra/commands/adr.md ✅ — `Docs/ADR/` → `<artifact-root>/adr/` (default `docs/adr/`) throughout,
-    incl. the suggested `git add`; resolves the declared root and checks for the publication signal
-    before defaulting; legacy `Docs/ADR/` read for context and numbering, reported once, never moved
-  - spectra/commands/brd.md ✅ — `/brds` → `<artifact-root>/brd/` (default `docs/brd/`) throughout, incl.
-    the front-matter description and the one-rule write scope; same root resolution, with the extra note
-    that a BRD's contents make publication the more damaging default; legacy `brds/` read, never moved
-  - spectra/extension.yml ✅ — `brd` description no longer names `/brds`; version 1.5.0 → 1.6.0
-  - catalog.json ✅ — version and `updated_at` mirrored (1.6.0)
-  - spectra/CHANGELOG.md ✅ — `[1.6.0]` entry records both moves, the declarable root, the publication
-    check, and the legacy-read behavior
-  - docs/packages/spectra.zip ✅ — rebuilt with tools/build_package.py
-  - spectra/README.md, AGENTS_LIST.md, docs/index.html, test/README.md ✅ — every user-facing statement
-    of where these agents write now names the canonical folders and the override
-  - CONTRIBUTING.md ✅ — new document-producing agents are pointed at Principle VII, including the duty
-    to honour a declared root
-  - tests/test_doc_output_paths.py ✅ — new: fails the suite when a shipped command file names a legacy
-    path or a non-conforming output folder, when a document command stops resolving the declared root, or
-    when it stops checking for the publication signal — so the principle is enforced rather than reviewed
-  - .specify/templates/*.md ✅ — the Constitution Check gate is generic; no principle names cited
-  - README.md ✅ — states no output paths; nothing to change
-  - specs/012-doc-output-convention/ ✅ — spec, plan, and tasks for this change
-
-Deliberately unchanged:
-  - brds/ (this repository's own 8 BRDs) — historical inputs cross-referenced from specs/; Principle VII
-    governs newly produced artifacts and does not require relocating an existing set
-  - VERSION / spectra_cli/ — the CLI channel did not change (Principle VI)
-
-Follow-up TODOs: (none)
-
---- Previous report ---
-Version: 1.4.0 → 1.5.0
-Bump type: MINOR — materially expanded guidance in Principle VI (one new MUST), plus a factual
-  correction in the same principle.
-Rationale: CLI 6.0.0 retired `spectra cli version` and `spectra cli update`, folding both into the
-  top-level `spectra version` / `spectra update`, which now report and update all four components of the
-  stack (Spec Kit's CLI, the core agents, the `spectra` command, and Spectra's agents).
-
-  That made one sentence in Principle VI false: it named `spectra cli update` as a consumer of
-  `/releases/latest`. Corrected to `spectra update`.
-
-  It also created a governance-relevant constraint that nothing previously recorded. Because
-  `spectra version` reports the whole stack, it requires a Spec Kit project with Spectra installed — so
-  it cannot answer "what version is this command?" in a bare directory. Three checks need exactly that
-  answer: CI's `VERSION`-parity assertion, the release smoke test, and the clean-room check that a
-  project uninstall leaves the command intact. All three now read the `cli vX.Y.Z` line from bare
-  `spectra`, and the last one runs precisely in the state where `spectra version` correctly refuses.
-  Principle VI now makes that line a MUST, so a future change cannot quietly remove it and break the
-  release procedure without failing loudly.
-
-Modified principles:
-  VI — `spectra cli update` → `spectra update` (the subcommand was retired in CLI 6.0.0); new MUST
-       requiring the CLI's own version to stay readable outside a Spec Kit project
-Added sections: (none)
-Removed sections: (none)
-
-Templates & docs in sync:
-  - .specify/templates/plan-template.md ✅ — Constitution Check gate is generic; no principle names cited
-  - .specify/templates/spec-template.md ✅ — no constitution references
-  - .specify/templates/tasks-template.md ✅ — no constitution references
-  - .kiro/prompts/speckit.*.md ✅ — none pin a constitution version or principle number
-  - README.md ✅ — "Keeping everything up to date" rewritten for the unified commands; 6.0.0 note added
-  - CONTRIBUTING.md ✅ — release smoke test now reads bare `spectra`; stale command references fixed
-  - docs/index.html ✅ — landing page advertises the two unified commands
-  - test/README.md ✅ — clean-room rows 1b, 5, 6b, 9, 10 rebuilt around the new surface
-  - .github/workflows/ci.yml ✅ — VERSION parity asserted via `importlib.metadata` plus the bare-`spectra`
-    banner; a new step covers the retired subcommands
-  - VERSION ✅ — 6.0.0 (CLI channel, MAJOR: the command surface lost two verbs)
-  - spectra/extension.yml, catalog.json ✅ — unchanged at 1.3.1; the channels stayed decoupled, as
-    Principle VI requires
-
-Follow-up TODOs: (none)
-
---- Previous report ---
-Version: 1.3.0 → 1.4.0
-Bump type: MINOR — materially expanded guidance in Principle V.
-Rationale: Principle V asserted two things this repository no longer does. It said there is no build
-  script, and that the Agents table in README.md is updated by hand when a command introduces or
-  changes an agent. Both became untrue with the agent roster: `agents-list.json` is now the single
-  source of truth for what Spectra offers, and `tools/generate_agent_docs.py` rewrites every
-  *structured* agent listing from it — the README Agents table, the Spec Kit core and Roadmap sections
-  of AGENTS_LIST.md, and the Commands table in spectra/README.md. `tools/build_package.py` likewise
-  builds the zip that used to be assembled by hand.
-
-  The amendment adds the roster to Principle V's sync list, states the generated/hand-authored split
-  explicitly (if it is a table or a list it is generated; if it is a paragraph it is written), extends
-  the no-drift clause to AGENTS_LIST.md and the roster, generalizes the landing page's
-  no-hard-coded-versions rule to cover the extension description and agent data the page now fetches,
-  and records the new CI assertions that make the split enforceable rather than aspirational. Also
-  updates two references to the `spectra --update` / README-table workflow that CLI 5.0.0 and the
-  generator replaced.
-
-Modified principles:
-  V  — no-build-script clause removed; roster and generator added to the sync obligations; the
-       generated vs hand-authored boundary stated; no-drift and no-hard-coded rules widened
-  VI — `spectra --update` → `spectra cli update` (the flag was removed in CLI 5.0.0)
-Added sections: (none)
-Removed sections: (none)
-
-Templates & docs in sync:
-  - agents-list.json ✅ — new: the roster, 44 agents
-  - tools/generate_agent_docs.py ✅ — new: owns four generated regions; `--check` verifies them
-  - tools/build_package.py ✅ — new: deterministic zip rebuild
-  - README.md / AGENTS_LIST.md / spectra/README.md ✅ — agent listings are now generated regions
-  - CONTRIBUTING.md ✅ — "Add a new command" names the roster, the generator, and the prose block
-  - .github/workflows/ci.yml ✅ — runs `tools/generate_agent_docs.py --check`
-  - .specify/templates/*.md ✅ — unaffected (the Constitution Check gate is generic)
-
-Follow-up TODOs: (none)
-
---- Previous report ---
-Version: 1.2.0 → 1.3.0
-Bump type: MINOR — materially expanded guidance in Principle VI and Publishing & Distribution
-  Standards; two factual corrections in Principle V.
-Rationale: The installer channel changed shape. `spectra-setup.py` — a standalone script downloaded
-  from a GitHub Release asset — is retired in favour of `spectra_cli/`, installed as a `uv` tool from
-  this repo's git URL and exposing a `spectra` command. Principle VI now describes that channel, and
-  settles the question the change surfaced: with two independently-versioned channels in one repo,
-  which one owns git tags. Answer: the CLI, exclusively — the catalog has nothing to tag, since
-  merging to `main` is its release. Adds the run-time catalog read that makes channel independence
-  real (adding an agent needs no CLI release), the VERSION single-sourcing rule the release workflow
-  enforces, and the no-hard-coded-versions rule for the landing page.
-
-  Two corrections to Principle V, which asserted things that were not true: GitHub Pages is enabled
-  (serving `main` `/docs`), not disabled; and the catalog/package sync is now CI-enforced rather than
-  purely a review obligation.
-
-Principles:
-  I.   Spec-Driven Development (We Dogfood Spec Kit)
-  II.  A Single Self-Contained Extension
-  III. Agent-Agnostic Commands
-  IV.  Context-Aware by Default
-  V.   The Catalog and Package Are Maintained in Sync
-  VI.  Two Independently-Versioned Release Channels
-
-Sections: Publishing & Distribution Standards · Development Workflow ·
-  Version Control & Branching Strategy · Governance
-
-Modified principles:
-  V  — corrects the GitHub Pages claim; adds the no-hard-coded-versions rule for docs/index.html;
-       points the channel cross-reference at the CLI instead of the retired script
-  VI — installer channel → CLI channel; adds the tags-belong-to-the-CLI rule and the run-time
-       catalog read
-Added sections: (none)
-Removed sections: (none)
-
-Templates & docs in sync:
-  - .specify/templates/plan-template.md ✅ (Constitution Check gate is generic)
-  - .specify/templates/spec-template.md ✅
-  - .specify/templates/tasks-template.md ✅
-  - README.md ✅ — Installation rewritten around `uv tool install`; adds "Two release channels"
-  - CONTRIBUTING.md ✅ — "Release the CLI (spectra-cli)" replaces "Release the installer"
-  - catalog.json / spectra/extension.yml (extension/catalog version) ✅ — unchanged at 1.3.0
-  - VERSION (CLI version) ✅ — 3.0.0, succeeding installer v2.0.0
-  - .github/workflows/{ci,release}.yml ✅ — enforce VERSION/tag parity and catalog sync
+Templates requiring updates:
+  - .specify/templates/plan-template.md ✅ no change (Constitution Check is generic)
+  - .specify/templates/spec-template.md ✅ no change
+  - .specify/templates/tasks-template.md ✅ no change
+  - spectra/commands/test-strategy.md ⚠ pending — write target `<artifact-root>/TEST_STRATEGY.md`
+  - spectra/commands/domain-analyzer.md ⚠ pending — write target `<artifact-root>/DOMAIN_ANALYSIS.md`,
+    root resolution, publication check, template (Principle VIII), handoff
+  - spectra/commands/test-plan.md, kb-vault.md ⚠ pending — locate the strategy at its new path
+  - tests/test_doc_output_paths.py ⚠ pending — canonical targets and carve-out docstring
+  - README.md, spectra/README.md, AGENTS_LIST.md, docs/ ⚠ pending — output paths
 
 Follow-up TODOs: (none)
 -->
@@ -633,6 +216,20 @@ document agents define the pattern: `<artifact-root>/adr/ADR-NNN-<kebab-title>.m
 subfolder — `<artifact-root>/threat-model/`, `<artifact-root>/api-design/` — and MUST NOT introduce a
 top-level folder of its own.
 
+**A standing-policy artifact is one flat file at the root, not a series.** Where a document type has
+exactly **one** current answer per project — a policy that a re-run replaces rather than adds to, as the
+constitution is — the command MUST write it as a single file directly in the artifact root, named
+`<artifact-root>/<UPPER_SNAKE_NAME>.md`: no subfolder, no sequence number. A re-run MUST rewrite that file
+in place and MUST NOT create a second one; Git carries the history. The two shipped singletons are
+`<artifact-root>/TEST_STRATEGY.md` (`speckit.spectra.test-strategy`) and `<artifact-root>/DOMAIN_ANALYSIS.md`
+(`speckit.spectra.domain-analyzer`). Everything else in this principle still binds a singleton — the
+declared root, the publication check, the non-publishing fallback, the lowercase project-relative
+directory path, and the read-report-leave-alone rule for earlier locations. Only the filename is
+uppercase, which is what marks it as the one standing document rather than an entry in a series. A
+series artifact — `adr`, `brd`, `impact-analysis`, `defect-rca`, and any agent whose re-run produces a
+new document rather than a replacement — keeps the subfolder and the `NNN` sequence. A new singleton
+MUST be named in this paragraph by amendment; a command MUST NOT declare itself one.
+
 **The root defaults to `docs/` and is declarable per project.** A project overrides it with a single line
 in its constitution, matched case-insensitively:
 
@@ -660,18 +257,23 @@ private folder is moved with one command, while a business requirements document
 cannot be recalled from caches, clones, or forks.
 
 **Spec Kit's own locations are outside this rule.** `.specify/` (constitution, memory, extension assets)
-and `specs/` belong to Spec Kit, and a command writing there — as `speckit.spectra.domain-analyzer` does
-with `.specify/memory/domain-analysis.md` — is writing **context** for another command to consume, not a
-deliverable for a human to read. The rule governs deliverables.
+and `specs/` belong to Spec Kit, and a command writing there — as `speckit.spectra.flaky-test-detector`
+does with its resumable task list in `.specify/memory/` — is writing **context** for another command to
+consume, not a deliverable for a human to read. The rule governs deliverables. A document a human
+reviews and edits before handing it on — a guardrail proposal an SME ticks — is a deliverable, even
+when another command consumes it next.
 
 **Paths MUST be lowercase and project-relative.** Not `Docs/`, not `/docs/`. This is correctness, not
 style: mixed case is a distinct directory on Linux but silently aliases into an existing `docs/` on a
 case-insensitive macOS filesystem, so one command produces two different layouts; and a leading slash
 names the filesystem root rather than the project.
 
-**A location an earlier version wrote to MUST be read, reported, and left alone.** That covers both the
-pre-1.6.0 folders (`Docs/ADR/`, `brds/`) and the default root itself once a project declares a different
-one. The command MUST read those locations — matching case-insensitively — for context and for sequence
+**A location an earlier version wrote to MUST be read, reported, and left alone.** That covers the
+pre-1.6.0 folders (`Docs/ADR/`, `brds/`), the pre-singleton locations
+(`docs/test-strategy/TEST_STRATEGY.md`, `.specify/memory/domain-analysis.md`), and the default root itself
+once a project declares a different one. For a singleton the read is for its prior content — answers,
+decisions, an SME's ticks — rather than for sequence continuity, and where both the earlier and the
+canonical file exist the canonical one wins. The command MUST read those locations — matching case-insensitively — for context and for sequence
 continuity, so the next number is one greater than the highest found across the canonical folder *and*
 every superseded one. It MUST report the superseded folder once, name the canonical one, and offer the
 move as a command the user can run. It MUST NOT move, rename, modify, or delete anything there itself.
@@ -685,7 +287,11 @@ safe is a fact about the project that cannot be known when the command is author
 convention most teams expect, and the minority who publish `docs/` need an escape hatch that costs them
 one line and then applies everywhere. Reading superseded locations rather than ignoring them is what keeps
 a cut-over from producing a duplicate `ADR-001`; refusing to move them is what keeps a documentation agent
-inside the write scope it promises.
+inside the write scope it promises. A singleton is the exception because a subfolder and a sequence number
+both describe a series, and a standing policy is not one: a folder that can only ever hold one file is
+noise, and a `001-` prefix on a document that is rewritten in place promises a `002-` that never comes.
+Writing it flat at the root, under a fixed uppercase name, gives the one path a reader, a link, and the
+next command can rely on.
 
 ### VIII. Documents Are Shaped by Overridable Templates
 
@@ -863,4 +469,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.8.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-09-21
+**Version**: 1.9.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-15

@@ -163,8 +163,10 @@ the answer this project already gave.
   that folder. Reject a value with a leading slash or a `..` segment, say why, and fall back to the
   default.
 - Otherwise the default root is the conventional documentation folder, `docs`.
-- Look for the strategy at `<artifact-root>/test-strategy/TEST_STRATEGY.md` — by default,
-  `docs/test-strategy/TEST_STRATEGY.md`.
+- Look for the strategy at `<artifact-root>/TEST_STRATEGY.md` — by default, `docs/TEST_STRATEGY.md`.
+  If it is not there, look at the location versions before 1.19.0 wrote,
+  `<artifact-root>/test-strategy/TEST_STRATEGY.md`, and use that file if it exists; the root-level file
+  wins when both do.
 
 **This resolution is read-only, and three obligations that attach to *writing* into the artifact root
 deliberately do not apply here:** you perform no published-site check, you recommend no alternative

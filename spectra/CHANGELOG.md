@@ -3,6 +3,47 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.19.0] - 2026-10-15
+
+### Changed
+- **`domain-analyzer` writes its proposal to `<artifact-root>/DOMAIN_ANALYSIS.md`** — by default
+  `docs/DOMAIN_ANALYSIS.md` — instead of `.specify/memory/domain-analysis.md`. An SME reviews, edits, and
+  ticks that file before it reaches the constitution, so it is a deliverable and now sits with every
+  other document a human reviews. It resolves the root the way every document agent does: the
+  constitution's `Artifact root:` line first, then the publication check before defaulting into `docs/`,
+  taking the non-publishing option when no choice can be obtained.
+- **`domain-analyzer` ends with a ready-to-paste handoff.** Its report links the file it actually wrote
+  and gives the exact `/speckit-constitution` prompt that adopts only the checked guardrails. It still
+  never invokes the constitution command itself, and gives no prompt when nothing is left to adopt.
+- **A re-run of `domain-analyzer` no longer re-offers what an SME already decided.** A candidate's ID is
+  now frozen once written, so a guardrail the SME reworded keeps it, and regenerating its original
+  wording matches instead of reappearing as new. A fresh candidate is also matched by intent, within
+  its section, against every existing item — checked, unchecked, or edited — so an item left unticked
+  stays rejected rather than coming back under a new ID.
+- **Guardrails already in the constitution are marked `status: adopted`.** On a re-run, a checked item
+  whose intent the constitution now asserts gets `adopted: <Principle>`, with its tick and wording left
+  as they were, and the handoff contract excludes `adopted` items from the selected set. Running the
+  `/speckit-constitution` prompt again therefore adopts only what is genuinely new. An adopted item is
+  never reverted; if its principle later stops covering it, the drift is reported.
+- **`test-strategy` writes `<artifact-root>/TEST_STRATEGY.md`** — by default `docs/TEST_STRATEGY.md` —
+  instead of `<artifact-root>/test-strategy/TEST_STRATEGY.md`. A folder that can only ever hold one file
+  added nothing. Its handoff now gives the same linked, ready-to-paste `/speckit-constitution` prompt.
+- **`test-plan` and `kb-vault` follow the strategy to its new path.** `test-plan` looks for
+  `TEST_STRATEGY.md` at the root first and falls back to the earlier location; `kb-vault`'s reserved map
+  routes a supplied test strategy or domain analysis to the root-level singleton.
+
+### Added
+- **`domain-analysis-template`**, registered and resolved through Spec Kit's template stack like every
+  other Spectra document. Override at `.specify/templates/overrides/domain-analysis-template.md`. The
+  checkbox-per-candidate format and its metadata keys stay with the command, because
+  `/speckit-constitution` reads them.
+
+### Migration
+- **Nothing is moved for you.** On the next run each command reads the file an earlier version wrote —
+  `.specify/memory/domain-analysis.md` or `docs/test-strategy/TEST_STRATEGY.md` — so prior answers and
+  every SME tick carry over into the new file. It reports the earlier file once and offers the
+  `git mv` / `git rm` to run; it never moves, edits, or deletes it itself.
+
 ## [1.18.1] - 2026-09-20
 
 ### Changed

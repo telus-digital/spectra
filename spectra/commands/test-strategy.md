@@ -1,5 +1,5 @@
 ---
-description: "Read the project, classify it greenfield or brownfield from evidence, ask five judgment calls the repository cannot settle — one at a time, each with a recommendation and the evidence behind it — and write one testing strategy covering unit, integration, API contract, end-to-end, and a coverage floor the project can actually hold, to <artifact-root>/test-strategy/TEST_STRATEGY.md. Then draft the constitution amendment that would bake it into every work session and hand it to /speckit-constitution. Never asks what it can measure, never lets an answer move a measured figure, never edits the constitution, never edits source, tests, or CI, and makes no network request."
+description: "Read the project, classify it greenfield or brownfield from evidence, ask five judgment calls the repository cannot settle — one at a time, each with a recommendation and the evidence behind it — and write one testing strategy covering unit, integration, API contract, end-to-end, and a coverage floor the project can actually hold, to <artifact-root>/TEST_STRATEGY.md. Then draft the constitution amendment that would bake it into every work session and hand it to /speckit-constitution. Never asks what it can measure, never lets an answer move a measured figure, never edits the constitution, never edits source, tests, or CI, and makes no network request."
 ---
 
 # Propose a testing strategy this project can actually hold
@@ -182,7 +182,7 @@ floor, and keep a shared section only for what genuinely applies repository-wide
 
 ## Step 4 — Resolve where the strategy will live
 
-The document goes to `<artifact-root>/test-strategy/TEST_STRATEGY.md`. Resolve the root in this order.
+The document goes to `<artifact-root>/TEST_STRATEGY.md` — one flat file at the root, no subfolder. Resolve the root in this order.
 
 **1. Read the declared root.** Look in the constitution for a line of this form, matched
 case-insensitively:
@@ -210,17 +210,31 @@ Finding any of them with no declared root, surface it, recommend `documents/`, a
 **Where the choice cannot be obtained, take the non-publishing option** — a strategy written to the
 wrong folder is a nuisance, and one published to the web may not be.
 
-**3. Otherwise default**, giving `docs/test-strategy/TEST_STRATEGY.md`, which is what most projects
+**3. Otherwise default**, giving `docs/TEST_STRATEGY.md`, which is what most projects
 will see.
 
 **You may offer the declaration line; you must never write it.** If the project would benefit from
 declaring a root, show the user the exact line to add and let them add it. Producing a document is not
 a licence to edit governance.
 
-**One file, no sequence number.** Other Spectra document agents number their output because they
-produce a series. A test strategy is a standing policy with exactly one current answer, like the
-constitution — so the filename is fixed, the path is stable enough to link to, and a re-run rewrites it
-in place. Git carries the history.
+**One file, at the root, no sequence number.** Other Spectra document agents write into a subfolder and
+number their output because they produce a series. A test strategy is a standing policy with exactly one
+current answer, like the constitution — so Principle VII makes it a singleton: the filename is fixed, it
+sits directly in the root, the path is stable enough to link to, and a re-run rewrites it in place. Git
+carries the history.
+
+**Read the earlier location, and leave it alone.** Versions before 1.19.0 wrote
+`<artifact-root>/test-strategy/TEST_STRATEGY.md` (matched case-insensitively). If that file exists and
+the root-level one does not, read it as the prior strategy — see "Re-running" below — and write the new
+document to the root. If both exist, the root-level file is the prior strategy and the earlier one is
+context only. Either way, report the earlier file once, name the canonical path, and offer the move as a
+command the user can run:
+
+```bash
+git mv docs/test-strategy/TEST_STRATEGY.md docs/TEST_STRATEGY.md
+```
+
+Never move, rename, modify, or delete it yourself.
 
 ## Step 5 — The clarification round
 
@@ -607,6 +621,14 @@ a subtly malformed constitution rather than an obviously broken one.
 ### The handoff
 
 Tell the user to run `/speckit-constitution` referencing the strategy document. **Do not invoke it.**
+Give the document as a link to the path you actually wrote — resolved root, not the default — and the
+command as one ready-to-paste line:
+
+```text
+Next: review the proposed amendment in [TEST_STRATEGY.md](docs/TEST_STRATEGY.md), then run:
+
+/speckit-constitution Adopt the checked items in the "Proposed constitution amendment" section of docs/TEST_STRATEGY.md
+```
 
 Two reasons, and both matter: a portable command cannot rely on one agent's way of calling another, and
 chaining would take the user out of their own governance change at exactly the moment they should be
@@ -616,7 +638,8 @@ looking at it.
 
 - **Rewrite the same file in place.** Never create a second strategy file. No sequence number, no
   supersede marker, no index. Git carries the history.
-- **Read the prior strategy first** and record it as an input.
+- **Read the prior strategy first** and record it as an input — the root-level file, or the earlier
+  `test-strategy/` location when only that exists (Step 4).
 - **Pre-fill the clarification round from the answers it recorded.** Offer each as that question's
   proposed answer — *"last run you said this; still true?"* — so a re-run confirms rather than
   interrogating a second time. Where the prior document recorded a question as not asked, ask it

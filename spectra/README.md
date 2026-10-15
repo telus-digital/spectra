@@ -135,11 +135,16 @@ A foundation-phase command that reads your project, infers its **business domain
 2. Infers your business domain and summarizes the evidence.
 3. Generates atomic candidate guardrails, each with a stable ID, a declarative/testable statement, a
    target constitution section, file-path evidence, and a confidence rating.
-4. Writes them to `.specify/memory/domain-analysis.md`, with **every item left unchecked (opt-in)**.
+4. Writes them to `docs/DOMAIN_ANALYSIS.md` — or `DOMAIN_ANALYSIS.md` at your declared artifact root —
+   with **every item left unchecked (opt-in)**, shaped by `domain-analysis-template` (override at
+   `.specify/templates/overrides/domain-analysis-template.md`).
+5. Ends with a link to the file and a ready-to-paste `/speckit-constitution` prompt for the handoff.
 
 It never edits the constitution or your source — its only write is its own proposal file. Review the
-file, check `- [x]` the guardrails you want (edit wording freely), then run `/speckit-constitution`
-referencing it to adopt **only the checked items**.
+file, check `- [x]` the guardrails you want (edit wording freely), then run the `/speckit-constitution`
+prompt it gives you to adopt **only the checked items**. A proposal an earlier version left at
+`.specify/memory/domain-analysis.md` is read on the next run, so your ticks carry over; the command
+reports it and leaves it for you to remove.
 
 Usage (Claude):
 
@@ -149,7 +154,11 @@ Usage (Claude):
 
 No arguments required — it analyzes the whole project. Optionally pass a focus hint, e.g.
 `/speckit-spectra-domain-analyzer focus on security`. Re-running preserves prior decisions, edits,
-and ordering; only genuinely new candidates are appended under a dated heading.
+and ordering; only genuinely new candidates are appended under a dated heading. A guardrail you
+reworded keeps its ID, so its original wording is not offered back to you, and an unticked item stays
+rejected rather than resurfacing. A ticked item the constitution now carries is marked
+`status: adopted`, and the handoff prompt skips it, so a second `/speckit-constitution` run does not
+adopt it twice.
 
 ---
 
@@ -201,7 +210,8 @@ and template:
 | an architecture decision | `<artifact-root>/adr/` | `adr-template` |
 | a business requirements document | `<artifact-root>/brd/` | `brd-template` |
 | an impact analysis | `<artifact-root>/impact-analysis/` | `impact-analysis-template` |
-| a test strategy | `<artifact-root>/test-strategy/` | `test-strategy-template` |
+| a test strategy | `<artifact-root>/TEST_STRATEGY.md` | `test-strategy-template` |
+| a domain analysis | `<artifact-root>/DOMAIN_ANALYSIS.md` | `domain-analysis-template` |
 | a defect root cause analysis | `<artifact-root>/defect-rca/` | `defect-rca-template` |
 | anything else | `<artifact-root>/<category>/` | `<category>-template`, else `kb-document-template` |
 
@@ -647,7 +657,7 @@ features to plan. It:
 5. Works four lenses — unit, integration, API contract, end-to-end — each either applicable with a named
    approach or not applicable with a stated reason.
 6. Derives a **coverage floor** from the baseline it could establish, with a ratchet toward the target.
-7. Writes one document to `docs/test-strategy/TEST_STRATEGY.md`, or your declared artifact root.
+7. Writes one document to `docs/TEST_STRATEGY.md`, or `TEST_STRATEGY.md` at your declared artifact root.
 8. Checks whether the strategy is already in your constitution, drafts the amendment if it is not, and
    hands it to `/speckit-constitution`.
 

@@ -168,9 +168,11 @@ the agent runs.
   `adr` → `<root>/adr/`, `brd` → `<root>/brd/`, a threat-model agent → `<root>/threat-model/`. Never a new
   top-level folder, never a leading slash, never mixed case (`Docs/` is a separate directory on Linux and
   silently aliases into `docs/` on macOS). Context written for another command to consume is different —
-  that belongs in Spec Kit's own `.specify/` or `specs/`, as `domain-analyzer` does with
-  `.specify/memory/domain-analysis.md`. `tests/test_doc_output_paths.py` enforces this on the shipped
-  command files.
+  that belongs in Spec Kit's own `.specify/` or `specs/`, as `flaky-test-detector` does with its task
+  list in `.specify/memory/`. A **standing-policy singleton** — one current version, rewritten in place —
+  is the one exception to the subfolder: it is a single flat file at the root, `<root>/TEST_STRATEGY.md`
+  and `<root>/DOMAIN_ANALYSIS.md`, and a new one is added only by amending Principle VII.
+  `tests/test_doc_output_paths.py` enforces this on the shipped command files.
 
   Three related duties. **Check before defaulting into `docs/`:** it is GitHub Pages' only non-root branch
   source and the default source directory for MkDocs and Docusaurus, so look for `mkdocs.yml`,

@@ -58,7 +58,8 @@ RESERVED = (
     "<artifact-root>/adr/",
     "<artifact-root>/brd/",
     "<artifact-root>/impact-analysis/",
-    "<artifact-root>/test-strategy/",
+    "| `<artifact-root>/` | `TEST_STRATEGY.md` |",
+    "| `<artifact-root>/` | `DOMAIN_ANALYSIS.md` |",
     "<artifact-root>/defect-rca/",
 )
 
@@ -198,7 +199,7 @@ class ItJoinsExistingSetsRatherThanStartingNewOnes(unittest.TestCase):
 
     def test_it_adopts_the_owning_agents_template(self):
         for template in ("adr-template", "brd-template", "impact-analysis-template",
-                         "test-strategy-template", "defect-rca-template"):
+                         "test-strategy-template", "domain-analysis-template", "defect-rca-template"):
             with self.subTest(template=template):
                 self.assertIn(template, text(), f"the reserved map no longer names {template}")
 
