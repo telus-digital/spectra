@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-10-15T00:00:00Z",
+  "updated_at": "2026-09-18T00:00:00Z",
   "catalog_url": "https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json",
   "extensions": {
     "spectra": {
@@ -10,7 +10,7 @@
       "category": "workflow",
       "effect": "read-write",
       "author": "TELUS Digital",
-      "version": "1.20.0",
+      "version": "1.21.0",
       "repository": "https://github.com/telus-digital/spectra",
       "homepage": "https://github.com/telus-digital/spectra/tree/main/spectra",
       "documentation": "https://github.com/telus-digital/spectra/blob/main/spectra/README.md",
@@ -20,7 +20,7 @@
         "speckit_version": ">=0.11.0"
       },
       "provides": {
-        "commands": 12
+        "commands": 13
       },
       "tags": [
         "documentation",
@@ -57,7 +57,10 @@
         "deployment",
         "deployment-strategy",
         "release",
-        "operations"
+        "operations",
+        "uat",
+        "regression",
+        "acceptance-testing"
       ],
       "verified": false,
       "downloads": 0,

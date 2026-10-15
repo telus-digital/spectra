@@ -1,21 +1,23 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version: 1.9.0 → 1.10.0
+Version: 1.10.0 → 1.11.0
 Bump type: MINOR — materially expanded guidance in an existing principle. No principle added, removed,
   or renamed.
-Rationale: A third agent produces a standing policy rather than a series — `deployment-strategy`
-  (spec 031). Principle VII says a new singleton MUST be named by amendment and a command MUST NOT
-  declare itself one, so the name lands here before the command ships. It is the first singleton with
-  no pre-singleton past, so the principle now says a singleton without an earlier location has nothing
-  to read and needs no migration.
+Rationale: A second command now writes a per-feature, human-read deliverable beside the specification
+  it concerns — `speckit.spectra.uat` writes `specs/<feature>/uat-report.md` and its `uat/` evidence,
+  as `speckit.spectra.test-plan` writes `specs/<feature>/test-plan.md` (spec 032). Spec 021 argued that
+  placement once, in Complexity Tracking, and recorded this amendment as "available but not taken". A
+  reading argued twice is a rule, so the Spec Kit carve-out in Principle VII now states it.
 
 Modified principles:
   - VII. Document Artifacts Live Under One Declared Root (title unchanged)
-    - changed: "two shipped singletons" → three; added `<artifact-root>/DEPLOYMENT_STRATEGY.md`
-      (`speckit.spectra.deployment-strategy`)
-    - added: a singleton with no earlier location has nothing to read and needs no migration
-    - unchanged: the list of earlier locations a command reads, reports, and leaves alone
+    - added: per-feature deliverables written beside the specification they concern are outside the
+      artifact-root rule, named: `specs/<feature>/test-plan.md` (`speckit.spectra.test-plan`) and
+      `specs/<feature>/uat-report.md` with its `uat/` evidence (`speckit.spectra.uat`)
+    - added: such a command writes nowhere else, and stops when the specification lies outside the
+      project it was invoked in
+    - unchanged: singletons, the declared root, the publication check, legacy reads
 
 Added sections: none
 Removed sections: none
@@ -24,10 +26,10 @@ Templates requiring updates:
   - .specify/templates/plan-template.md ✅ no change (Constitution Check is generic)
   - .specify/templates/spec-template.md ✅ no change
   - .specify/templates/tasks-template.md ✅ no change
-  - spectra/commands/deployment-strategy.md ✅ added in the same change (spec 031)
-  - spectra/commands/kb-vault.md ✅ reserved map gains DEPLOYMENT_STRATEGY.md
-  - tests/test_doc_output_paths.py ✅ SINGLETON accepts an entry with no earlier location
-  - CONTRIBUTING.md ✅ singleton list
+  - spectra/commands/test-plan.md ✅ cites the carve-out (spec 032)
+  - spectra/commands/uat.md ✅ added in the same change (spec 032)
+  - tests/test_doc_output_paths.py ✅ both commands asserted as beside-the-spec documents
+  - CONTRIBUTING.md ✅ carve-out wording
 
 Follow-up TODOs: (none)
 -->
@@ -258,6 +260,18 @@ consume, not a deliverable for a human to read. The rule governs deliverables. A
 reviews and edits before handing it on — a guardrail proposal an SME ticks — is a deliverable, even
 when another command consumes it next.
 
+**A per-feature deliverable lives beside the specification it concerns.** A document that is *about one
+feature* — read by a human, and consumed next to that feature's `tasks.md` — is written into the
+feature's own `specs/<feature>/` directory rather than under the artifact root, because moving it would
+sever it from the specification a reader is holding, and the directory already supplies the sequence a
+`NNN` prefix would repeat. The shipped per-feature deliverables are `specs/<feature>/test-plan.md`
+(`speckit.spectra.test-plan`) and `specs/<feature>/uat-report.md` with its run-stamped `uat/` evidence
+(`speckit.spectra.uat`). Such a command MUST write nowhere else, MUST take the feature as an explicit
+input rather than infer it, and MUST stop before writing when the specification lies outside the project
+it was invoked in — its destination comes from its input, so that is where the write scope is checked. A
+new per-feature deliverable MUST be named in this paragraph by amendment. Everything else in Principle
+VIII still binds it: it is shaped by a registered, overridable template.
+
 **Paths MUST be lowercase and project-relative.** Not `Docs/`, not `/docs/`. This is correctness, not
 style: mixed case is a distinct directory on Linux but silently aliases into an existing `docs/` on a
 case-insensitive macOS filesystem, so one command produces two different layouts; and a leading slash
@@ -464,4 +478,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.10.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-15
+**Version**: 1.11.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-15

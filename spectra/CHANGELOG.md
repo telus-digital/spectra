@@ -3,6 +3,57 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.21.0] - 2026-10-15
+
+### Added
+- **`speckit.spectra.uat`** — the UAT Runner, in the Testing & Quality phase. It runs a feature's
+  user-acceptance scenarios **only on explicit request** — invoked directly, or by accepting an offer made
+  after implement. It reads the UAT phase in the feature's `tasks.md` and the Suggested UAT scenarios in
+  its `test-plan.md`, shows the exact command it would use to start the build and asks before starting
+  anything, then performs the scenarios the agent can actually drive in that session. Evidence —
+  screenshots, terminal or request transcripts — goes to `specs/<feature>/uat/<run-stamp>/`, never
+  overwriting an earlier run. It ticks a `[UAT]` task only when it observed the scenario pass, linking the
+  evidence on the same line; human-only, failed, and blocked scenarios stay open with a reason. It writes
+  `specs/<feature>/uat-report.md` with a cumulative run log. The feature path is required and never
+  inferred; it never edits source, tests, CI, the spec, the test plan, or the constitution, masks or
+  withholds anything that might be a secret, and makes no network request beyond what the build under
+  test makes.
+- **`uat-report-template`**, registered and resolved through Spec Kit's template stack. Override at
+  `.specify/templates/overrides/uat-report-template.md`.
+- **Two optional hooks.** After specify, an offer to generate a test plan for the spec just written.
+  After implement, an offer to run UAT, ordered before the existing pull-request offer. Both only ask.
+
+### Changed
+- **`test-strategy` works six lenses instead of four**: unit, integration, API contract, end-to-end,
+  **UAT** (who may execute it, and what counts as evidence on each surface the project has) and
+  **Regression** (the gate suite, where it runs, and whether a fixed defect earns a test). It records
+  each lens's applicability and the lens-ownership map in front matter, so every test plan inherits them.
+  Still five questions: question 3 now also asks which journeys deserve UAT and who signs it off, and
+  question 5 whether an AI agent may execute UAT. Where UAT applies, the drafted constitution amendment
+  carries a clause that the implement command never executes or ticks UAT tasks.
+- **`test-plan` takes its lens set from the strategy, not just the names.** A lens the strategy rules out
+  is unavailable, and a criterion that only it could verify is listed as "ruled out by the strategy". A
+  strategy that predates UAT and regression, or no strategy at all, is said loudly. Two new sections:
+  **Suggested UAT scenarios** (every user story gets one or a reason; executor `agent`, `human`, or
+  `either`) and **Regression scope** (the existing tests that must stay green, cited). It now honours the
+  strategy's ownership map, ruled-out tools, known risk areas, favoured journeys, per-surface floors, and
+  provenance, and flags a strategy that looks stale.
+- **`test-plan`'s handoff writes into `plan.md`.** The printed planning prompt links the written test
+  plan and asks for a "Testing obligations" section in `plan.md` — which the core tasks command reads —
+  so the tasks include tests at the assigned levels, keep the regression scope green, and end with a UAT
+  phase that the implement command does not execute.
+
+### Fixed
+- `test-plan`'s spec-resolution step said "Four outcomes" and listed six.
+
+### Upgrading
+- Re-run `speckit.spectra.test-strategy` to add the UAT and Regression lenses to an existing
+  `TEST_STRATEGY.md`. Until then, test plans omit both sections and say why.
+
+### Governance
+- Spectra's own constitution (1.11.0) states, in Principle VII, that a per-feature deliverable lives beside
+  the specification it concerns, and names `test-plan.md` and `uat-report.md`.
+
 ## [1.20.0] - 2026-10-15
 
 ### Added

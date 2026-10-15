@@ -268,68 +268,87 @@ class SingletonOutputPaths(unittest.TestCase):
 
 
 class TheOutputIsNotAnArtifactRootDocument(unittest.TestCase):
-    """`test-plan` is the first document command that is deliberately NOT in CANONICAL.
+    """Per-feature deliverables are deliberately NOT in CANONICAL or SINGLETON.
 
     Every assertion `DOCUMENT_COMMANDS` drives below describes a command that *writes* into the artifact
     root: it must contain the literal `never write it`, name all six publication signals, and recommend
-    `documents/`. `speckit.spectra.test-plan` does none of that, because it writes beside the
-    specification it was handed — `specs/<feature>/test-plan.md` — and resolves the declared root only to
-    *locate* another agent's strategy document. Adding it to `CANONICAL` would demand three clauses that
+    `documents/`. The commands listed here do none of that, because each writes beside the specification
+    of the feature it was handed — `specs/<feature>/…` — and at most resolves the declared root to
+    *locate* another agent's strategy document. Adding one to `CANONICAL` would demand three clauses that
     would be false in the shipped command, and would assert a write target it does not have.
 
     Which leaves a gap this class exists to close: in a dict, "deliberately absent" and "someone forgot"
     look exactly the same. So the omission is asserted, with its reason, and a future maintainer who adds
-    the entry fails a test that explains why the entry does not belong. The reading of Principle VII's
-    `specs/` carve-out that permits the placement is argued in specs/021-test-plan-agent/plan.md under
-    Complexity Tracking.
+    the entry fails a test that explains why the entry does not belong. `test-plan` was the first (spec
+    021, argued in its Complexity Tracking); `uat` is the second (spec 032), and with two the carve-out
+    became explicit in Principle VII ("A per-feature deliverable lives beside the specification it
+    concerns"), which `TheConstitutionStatesTheRule` pins.
     """
 
-    COMMAND = "test-plan.md"
+    # command file -> the file it writes beside the specification
+    BESIDE_THE_SPEC = {
+        "test-plan.md": "test-plan.md",
+        "uat.md": "uat-report.md",
+    }
 
-    def test_the_command_ships(self):
-        """Guard the guard: if the file is gone, the assertions below pass for the wrong reason."""
-        self.assertTrue(
-            (COMMANDS_DIR / self.COMMAND).is_file(),
-            f"{self.COMMAND} no longer ships; this class asserts a deliberate omission about it",
-        )
+    def test_each_command_ships(self):
+        """Guard the guard: if a file is gone, the assertions below pass for the wrong reason."""
+        for command in self.BESIDE_THE_SPEC:
+            with self.subTest(command=command):
+                self.assertTrue(
+                    (COMMANDS_DIR / command).is_file(),
+                    f"{command} no longer ships; this class asserts a deliberate omission about it",
+                )
 
-    def test_it_is_deliberately_absent_from_canonical(self):
-        self.assertNotIn(
-            self.COMMAND,
-            CANONICAL,
-            f"{self.COMMAND} was added to CANONICAL, which puts it into DOCUMENT_COMMANDS and asserts "
-            "it writes into the artifact root. It does not: it writes test-plan.md beside the "
-            "specification it was given, and reads the declared root only to find TEST_STRATEGY.md. "
-            "See specs/021-test-plan-agent/plan.md, Complexity Tracking, before changing this",
-        )
+    def test_each_is_deliberately_absent_from_canonical_and_singleton(self):
+        for command in self.BESIDE_THE_SPEC:
+            with self.subTest(command=command):
+                self.assertNotIn(
+                    command,
+                    CANONICAL,
+                    f"{command} was added to CANONICAL, which asserts it writes into the artifact root. "
+                    "It does not: it writes beside the specification of the feature it was given. See "
+                    "Principle VII's per-feature paragraph before changing this",
+                )
+                self.assertNotIn(command, SINGLETON, f"{command} is not a standing-policy singleton")
 
-    def test_it_writes_beside_the_specification_instead(self):
-        text = (COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8")
-        self.assertIn(
-            "test-plan.md",
-            text,
-            f"{self.COMMAND} no longer names its output file",
-        )
-        self.assertIn(
-            "no artifact root is resolved for this output",
-            " ".join(text.split()).lower(),
-            f"{self.COMMAND} no longer states that it resolves no artifact root for its output; that "
-            "sentence is what tells a reader the omission above is a decision",
-        )
+    def test_each_names_its_beside_the_spec_output(self):
+        for command, output in self.BESIDE_THE_SPEC.items():
+            with self.subTest(command=command):
+                text = (COMMANDS_DIR / command).read_text(encoding="utf-8")
+                self.assertIn(output, text, f"{command} no longer names its output file, {output}")
+                self.assertIn(
+                    "no artifact root is resolved for this output",
+                    " ".join(text.split()).lower(),
+                    f"{command} no longer states that it resolves no artifact root for its output; that "
+                    "sentence is what tells a reader the omission above is a decision",
+                )
 
-    def test_it_still_reads_the_declared_root_for_the_lookup(self):
+    def test_the_constitution_names_both(self):
+        text = CONSTITUTION.read_text(encoding="utf-8")
+        paragraph = text.split("A per-feature deliverable lives beside the specification")[1][:1500]
+        for output in self.BESIDE_THE_SPEC.values():
+            with self.subTest(output=output):
+                self.assertIn(
+                    f"specs/<feature>/{output}",
+                    paragraph,
+                    f"Principle VII's per-feature paragraph no longer names {output}; a new per-feature "
+                    "deliverable must be named there by amendment",
+                )
+
+    def test_test_plan_still_reads_the_declared_root_for_the_lookup(self):
         """Read-only use of the declaration, which must not silently disappear either."""
-        text = (COMMANDS_DIR / self.COMMAND).read_text(encoding="utf-8")
+        text = (COMMANDS_DIR / "test-plan.md").read_text(encoding="utf-8")
         self.assertIn(
             ROOT_DECLARATION,
             text,
-            f"{self.COMMAND} no longer resolves the project's declared artifact root; a project that "
+            "test-plan.md no longer resolves the project's declared artifact root; a project that "
             "declares one would have its strategy document looked for in the wrong place",
         )
         self.assertIn(
             "this resolution is read-only",
             " ".join(text.split()).lower(),
-            f"{self.COMMAND} no longer marks the root resolution read-only; without that, the three "
+            "test-plan.md no longer marks the root resolution read-only; without that, the three "
             "write-time obligations it skips look like omissions rather than non-applicable",
         )
 

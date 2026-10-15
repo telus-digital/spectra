@@ -32,7 +32,7 @@
 <!--
   Out of scope matters more than in scope. It is the line you point at later when someone asks why a
   bug wasn't caught — so every exclusion names who covers it, or says that nobody does.
-  Give the user story titles here once, so USn-ACn references in section 3 are legible.
+  Give the user story titles here once, so USn-ACn references in sections 3 and 4 are legible.
 -->
 
 **In scope**
@@ -77,17 +77,46 @@
 |---|---|---|---|---|---|
 | T1 | [what must be true, one line] | [FR-001 / SC-002 / US1-AC1] | [level] | P1 | [test path, or "—"] |
 
-**Levels in use**: [the resolved vocabulary] — from [the strategy document's path / the constitution / convention]
+**Lens set in use**: [the resolved lenses and the condition levels among them] — from [the strategy document's path / the constitution / the defaults]
 
 **Explicitly not covered**
 
 | Verifies | Reason | Remedy |
 |---|---|---|
-| [specification item] | [unresolved clarification / untestable as written / out of scope / deferred] | [what would resolve it] |
+| [specification item] | [unresolved clarification / untestable as written / out of scope / deferred / ruled out by the strategy] | [what would resolve it] |
 
 ---
 
-## 4. Environment & Data
+## 4. Suggested UAT Scenarios
+
+<!--
+  User-visible journeys, judged in the user's own terms — what a stakeholder would do to decide whether
+  the feature is acceptable. Not click scripts. Every user story appears here at least once, or under
+  "Explicitly not covered" with its reason.
+  Executor: agent (the surface can be driven and the strategy permits it), human, or either.
+  Each becomes one task in a final UAT phase that the implement command does not execute.
+-->
+
+| ID | Journey | Expected outcome | Verifies | Priority | Executor | Evidence |
+|---|---|---|---|---|---|---|
+| UAT1 | [what the user sets out to do] | [what they see or get] | [US1-AC1] | P1 | [agent / human / either] | [screenshot / transcript] |
+
+---
+
+## 5. Regression Scope
+
+<!--
+  Existing tests that must stay green because they touch what this feature changes, plus any new
+  regression test a risk justifies. If nothing was found, say what was searched and where.
+-->
+
+| Test | Touches | Kind |
+|---|---|---|
+| [path to an existing test] | [module or identifier the feature changes] | [existing / risk-driven addition — the risk] |
+
+---
+
+## 6. Environment & Data
 
 <!-- If someone else cannot run these tests from this section alone, it is too thin. -->
 
@@ -97,7 +126,7 @@
 
 ---
 
-## 5. Exit Criteria
+## 7. Exit Criteria
 
 <!--
   The bar for a go/no-go call, as plain statements — no checkboxes. Each one carries its threshold and
@@ -107,6 +136,7 @@
 | Criterion | Threshold | Confirmed by |
 |---|---|---|
 | [what must hold] | [the bar, numeric where the spec allows] | [role] |
+| All P1 UAT scenarios passed | [every P1 scenario's evidence linked from its task] | [role] |
 
 ---
 

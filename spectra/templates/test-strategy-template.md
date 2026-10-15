@@ -114,6 +114,41 @@
 
 **Tools**: [tool — tier and evidence]
 
+## UAT
+
+<!--
+  Applicable or not, with the reason either way. UAT is judged in the user's own terms against an
+  assembled build — never self-certified by whoever wrote the code.
+  Executors: human, agent on explicit request, or both. Evidence: one line per surface this project
+  actually has (screenshot for browser, transcript for cli or http). The journeys it favours.
+-->
+
+| Field | |
+|---|---|
+| **Applicability** | [applicable / not applicable — the reason] |
+| **Proves** | that the feature is acceptable to its user, in the user's own terms |
+| **Boundary** | nothing about the implementation — only that the build is assembled |
+| **Executors** | [human / agent on explicit request / both] — [source: question 5, or convention] |
+| **Evidence** | [surface: what counts as evidence] |
+| **Favoured journeys** | [from question 3] |
+| **Today** | [what acceptance looks like now, with citations — brownfield only] |
+| **Approach** | [how scenarios are derived and who signs them off] |
+
+## Regression testing
+
+<!--
+  Regression is not a level and not a tool: it is the obligation that what passes today keeps passing.
+  Name the gate suite and cite where it runs, or say it runs nowhere automatically.
+-->
+
+| Field | |
+|---|---|
+| **Applicability** | [applicable / not applicable — the reason] |
+| **Gate** | [the suite that must stay green] |
+| **Where it runs** | [cited workflow, or "runs nowhere automatically"] |
+| **Defect rule** | [does a fixed defect earn a regression test — and its provenance] |
+| **Today** | [what exists, with citations — brownfield only] |
+
 ## Coverage floor
 
 <!--

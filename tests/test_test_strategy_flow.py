@@ -55,6 +55,11 @@ def command_text() -> str:
     return COMMAND.read_text(encoding="utf-8")
 
 
+def flat(text: str) -> str:
+    """Lowercased, whitespace collapsed — so an assertion survives a re-wrap of the prose."""
+    return " ".join(text.split()).lower()
+
+
 def front_matter_example() -> str:
     """The ```yaml block in Step 10 — the shape a run is told to copy."""
     blocks = re.findall(r"```yaml\n(.*?)```", command_text(), re.S)
@@ -638,14 +643,52 @@ class TheReportPrecedesTheGate(unittest.TestCase):
         self.assertIn("infer no approval from silence", text)
 
 
-class TheFourLensesAreMandatory(unittest.TestCase):
-    """FR-014, FR-020 — a lens that does not apply says so."""
+class TheSixLensesAreMandatory(unittest.TestCase):
+    """FR-014, FR-020 — a lens that does not apply says so. Spec 032 added UAT and Regression."""
 
-    def test_all_four_lenses_are_named(self):
+    def test_all_six_lenses_are_named(self):
         text = command_text()
-        for lens in ("Unit", "Integration", "API contract", "End-to-end"):
+        for lens in ("Unit", "Integration", "API contract", "End-to-end", "UAT", "Regression"):
             with self.subTest(lens=lens):
                 self.assertIn(lens, text)
+
+    def test_the_count_says_six(self):
+        text = flat(command_text())
+        self.assertIn("six mandatory lenses", text)
+        self.assertNotIn("four mandatory lenses", text)
+        self.assertNotIn("the four lenses", text)
+
+    def test_uat_states_executors_and_evidence_per_surface(self):
+        text = flat(command_text())
+        self.assertIn("agent on explicit request", text)
+        self.assertIn("evidence for a surface this project does not have is not named", text)
+
+    def test_regression_names_its_gate_and_the_defect_rule(self):
+        text = flat(command_text())
+        self.assertIn("regression gate", text)
+        self.assertIn("runs nowhere automatically", text)
+        self.assertIn("fixed defect earns a regression test", text)
+
+    def test_the_front_matter_records_applicability_and_ownership(self):
+        example = front_matter_example()
+        self.assertIn("lenses:", example)
+        self.assertIn("ownership:", example)
+        text = command_text()
+        for value in ("`applicable`", "`not_applicable`"):
+            with self.subTest(value=value):
+                self.assertIn(value, text)
+
+    def test_the_round_folds_uat_into_existing_questions(self):
+        """Research R3: still five questions, and the announced count stays true."""
+        text = flat(command_text())
+        self.assertIn("or a uat scenario", text)
+        self.assertIn("whether an ai agent may execute uat", text)
+
+    def test_the_amendment_keeps_uat_out_of_implement(self):
+        self.assertIn(
+            "MUST NOT be executed or marked complete by the implement command",
+            " ".join(command_text().split()),
+        )
 
     def test_a_lens_is_applicable_or_carries_a_reason(self):
         text = command_text()
@@ -666,7 +709,7 @@ class TheShippedTemplateMatchesTheDocumentedSections(unittest.TestCase):
 
     SECTION = re.compile(r"^## +(.+?)\s*$", re.M)
 
-    def test_the_template_declares_the_ten_sections(self):
+    def test_the_template_declares_the_twelve_sections(self):
         names = self.SECTION.findall(TEMPLATE.read_text(encoding="utf-8"))
         self.assertEqual(
             names,
@@ -677,6 +720,8 @@ class TheShippedTemplateMatchesTheDocumentedSections(unittest.TestCase):
                 "Integration testing",
                 "API contract testing",
                 "End-to-end testing",
+                "UAT",
+                "Regression testing",
                 "Coverage floor",
                 "Recommendations summary",
                 "Proposed constitution amendment",

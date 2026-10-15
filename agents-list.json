@@ -362,6 +362,16 @@
       "command": "speckit.converge"
     },
     {
+      "id": "uat",
+      "title": "UAT Runner",
+      "description": "Run the user-acceptance scenarios from your test plan on explicit request — perform what the agent can drive, save the evidence, and tick only what it saw pass.",
+      "status": "available",
+      "phase": "testing-quality",
+      "type": "add-on",
+      "provider": "spectra",
+      "command": "speckit.spectra.uat"
+    },
+    {
       "id": "test-coverage",
       "title": "Test Coverage Analyst",
       "description": "Find the gaps against the test pyramid, so coverage is real protection rather than just a percentage.",

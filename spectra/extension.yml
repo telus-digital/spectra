@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.20.0"
+  version: "1.21.0"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
@@ -50,7 +50,7 @@ provides:
       description: "Find the tests that pass and fail on the same code by reading the test source alone — no test run, no CI history — report each with a confidence rating and a concrete fix, then, behind two explicit gates, write a resumable task list to .specify/memory/flaky-test-analysis.md and apply the fixes the developer approves."
     - name: "speckit.spectra.test-strategy"
       file: "commands/test-strategy.md"
-      description: "Read the project, classify it greenfield or brownfield from its own evidence, ask five judgment calls the repository cannot settle — where the testing weight should sit, whether an external consumer exists, which journeys justify end-to-end, what has broken before, and what the organisation forbids — one question at a time, each carrying a recommendation and the evidence behind it, then write one testing strategy to docs/TEST_STRATEGY.md (or TEST_STRATEGY.md at the project's declared artifact root) covering unit, integration, API contract, and end-to-end testing plus a coverage floor the project can actually hold — in brownfield never above the measured baseline, whatever any answer requests. It never asks what it can measure: the mode, the stack, the surfaces, and the coverage figure are read, not requested, and an answer is recorded as stated rather than as evidence. Declining every question produces the document it would have written on its own, and --non-interactive skips the round outright. A foundation-phase agent, run once alongside the constitution. It then drafts the constitution amendment that would bake the strategy into every work session and hands it to speckit.constitution: it never writes the constitution itself, in any run, approved or not. Recommends configuration rather than applying it, runs nothing without an explicit confirmation, and makes no network request."
+      description: "Read the project, classify it greenfield or brownfield from its own evidence, ask five judgment calls the repository cannot settle — where the testing weight should sit, whether an external consumer exists, which journeys justify end-to-end or UAT and who signs UAT off, what has broken before, and what the organisation forbids (including whether an AI agent may execute UAT) — one question at a time, each carrying a recommendation and the evidence behind it, then write one testing strategy to docs/TEST_STRATEGY.md (or TEST_STRATEGY.md at the project's declared artifact root) covering six lenses — unit, integration, API contract, end-to-end, UAT, and regression — recorded in front matter that every test plan inherits, plus a coverage floor the project can actually hold — in brownfield never above the measured baseline, whatever any answer requests. It never asks what it can measure: the mode, the stack, the surfaces, and the coverage figure are read, not requested, and an answer is recorded as stated rather than as evidence. Declining every question produces the document it would have written on its own, and --non-interactive skips the round outright. A foundation-phase agent, run once alongside the constitution. It then drafts the constitution amendment that would bake the strategy into every work session — including, where UAT applies, the rule that the implement command never executes or ticks UAT tasks — and hands it to speckit.constitution: it never writes the constitution itself, in any run, approved or not. Recommends configuration rather than applying it, runs nothing without an explicit confirmation, and makes no network request."
     - name: "speckit.spectra.deployment-strategy"
       file: "commands/deployment-strategy.md"
       description: "Read the project and any local documents the user references, classify what it ships — service, static site, library, CLI or desktop tool, mobile app, or infrastructure — and write one deployment strategy to docs/DEPLOYMENT_STRATEGY.md (or DEPLOYMENT_STRATEGY.md at the project's declared artifact root) covering six lenses: environments and promotion, pipeline and artifact traceability, release and versioning, data and schema change, rollback and recovery, and operability and configuration. Each lens reports today's state before recommending, and every claim is marked verified, claimed, stated, or convention. Asks five judgment calls the repository cannot settle — hosting, production approval, a pre-release environment, recovery targets, release cadence — once per project and one at a time, each with a recommendation and the evidence behind it; never invents a value only the client or ops owner can supply, listing it as an open question instead. Operability stays at the level of policy and ownership. Then drafts a constitution amendment carrying only durable invariants and hands it to speckit.constitution with a ready-to-paste line: it never edits the constitution, in any run, approved or not. Never edits source, CI, manifests, or infrastructure code, runs nothing, and makes no network request."
@@ -59,7 +59,10 @@ provides:
       description: "Produce a codebase-grounded feature impact analysis for a stakeholder go / no-go decision before any specification work begins — cited findings, a defined impact rating, at most five clarifying questions, and a stated coverage boundary — written under docs/impact-analysis/ (or the project's declared artifact root). Makes no network request and accepts no repository URL: other systems are declared as text, a document, or a local directory read in place."
     - name: "speckit.spectra.test-plan"
       file: "commands/test-plan.md"
-      description: "Turn one specification into a stakeholder-facing test plan written beside it as test-plan.md — scope, risks, traceable test conditions, environment, and exit criteria — grounded in the project's own testing policy and its existing suite. The spec path is required and never inferred: no branch name, no feature record, no most-recent-file guess, because a plan generated against the wrong spec is undetectably wrong to whoever approves it. Every acceptance criterion reaches a condition or is reported as uncovered, and an ambiguous requirement gets a stated gap rather than an invented condition. Carries no checkbox in any section — it is approved, not tracked — and hands the approved plan to the planning command as printed text rather than a hook. Writes one file, runs nothing, and makes no network request."
+      description: "Turn one specification into a stakeholder-facing test plan written beside it as test-plan.md — scope, risks, traceable test conditions, suggested UAT scenarios, regression scope, environment, and exit criteria — grounded in the project's own testing policy and its existing suite. It uses exactly the lenses the test strategy chose: a lens the strategy rules out is unavailable, and it says so loudly when the strategy predates UAT and regression or does not exist. The spec path is required and never inferred: no branch name, no feature record, no most-recent-file guess, because a plan generated against the wrong spec is undetectably wrong to whoever approves it. Every acceptance criterion reaches a condition or a UAT scenario or is reported as uncovered, every user story gets a UAT scenario or a reason, and an ambiguous requirement gets a stated gap rather than an invented condition. Carries no checkbox in any section — it is approved, not tracked — and is offered by an optional hook after specify. It ends with a ready-to-paste planning prompt that writes the plan's testing obligations into plan.md, so the tasks include the tests and a final UAT phase the implement command does not execute. Writes one file, runs nothing, and makes no network request."
+    - name: "speckit.spectra.uat"
+      file: "commands/uat.md"
+      description: "Run user-acceptance testing for one feature, only on explicit request: read the UAT phase in its tasks.md and the Suggested UAT scenarios in its test-plan.md, start the build after your confirmation, perform the scenarios the agent can actually drive, save screenshots or transcripts as evidence beside the spec, tick only the UAT tasks it observed pass, and write uat-report.md. The feature path is required and never inferred. Human-only, failed, and blocked scenarios stay open with a reason. Never edits source, tests, CI, the spec, the test plan, or the constitution, never reproduces a secret, and makes no network request beyond what the build under test makes."
 
   # The section structure of every document Spectra produces. Both are resolved through Spec Kit's template
   # stack, so a project overrides one by dropping its own copy at .specify/templates/overrides/<name>.md —
@@ -94,10 +97,13 @@ provides:
       description: "Section structure for the guardrail proposal produced by speckit.spectra.domain-analyzer. Override at .specify/templates/overrides/domain-analysis-template.md. The checkbox-per-candidate format, the metadata keys and their order, the file-path evidence rule, the never-pre-select rule, and the re-run preservation of SME decisions stay with the command."
     - name: "test-strategy-template"
       file: "templates/test-strategy-template.md"
-      description: "Section structure for the testing strategy produced by speckit.spectra.test-strategy. Override at .specify/templates/overrides/test-strategy-template.md. The evidence-or-convention marker, the floor-never-exceeds-baseline rule, the baseline provenance labels, the tool tiers, and the coverage statement stay with the command."
+      description: "Section structure for the testing strategy produced by speckit.spectra.test-strategy. Override at .specify/templates/overrides/test-strategy-template.md. The evidence-or-convention marker, the six mandatory lenses and their front-matter record, the floor-never-exceeds-baseline rule, the baseline provenance labels, the tool tiers, and the coverage statement stay with the command."
     - name: "test-plan-template"
       file: "templates/test-plan-template.md"
-      description: "Section structure for the per-feature test plans produced by speckit.spectra.test-plan. Override at .specify/templates/overrides/test-plan-template.md. The traceability invariant, the no-checkbox rule, the cited-absence rule, the priority derivation, the secret prohibition, and the coverage statement stay with the command."
+      description: "Section structure for the per-feature test plans produced by speckit.spectra.test-plan. Override at .specify/templates/overrides/test-plan-template.md. The traceability invariant, the strategy-consistent lens set, the every-story-gets-a-UAT-scenario rule, the no-checkbox rule, the cited-absence rule, the priority derivation, the secret prohibition, and the coverage statement stay with the command."
+    - name: "uat-report-template"
+      file: "templates/uat-report-template.md"
+      description: "Section structure for the per-feature UAT report produced by speckit.spectra.uat. Override at .specify/templates/overrides/uat-report-template.md. The observed-pass-only rule, evidence linking, the open-with-a-reason rule for human-only, failed, and blocked scenarios, the prohibition on reproducing a secret, and the coverage statement stay with the command."
     - name: "deployment-strategy-template"
       file: "templates/deployment-strategy-template.md"
       description: "Section structure for the deployment strategy produced by speckit.spectra.deployment-strategy. Override at .specify/templates/overrides/deployment-strategy-template.md. The four provenances (verified, claimed, stated, convention), the never-invent rule for open questions, the policy-level boundary on operability, the prohibition on reproducing a secret, and the rule that the promotion diagram shows only what the environments table states stay with the command."
@@ -110,11 +116,25 @@ provides:
       description: "Default shape for a knowledge document ingested by speckit.spectra.kb-vault, used where no category-specific template resolves. Override at .specify/templates/overrides/kb-document-template.md, or shape one category with .specify/templates/overrides/<category>-template.md. The traceability rule, the gap-not-invention rule, provenance, and the prohibition on reproducing a secret stay with the command."
 
 hooks:
-  after_implement:
-    command: speckit.spectra.create-pr
+  # Every Spectra hook is an offer: optional, so it asks and never runs on its own.
+  after_specify:
+    command: speckit.spectra.test-plan
     optional: true
-    prompt: "Open a pull request for this spec?"
-    description: "Offer to open a PR after implementation completes"
+    prompt: "Generate a test plan for this spec? Pass the spec file path this specify run just wrote (its SPEC_FILE) as the argument."
+    description: "Offer a stakeholder test plan right after the specification is written"
+  # A list, so UAT is offered before a pull request: listed first and given the lower priority number,
+  # which Spec Kit sorts on (per-event lists with priority arrived in Spec Kit 0.10.0).
+  after_implement:
+    - command: speckit.spectra.uat
+      optional: true
+      priority: 5
+      prompt: "Run UAT now? The agent performs the scenarios it can drive and leaves the rest for a human."
+      description: "Offer agent-run UAT after implementation, before a PR is opened"
+    - command: speckit.spectra.create-pr
+      optional: true
+      priority: 10
+      prompt: "Open a pull request for this spec?"
+      description: "Offer to open a PR after implementation completes"
 
 tags:
   - "documentation"
@@ -152,3 +172,6 @@ tags:
   - "deployment-strategy"
   - "release"
   - "operations"
+  - "uat"
+  - "regression"
+  - "acceptance-testing"

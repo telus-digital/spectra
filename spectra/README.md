@@ -18,6 +18,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 | `speckit.spectra.impact` | Find out what a proposed feature would actually touch, with cited evidence, before anyone commits to building it. |
 | `speckit.spectra.test-plan` | Turn a specification into a test plan stakeholders can approve — traceable conditions, stated exclusions, and a real exit bar — before the implementation is designed. |
 | `speckit.spectra.adr` | Capture a context-aware Architecture Decision Record grounded in the codebase, prior ADRs, and the constitution. |
+| `speckit.spectra.uat` | Run the user-acceptance scenarios from your test plan on explicit request — perform what the agent can drive, save the evidence, and tick only what it saw pass. |
 | `speckit.spectra.flaky-test-detector` | Find the tests that pass and fail on the same code, then fix the ones you approve, one at a time. |
 | `speckit.spectra.defect-rca` | Take a defect from a ticket, an issue, or a description down to its root cause — with evidence read from the code, not asked for. |
 | `speckit.spectra.create-pr` | Open a correctly-targeted GitHub PR for the current spec branch and return its URL. |
@@ -656,8 +657,8 @@ features to plan. It:
 3. Identifies the **testable surfaces**, so a monorepo does not get one answer for three stacks.
 4. **Asks you five things it cannot measure** — one question at a time, each carrying the answer it
    would have chosen and the evidence behind it.
-5. Works four lenses — unit, integration, API contract, end-to-end — each either applicable with a named
-   approach or not applicable with a stated reason.
+5. Works six lenses — unit, integration, API contract, end-to-end, UAT, regression — each either
+   applicable with a named approach or not applicable with a stated reason.
 6. Derives a **coverage floor** from the baseline it could establish, with a ratchet toward the target.
 7. Writes one document to `docs/TEST_STRATEGY.md`, or `TEST_STRATEGY.md` at your declared artifact root.
 8. Checks whether the strategy is already in your constitution, drafts the amendment if it is not, and
@@ -685,6 +686,13 @@ provenance: `measured` only if it ran your tool this session **after asking**, `
 report's date if it read a committed file, `unavailable` if there was nothing to read. It runs nothing
 without that confirmation.
 
+**UAT and regression are policy, not levels.** The UAT lens states who may perform acceptance — a human,
+or an AI agent only on explicit request — and what counts as evidence on each surface the project has.
+The regression lens names the suite that must stay green, where it runs, and whether a fixed defect earns
+a regression test. The lens set and the ownership map are recorded in the document's front matter, so
+`test-plan` reads them rather than guessing, and the drafted amendment keeps UAT tasks out of the
+implement command's hands.
+
 It **never writes your constitution** — not on approval, not on a re-run. It drafts the amendment, shows
 it, records your decision in the strategy document, and names the command that applies it, so one command
 owns constitution edits and the sync impact report that goes with them. It **never applies configuration**
@@ -700,9 +708,9 @@ Usage (Claude):
 /speckit-spectra-test-strategy
 ```
 
-No arguments required. Optionally pass a focus to weight the analysis — it never narrows the four
+No arguments required. Optionally pass a focus to weight the analysis — it never narrows the six
 mandatory lenses — or `--non-interactive` to declare that no answer can be taken in this session. The
-document's ten sections are overridable at `.specify/templates/overrides/test-strategy-template.md`.
+document's twelve sections are overridable at `.specify/templates/overrides/test-strategy-template.md`.
 
 ## `speckit.spectra.deployment-strategy` — Deployment Strategist
 
@@ -757,15 +765,19 @@ before the implementation is designed. Hand it a specification and it:
    guesses.** With no argument it asks and stops, having read nothing.
 2. Reads your project — the spec in full, the constitution, your test strategy, existing tests and
    runner configuration, dependency manifests, CI definitions, and the source the feature touches.
-3. Resolves the **level vocabulary** from your own `TEST_STRATEGY.md` where you have one, taking its lens
-   names verbatim so the two documents read against each other.
-4. Turns every acceptance criterion into a **test condition** — or reports it as uncovered, with a reason.
-5. Derives the risk table from stated triggers, and condition priority from your spec's own story
-   priorities.
-6. Writes one `test-plan.md` **beside the spec**, then prints the planning invocation that consumes it.
+3. Resolves the **lens set** from your own `TEST_STRATEGY.md` where you have one, taking its lens names
+   verbatim so the two documents read against each other. A lens the strategy ruled out is unavailable;
+   with no strategy it uses the full default set and flags that loudly.
+4. Turns every acceptance criterion into a **test condition** or a **UAT scenario** — or reports it as
+   uncovered, with a reason.
+5. Derives the risk table from stated triggers and the strategy's known risk areas, and condition priority
+   from your spec's own story priorities.
+6. Suggests **UAT scenarios** — at least one per user story, each with an executor: `agent`, `human`, or
+   `either` — and a **regression scope** of existing tests that must stay green.
+7. Writes one `test-plan.md` **beside the spec**, then prints the planning prompt that consumes it.
 
-**Traceability runs both ways, and that is the product.** Every acceptance criterion reaches at least one
-condition or the *explicitly not covered* list — never neither. Every condition names what it verifies
+**Traceability runs both ways, and that is the product.** Every acceptance criterion reaches a condition, a
+UAT scenario, or the *explicitly not covered* list — never none of them. Every condition names what it verifies
 using your spec's own identifiers, so a reviewer can check coverage in either direction without reading
 code. The run reports the count: criteria covered out of criteria found.
 
@@ -791,6 +803,18 @@ root — no number, no subfolder. A test plan is about one feature, so its ident
 directory, exactly as the `spec.md` and `plan.md` next to it carry no number either. Your declared
 `Artifact root:` is read for one purpose only: finding `TEST_STRATEGY.md`.
 
+**It honours the whole strategy.** It follows the ownership map when choosing a level, never names a tool
+the strategy ruled out, picks the coverage floor of the surface the feature touches, carries each inherited
+rule's provenance, and flags a strategy that predates the UAT and Regression lenses or looks stale.
+
+**The handoff lands in `plan.md`.** The planning prompt links the written test plan and asks `plan` to
+record a *Testing obligations* section — because `tasks` reads `plan.md`, not the test plan. UAT scenarios
+become a final phase titled "User Acceptance (UAT) — not executed by the implement command", which a human
+ticks or `speckit.spectra.uat` performs on request.
+
+**It is offered, never run, after `specify`.** An optional hook asks whether to generate a test plan and
+passes the spec `specify` just wrote — so the command still never infers which spec you meant.
+
 A re-run — usually after `clarify` changes the spec — reads the existing plan, states what would change
 before you answer, and carries forward every explicitly-not-covered decision or says it removed one.
 
@@ -801,8 +825,48 @@ Usage (Claude):
 ```
 
 The spec path is required. Pass `--non-interactive` in CI: it will create a plan that does not exist, but
-never rewrite one that does. The document's six sections are overridable at
+never rewrite one that does. The document's seven sections are overridable at
 `.specify/templates/overrides/test-plan-template.md`.
+
+## `speckit.spectra.uat` — UAT Runner
+
+An optional command that runs **after `implement`, only on your explicit request**. The implement command
+leaves the UAT phase in `tasks.md` open; you either perform those scenarios yourself and tick them, or hand
+the feature to this command. It:
+
+1. Resolves the feature you named. **It never guesses** — no branch name, no `.specify/feature.json`, no
+   picker. With no argument it asks and stops.
+2. Reads the UAT phase in `tasks.md`, the scenarios in `test-plan.md`, the strategy's evidence rule, and
+   the constitution.
+3. Reports incomplete implementation and asks before going on, then **shows the exact command** it would
+   run to start the build and waits for your confirmation. Declined, every scenario is reported blocked.
+4. Performs only the `agent` and `either` scenarios it can drive with the tools available in its own
+   session, and says which tools it relied on.
+5. Captures evidence — screenshots, transcripts, comparisons — under
+   `specs/<feature>/uat/<YYYYMMDD-HHMMSS>/`, never overwriting an earlier run.
+6. Ticks **only the UAT tasks it observed pass**, appending a link to the evidence, and writes
+   `uat-report.md` beside the spec.
+
+**A tick is a claim that acceptance happened**, so it is never made on anything less than an observed
+pass. `human` scenarios, failures, and scenarios it could not reach stay open with a reason; a task a
+human already ticked is never touched, and a pass is never reverted.
+
+**It changes nothing it is accepting** — not source, tests, configuration, the spec, the test plan, or the
+constitution — and never edits code to make a scenario pass. It acts on a locally started build unless you
+name an environment, makes no network request beyond what the build under test makes, and masks or
+withholds any capture that might show a secret, recording what it withheld.
+
+After `implement`, an optional hook offers it ahead of `create-pr`. The hook only asks.
+
+Usage (Claude):
+
+```
+/speckit-spectra-uat specs/021-signed-webhooks
+```
+
+The feature is required. Pass `--env <name-or-url>` to act on an environment other than a local build, or
+`--non-interactive` in CI, where it starts nothing and attempts nothing. The report is overridable at
+`.specify/templates/overrides/uat-report-template.md`.
 
 ## `speckit.spectra.defect-rca` — Defect Root Cause Analysis
 

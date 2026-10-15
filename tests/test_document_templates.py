@@ -41,6 +41,7 @@ DOCUMENT_COMMANDS = {
     "test-strategy.md": "test-strategy-template",
     "deployment-strategy.md": "deployment-strategy-template",
     "test-plan.md": "test-plan-template",
+    "uat.md": "uat-report-template",
 }
 
 # The resolution stack, in priority order. Every document command must name all of it.

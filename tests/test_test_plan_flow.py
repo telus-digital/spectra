@@ -29,9 +29,9 @@ of these rules is the kind a well-meaning edit removes without anyone noticing:
   match rather than inferred from prose, so it is asserted on the artifacts themselves.
 - **It runs nothing.** Existing coverage is read from test source. An unbidden test run on a stranger's
   repository is unbounded in time and may reach the network.
-- **The handoff is printed, never invoked, and never a hook.** A hook would make every project that
-  installs the extension prompt for a test plan on every feature, which is the opposite of the opt-in
-  add-on this is.
+- **The handoff is printed, never invoked.** Spec 021 also kept it off every hook; spec 032 reversed
+  that, so test-plan is now *offered* by an optional hook after specify. The hook only asks — it never
+  runs the command on its own — and the never-infer rule holds whichever way the command is reached.
 
 Standard library only, like the rest of the suite.
 """
@@ -170,10 +170,10 @@ class TraceabilityRunsBothWays(unittest.TestCase):
     def test_every_acceptance_criterion_reaches_a_condition_or_an_uncovered_item(self):
         text = phrases()
         self.assertTrue(
-            "never neither" in text,
-            "the forward half of the traceability invariant is gone; a criterion absent from both the "
-            "conditions table and the not-covered list is the defect this command exists to prevent, "
-            "and the document looks complete while it is wrong",
+            "never none of them" in text,
+            "the forward half of the traceability invariant is gone; a criterion absent from the "
+            "conditions table, the UAT scenarios, and the not-covered list is the defect this command "
+            "exists to prevent, and the document looks complete while it is wrong",
         )
 
     def test_every_condition_names_what_it_verifies(self):
@@ -207,15 +207,129 @@ class AmbiguityIsReportedNeverResolved(unittest.TestCase):
     def test_it_never_invents_the_missing_decision(self):
         self.assertIn("Never invent the missing decision", command_text())
 
-    def test_it_names_the_four_uncovered_reasons(self):
+    def test_it_names_the_five_uncovered_reasons(self):
+        """Spec 032 added the fifth: a criterion only a lens the strategy ruled out could verify."""
         text = phrases()
-        for reason in ("unresolved clarification", "untestable as written", "out of scope", "deferred"):
+        for reason in ("unresolved clarification", "untestable as written", "out of scope", "deferred",
+                       "ruled out by the strategy"):
             with self.subTest(reason=reason):
                 self.assertIn(reason, text)
 
     def test_an_unresolved_marker_names_the_clarification_command(self):
         text = phrases()
         self.assertIn("clarification command", text)
+
+
+class TheLensSetComesFromTheStrategy(unittest.TestCase):
+    """Spec 032 FR-010 to FR-014 — the plan has exactly the lenses the strategy chose.
+
+    Before spec 032 the plan took only the strategy's *names*. Now it takes the *set*: a lens the strategy
+    marks not applicable is unavailable here, so two documents a reviewer reads side by side can no longer
+    disagree about whether, say, UAT is part of how this project tests itself.
+    """
+
+    def test_it_reads_the_strategy_front_matter(self):
+        self.assertIn("`lenses:`", command_text())
+
+    def test_a_ruled_out_lens_sends_the_criterion_to_not_covered(self):
+        text = phrases()
+        self.assertIn("ruled out by the strategy", text)
+        self.assertIn("re-run test-strategy", text)
+
+    def test_a_pre_032_strategy_is_named_loudly(self):
+        self.assertIn("this strategy predates the uat and regression lenses", phrases())
+
+    def test_no_strategy_is_named_loudly(self):
+        self.assertIn("no test strategy exists", phrases())
+
+    def test_uat_and_regression_are_sections_not_levels(self):
+        text = phrases()
+        self.assertIn("section-bearing", text)
+        self.assertIn("never a condition's level", text)
+
+    def test_manual_stays_distinct_from_uat(self):
+        self.assertIn("distinct from a uat scenario", phrases())
+
+
+class UatScenariosAndRegressionScope(unittest.TestCase):
+    """Spec 032 FR-020 to FR-026 — the two sections everything downstream starts from."""
+
+    def test_it_derives_suggested_uat_scenarios(self):
+        text = phrases()
+        self.assertIn("suggested uat scenarios", text)
+        self.assertIn("`uat1`", text)
+
+    def test_every_scenario_names_an_executor(self):
+        text = command_text()
+        for executor in ("`agent`", "`human`", "`either`"):
+            with self.subTest(executor=executor):
+                self.assertIn(executor, text)
+
+    def test_the_agent_executor_needs_a_drivable_surface(self):
+        text = phrases()
+        self.assertIn("agent only where the surface can actually be driven", text)
+        self.assertIn(
+            "not from this session's tools", text,
+            "test-plan must judge the executor from the surface kind and the strategy's policy; uat runs "
+            "later, possibly in a different agent, so the planning session's tools prove nothing (FR-021)",
+        )
+
+    def test_every_user_story_gets_a_scenario_or_a_reason(self):
+        self.assertIn("every user story", phrases())
+
+    def test_it_derives_a_regression_scope(self):
+        text = phrases()
+        self.assertIn("regression scope", text)
+        for kind in ("`existing`", "`risk-driven addition`"):
+            with self.subTest(kind=kind):
+                self.assertIn(kind, command_text())
+
+    def test_the_template_declares_both_sections(self):
+        template = TEMPLATE.read_text(encoding="utf-8")
+        self.assertIn("## 4. Suggested UAT Scenarios", template)
+        self.assertIn("## 5. Regression Scope", template)
+
+
+class ItHonoursTheWholeStrategy(unittest.TestCase):
+    """Spec 032 FR-030 to FR-037 — more of the strategy than its vocabulary and its floor."""
+
+    def test_the_ownership_map_decides_the_level(self):
+        text = phrases()
+        self.assertIn("honour the strategy's ownership map", text)
+        self.assertIn("`ownership:`", command_text())
+
+    def test_a_ruled_out_tool_is_never_named(self):
+        self.assertIn("a tool the strategy ruled out", phrases())
+
+    def test_a_known_risk_area_raises_likelihood(self):
+        self.assertIn("at least medium", phrases())
+
+    def test_the_strategy_journeys_are_favoured(self):
+        self.assertIn("journeys the strategy names", phrases())
+
+    def test_the_floor_is_per_surface(self):
+        self.assertIn("the floor of each surface the feature touches", phrases())
+
+    def test_inherited_policy_keeps_its_provenance(self):
+        text = phrases()
+        self.assertIn("carries the strategy's provenance", text)
+        for provenance in ("`cited`", "`convention`", "`stated`"):
+            with self.subTest(provenance=provenance):
+                self.assertIn(provenance, command_text())
+
+    def test_a_stale_strategy_is_flagged(self):
+        text = phrases()
+        self.assertIn("possibly stale", text)
+        self.assertIn("the history lookup is a read", text)
+
+    def test_step_one_counts_its_own_outcomes(self):
+        """The defect spec 032 found: the prose said four, the table listed six."""
+        text = command_text()
+        step = text[text.index("## Step 1 — Resolve the specification"):text.index("### Never infer")]
+        stated = re.search(r"(\w+) outcomes:", step).group(1).lower()
+        words = {"four": 4, "five": 5, "six": 6, "seven": 7}
+        rows = [line for line in step.splitlines() if line.startswith("| ") and not line.startswith("| Input")]
+        self.assertEqual(words[stated], len(rows), f"Step 1 says {stated} outcomes but lists {len(rows)}")
 
 
 class AbsenceIsAlwaysCited(unittest.TestCase):
@@ -317,7 +431,8 @@ class TheVocabularyIsInherited(unittest.TestCase):
 
     def test_the_default_vocabulary_is_stated(self):
         text = command_text()
-        for level in ("`unit`", "`integration`", "`api-contract`", "`end-to-end`", "`manual`"):
+        for level in ("`unit`", "`integration`", "`api-contract`", "`end-to-end`", "`manual`", "`uat`",
+                      "`regression`"):
             with self.subTest(level=level):
                 self.assertIn(level, text)
 
@@ -452,23 +567,60 @@ class TheHandoffIsPrintedNeverWired(unittest.TestCase):
         self.assertIn("invoke another command", text)
         self.assertIn("not an invocation", text)
 
-    def test_it_registers_no_hook(self):
+    def test_it_is_offered_by_an_optional_hook_that_only_asks(self):
+        """Spec 032 FR-040 to FR-042, reversing spec 021 FR-005."""
         text = phrases()
-        self.assertIn("not a hook", text)
+        self.assertIn("offered by an optional hook after specify", text)
+        self.assertIn("the hook only asks", text)
+
+    def test_the_hook_does_not_relax_the_never_infer_rule(self):
+        self.assertIn("reached through the hook or not", phrases())
 
     def test_it_writes_no_marker_into_the_specification(self):
         text = phrases()
         self.assertIn("not a marker in the specification", text)
 
-    def test_no_hook_is_registered_in_the_manifest(self):
-        """The claim above, checked against the file that would carry a registration."""
+    def test_the_manifest_offers_it_after_specify_optionally(self):
+        """The claim above, checked against the file that carries the registration."""
         manifest = MANIFEST.read_text(encoding="utf-8")
         hooks = manifest.partition("\nhooks:")[2].partition("\ntags:")[0]
+        after_specify = hooks.partition("after_specify:")[2].partition("after_implement:")[0]
+        self.assertIn("speckit.spectra.test-plan", after_specify)
+        self.assertIn("optional: true", after_specify)
         self.assertNotIn(
-            "test-plan", hooks,
-            "spectra/extension.yml registers a hook for test-plan; FR-005 keeps the agent opt-in, and "
-            "a before_plan hook would prompt for a test plan on every feature in every install",
+            "optional: false", after_specify,
+            "a mandatory test-plan hook would run on every feature in every install; spec 032 makes it "
+            "an offer, never an automatic step",
         )
+        self.assertIn(
+            "SPEC_FILE", after_specify,
+            "the hook prompt must tell the agent to pass the spec path, because test-plan never infers it",
+        )
+        self.assertNotIn("reported above", after_specify, "core specify prints hooks before SPEC_FILE")
+
+    def test_the_prompt_writes_the_obligations_into_plan_md(self):
+        """Spec 032 FR-043: the core tasks command reads plan.md, never test-plan.md."""
+        text = phrases()
+        self.assertIn("testing obligations", text)
+        self.assertIn("writes the test before the implementation it covers", text)
+
+    def test_uat_scenarios_become_a_final_phase_implement_does_not_execute(self):
+        text = phrases()
+        self.assertIn("not executed by the implement command", text)
+        self.assertIn("[uat] uat<n>", text)
+
+    def test_the_phase_title_names_no_agent_syntax(self):
+        """Principle III: the title lands in every user's tasks.md, whatever agent they use."""
+        text = command_text()
+        start = text.index("User Acceptance (UAT)")
+        title = text[start:start + 80]
+        self.assertNotIn("/speckit", title, "the UAT phase title hard-codes one agent's slash syntax")
+
+    def test_a_clause_for_an_absent_section_is_dropped(self):
+        self.assertIn("never mentions a section the plan does not have", phrases())
+
+    def test_the_prompt_links_the_written_file(self):
+        self.assertIn("link to the path you actually wrote", phrases())
 
     def test_it_withholds_the_handoff_when_nothing_was_written(self):
         text = phrases()

@@ -5,7 +5,8 @@ description: "Turn a specification into one stakeholder-facing test plan written
 # Turn a specification into a test plan people can approve
 
 You are the **Test Plan** agent. You run after `speckit.specify` and before the planning command, on
-one feature at a time. Someone hands you a specification; you read it and the project around it, and
+one feature at a time — offered by an optional hook after specify, so the flow reads specify → test plan
+→ plan → tasks → implement. Someone hands you a specification; you read it and the project around it, and
 write a single Markdown document beside it that answers four questions a stakeholder actually asks —
 what will be verified, what deliberately will not be, where the risk sits, and what "done" means. That
 document is circulated and approved. Then it is handed to the planning command so the tasks include
@@ -52,7 +53,7 @@ them.
 | Run, build, or install anything — including the test suite | You establish existing coverage by reading tests, never by executing them |
 | Make a network request, or accept a repository URL, credential, or token | You read only the project in front of you |
 | Edit the constitution, create a branch, stage, or commit | Producing a document is not a licence to edit governance or history |
-| Edit a core command file, or register a hook | `speckit.specify` and the planning command stay unaware of you. You are opt-in |
+| Edit a core command file | `speckit.specify` and the planning command stay unaware of you. The extension's manifest offers you after specify; the command itself registers and edits nothing |
 | Invoke another command | You print the invocation; the user runs it |
 | Create or edit a template file | Templates are input |
 | Reproduce a secret value, in whole or in fragment | Name its kind and where it is configured; withhold the value |
@@ -65,9 +66,9 @@ These are the product. A plan that reads well and cannot be checked is worse tha
 will approve it. These rules live here, in this command — **not** in the template. A project that
 overrides the template can drop a section; it cannot make you stop obeying these.
 
-- **R1 — Every acceptance criterion reaches a condition or an uncovered item, never neither.** A
-  criterion absent from both is the single failure this document exists to prevent, and it is invisible
-  unless you count.
+- **R1 — Every acceptance criterion reaches a condition, a UAT scenario, or an uncovered item, never
+  none of them.** A criterion absent from all three is the single failure this document exists to
+  prevent, and it is invisible unless you count.
 - **R2 — Every condition names what it verifies**, using the specification's own identifier. A condition
   that traces to nothing verifies nothing anyone asked for.
 - **R3 — Never invent a decision the specification does not contain.** Where a requirement is too
@@ -82,7 +83,7 @@ overrides the template can drop a section; it cannot make you stop obeying these
 
 ## Step 1 — Resolve the specification
 
-Resolve the path before you read anything else. Four outcomes:
+Resolve the path before you read anything else. Six outcomes:
 
 | Input | What you do |
 |---|---|
@@ -92,6 +93,10 @@ Resolve the path before you read anything else. Four outcomes:
 | A directory with no `spec.md` | Report the directory. **Stop** |
 | A directory with several candidate specifications and no `spec.md` | List what you found and ask. **Do not choose** |
 | A path that is missing or unreadable | Report the path and the reason. **Stop** |
+
+**Reached through the hook or not, the input is resolved identically.** The after-specify offer tells
+the agent to pass the spec file specify just wrote; if it arrives with no path anyway, that is an empty
+argument and it stops like one. The offer only asks, and being offered is not a licence to infer.
 
 **The usability test is deliberately weak.** The file must be Markdown-like text, be non-empty, carry at
 least one heading, and carry at least one of a requirements, user-scenario, acceptance-criteria, or
@@ -152,7 +157,7 @@ reduced coverage — never narrow silently.
 
 **Never ask a question the specification or the repository answers.** If it is in the code, read it.
 
-## Step 3 — Resolve the level vocabulary
+## Step 3 — Resolve the lens set
 
 Every project already disagrees about what "integration test" means. Do not re-open the question: take
 the answer this project already gave.
@@ -173,25 +178,66 @@ deliberately do not apply here:** you perform no published-site check, you recom
 root, and you never offer the declaration line. None of them protects anything in a run that writes
 nothing there — and your own output destination is fixed by Step 1 either way.
 
-**Then resolve the vocabulary**, highest priority first:
+**Then resolve the lens set**, highest priority first. You take two things from it: which lenses this
+project tests with, and what it calls them.
 
-1. **The strategy document's lens names**, used **verbatim** — not normalized, not title-cased, not
-   mapped onto anything.
+1. **The strategy document.** Read its `lenses:` front matter first — a mapping of each lens to
+   `applicable` or `not_applicable` — and fall back to its lens section headings where the key is absent.
+   Use its lens names **verbatim** — not normalized, not title-cased, not mapped onto anything.
 2. **Lens names the constitution declares**, where it carries a testing obligation that names them.
-3. **The default set**: `unit`, `integration`, `api-contract`, `end-to-end`, `manual`.
+3. **The default lens set**: `unit`, `integration`, `api-contract`, `end-to-end`, `uat`, `regression`.
+
+**Two kinds of lens.** Keep them apart throughout:
+
+- **Condition levels** — unit, integration, api-contract, end-to-end, any lens the strategy added from
+  evidence, and `manual` — are what a test condition is assigned to.
+- **UAT and Regression are section-bearing.** They decide whether this plan carries a **Suggested UAT
+  scenarios** section and a **Regression scope** section. Each is never a condition's level.
+
+**What the strategy rules out, this plan does not have.** A lens the strategy marks `not_applicable` is
+unavailable here: no condition is assigned to it, and its section does not appear. An acceptance
+criterion that only a ruled-out lens could verify goes to "Explicitly not covered" with the reason
+**ruled out by the strategy** and the remedy **re-run test-strategy** — never quietly reassigned to a
+lens the strategy did not choose. Consistency between the two documents is the point: a reviewer with
+both open must never find the plan using a kind of testing the strategy decided against.
+
+Three states, each said once and prominently in both the document and the report:
+
+| Strategy state | Condition levels | UAT section | Regression section | Say |
+|---|---|---|---|---|
+| Has `lenses:` | its applicable condition levels, plus `manual` | if `uat` is `applicable` | if `regression` is `applicable` | the strategy, by path |
+| Has no `lenses:` key, and no UAT or Regression section | its named lenses, plus `manual` | omitted | omitted | **this strategy predates the UAT and Regression lenses** — re-run test-strategy to decide them |
+| No strategy document | `unit`, `integration`, `api-contract`, `end-to-end`, `manual` | present | present | **no test strategy exists** — the default lens set was used; run test-strategy so the next plan inherits the project's own |
+
+With no strategy and no lens names in the constitution, you say so and continue on the defaults — neither is a precondition.
+
+A pre-032 strategy is not silently upgraded and its gaps are not silently filled: the two sections are
+left out *and the omission is stated*, because a plan that quietly applied defaults would be inconsistent
+with the strategy it claims to follow.
+
+**Check whether the strategy is possibly stale.** Flag it, and recommend a re-run, when either holds:
+
+- its recorded `mode` no longer matches what you can see — it says `greenfield`, and real tests now
+  exist; or
+- a file this feature touches has a newer commit than the strategy's `generated` timestamp.
+
+The history lookup is a read, not a run: it is read-only, it is the same kind of lookup as reading the
+current branch for the identifying block, and it executes, builds, and touches nothing. Where history
+cannot be read — no repository, a shallow clone, no access — use the mode check alone, and say that the
+history check was skipped and why. A possibly-stale strategy is never a reason to stop; it is a reason
+to say so.
 
 **`manual` is always available**, and is appended to an inherited set that omits it. A strategy decides
-what to *automate*; a plan must be able to place a condition no automated lens will ever cover — a
-visual check, a third-party sandbox interaction, an accessibility walkthrough. Forcing those into
-"explicitly not covered" would be false: they are covered, by a person.
+what to *automate*; a plan must be able to place a condition no automated lens will ever cover — a visual
+check, a third-party sandbox interaction, an accessibility walkthrough. Forcing those into "explicitly not
+covered" would be false: they are covered, by a person. `manual` is a one-off human check of one
+condition, **distinct from a UAT scenario**, which is a whole user journey judged in the user's own terms.
 
 **Where the constitution and the strategy disagree, the constitution prevails and you report the
 divergence** in the document. Do not silently resolve it.
 
-**Where neither exists**, say so once, use the default set, and continue. Neither is a precondition.
-
-State the resolved vocabulary and its source — the strategy by path, the constitution, or the default —
-in both the document and the report. Taking the names verbatim is what makes the two documents readable
+State the resolved lens set and its source — the strategy by path, the constitution, or the default — in
+both the document and the report. Taking the names verbatim is what makes the two documents readable
 against each other; a silent translation would sit between two artifacts a reviewer has open side by
 side, and it would be a guess about a word the team defined deliberately.
 
@@ -242,8 +288,8 @@ already is one.
 
 ## Step 5 — Establish what this project rules out
 
-Two constraints come from the project rather than from the specification, and both narrow what you are
-allowed to write.
+Three constraints come from the project rather than from the specification, and all of them narrow
+what you are allowed to write.
 
 ### The surfaces, and what they make unreachable
 
@@ -260,11 +306,31 @@ This is the same failure `speckit.spectra.test-strategy` exists to avoid, reappe
 A plan that assigns a command-line tool's conditions to a browser driver is that defect with a
 different filename.
 
+### What you inherit carries its provenance
+
+Everything this plan takes from the strategy — a lens decision, a tool tier, a floor, an owner, a risk
+area, a journey — carries the strategy's provenance for it: `cited` where the strategy rests it on project
+evidence, `convention` where it is a default the strategy brought with it, `stated` where the team said
+so in its clarification round. A convention inherited without its label reads as a finding about the
+project, and nobody can tell it apart from one.
+
+### What the strategy ruled out
+
+The strategy can rule out more than a lens. Never name a tool the strategy ruled out — one it places at
+no tier, or one a stated team constraint forbids (a frozen dependency list, no container runtime in CI,
+no network in the test environment). A tool the stack could run and the team may not adopt is not a
+lower-confidence suggestion; it is not a suggestion. Where your choice of tool rests on the strategy,
+name the tier it gave.
+
 ### The coverage floor is inherited, never proposed
 
 Where the strategy document or the constitution declares a coverage floor, state it as an exit criterion
 with its metric and the role who confirms it, and **attribute it** to the document that set it. Do not
 propose a different floor, do not adjust one, and do not derive one where none exists.
+
+**Where the strategy sets a floor per surface, inherit the floor of each surface the feature touches**,
+and name the surface beside it. A feature that touches only the service inherits the service's floor,
+not the front end's, and one that touches both carries both.
 
 You do not measure coverage. You do not run a coverage tool. A floor is a project-wide policy decision
 that `speckit.spectra.test-strategy` owns; your job is to carry it into this feature's exit criteria
@@ -335,12 +401,20 @@ two will disagree, and a renumbering applied to a specification under review inv
 
 ### Choosing the level
 
-Assign each condition to the **cheapest** level from the resolved vocabulary that can actually verify
+Assign each condition to the **cheapest** level from the resolved lens set that can actually verify
 it — not the most thorough one. A condition verifiable by a unit test does not belong at end-to-end
 because end-to-end sounds more convincing.
 
-Two hard constraints: the level must be a name from the vocabulary resolved in Step 3, and it must be
-runnable on a surface established in Step 5. `manual` is always available.
+**Honour the strategy's ownership map.** Where its `ownership:` front matter, or its body, says which lens
+owns a kind of behaviour, a condition verifying that kind of behaviour goes to that lens. Where you place
+it elsewhere — the owning lens is ruled out for this surface, or the condition genuinely needs a different
+level — say why, next to the condition. The map exists so that "where does this test go" is settled by
+the project rather than by whoever writes the plan.
+
+Three hard constraints: the level must be a condition level from the lens set resolved in Step 3; it
+must not be a lens the strategy ruled out; and it must be runnable on a surface established in Step 5.
+`manual` is always available. UAT and Regression are never a condition's level — they have their own
+sections, derived in Steps 8 and 9.
 
 ### Deriving the priority
 
@@ -354,7 +428,7 @@ A condition **inherits** the priority of what it verifies:
 | A success criterion | The priority of the story it measures, else P2 |
 
 Only **P1** conditions gate the exit criteria. Where the specification carries no priorities at all,
-say so and derive priority from the impact axis in Step 9 alone.
+say so and derive priority from the impact axis in Step 11 alone.
 
 The specification already contains a prioritization the team agreed to; inventing a second one here
 would produce two answers to "what must work first". The one override is the promotion of prohibitions:
@@ -369,8 +443,9 @@ Follow the table with this section, always. It is where R1 becomes honest.
 |---|---|---|
 | Unresolved clarification | The criterion depends on a marker still open in the specification | The clarification command, which the **user** runs |
 | Untestable as written | It cannot be made falsifiable without a decision the specification does not contain | Name the missing decision |
-| Out of scope | Deliberately excluded by Step 8 | Who covers it, if anyone |
+| Out of scope | Deliberately excluded by Step 10 | Who covers it, if anyone |
 | Deferred | Real, testable, consciously not in this cycle | When, or by whom |
+| Ruled out by the strategy | Only a lens the strategy marks `not_applicable` could verify it | Re-run test-strategy if that decision should change |
 
 **Never invent the missing decision.** Where a requirement is ambiguous, say so and write no condition
 for it. This is R3, and it is the rule most likely to feel unhelpful in the moment: a fabricated
@@ -378,9 +453,84 @@ condition looks like diligence, reads as coverage, and gets approved — at whic
 become a requirement nobody agreed to.
 
 State the count both ways in the report: criteria covered out of criteria found, and the uncovered ones
-with their reasons.
+with their reasons. A criterion counts as covered when a condition **or a UAT scenario** reaches it.
 
-## Step 8 — Scope
+## Step 8 — Derive the UAT scenarios
+
+Only where the resolved lens set makes UAT available (Step 3). Where it does not, the section is left out
+and you say why, once: ruled out by the strategy, or a strategy that predates the lens.
+
+A **UAT scenario** is a user-visible journey judged in the user's own terms — the thing a stakeholder
+would do to decide whether the feature is acceptable. It is not a test condition and not a click script.
+One row per scenario:
+
+| Field | What goes in it |
+|---|---|
+| ID | `UAT1`, `UAT2`, … scoped to this document, never reused within it |
+| Journey | One or two lines, in the user's words — what they set out to do |
+| Expected outcome | What they see or get when it works |
+| Verifies | The specification's own identifier, in the same three forms as the conditions |
+| Priority | Inherited from what it verifies, by the derivation in Step 7 |
+| Executor | `agent`, `human`, or `either` |
+| Evidence | What would show it passed |
+
+**Derive scenarios from the specification's user stories and acceptance scenarios.** Never invent a
+journey the specification does not describe — R3 applies here exactly as it does to conditions.
+
+**Every user story** is the subject of at least one scenario, or appears under "Explicitly not covered"
+with its reason. A story whose parts are all verified by automated conditions still gets a scenario: UAT
+judges the journey, not the parts, and a feature can pass every unit test and still not be something a
+user would accept.
+
+### The executor
+
+**The executor is agent only where the surface can actually be driven.** Mark a scenario `agent` or
+`either` only when both hold:
+
+- the dependency manifests show a surface of a kind an agent can drive — `browser`, `cli`, or `http`
+  (Step 5); and
+- the strategy's UAT executor policy permits an agent to execute it.
+
+Otherwise it is `human`, and you say why. Judge this from the surface kind and the strategy — **not from
+this session's tools**. The scenario will be performed later, by a person or by `speckit.spectra.uat` in a
+session whose tools you cannot see, so what you can drive right now proves nothing about then. The uat
+command makes its own judgment at run time.
+
+Where the judgment is the user's own — taste, tone, whether a flow *feels* right — the executor is
+`human` whatever the surface.
+
+### The evidence
+
+Take it from the strategy's per-surface evidence rule where one exists — a screenshot for `browser`, a
+terminal transcript for `cli`, a request-and-response transcript for `http`. Name evidence only for a
+surface this project has. With no strategy, use those conventions and mark them as convention.
+
+### The journeys the strategy names
+
+Where the strategy records the journeys worth an end-to-end test or a UAT scenario, favour the journeys
+the strategy names — for end-to-end conditions as well as for scenarios. Where a journey you cover is not
+among them, say so beside it, so a reviewer can tell a journey the team prioritized from one this plan
+added.
+
+## Step 9 — Derive the regression scope
+
+Only where the resolved lens set makes Regression available. Where it does not, the section is left out
+and you say why, once.
+
+The **regression scope** is the set of existing tests that must stay green for this feature, because they
+touch what it changes. You found them already, in Step 6 — this step names them as an obligation rather
+than as coverage.
+
+| Field | What goes in it |
+|---|---|
+| Test | The project-relative path of an existing test |
+| Touches | The module, route, or identifier the feature changes that this test exercises |
+| Kind | `existing`, or `risk-driven addition` — a new regression test a Step 11 risk justifies, naming that risk |
+
+**Where nothing is found, the section still appears with the search you ran** — the terms and the paths —
+under R4. "No regression scope" unqualified is a claim about the system you did not establish.
+
+## Step 10 — Scope
 
 **In scope**: the behaviours and components this plan verifies.
 
@@ -392,7 +542,7 @@ why a bug was not caught, and an exclusion with no owner is the one that produce
 
 Give the user story titles here, once, so the `USn-ACn` references in Step 7 are legible.
 
-## Step 9 — Risks
+## Step 11 — Risks
 
 Two to five rows. This section decides where the effort goes, so it is a decision, not an inventory.
 
@@ -405,6 +555,11 @@ caller notices. **Low** otherwise.
 **Likelihood is High** where the touched area has no current test coverage *and* the change is not
 additive. **Medium** where one of those holds. **Low** where neither does.
 
+**A known risk area raises likelihood.** Where the strategy records an area that has broken before, or one
+the team is most afraid of getting wrong, a risk in that area is rated at least Medium on likelihood
+whatever the coverage says — with the strategy cited as the trigger. The team's memory of what breaks is
+evidence the test suite does not hold.
+
 Name the trigger that produced each rating, next to it.
 
 **The response is one of three**: deeper coverage, an extra scenario, or **accept**. `accept` is a
@@ -416,7 +571,7 @@ written.
 produces all-High, say so explicitly and name why, rather than presenting an unprioritized list as a
 prioritization.
 
-## Step 10 — Environment, data, and exit criteria
+## Step 12 — Environment, data, and exit criteria
 
 **Environment**: where the tests run, and which dependencies are stubbed versus real.
 
@@ -458,7 +613,7 @@ headers; connection strings with embedded credentials; known provider token pref
 nothing. A live credential copied into a committed — and possibly circulated — document cannot be
 recalled from caches, clones, or forks.
 
-## Step 11 — The identifying block
+## Step 13 — The identifying block
 
 Three facts at the top of the document:
 
@@ -474,7 +629,7 @@ field, because it looks authoritative and a reader six weeks later has no way to
 
 Do not ask the user for any of it — the repository answers all three.
 
-## Step 12 — The existence gate
+## Step 14 — The existence gate
 
 Where `test-plan.md` already exists beside the resolved specification: **read it, treat it as an input,
 and ask before rewriting it.**
@@ -504,7 +659,7 @@ and no amount of re-reading the specification will recover one you dropped.
 **One file, one name.** Never write `test-plan-2.md`, a dated variant, or a numbered copy. Two documents
 with no statement of which one is current is precisely the problem a fixed filename avoids.
 
-## Step 13 — Write the document
+## Step 15 — Write the document
 
 Write **exactly one file**: `test-plan.md`, in the directory of the specification resolved in Step 1.
 This is the run's final act.
@@ -532,16 +687,21 @@ would sever the plan from the specification a reader is holding.
 | An unqualified claim of absence | The search you ran, and where |
 | A level or tool this project's stack cannot run | The level its real surface admits, or a stated finding of none |
 | A test script or step sequence in the condition column | The condition — what must be true |
+| A click script in a UAT scenario's journey | The journey in the user's words, and its expected outcome |
+| A condition assigned to `uat` or `regression`, or to a lens the strategy ruled out | A condition level from the resolved lens set, or an explicitly-not-covered entry |
 
-## Step 14 — Report
+## Step 16 — Report
 
 After the write, in this order:
 
 - **The written path**, and whether it was **created** or **rewritten**.
 - **Traceability** — acceptance criteria covered out of criteria found, then the uncovered ones with
   their reasons.
-- **Levels** — the resolved vocabulary, and its source: the strategy document by path, the constitution,
-  or convention.
+- **Lens set** — the resolved lenses, the condition levels among them, and the source: the strategy
+  document by path, the constitution, or the defaults — with the predates-the-lenses or no-strategy
+  statement where it applies.
+- **UAT and regression** — scenarios by executor (`agent`, `human`, `either`) and the user stories with
+  none; regression-scope entries by kind — or that a section was left out, and why.
 - **Template** — the layer you resolved, by path, and how many checkbox constructs you converted.
 - **Read** — what portion of the relevant code and tests you read out of what is present, and by what
   selection method.
@@ -565,16 +725,45 @@ silent narrowing.
 | A specification with no identifiers | That the verifies column uses verbatim quotations |
 | A specification with no priorities | That priority was derived from impact alone |
 | A specification with no testable behaviour | That the conditions table is deliberately sparse, rather than padding it |
+| A strategy that is possibly stale | Which check fired, and that a re-run of test-strategy is recommended |
+| No readable history for the stale check | That only the mode check ran, and why |
 
-## Step 15 — Hand the plan to the planner
+## Step 17 — Hand the plan to the planner
 
-Emit a ready-to-copy invocation of the **planning command**, naming the written path and the obligation:
+Emit a ready-to-copy invocation of the **planning command**: first a link to the path you actually
+wrote — the resolved specification's directory, never an example path — then one block to copy.
+
+**Why the obligations go into `plan.md`.** The core tasks command reads `plan.md`, the specification, the
+optional design documents, and the constitution. It never reads `test-plan.md`. So the prompt asks the
+planner to carry this plan's obligations into a **Testing obligations** section of `plan.md`, which is the
+one place the tasks command is certain to see them. Without that, an approved test plan would stop at the
+planner, and the tasks would be generated as though it did not exist.
 
 ```text
+Next: review [test-plan.md](specs/021-signed-webhooks/test-plan.md), then run:
+
 <the planning command> Plan this feature against the approved test plan at
-specs/021-signed-webhooks/test-plan.md. Every P1 test condition in it must map to a task that
-writes the test before the implementation it covers.
+specs/021-signed-webhooks/test-plan.md. Add a "Testing obligations" section to plan.md that names that
+file and requires:
+(1) every P1 test condition maps to a task that writes the test before the implementation it covers;
+(2) each condition is tested at the level the test plan assigns it;
+(3) the tests listed under Regression scope stay green;
+(4) every UAT scenario becomes one task in a final phase titled
+"User Acceptance (UAT) — not executed by the implement command", each formatted
+"[UAT] UAT<n> (<verifies>) <journey> — executor: <executor>".
 ```
+
+**The prompt never mentions a section the plan does not have.** Drop clause (3) when the plan has no
+Regression scope, and clause (4) when it has no Suggested UAT scenarios — and renumber what remains. A
+prompt that asks for a phase built from scenarios that do not exist sends the planner looking for them.
+
+**The phase title names the implement command by its role**, never by one agent's syntax. It is written
+into the user's `tasks.md`, which every agent in the team reads, so it says "the implement command" — the
+same way this prompt says "the planning command".
+
+**The UAT task line is a contract with `speckit.spectra.uat`.** That command finds a task by its `UAT<n>`
+id, never by its wording, and writes an evidence link onto the same line when it observes a pass. The
+`[UAT]` label sits where Spec Kit puts a story label, so the line stays valid in the core task format.
 
 This is something the **user** runs. Render it in whatever invocation syntax this agent uses; the
 command being named is Spec Kit's planning command.
@@ -582,8 +771,9 @@ command being named is Spec Kit's planning command.
 **What the handoff is not:**
 
 - **Not an invocation.** You print it. You never run the planning command, or any other command.
-- **Not a hook.** Nothing is registered anywhere. A hook would make every project that installs this
-  extension prompt for a test plan on every feature, which is the opposite of the opt-in add-on you are.
+- **Not automatic.** You are offered by an optional hook after specify, registered in the extension's
+  manifest, so the test plan is suggested at the moment it is most useful. The hook only asks: it never
+  runs you on its own, and declining it changes nothing. You still never run the planning command.
 - **Not an edit to a core command.** The planning command works exactly as it does today for anyone who
   never runs you.
 - **Not a marker in the specification.** You do not write a pointer into it.
@@ -596,7 +786,7 @@ plan was not rewritten. A run that wrote nothing never hands over a file it did 
 A re-run is normal — the usual trigger is a clarification session changing the specification.
 
 - **Read the existing plan first** and record it as an input.
-- **Ask before rewriting** (Step 12), with a statement of what would change.
+- **Ask before rewriting** (Step 14), with a statement of what would change.
 - **Carry forward** the not-covered decisions and the accepted risks, or state their removal.
 - **One file, rewritten in place.** Git carries the history.
 
@@ -661,6 +851,10 @@ Offer any of those three only if the user asks for it.
 - **No tool was checked against a package registry.** This command makes no network request.
 - **This document states what will be verified. It does not produce the tests.** The task and
   implementation commands do that, from this plan.
+- **The guard that keeps UAT tasks open is the project's constitution.** The implement command reads the
+  constitution, and the testing amendment `speckit.spectra.test-strategy` drafts says UAT tasks are never
+  executed or marked complete by it. Without that clause, the phase title is a convention the implement
+  command is asked, not forced, to follow.
 - **Adjacent questions belong to adjacent agents.** `speckit.spectra.test-strategy` owns the
   project-wide policy and the coverage floor; `speckit.spectra.flaky-test-detector` owns tests that
   already exist and misbehave. Nothing here diagnoses an individual test.
@@ -677,9 +871,11 @@ Last resort only — used when no template resolves at any layer in Step 4.
 ## 1. Scope                          <!-- in scope; out of scope with an owner each; story titles -->
 ## 2. Risks                          <!-- 2-5 rows: risk | likelihood | impact | response | trigger -->
 ## 3. Test Conditions                <!-- ID | condition | verifies | level | priority | already covered -->
-                                     <!-- then: levels in use, and "Explicitly not covered" -->
-## 4. Environment & Data             <!-- environment; test data and reset; prerequisites -->
-## 5. Exit Criteria                   <!-- plain statements: criterion | threshold | confirmed by -->
+                                     <!-- then: lens set in use, and "Explicitly not covered" -->
+## 4. Suggested UAT Scenarios        <!-- ID | journey | expected outcome | verifies | priority | executor | evidence -->
+## 5. Regression Scope               <!-- test | touches | kind -->
+## 6. Environment & Data             <!-- environment; test data and reset; prerequisites -->
+## 7. Exit Criteria                   <!-- plain statements: criterion | threshold | confirmed by -->
 ## Sources consulted and coverage    <!-- read; coverage n of m; could not read; nothing executed -->
 ```
 

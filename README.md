@@ -136,6 +136,7 @@ phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception 
 | Technical-Debt & Maintainability | Implementation | Construction | Add-on | 🚧 under dev |
 | Testing | Testing & Quality | Construction | Core | ✅ available |
 | Convergence | Testing & Quality | Construction | Core | ✅ available |
+| UAT Runner | Testing & Quality | Construction | Add-on | ✅ available |
 | Test Coverage Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Test Automation Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
 | Flaky Test Detector | Testing & Quality | Construction | Add-on | ✅ available |

@@ -172,7 +172,10 @@ the agent runs.
   list in `.specify/memory/`. A **standing-policy singleton** — one current version, rewritten in place —
   is the one exception to the subfolder: it is a single flat file at the root — `<root>/TEST_STRATEGY.md`,
   `<root>/DOMAIN_ANALYSIS.md`, and `<root>/DEPLOYMENT_STRATEGY.md` — and a new one is added only by
-  amending Principle VII.
+  amending Principle VII. A **per-feature deliverable** — about one feature, not the project — lives
+  beside the specification it concerns instead: `specs/<feature>/test-plan.md` from `test-plan`, and
+  `specs/<feature>/uat-report.md` with its run-stamped `uat/` evidence from `uat`. Such a command takes the
+  feature explicitly, writes nowhere else, and a new one is likewise added only by amending Principle VII.
   `tests/test_doc_output_paths.py` enforces this on the shipped command files.
 
   Three related duties. **Check before defaulting into `docs/`:** it is GitHub Pages' only non-root branch

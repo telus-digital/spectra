@@ -31,7 +31,7 @@ optionally one flag:
 $ARGUMENTS
 
 **This command requires no arguments.** With empty input, analyze the whole project. If the user
-supplied a focus, weight your analysis toward it — but still cover all four mandatory lenses. A hint
+supplied a focus, weight your analysis toward it — but still cover all six mandatory lenses. A hint
 narrows nothing.
 
 **The one flag** is `--non-interactive`: a declaration that no answer can be taken in this session.
@@ -93,7 +93,7 @@ overrides the template can drop a section; it cannot make you stop obeying these
   where it is legitimately the user's to make, and record the disagreement in the document. Do not
   argue it in the session, and do not silently keep your own version.
 
-## The four lenses, defined
+## The six lenses, defined
 
 Every project already disagrees about these words. Define them by what they prove, not by a directory
 or a tool, and use these definitions throughout the document.
@@ -104,9 +104,18 @@ or a tool, and use these definitions throughout the document.
 | **Integration** | that components work together — wiring, not logic | nothing about the network being reachable |
 | **API contract** | that an interface someone else depends on is or is not breaking | neither side's implementation |
 | **End-to-end** | that one user-visible journey works — and nothing about why it stopped | the system is assembled |
+| **UAT** | that the feature is acceptable to its user, in the user's own terms | nothing about the implementation — only that the build is assembled |
+| **Regression** | that behaviour which already worked still works after a change | the existing suite is the baseline, at whatever level those tests live |
 
-Record, per project, which lens owns a given behaviour. A team should be able to settle "where does
-this test go" from your document rather than from taste.
+The first four are where a test *lives*. The last two are different in kind, and the difference matters
+to every plan that inherits this document. **UAT** is judged by the person the feature is for — a human,
+or an agent only when a human explicitly asks — so it is never self-certified by whoever wrote the code.
+**Regression** is not a level at all: it is the obligation that the tests already passing stay passing,
+and it is met by tests at whatever level they already live.
+
+Record, per project, which lens owns a given behaviour — in the body, and as the `ownership:` map in the
+front matter (Step 10), which `speckit.spectra.test-plan` reads. A team should be able to settle "where
+does this test go" from your document rather than from taste.
 
 ## Step 1 — Read the project before you propose anything
 
@@ -291,11 +300,11 @@ by any repository.
 
 | # | What you ask | What it settles | What it changes |
 |---|---|---|---|
-| 1 | Where the weight should sit — unit-heavy, integration-heavy, or thin and broad | The strategy's shape. The same repository honestly supports more than one | All four lens sections, and how the floor is derived |
+| 1 | Where the weight should sit — unit-heavy, integration-heavy, or thin and broad | The strategy's shape. The same repository honestly supports more than one | All six lens sections, and how the floor is derived |
 | 2 | Whether anything outside this repository depends on an interface here | Whether an external consumer exists. An internal handler and a published interface look identical in a source tree | Whether the API contract lens is a section or one line |
-| 3 | Which journeys are worth an end-to-end test | Business priority. Step 7 resolves the *surface* from evidence; which journeys justify the most expensive lens is not in any manifest | The end-to-end approach, and how many of them there are |
+| 3 | Which journeys are worth an end-to-end test or a UAT scenario, and who signs UAT off | Business priority and acceptance ownership. Step 7 resolves the *surface* from evidence; which journeys justify the most expensive lenses, and whose judgment accepts them, is not in any manifest | The end-to-end approach and how many there are; the UAT executor policy and which journeys UAT favours |
 | 4 | What has broken that the tests did not catch — in greenfield, what they are most afraid of getting wrong | Where the real risk is, as against uniform coverage | Which recommendations lead, and what the ratchet targets first |
-| 5 | What constraints the repository does not show — no container runtime in CI, a freeze on new dependencies, no network in the test environment, a compliance rule | What the team may adopt, as against what the stack can run | Tool tiers: a tool the organisation forbids is not a lower-confidence recommendation, it is not a recommendation |
+| 5 | What constraints the repository does not show — no container runtime in CI, a freeze on new dependencies, no network in the test environment, a compliance rule, and whether an AI agent may execute UAT here, and against which environments | What the team may adopt, as against what the stack can run | Tool tiers: a tool the organisation forbids is not a lower-confidence recommendation, it is not a recommendation. Whether `agent on explicit request` is a permitted UAT executor |
 
 Question 5 is the one that is easiest to skip and costs the most. R5 stops you naming a tool whose
 prerequisites this surface lacks. It says nothing about a tool this surface could run and this team may
@@ -323,7 +332,8 @@ The forcing case is question 3 on a project whose end-to-end surface resolves to
 journeys are worth an end-to-end test"* is incoherent for a library with no entry point, so ask instead:
 
 > Question 3 of 5 — the end-to-end surface resolved to `none`: this project exposes no browser, HTTP,
-> or command-line entry point. Confirm, or name a journey you want covered anyway.
+> or command-line entry point, so neither an end-to-end test nor a UAT scenario has a journey to follow.
+> Confirm, or name a journey you want covered anyway, and who would accept it.
 
 Question 2 gets the same treatment where a published manifest already answers it.
 
@@ -375,9 +385,10 @@ an override that failed to apply is indistinguishable from one that applied.
 > `.specify/templates/overrides/test-strategy-template.md`, where it is committed, applies to the whole
 > team, and survives an extension update.
 
-## Step 7 — Work the four lenses
+## Step 7 — Work the six lenses
 
-For each of **unit**, **integration**, **API contract**, and **end-to-end**, produce either:
+For each of **unit**, **integration**, **API contract**, **end-to-end**, **UAT**, and **regression**,
+produce either:
 
 - **applicable**, with a named approach, the tools it implies, and the evidence behind them; or
 - **not applicable**, with a stated reason.
@@ -418,6 +429,32 @@ Resolve the lens to the surface this project actually has: **browser**, **http**
 **Never default to a browser driver.** A browser driver requires browser evidence in a manifest. For a
 published library or a command-line tool the honest answer is `cli` or `none`, and `none` is a valid
 outcome — better than an end-to-end suite the project cannot run and will not maintain.
+
+### The UAT lens
+
+Decide whether UAT applies, and say why either way. A library with no user-facing entry point either
+marks it not applicable or scopes it to a developer-facing journey — the reason is stated whichever you
+choose. Where it applies, record two things:
+
+- **Who may execute it** — `human`, `agent on explicit request`, or both, from question 5 where it was
+  answered, else `human` as a convention. An agent never executes UAT unasked: the implement command
+  leaves UAT open, and acceptance is checked only when a person asks for it.
+- **What counts as evidence, per surface** — a screenshot (optionally a before-and-after pair) for
+  `browser`, a terminal transcript for `cli`, a request-and-response transcript for `http`. Name evidence
+  only for the surfaces Step 3 found: **evidence for a surface this project does not have is not named**,
+  for the same reason R5 refuses a tool the stack cannot run.
+
+Name the journeys UAT favours from question 3.
+
+### The regression lens
+
+Name the **regression gate**: the suite that must stay green on every change, and where it runs — cite
+the CI workflow that runs it, or say plainly that it **runs nowhere automatically**, which is itself the
+first recommendation. Then state whether a **fixed defect earns a regression test**. The default is yes,
+marked `convention`; question 5 may say otherwise.
+
+Regression is never a separate directory or tool. It is met by the tests already in place, at the level
+they already live, and a recommendation that moves them is a rewrite proposal, not a regression policy.
 
 ## Step 8 — Establish the coverage baseline
 
@@ -499,6 +536,17 @@ run: 4
 coverage_of_analysis: "12 of 81 files opened; the rest are tooling"
 baseline: unavailable
 amendment_state: partial
+lenses:
+  unit: applicable
+  integration: applicable
+  api-contract: not_applicable
+  end-to-end: applicable
+  uat: applicable
+  regression: applicable
+ownership:
+  "pure calculation": unit
+  "persistence round-trip": integration
+  "signed-in journey": end-to-end
 clarification:
   asked: 5
   answered: 5
@@ -521,6 +569,13 @@ clarification:
 proposed-amendment section already carries the state, the governing clause, the conflict, and the
 approval in full, and a header that repeats a paragraph is what breaks the document. `disposition` is
 `answered`, `default_taken`, or `not_asked`.
+
+`lenses` maps every lens — the six mandatory ones, plus any you added from evidence — to `applicable` or
+`not_applicable`, with exactly those spellings and no others. `ownership` maps a short, quoted kind of
+behaviour to the lens that owns it. Both are here, and not only in the body, because
+`speckit.spectra.test-plan` reads them: a lens marked `not_applicable` is one no test plan in this project
+may use, and a project that overrides the template may reshape the body but never the header. Keep each
+value one word; the reason a lens does not apply belongs in its section.
 
 Carry **every** question, including any you did not ask — an absent entry and a `not_asked` entry are
 different claims. Where there was no coverage tooling and therefore no coverage question, say so in the
@@ -594,6 +649,22 @@ consume it directly:
 ```
 
 Leave the checkbox unchecked. The user's approval is what checks it.
+
+**Where UAT is applicable, the draft carries one clause whatever else it says.** The implement command
+reads the constitution, and this is the clause that keeps acceptance from being self-certified by the
+agent that wrote the code:
+
+```markdown
+- [ ] UAT tasks MUST NOT be executed or marked complete by the implement command; they run only on an
+      explicit request — by a human, or by `speckit.spectra.uat` — so acceptance is never certified by
+      the agent that wrote the code.
+      section: <the constitution's testing section>
+      status: add
+```
+
+Treat it like any other obligation in Step 12: where the constitution already says this, the state is
+`embedded` for it and you draft nothing; where it does not, the state is at least `partial`. Where UAT is
+not applicable, do not draft it — a rule about tasks that will never exist is noise in a constitution.
 
 ### The gate
 
@@ -712,6 +783,8 @@ Last resort only — used when no template resolves at any layer in Step 6.
 ## Integration testing             <!-- applicability, proves, boundary, today, approach, tools -->
 ## API contract testing            <!-- applicability, proves, boundary, today, approach, tools -->
 ## End-to-end testing              <!-- surface: browser | http | cli | none, then as above -->
+## UAT                             <!-- applicability, proves, boundary, executors, evidence per surface, today, approach -->
+## Regression testing              <!-- applicability, gate, where it runs, defect rule, today -->
 ## Coverage floor                  <!-- metric, baseline + provenance, floor, rounding, ratchet, enforcement -->
 ## Recommendations summary         <!-- table: # | lens | surface | recommendation | evidence | scope -->
 ## Proposed constitution amendment <!-- embedded state, clause, conflict, approval, text, how to apply -->
