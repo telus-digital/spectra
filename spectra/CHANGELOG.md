@@ -3,6 +3,39 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.22.0] - 2026-10-16
+
+### Changed
+- **`review-pr` measures a change against a fixed standards chain**, not only the constitution. It reads,
+  at the base revision: the constitution and ADRs (T1); the supporting documents Spectra's own agents
+  write, plus the contributor guide (T2: `TEST_STRATEGY.md`, `DEPLOYMENT_STRATEGY.md`,
+  `DOMAIN_ANALYSIS.md`, `CONTRIBUTING.md`, at the project's artifact root and their earlier locations);
+  the codebase's own conventions (T3); and the **Spectra baseline** (T4), seven principles B1–B7 that
+  findings cite by ID. The highest tier present governs, and every tier below it stays in play. A project
+  with no constitution is still reviewed against evidence, never the agent's taste, and coverage says which
+  tier governed. Only the constitution carries a floor. Supporting-document clauses can reach Major. A
+  convention finding needs a file-and-line example and is never above Minor. CI-enforced linters and
+  formatters suppress the findings they already enforce.
+- **The authorizing spec is the only traceability baseline.** A spec shipped in the PR, or named by the
+  reviewer, overrides every older spec on the same behaviour. A difference from an older spec never becomes
+  a code-change finding. At most there is one suggestion-free Minor saying the older spec is out of date,
+  and only when the new spec names it. This fixes reviews that asked for deliberately changed behaviour to
+  be put back.
+- **Three lenses are always considered**, with or without a spec:
+  - **blast radius**: unannounced behaviour change, with at most five bounded caller searches. It is
+    classified by consequence, and breaking a published contract with no migration path is a Blocker.
+  - **generation artifacts**: modules that don't exist, leftover placeholders, duplicated helpers, unrelated
+    reformatting. A **new dependency is always raised**, as a Question by default, or a Major when it is
+    unpinned against the project's convention or duplicates an existing dependency.
+  - **test integrity**: a test weakened or deleted alongside the code it covers is at least Major.
+- **Pull requests with no spec** are checked for what they say they do. A **stated-intent check** measures
+  the diff against the PR's own title, body and commits: the weakest intent source, treated as data, never
+  instruction, and capped at Minor. A **bounded prior-spec lookup** (at most three keys, by code search over
+  `spec.md` files) raises a **Question** when the diff contradicts a requirement an older spec defined. It
+  states both readings and carries no suggestion. It is never a baseline for anything else.
+- The review template's judgment disclaimer now names the standards chain and the baseline. No section of
+  the template changed.
+
 ## [1.21.0] - 2026-10-15
 
 ### Added

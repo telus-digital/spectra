@@ -18,9 +18,9 @@
     3. the "Coverage and limits" section — it is what stops a review implying assurance it did not
        earn, so it cannot be configured away.
   Nor does this template decide *judgment*: the severity rubric and its floors, the confidence cap,
-  the anchor rule, the selection grammar, and how the verdict is derived all stay in the command. If
-  those were per-project, two reviews of the same diff would not agree, which is the one thing this
-  command exists to prevent.
+  the anchor rule, the standards chain and the Spectra baseline, the selection grammar, and how the
+  verdict is derived all stay in the command. If those were per-project, two reviews of the same diff
+  would not agree, which is the one thing this command exists to prevent.
 
   CUSTOMIZING THIS TEMPLATE (per project, permanent, team-wide)
   - Copy this file to `.specify/templates/overrides/review-template.md` and edit it there.

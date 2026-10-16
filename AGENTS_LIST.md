@@ -279,7 +279,19 @@ only** — there is no hook — since a reviewer should not be the author.
     which previously published findings now appear resolved.
 - **Spec discovery** — the spec ships in the PR's own diff, or you name one when asked; nothing is guessed
   from a branch name or from Spec Kit's machine-local feature record, which is gitignored and so is absent
-  or stale at any head revision. A PR with no spec is reviewed standalone, and says so.
+  or stale at any head revision. A PR with no spec is reviewed standalone, and says so. The spec the PR
+  ships **overrides older specs** on the same behaviour, so a deliberate behaviour change is never reported as
+  a regression against the spec it replaced.
+- **Standards** — measured against a fixed chain: the constitution and ADRs, then the supporting documents
+  Spectra's own agents write (test strategy, deployment strategy, domain analysis) and the contributor guide,
+  then the codebase's own conventions, then a **seven-principle baseline** (B1–B7) cited by ID. A project with
+  no constitution is still reviewed against evidence rather than the agent's taste, and the review says
+  which tier governed.
+- **No-spec and AI-assisted PRs** — three lenses run on every PR: **blast radius** (behaviour that changed
+  without being announced), **generation artifacts** (modules that don't exist, new dependencies, duplicated
+  helpers), and **test integrity** (a weakened test is at least Major). Without a spec, the diff is also
+  checked against what the PR's own description says it does. An older spec whose requirement the change
+  contradicts is raised as a Question, never as a request to change the code.
 - **Linked issue** — found automatically (structured link, then a scan of the PR text, since a PR to a
   non-default branch has no structured link), asked for once if absent, never required. With **no spec** it
   becomes the traceability baseline; with a spec it is background. Its content is treated as data about

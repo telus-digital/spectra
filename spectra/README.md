@@ -340,9 +340,14 @@ reviews one — judging it against **the intent and standards the PR carries**, 
    review to one head revision**, reported everywhere and re-checked before publishing.
 3. Reads the PR's **spec, plan, tasks, and ADRs at that revision**, and the **constitution and ADRs in
    force on the base branch**. The revision split is deliberate: it is what lets the agent notice a PR
-   that changes the rules it is being measured against.
+   that changes the rules it is being measured against. Standards form a fixed chain — constitution and
+   ADRs, then the test strategy, deployment strategy, domain analysis and contributor guide, then the
+   codebase's own conventions, then a seven-principle **Spectra baseline** (B1–B7) cited by ID — so a
+   project with no constitution is still reviewed against evidence, and the review says which tier governed.
 4. Locates the governing spec from the PR's own diff, and — when the diff carries none — from a path you
-   name in the run's single context question, before treating the change as carrying no spec. Neither the
+   name in the run's single context question, before treating the change as carrying no spec. That spec
+   **overrides older specs** on the same behaviour: a deliberate change is never reported as a regression
+   against the spec it replaced. Neither the
    branch name nor Spec Kit's machine-local feature record (`.specify/feature.json`) is ever used to guess:
    Spec Kit keeps that file out of version control, so at a PR's head revision it is absent or stale.
 5. Reads the **linked issue as optional extra context** — found automatically, asked for once if absent,
@@ -350,7 +355,10 @@ reviews one — judging it against **the intent and standards the PR carries**, 
    background, and where the two disagree that is a Question naming both.
 6. Runs **traceability in both directions** (work claimed complete but absent; changes no task
    authorized), **guardrails** with the violated clause quoted, and **craft** lenses chosen from what
-   the diff actually touches — reporting which lenses did not run, and why.
+   the diff actually touches — reporting which lenses did not run, and why. Three lenses run on every PR:
+   **blast radius**, **generation artifacts** (a new dependency is always raised), and **test integrity** (a
+   weakened test is at least Major). Without a spec, the diff is also checked against what the PR's own
+   description says, and an older spec it contradicts is raised as a Question — never a code-change request.
 7. Grades every finding Blocker / Major / Minor / Nit / Question from a **fixed rubric** so repeated
    reviews of one revision agree, with a separate confidence axis that caps severity: a low-confidence
    finding becomes a Question rather than a Blocker.
