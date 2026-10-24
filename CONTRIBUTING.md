@@ -227,8 +227,15 @@ spec-driven workflow on a feature branch, not by copying files and editing them.
 is itself how the published extension gets exercised. A new capability is a **new command file under
 `spectra/commands/`** registered in `spectra/extension.yml` — never a new top-level extension folder.
 
+This applies to feature work — a new agent, a material change to what an agent does, or a change to
+how the CLI works. A small bug fix, a cosmetic change, or housekeeping needs no spec, though it still
+bumps the version and resyncs the package like any other change to `spectra/`.
+
 Run these Spec Kit commands in order from your agent (Claude triggers shown in parentheses; the
-generic Spec Kit form is `/speckit.<step>`):
+generic Spec Kit form is `/speckit.<step>`). **You invoke each one yourself.** The agent runs only the
+command you invoked, then stops and names the next — it never starts a phase on its own, and asking it
+in chat to "run plan" gets you the command to type, not a plan. The stop is where you review the
+output before moving on:
 
 1. **Specify** — `/speckit.specify` (`/speckit-specify`). Describe the command you want in plain
    language: what it does, and `read-only` vs `read-write` effect. This creates a

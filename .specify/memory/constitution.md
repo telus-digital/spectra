@@ -1,27 +1,43 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version: 1.11.0 → 1.11.1
-Bump type: PATCH — wording only. No rule added, removed, or changed.
-Rationale: `speckit.spectra.domain-analyzer` no longer asks an SME to tick checkboxes in its file; the SME
-  decides each lens in the session and the file records the decisions (spec 034). Principle VII's two
-  examples that described "an SME's ticks" now say what the SME does instead.
+Version: 1.11.1 → 1.12.0
+Bump type: MINOR — materially expanded guidance. No principle added, removed, or renumbered.
+  Not MAJOR: Principle I's intent — feature work goes through Spec Kit — is unchanged. The amendment
+  says how the phases are run and draws the scope line explicitly; work that already complied with
+  1.11.1 by running the workflow phase by phase still complies.
+Rationale: agents were chaining specify → plan → tasks → implement in one turn, or building a feature
+  straight from a chat ask. Principle I now defines feature work, makes each phase a user-held
+  checkpoint, and requires out-of-band feature asks to be redirected to `/speckit.specify` with a
+  suggested prompt. Small fixes and cosmetic changes are explicitly outside the workflow.
 
 Modified principles:
-  - VII. Document Artifacts Live Under One Declared Root (title unchanged)
-    - reworded: "a guardrail proposal an SME ticks" → "a guardrail proposal an SME decides on"
-    - reworded: "an SME's ticks" → "an SME's choices"
-    - unchanged: singletons (DOMAIN_ANALYSIS.md keeps its name), the declared root, the publication
-      check, legacy reads
+  - I. Spec-Driven Development (We Dogfood Spec Kit) (title unchanged)
+    - changed: "Non-trivial work" → "Feature work, as defined under Scope"
+    - added: the user starts each phase and supporting command (`clarify`, `checklist`, `analyze`,
+      `converge`, `taskstoissues`) by invoking it — a chat request to run one does not count; one
+      command per invocation, then stop; out-of-band feature asks redirected with a ready-to-paste
+      `/speckit.specify` prompt; a definition of feature work (new agent, material agent change, CLI
+      behavior, packaging/distribution/release) and of what is exempt (small bug fixes, cosmetics,
+      housekeeping); no implicit waiver; exempt work is still bound by Principles V–VI and ship.py
+    - expanded rationale: chaining removes the review points; single maintainer means they are the
+      only review; why small fixes are exempt
+
+Modified sections:
+  - Development Workflow — "adding or changing a command" narrowed to adding or materially changing
+    one; small fixes may skip steps 1–4 but not 5–6 or Principle V; steps 1–4 and the supporting
+    commands marked user-invoked, agent stops after each; long lines rewrapped
 
 Added sections: none
 Removed sections: none
 
 Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ no change
+  - .specify/templates/plan-template.md ✅ no change (Constitution Check reads principles at run time)
   - .specify/templates/spec-template.md ✅ no change
   - .specify/templates/tasks-template.md ✅ no change
-  - spectra/commands/domain-analyzer.md ✅ rewritten in the same change (spec 034)
+  - .specify/templates/checklist-template.md ✅ no change
+  - CLAUDE.md ✅ Principle I pointer added near the top
+  - CONTRIBUTING.md ✅ "Add a new command" says each step is user-invoked and the agent stops
 
 Follow-up TODOs: (none)
 -->
@@ -38,14 +54,57 @@ and maintained.
 
 ### I. Spec-Driven Development (We Dogfood Spec Kit)
 
-Spectra is built using the same spec-driven workflow it ships to others. Non-trivial work MUST flow
-through Spec Kit — `specify` → `plan` → `tasks` → `implement` — rather than ad-hoc edits. Specs live
-under `specs/`, and the project constitution under `.specify/memory/` is the source of truth that
-plans are checked against.
+Spectra is built using the same spec-driven workflow it ships to others. Feature work, as defined
+under **Scope** below, MUST flow through Spec Kit — `specify` → `plan` → `tasks` → `implement` —
+rather than ad-hoc edits. Specs live under `specs/`, and the project constitution under
+`.specify/memory/` is the source of truth that plans are checked against.
+
+**The phases are checkpoints, and the user holds every one of them.** These rules are non-negotiable:
+
+- **The user starts each phase; the agent never does.** `specify`, `plan`, `tasks`, and `implement` —
+  and the supporting commands `clarify`, `checklist`, `analyze`, `converge`, and `taskstoissues` where
+  they are used — MUST each be started by the user invoking that command (for example
+  `/speckit.specify`). The invocation is what starts the phase: a chat message asking the agent to run
+  one does not, and the agent answers it with the command for the user to run. An agent MUST NOT start
+  a phase the user did not invoke: not by running its command, not by calling it as a skill or tool,
+  and not by writing its artifacts (`spec.md`, `plan.md`, `tasks.md`, or code) by hand.
+- **One command per invocation, then stop.** When a phase or supporting command finishes, the agent
+  MUST stop, summarize what it produced, and name the next command for the user to run. It MUST NOT
+  continue into the next one, however obvious it looks and even when the user's original wording
+  described the whole feature. The stop between phases is where the user reviews the result.
+- **An out-of-band feature ask is redirected, not fulfilled.** When a user asks in plain chat — outside
+  a Spec Kit command — for feature work, the agent MUST NOT start building it and MUST NOT start the
+  workflow on the user's behalf. It MUST instead (1) say that the work is feature work and goes through
+  spec-driven development under Principle I; (2) give a ready-to-paste `/speckit.specify` prompt
+  drafted from the ask, stating what is wanted and why, with known constraints and open questions, and
+  staying out of implementation detail; and (3) stop and wait. Reading code to write a better prompt is
+  allowed; editing files is not.
+- **Scope — what is feature work.** Feature work is a new capability or an enhancement, or a material
+  change to how something behaves: adding an agent; materially changing what an agent does, asks, or
+  produces; changing how the `spectra` CLI works — its command surface, install or update flow, or
+  prerequisites; and changing how Spectra is packaged, distributed, or released. It goes through specs
+  however few lines it takes. Everything else is outside these rules and MAY be done directly in chat,
+  with or without plan mode and with no spec: small bug fixes that restore intended behavior, cosmetic
+  and wording changes, typos, broken links, formatting, and documentation or tooling housekeeping. So
+  are answering questions, explaining code, and reviewing; running a Spectra command
+  (`speckit.spectra.*`) the user invoked; and amending this constitution through `constitution`. Where
+  it is unclear whether an ask is feature work, the agent MUST treat it as feature work, say why, and
+  redirect; the user may reclassify it as a small fix.
+- **No implicit waiver.** Urgency, a small diff, or "just do it" phrasing does not turn feature work
+  into a small fix and does not waive a checkpoint. An agent MUST NOT read a broad request — "build X
+  end to end" — as permission to run more than one phase.
+- **Work outside specs is still governed.** A small fix skips the spec, not the other principles: a fix
+  to a command still bumps the catalog version and resyncs the package (Principle V), a fix to the CLI
+  still follows Principle VI, and every change still lands through `tools/ship.py`.
 
 Rationale: Spectra's value proposition is agentic SDD across the SDLC. If we do not use it to build
 ourselves, we cannot credibly recommend it, and we lose our best feedback loop on the extension we
-publish.
+publish. Using it means stopping at its checkpoints: an agent that chains `specify` → `plan` → `tasks` →
+`implement` in one turn removes the review points that make spec-driven development worth doing, and the
+user is handed a finished feature built on a spec and plan they never approved. With a single maintainer
+(see Governance), those checkpoints are the only review the work gets. Small fixes are exempt because a
+spec for a correction that changes nothing a user would call new costs more review than the change
+carries; the line is drawn at capability and behavior, not at diff size.
 
 ### II. A Single Self-Contained Extension
 
@@ -380,28 +439,37 @@ being re-litigated per agent, which is exactly how the `adr`/`brd` divergence ar
 
 ## Development Workflow
 
-Adding or changing a command MUST flow through the Spec Kit spec-driven commands (Principle I) — the
-`spectra/` folder MUST NOT be hand-created or edited ad hoc, and new capabilities are added as commands
-under it, never as new extensions:
+Adding a command, or materially changing one, is feature work and MUST flow through the Spec Kit
+spec-driven commands (Principle I) — the `spectra/` folder MUST NOT be hand-created, feature work in it
+MUST NOT be done ad hoc, and new capabilities are added as commands under it, never as new extensions.
+A small fix to an existing command is outside Principle I's scope and may skip steps 1–4, but not
+steps 5–6 or the sync obligations of Principle V. Steps 1–4 are the Principle I checkpoints: the user
+invokes each one, and the agent stops when it finishes and names the next.
 
-1. **Specify** (`specify`) — describe the command in plain language: its purpose and `read-only` vs
-   `read-write` effect. This creates the spec branch (via the `before_specify` hook, per the Version
-   Control & Branching Strategy) and `specs/<NNN>-<name>/spec.md`. Run `clarify` to resolve open
-   questions before planning.
-2. **Plan** (`plan`) — generate the design artifacts. The Constitution Check gate enforces the single
-   self-contained `spectra/` extension (Principle II), a new command file under `spectra/commands/`
-   registered in `spectra/extension.yml`, agent-agnostic `$ARGUMENTS` commands under the
-   `speckit.spectra.<command>` namespace (Principle III), context-awareness (Principle IV), the
-   catalog/package sync obligations (Principle V), and — for any command that produces a document —
-   the artifact-root output convention (Principle VII) and the registered, overridable template it is
-   shaped by (Principle VIII).
-3. **Tasks** (`tasks`) — produce the dependency-ordered task list.
-4. **Implement** (`implement`) — execute the tasks: add the command file under `spectra/commands/`,
-   register it in `spectra/extension.yml`, bump `extension.version` with a matching
-   `spectra/CHANGELOG.md` entry, rebuild `docs/packages/spectra.zip` (a single top-level `spectra/`
-   folder), update the `spectra` entry in `catalog.json` (the single source of truth) and
-   `docs/index.html`, register the agent in `agents-list.json`, and regenerate the structured agent
-   listings with `tools/generate_agent_docs.py` (Principle V).
+1. **Specify** (`specify`, user-invoked; the agent stops after it) — describe the command in plain
+   language: its purpose and `read-only` vs `read-write` effect. This creates the spec branch (via the
+   `before_specify` hook, per the Version Control & Branching Strategy) and
+   `specs/<NNN>-<name>/spec.md`. The user may run `clarify` to resolve open questions before planning,
+   and `checklist` to check the spec's quality; each is user-invoked and the agent stops after it.
+2. **Plan** (`plan`, user-invoked; the agent stops after it) — generate the design artifacts. The
+   Constitution Check gate enforces the single self-contained `spectra/` extension (Principle II), a
+   new command file under `spectra/commands/` registered in `spectra/extension.yml`, agent-agnostic
+   `$ARGUMENTS` commands under the `speckit.spectra.<command>` namespace (Principle III),
+   context-awareness (Principle IV), the catalog/package sync obligations (Principle V), and — for any
+   command that produces a document — the artifact-root output convention (Principle VII) and the
+   registered, overridable template it is shaped by (Principle VIII).
+3. **Tasks** (`tasks`, user-invoked; the agent stops after it) — produce the dependency-ordered task
+   list. The user may then run `analyze` for a cross-artifact consistency check, or `taskstoissues`
+   to open the tasks as GitHub issues; each is user-invoked and the agent stops after it.
+4. **Implement** (`implement`, user-invoked; the agent stops after it) — execute the tasks: add the
+   command file under `spectra/commands/`, register it in `spectra/extension.yml`, bump
+   `extension.version` with a matching `spectra/CHANGELOG.md` entry, rebuild
+   `docs/packages/spectra.zip` (a single top-level `spectra/` folder), update the `spectra` entry in
+   `catalog.json` (the single source of truth) and `docs/index.html`, register the agent in
+   `agents-list.json`, and regenerate the structured agent listings with
+   `tools/generate_agent_docs.py` (Principle V). Where work is left unbuilt, the user may run
+   `converge` to append it to `tasks.md` and then `implement` again; `converge` too is user-invoked
+   and the agent stops after it.
 5. **Test locally** by installing the working copy with `specify extension add --dev <path-to-spectra>`
    into a throwaway Spec Kit project and exercising every command end to end before publishing.
 6. **Publish** by committing the `spectra/` folder, the `specs/` artifacts, the updated `catalog.json`,
@@ -470,4 +538,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.11.1 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-23
+**Version**: 1.12.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-24

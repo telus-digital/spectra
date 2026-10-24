@@ -3,6 +3,16 @@
 Read `.specify/memory/constitution.md` first — it governs how Spectra is built, and the
 Constitution Check gate in every plan is binding.
 
+**Feature work goes through specs, and the user runs every phase (Principle I).** Adding an agent,
+materially changing what an agent does, changing how the `spectra` CLI works, or changing how Spectra
+is packaged or released is feature work. When asked for it in plain chat, do not build it and do not
+start the workflow: say it is feature work, give a ready-to-paste `/speckit.specify` prompt, and stop.
+Never run `specify`, `clarify`, `checklist`, `plan`, `tasks`, `analyze`, `converge`, `taskstoissues`,
+or `implement` yourself — a chat request to run one is answered with the command, not by running it.
+When the user invokes one, do that one phase, summarize it, name the next command, and stop. Small bug
+fixes, cosmetics, and housekeeping need no spec and can be done directly, but still follow every other
+principle (version bump and package resync for a command fix, `tools/ship.py` to land).
+
 Two independently-versioned things live in this repo. Know which one you are changing:
 
 - **`spectra/`** — the Spec Kit extension (the agents). Markdown + YAML, no code. Versioned in
