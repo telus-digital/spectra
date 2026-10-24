@@ -39,6 +39,25 @@ class VersionScan(unittest.TestCase):
     def test_tolerates_an_unquoted_version(self):
         self.assertEqual(extension.parse_manifest_version("extension:\n  version: 1.5.0\n"), "1.5.0")
 
+    def test_tolerates_a_single_quoted_version(self):
+        self.assertEqual(extension.parse_manifest_version("extension:\n  version: '1.5.0'\n"), "1.5.0")
+
+    def test_tolerates_a_trailing_comment(self):
+        text = 'extension:\n  version: "1.5.0"  # bumped for the release\n'
+        self.assertEqual(extension.parse_manifest_version(text), "1.5.0")
+
+    def test_mismatched_quotes_do_not_match(self):
+        self.assertIsNone(extension.parse_manifest_version("extension:\n  version: '1.5.0\"\n"))
+
+    def test_a_spec_kit_reserialized_manifest_compares_equal_to_the_published_one(self):
+        # Spec Kit rewrites the installed manifest with single quotes throughout; the quotes used to
+        # leak into the version, which then sorted below the published one and read as out of date.
+        installed = ("schema_version: '1.0'\nextension:\n  id: spectra\n  version: '1.22.0'\n"
+                     "requires:\n  speckit_version: '>=0.11.0'\n")
+        version = extension.parse_manifest_version(installed)
+        self.assertEqual(version, "1.22.0")
+        self.assertEqual(extension.compare(version, "1.22.0"), extension.UP_TO_DATE)
+
     def test_a_manifest_with_no_version_yields_none(self):
         self.assertIsNone(extension.parse_manifest_version('extension:\n  id: "spectra"\n'))
 

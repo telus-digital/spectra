@@ -35,7 +35,11 @@ PUBLISHED_MANIFEST = "spectra/extension.yml"
 
 # `  version: "1.3.1"` — the `extension:` block's own version, at two-space indentation. Anchored to
 # the line so a nested `version:` deeper in the file (for example under `requires:`) cannot match.
-_VERSION_LINE = re.compile(r'^  version:\s*"?([^"\s]+)"?\s*$')
+# The quotes may be double, single, or absent: the published manifest uses double quotes, but Spec Kit
+# re-serializes the installed copy with single quotes, and a quote left inside the captured value makes
+# the version unparseable — which `compare()` sorts below everything, reporting a current install as
+# out of date. The closing quote must match the opening one, and a trailing comment is allowed.
+_VERSION_LINE = re.compile(r'''^  version:\s*(["']?)([^"'\s#]+)\1\s*(?:#.*)?$''')
 
 # Verdicts from `compare()`.
 UP_TO_DATE = "up_to_date"
@@ -60,7 +64,7 @@ def parse_manifest_version(text: str):
     for line in text.splitlines():
         match = _VERSION_LINE.match(line)
         if match:
-            return match.group(1).strip() or None
+            return match.group(2).strip() or None
     return None
 
 
