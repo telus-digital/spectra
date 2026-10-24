@@ -11,7 +11,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 
 | Command | What it does |
 | ------- | ------------ |
-| `speckit.spectra.domain-analyzer` | Infer the project's business domain from its code and docs, then propose opt-in candidate guardrails for SME review. |
+| `speckit.spectra.domain-analyzer` | Infer the project's business domain from its code and docs, have an SME decide candidate guardrails lens by lens, and hand the result to the constitution. |
 | `speckit.spectra.kb-vault` | Absorb documents you supply — ADRs, engineering methodology, UX/UI standards — and land them in the repository as Markdown, planned and approved before anything is written. |
 | `speckit.spectra.test-strategy` | Decide how this project tests itself — and what coverage floor it can actually hold — before the first feature is planned. |
 | `speckit.spectra.brd` | Turn a raw business requirement, typed or in a document, into a structured, specify-ready BRD. |
@@ -129,23 +129,30 @@ updates, and your edit goes with them.
 
 ## `speckit.spectra.domain-analyzer` — Domain Analyzer
 
-A foundation-phase command that reads your project, infers its **business domain**, and proposes
-**evidence-backed, opt-in guardrails** for your constitution. It:
+A foundation-phase command whose output exists to become your **constitution's input**. It is built for
+an existing codebase that has never had a constitution, and it works with one that has. It:
 
-1. Reads your project context — constitution, docs and specs, source code and dependency manifests,
-   and any prior proposal file.
-2. Infers your business domain and summarizes the evidence.
-3. Generates atomic candidate guardrails, each with a stable ID, a declarative/testable statement, a
-   target constitution section, file-path evidence, and a confidence rating.
-4. Writes them to `docs/DOMAIN_ANALYSIS.md` — or `DOMAIN_ANALYSIS.md` at your declared artifact root —
-   with **every item left unchecked (opt-in)**, shaped by `domain-analysis-template` (override at
+1. Says first whether it found `.specify/memory/constitution.md`, and so whether this run's goal is to
+   **create** the constitution or **update** it.
+2. Reads your project — constitution, docs and specs, source code and dependency manifests, and any
+   prior analysis — and infers your business domain from the evidence.
+3. Works seven lenses: domain & business rules, data sensitivity & regulation, security & trust
+   boundaries, architecture & boundaries, technology & dependency policy, reliability & operability, and
+   delivery & workflow. Each candidate guardrail cites a file and says whether the code already follows
+   it (`observed`) or not (`aspirational`). Testing and deployment policy are left to `test-strategy`
+   and `deployment-strategy`.
+4. Asks you eight questions, one at a time: the domain, then one per lens. Each has at least four
+   options, one recommended and one **Skip**, and free text always works.
+5. Only after the last answer, writes `docs/DOMAIN_ANALYSIS.md` — or `DOMAIN_ANALYSIS.md` at your
+   declared artifact root — recording every candidate and decision, plus a **Constitution input**
+   section holding exactly what you accepted. It is shaped by `domain-analysis-template` (override at
    `.specify/templates/overrides/domain-analysis-template.md`).
-5. Ends with a link to the file and a ready-to-paste `/speckit-constitution` prompt for the handoff.
+6. Ends with a link to the file and a ready-to-paste `/speckit-constitution` prompt that creates or
+   amends the constitution from that section.
 
-It never edits the constitution or your source — its only write is its own proposal file. Review the
-file, check `- [x]` the guardrails you want (edit wording freely), then run the `/speckit-constitution`
-prompt it gives you to adopt **only the checked items**. A proposal an earlier version left at
-`.specify/memory/domain-analysis.md` is read on the next run, so your ticks carry over; the command
+It never edits the constitution or your source, and it adopts nothing you did not choose: Skip, an
+unanswered question, and `--non-interactive` all adopt nothing. An analysis an earlier version left at
+`.specify/memory/domain-analysis.md` is read on the next run, so your decisions carry over; the command
 reports it and leaves it for you to remove.
 
 Usage (Claude):
@@ -155,12 +162,13 @@ Usage (Claude):
 ```
 
 No arguments required — it analyzes the whole project. Optionally pass a focus hint, e.g.
-`/speckit-spectra-domain-analyzer focus on security`. Re-running preserves prior decisions, edits,
-and ordering; only genuinely new candidates are appended under a dated heading. A guardrail you
-reworded keeps its ID, so its original wording is not offered back to you, and an unticked item stays
-rejected rather than resurfacing. A ticked item the constitution now carries is marked
-`status: adopted`, and the handoff prompt skips it, so a second `/speckit-constitution` run does not
-adopt it twice.
+`/speckit-spectra-domain-analyzer focus on security`. Re-running offers your previous answers as each
+question's proposed answer, so it confirms rather than asks again. A guardrail you reworded keeps its ID,
+and one you declined is not offered back to you as new. An accepted guardrail the constitution now
+carries is marked `status: adopted` and leaves the Constitution input section, so a second
+`/speckit-constitution` run does not adopt it twice. A checkbox file from an earlier version is read as
+your prior decisions: ticked means accepted, and unticked items are asked about again, since an unticked box
+cannot say whether anyone looked at it.
 
 ---
 

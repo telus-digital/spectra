@@ -51,7 +51,7 @@
     {
       "id": "domain-analyzer",
       "title": "Domain Analyzer",
-      "description": "Infer the project's business domain from its code and docs, then propose opt-in candidate guardrails for SME review.",
+      "description": "Infer the project's business domain from its code and docs, have an SME decide candidate guardrails lens by lens, and hand the result to the constitution.",
       "status": "available",
       "phase": "foundation",
       "type": "add-on",

@@ -383,6 +383,20 @@ class ReRuns(unittest.TestCase):
         self.assertTrue(has("State what changed"))
 
 
+class OnlyAcceptedDomainGuardrailsShapeGates(unittest.TestCase):
+    """A domain analysis records what the SME declined as well as what they accepted (spec 034, FR-022).
+
+    A declined guardrail shaping a deployment gate would enforce a rule the project explicitly rejected.
+    """
+
+    def test_only_accepted_entries_shape_a_gate(self):
+        self.assertTrue(has("only entries whose `decision` is `accepted`"))
+        self.assertTrue(has("a `declined`, `skipped`, or `not_asked` entry never does"))
+
+    def test_a_legacy_checkbox_file_counts_only_ticked_items(self):
+        self.assertTrue(has("only `- [x]` items count"))
+
+
 class NonServiceDeployables(unittest.TestCase):
     def test_the_adaptation_table(self):
         self.assertIn("### How each lens reads for each class", command_text())

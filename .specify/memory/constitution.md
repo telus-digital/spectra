@@ -1,35 +1,27 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version: 1.10.0 → 1.11.0
-Bump type: MINOR — materially expanded guidance in an existing principle. No principle added, removed,
-  or renamed.
-Rationale: A second command now writes a per-feature, human-read deliverable beside the specification
-  it concerns — `speckit.spectra.uat` writes `specs/<feature>/uat-report.md` and its `uat/` evidence,
-  as `speckit.spectra.test-plan` writes `specs/<feature>/test-plan.md` (spec 032). Spec 021 argued that
-  placement once, in Complexity Tracking, and recorded this amendment as "available but not taken". A
-  reading argued twice is a rule, so the Spec Kit carve-out in Principle VII now states it.
+Version: 1.11.0 → 1.11.1
+Bump type: PATCH — wording only. No rule added, removed, or changed.
+Rationale: `speckit.spectra.domain-analyzer` no longer asks an SME to tick checkboxes in its file; the SME
+  decides each lens in the session and the file records the decisions (spec 034). Principle VII's two
+  examples that described "an SME's ticks" now say what the SME does instead.
 
 Modified principles:
   - VII. Document Artifacts Live Under One Declared Root (title unchanged)
-    - added: per-feature deliverables written beside the specification they concern are outside the
-      artifact-root rule, named: `specs/<feature>/test-plan.md` (`speckit.spectra.test-plan`) and
-      `specs/<feature>/uat-report.md` with its `uat/` evidence (`speckit.spectra.uat`)
-    - added: such a command writes nowhere else, and stops when the specification lies outside the
-      project it was invoked in
-    - unchanged: singletons, the declared root, the publication check, legacy reads
+    - reworded: "a guardrail proposal an SME ticks" → "a guardrail proposal an SME decides on"
+    - reworded: "an SME's ticks" → "an SME's choices"
+    - unchanged: singletons (DOMAIN_ANALYSIS.md keeps its name), the declared root, the publication
+      check, legacy reads
 
 Added sections: none
 Removed sections: none
 
 Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ no change (Constitution Check is generic)
+  - .specify/templates/plan-template.md ✅ no change
   - .specify/templates/spec-template.md ✅ no change
   - .specify/templates/tasks-template.md ✅ no change
-  - spectra/commands/test-plan.md ✅ cites the carve-out (spec 032)
-  - spectra/commands/uat.md ✅ added in the same change (spec 032)
-  - tests/test_doc_output_paths.py ✅ both commands asserted as beside-the-spec documents
-  - CONTRIBUTING.md ✅ carve-out wording
+  - spectra/commands/domain-analyzer.md ✅ rewritten in the same change (spec 034)
 
 Follow-up TODOs: (none)
 -->
@@ -257,7 +249,7 @@ cannot be recalled from caches, clones, or forks.
 and `specs/` belong to Spec Kit, and a command writing there — as `speckit.spectra.flaky-test-detector`
 does with its resumable task list in `.specify/memory/` — is writing **context** for another command to
 consume, not a deliverable for a human to read. The rule governs deliverables. A document a human
-reviews and edits before handing it on — a guardrail proposal an SME ticks — is a deliverable, even
+reviews and edits before handing it on — a guardrail proposal an SME decides on — is a deliverable, even
 when another command consumes it next.
 
 **A per-feature deliverable lives beside the specification it concerns.** A document that is *about one
@@ -281,7 +273,7 @@ names the filesystem root rather than the project.
 pre-1.6.0 folders (`Docs/ADR/`, `brds/`), the pre-singleton locations
 (`docs/test-strategy/TEST_STRATEGY.md`, `.specify/memory/domain-analysis.md`), and the default root itself
 once a project declares a different one. For a singleton the read is for its prior content — answers,
-decisions, an SME's ticks — rather than for sequence continuity, and where both the earlier and the
+decisions, an SME's choices — rather than for sequence continuity, and where both the earlier and the
 canonical file exist the canonical one wins. The command MUST read those locations — matching case-insensitively — for context and for sequence
 continuity, so the next number is one greater than the highest found across the canonical folder *and*
 every superseded one. It MUST report the superseded folder once, name the canonical one, and offer the
@@ -478,4 +470,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.11.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-15
+**Version**: 1.11.1 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-23

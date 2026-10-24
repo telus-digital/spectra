@@ -200,7 +200,8 @@ class SingletonOutputPaths(unittest.TestCase):
 
     def test_the_domain_analyzer_hands_off_with_a_ready_prompt(self):
         text = (COMMANDS_DIR / "domain-analyzer.md").read_text(encoding="utf-8")
-        self.assertIn("/speckit-constitution Adopt only the checked", text)
+        self.assertIn('/speckit-constitution Create the project constitution from the "Constitution input"', text)
+        self.assertIn('/speckit-constitution Amend the constitution with every guardrail', text)
         self.assertIn("[DOMAIN_ANALYSIS.md](docs/DOMAIN_ANALYSIS.md)", text)
         self.assertIn("Do not invoke `/speckit-constitution` yourself", text)
 

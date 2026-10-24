@@ -170,7 +170,10 @@ Inspect, where present:
    manifests, ownership files such as `CODEOWNERS`.
 10. **Sibling strategy documents** — `TEST_STRATEGY.md` and `DOMAIN_ANALYSIS.md` at the resolved artifact
     root (Step 3). The first settles which tests exist; the second may carry domain constraints — an
-    audit obligation, a residency rule — that shape the gates.
+    audit obligation, a residency rule — that shape the gates. From `DOMAIN_ANALYSIS.md`, only entries
+    whose `decision` is `accepted` — the Constitution input section, or an `accepted` record under a lens —
+    may shape a gate; a `declined`, `skipped`, or `not_asked` entry never does. In a file from before
+    1.23.0, which uses checkboxes, only `- [x]` items count.
 
 **Referenced documents.** Read every local document the user named or attached. Every claim drawn from a
 referenced document is `claimed` until the repository confirms it (R1). Read formats your environment

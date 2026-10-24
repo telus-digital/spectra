@@ -677,5 +677,20 @@ class ThePriorSpecLookup(States, unittest.TestCase):
         self.assertStates("against their caps")
 
 
+class OnlyAcceptedGuardrailsAreStandards(States, unittest.TestCase):
+    """A domain analysis records what the SME declined as well as what they accepted (spec 034, FR-022).
+
+    Citing a declined guardrail as a T2 clause would raise a Major finding against a rule the project
+    explicitly rejected.
+    """
+
+    def test_only_accepted_entries_are_cited(self):
+        self.assertStates("From a domain analysis, only accepted guardrails are standards.")
+        self.assertStates("A `declined`, `skipped`, or `not_asked` entry is never a finding source.")
+
+    def test_a_legacy_checkbox_file_counts_only_ticked_items(self):
+        self.assertStates("only `- [x]` items count")
+
+
 if __name__ == "__main__":
     unittest.main()

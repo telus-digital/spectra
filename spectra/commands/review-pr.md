@@ -277,6 +277,12 @@ folder. Otherwise, and whenever there is no constitution, the root is `docs/`. T
 | Domain analysis (T2) | `<root>/DOMAIN_ANALYSIS.md` | `.specify/memory/domain-analysis.md` |
 | Contributor guide (T2) | `CONTRIBUTING.md` | `.github/CONTRIBUTING.md` |
 
+**From a domain analysis, only accepted guardrails are standards.** `DOMAIN_ANALYSIS.md` records every
+guardrail the domain analyzer offered, including those the SME rejected. Cite only entries whose `decision`
+is `accepted` — the Constitution input section, or an `accepted` record under a lens. A `declined`,
+`skipped`, or `not_asked` entry is never a finding source. In a file from before 1.23.0, which uses
+checkboxes, only `- [x]` items count.
+
 ADRs stay in T1. They are in this table only because they share the root lookup. Where both a canonical and
 a legacy file exist, the canonical one wins. No other path is tried: a policy document in a place Spectra
 doesn't write to is one this command cannot know is a policy. The absent-versus-unreachable rule below

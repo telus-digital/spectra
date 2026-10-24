@@ -3,6 +3,45 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.23.0] - 2026-10-23
+
+### Changed
+- **`domain-analyzer` is interactive and exists to feed the constitution.** It now follows the same shape
+  as `test-strategy`: read, ask, then write once.
+  - **The goal comes first.** The run opens by saying whether `.specify/memory/constitution.md` exists, and
+    so whether this analysis will **create** the constitution or **update** it. The goal is carried into
+    the document and into the handoff.
+  - **Seven fixed lenses**, each feeding a constitution section: domain & business rules, data sensitivity
+    & regulation, security & trust boundaries, architecture & boundaries, technology & dependency policy,
+    reliability & operability, delivery & workflow. No lens is ever omitted; one with nothing to propose
+    says what was searched. Testing and deployment policy are referred to `test-strategy` and
+    `deployment-strategy` rather than proposed twice.
+  - **Every candidate says whether the code already follows it** — `observed` or `aspirational` — so an SME
+    on a brownfield project can see which guardrails create debt the day they are ratified.
+  - **Eight questions, one per turn**: the domain, then one per lens. Each offers at least four options —
+    recommended set, codify only what exists, full set, Skip — with exactly one recommended, and free text
+    always valid. "Use your defaults" takes every recommendation.
+  - **Only a human choice adopts.** Skip, an unanswered question, and `--non-interactive` adopt nothing.
+  - **The file is written once, after the round**, to the same `<artifact-root>/DOMAIN_ANALYSIS.md`. It
+    records every candidate with its decision (`accepted`, `declined`, `skipped`, `not_asked`) and gathers
+    the accepted, not-yet-adopted ones into a **Constitution input** section.
+  - **The handoff is worded for the goal**: a create prompt or an amend prompt for `/speckit-constitution`,
+    or none when nothing was accepted. The command still never writes the constitution or invokes that
+    command.
+  - **Re-runs** pre-fill each question with the previous answer, never re-offer a declined candidate, keep
+    frozen IDs, and mark accepted items the constitution now carries as `adopted`.
+- **Earlier checkbox files are read, not lost.** A pre-1.23.0 `DOMAIN_ANALYSIS.md` (or
+  `.specify/memory/domain-analysis.md`) is read as prior decisions — ticked is accepted, unticked is
+  undecided and asked again, since an unticked box cannot say whether anyone reviewed it — and rewritten in
+  the new format.
+- **`review-pr` and `deployment-strategy` use only accepted guardrails from a domain analysis.** The
+  analysis now records the guardrails an SME declined or skipped as well as the ones they accepted; only
+  `accepted` entries are a standard a review may raise a finding against, or a constraint that may shape a
+  deployment gate. In an earlier checkbox file, only ticked items count.
+- **`domain-analysis-template`** has new sections: constitution status and goal, inferred domain, one per
+  lens, Constitution input, and decisions and sources. A project override written for the checkbox format
+  still resolves; the command writes the Constitution input section even when an override omits it.
+
 ## [1.22.0] - 2026-10-16
 
 ### Changed

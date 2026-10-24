@@ -631,7 +631,7 @@
         </li>
         <li>
           <span class="name">speckit.spectra.domain-analyzer</span>
-          <span class="cdesc">Scan the existing codebase, docs, and ADRs to infer the project's domain, then write an opt-in proposal of candidate guardrails to <code>docs/DOMAIN_ANALYSIS.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, for SME review. It ends with a link to the file and a ready-to-paste <code>/speckit-constitution</code> prompt. It never edits the constitution or source — you choose what to adopt. Overridable at <code>.specify/templates/overrides/domain-analysis-template.md</code>.</span>
+          <span class="cdesc">Say whether the project has a constitution — so whether this run creates or updates one — then scan the codebase, docs, and ADRs to infer its domain and work seven lenses. You decide each lens's candidate guardrails in the session, from at least four options with one recommended and one Skip. Only then does it write <code>docs/DOMAIN_ANALYSIS.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, with a Constitution input section and a ready-to-paste <code>/speckit-constitution</code> prompt. It never edits the constitution or source, and adopts nothing you did not choose. Overridable at <code>.specify/templates/overrides/domain-analysis-template.md</code>.</span>
           <span class="args"><b>Arguments:</b> none required — runs on the whole project (ideal for brownfield). Optionally pass a domain hint to steer it.</span>
           <span class="lbl">Example (Claude)</span>
           <pre><code>/speckit-spectra-domain-analyzer this is a banking system</code></pre>

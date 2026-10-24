@@ -48,11 +48,13 @@ any constitution update the decision implies.
 <!-- SPECTRA:AGENT id=domain-analyzer -->
 ### Domain Analyzer ✅
 
-**`speckit.spectra.domain-analyzer`** — Scan the existing codebase, docs, and ADRs to infer the
-project's business domain, then write an opt-in proposal of candidate guardrails to
-`docs/DOMAIN_ANALYSIS.md` — or your declared artifact root — for SME review. It ends by handing you a
-ready-to-paste `/speckit-constitution` prompt that links the file. It never edits the constitution or
-source — you choose which guardrails to adopt.
+**`speckit.spectra.domain-analyzer`** — Say whether the project has a constitution, so whether this run
+creates or updates one, then scan the codebase, docs, and ADRs to infer the business domain and work
+seven lenses. It asks you to decide each lens's candidate guardrails in the session, with at least four
+options per question, one recommended and one Skip. Only then does it write `docs/DOMAIN_ANALYSIS.md` —
+or your declared artifact root — with a Constitution input section of what you accepted, and hand you a
+ready-to-paste `/speckit-constitution` prompt. It never edits the constitution or source, and adopts
+nothing you did not choose.
 
 - **Arguments** — none required. Optionally pass a focus or a domain hint to steer the analysis.
 - **Use it when** — bootstrapping constitution guardrails for a brownfield project (no args — it infers
