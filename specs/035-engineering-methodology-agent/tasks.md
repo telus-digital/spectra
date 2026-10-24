@@ -355,7 +355,7 @@ neither proposes in the other's ground; deployment-strategy cites the methodolog
 - [X] T054 Run the full suite `python3 -m unittest discover -s tests`. The count must be the T002 baseline plus the new tests, with zero failures
 - [X] T055 Follow `quickstart.md` §2–§4 manually: `specify extension add --dev ./spectra` into a throwaway Spec Kit project, then brownfield, greenfield, mixed, non-interactive, and re-run — including a brownfield repository that already keeps a hand-written `docs/ENGINEERING_METHODOLOGY.md`, which must be read as evidence and the produced document cover intake, work modes, spikes, branching, review, commits, AI tooling, and constitution amendment with coverage and environments only linked (SC-006). Record the results in the PR notes
 - [X] T056 Set `spec.md` **Status** to `Implemented` only if every task above is `[X]`; otherwise `In Progress` with a `## Deferred` entry per open task
-- [ ] T057 Run `python3 tools/ship.py --dry-run`. Then, with the user's go-ahead, commit and land with `python3 tools/ship.py` (never `git push origin main`; see `SHIPPING.md`)
+- [X] T057 Run `python3 tools/ship.py --dry-run`. Then, with the user's go-ahead, commit and land with `python3 tools/ship.py` (never `git push origin main`; see `SHIPPING.md`)
 
 ---
 
