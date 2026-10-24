@@ -40,6 +40,7 @@ DOCUMENT_COMMANDS = {
     "kb-vault.md": "kb-document-template",
     "test-strategy.md": "test-strategy-template",
     "deployment-strategy.md": "deployment-strategy-template",
+    "methodology.md": "engineering-methodology-template",
     "test-plan.md": "test-plan-template",
     "uat.md": "uat-report-template",
 }

@@ -47,6 +47,7 @@ SINGLETON = {
     "test-strategy.md": ("docs/TEST_STRATEGY.md", "docs/test-strategy/TEST_STRATEGY.md"),
     "domain-analyzer.md": ("docs/DOMAIN_ANALYSIS.md", ".specify/memory/domain-analysis.md"),
     "deployment-strategy.md": ("docs/DEPLOYMENT_STRATEGY.md", None),
+    "methodology.md": ("docs/ENGINEERING_METHODOLOGY.md", None),
 }
 
 # Commands whose output folder is *computed per document* rather than fixed, so `CANONICAL`'s

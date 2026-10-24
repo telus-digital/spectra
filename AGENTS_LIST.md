@@ -50,7 +50,7 @@ any constitution update the decision implies.
 
 **`speckit.spectra.domain-analyzer`** — Say whether the project has a constitution, so whether this run
 creates or updates one, then scan the codebase, docs, and ADRs to infer the business domain and work
-seven lenses. It asks you to decide each lens's candidate guardrails in the session, with at least four
+six lenses, handing workflow to the Methodology Analyst. It asks you to decide each lens's candidate guardrails in the session, with at least four
 options per question, one recommended and one Skip. Only then does it write `docs/DOMAIN_ANALYSIS.md` —
 or your declared artifact root — with a Constitution input section of what you accepted, and hand you a
 ready-to-paste `/speckit-constitution` prompt. It never edits the constitution or source, and adopts
@@ -64,6 +64,29 @@ nothing you did not choose.
   ```
   /speckit-spectra-domain-analyzer
   /speckit-spectra-domain-analyzer this is a banking system
+  ```
+
+<!-- SPECTRA:AGENT id=methodology -->
+### Methodology Analyst ✅
+
+**`speckit.spectra.methodology`** — Say whether the project is brownfield or greenfield and whether this
+run creates or updates the constitution, then read the history, workflow configuration, and sibling
+documents and work nine lenses: methodology stack, work modes, requirements intake, spec lifecycle,
+branching, review gates, change records, AI collaboration, and governance. Spec-driven development is
+the base; test-first, behaviour-first, domain-first, contract-first, and ADR-driven overlays are offered
+with their evidence and enter the constitution only as obligations bound to a spec-kit phase. It asks
+you ten questions one at a time, then writes an onboarding-grade `docs/ENGINEERING_METHODOLOGY.md` — or
+your declared artifact root — with a Constitution input section, and hands you a ready-to-paste
+`/speckit-constitution` prompt. It never edits the constitution and adopts nothing you did not choose.
+
+- **Arguments** — none required. Optionally pass a focus hint, or `--non-interactive` to write the
+  document without asking anything (and adopt nothing).
+- **Use it when** — bringing an existing codebase onto Spectra and writing down how the team really works,
+  or agreeing a methodology for a new project — including whether test-first is binding.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-methodology
+  /speckit-spectra-methodology we are weighing TDD for new code
   ```
 
 <!-- SPECTRA:AGENT id=kb-vault -->

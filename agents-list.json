@@ -59,6 +59,16 @@
       "command": "speckit.spectra.domain-analyzer"
     },
     {
+      "id": "methodology",
+      "title": "Methodology Analyst",
+      "description": "Find, choose, and record the team's engineering methodology — spec-driven by default, with test-first or behaviour-first as binding phase obligations — and hand it to the constitution.",
+      "status": "available",
+      "phase": "foundation",
+      "type": "add-on",
+      "provider": "spectra",
+      "command": "speckit.spectra.methodology"
+    },
+    {
       "id": "kb-vault",
       "title": "KB Vault",
       "description": "Absorb documents you supply — ADRs, engineering methodology, UX/UI standards — and land them in the repository as Markdown, planned and approved before anything is written.",

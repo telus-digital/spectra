@@ -1,45 +1,29 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version: 1.11.1 → 1.12.0
-Bump type: MINOR — materially expanded guidance. No principle added, removed, or renumbered.
-  Not MAJOR: Principle I's intent — feature work goes through Spec Kit — is unchanged. The amendment
-  says how the phases are run and draws the scope line explicitly; work that already complied with
-  1.11.1 by running the workflow phase by phase still complies.
-Rationale: agents were chaining specify → plan → tasks → implement in one turn, or building a feature
-  straight from a chat ask. Principle I now defines feature work, makes each phase a user-held
-  checkpoint, and requires out-of-band feature asks to be redirected to `/speckit.specify` with a
-  suggested prompt. Small fixes and cosmetic changes are explicitly outside the workflow.
+Version: 1.12.0 → 1.13.0
+Bump type: MINOR — materially expanded guidance: a new named singleton. No principle added, removed,
+  or renumbered, and no rule changed.
+Rationale: feature 035 adds `speckit.spectra.methodology`, which writes one standing-policy document.
+  Principle VII requires a new singleton to be named in its singleton paragraph by amendment; a command
+  may not declare itself one.
 
 Modified principles:
-  - I. Spec-Driven Development (We Dogfood Spec Kit) (title unchanged)
-    - changed: "Non-trivial work" → "Feature work, as defined under Scope"
-    - added: the user starts each phase and supporting command (`clarify`, `checklist`, `analyze`,
-      `converge`, `taskstoissues`) by invoking it — a chat request to run one does not count; one
-      command per invocation, then stop; out-of-band feature asks redirected with a ready-to-paste
-      `/speckit.specify` prompt; a definition of feature work (new agent, material agent change, CLI
-      behavior, packaging/distribution/release) and of what is exempt (small bug fixes, cosmetics,
-      housekeeping); no implicit waiver; exempt work is still bound by Principles V–VI and ship.py
-    - expanded rationale: chaining removes the review points; single maintainer means they are the
-      only review; why small fixes are exempt
-
-Modified sections:
-  - Development Workflow — "adding or changing a command" narrowed to adding or materially changing
-    one; small fixes may skip steps 1–4 but not 5–6 or Principle V; steps 1–4 and the supporting
-    commands marked user-invoked, agent stops after each; long lines rewrapped
+  - VII (title unchanged)
+    - changed: "The three shipped singletons" → "The four shipped singletons"
+    - added: `<artifact-root>/ENGINEERING_METHODOLOGY.md` (`speckit.spectra.methodology`)
+    - added: note that ENGINEERING_METHODOLOGY.md never had an earlier location, so it needs no migration
 
 Added sections: none
 Removed sections: none
 
-Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ no change (Constitution Check reads principles at run time)
-  - .specify/templates/spec-template.md ✅ no change
-  - .specify/templates/tasks-template.md ✅ no change
-  - .specify/templates/checklist-template.md ✅ no change
-  - CLAUDE.md ✅ Principle I pointer added near the top
-  - CONTRIBUTING.md ✅ "Add a new command" says each step is user-invoked and the agent stops
+Templates requiring updates: none — plan/spec/tasks templates do not enumerate singletons.
+  ✅ .specify/templates/plan-template.md (Constitution Check unaffected)
+  ✅ .specify/templates/spec-template.md
+  ✅ .specify/templates/tasks-template.md
 
-Follow-up TODOs: (none)
+Follow-up TODOs: none. The command, template and tests that rely on this amendment are tasks T004 onward
+  of specs/035-engineering-methodology-agent/tasks.md.
 -->
 
 # Spectra Constitution
@@ -266,11 +250,13 @@ top-level folder of its own.
 exactly **one** current answer per project — a policy that a re-run replaces rather than adds to, as the
 constitution is — the command MUST write it as a single file directly in the artifact root, named
 `<artifact-root>/<UPPER_SNAKE_NAME>.md`: no subfolder, no sequence number. A re-run MUST rewrite that file
-in place and MUST NOT create a second one; Git carries the history. The three shipped singletons are
+in place and MUST NOT create a second one; Git carries the history. The four shipped singletons are
 `<artifact-root>/TEST_STRATEGY.md` (`speckit.spectra.test-strategy`), `<artifact-root>/DOMAIN_ANALYSIS.md`
-(`speckit.spectra.domain-analyzer`), and `<artifact-root>/DEPLOYMENT_STRATEGY.md`
-(`speckit.spectra.deployment-strategy`). A singleton that never had an earlier location has nothing to
-read under the rule below and needs no migration. Everything else in this principle still binds a singleton — the
+(`speckit.spectra.domain-analyzer`), `<artifact-root>/DEPLOYMENT_STRATEGY.md`
+(`speckit.spectra.deployment-strategy`), and `<artifact-root>/ENGINEERING_METHODOLOGY.md`
+(`speckit.spectra.methodology`). A singleton that never had an earlier location — as
+`ENGINEERING_METHODOLOGY.md` never did — has nothing to read under the rule below and needs no migration.
+Everything else in this principle still binds a singleton — the
 declared root, the publication check, the non-publishing fallback, the lowercase project-relative
 directory path, and the read-report-leave-alone rule for earlier locations. Only the filename is
 uppercase, which is what marks it as the one standing document rather than an entry in a series. A
@@ -538,4 +524,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.12.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-24
+**Version**: 1.13.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-24

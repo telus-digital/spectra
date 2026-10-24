@@ -12,6 +12,7 @@ extension that bundles Spectra's agentic SDLC commands. Every command lives unde
 | Command | What it does |
 | ------- | ------------ |
 | `speckit.spectra.domain-analyzer` | Infer the project's business domain from its code and docs, have an SME decide candidate guardrails lens by lens, and hand the result to the constitution. |
+| `speckit.spectra.methodology` | Find, choose, and record the team's engineering methodology — spec-driven by default, with test-first or behaviour-first as binding phase obligations — and hand it to the constitution. |
 | `speckit.spectra.kb-vault` | Absorb documents you supply — ADRs, engineering methodology, UX/UI standards — and land them in the repository as Markdown, planned and approved before anything is written. |
 | `speckit.spectra.test-strategy` | Decide how this project tests itself — and what coverage floor it can actually hold — before the first feature is planned. |
 | `speckit.spectra.brd` | Turn a raw business requirement, typed or in a document, into a structured, specify-ready BRD. |
@@ -136,12 +137,12 @@ an existing codebase that has never had a constitution, and it works with one th
    **create** the constitution or **update** it.
 2. Reads your project — constitution, docs and specs, source code and dependency manifests, and any
    prior analysis — and infers your business domain from the evidence.
-3. Works seven lenses: domain & business rules, data sensitivity & regulation, security & trust
-   boundaries, architecture & boundaries, technology & dependency policy, reliability & operability, and
-   delivery & workflow. Each candidate guardrail cites a file and says whether the code already follows
-   it (`observed`) or not (`aspirational`). Testing and deployment policy are left to `test-strategy`
-   and `deployment-strategy`.
-4. Asks you eight questions, one at a time: the domain, then one per lens. Each has at least four
+3. Works six lenses: domain & business rules, data sensitivity & regulation, security & trust
+   boundaries, architecture & boundaries, technology & dependency policy, and reliability & operability.
+   Each candidate guardrail cites a file and says whether the code already follows it (`observed`) or
+   not (`aspirational`). Testing, deployment, and workflow policy are left to `test-strategy`,
+   `deployment-strategy`, and `methodology`.
+4. Asks you seven questions, one at a time: the domain, then one per lens. Each has at least four
    options, one recommended and one **Skip**, and free text always works.
 5. Only after the last answer, writes `docs/DOMAIN_ANALYSIS.md` — or `DOMAIN_ANALYSIS.md` at your
    declared artifact root — recording every candidate and decision, plus a **Constitution input**
@@ -168,7 +169,56 @@ and one you declined is not offered back to you as new. An accepted guardrail th
 carries is marked `status: adopted` and leaves the Constitution input section, so a second
 `/speckit-constitution` run does not adopt it twice. A checkbox file from an earlier version is read as
 your prior decisions: ticked means accepted, and unticked items are asked about again, since an unticked box
-cannot say whether anyone looked at it.
+cannot say whether anyone looked at it. Delivery & workflow decisions from an earlier version are kept
+as a record, handed on to `methodology`, and leave the Constitution input section.
+
+---
+
+## `speckit.spectra.methodology` — Methodology Analyst
+
+A foundation-phase command that writes down how your team works — for a new engineer to read, and for
+the constitution to bind. It is built for an existing codebase being brought onto Spectra, and it works
+on an empty repository too. It:
+
+1. Says first whether the project is **brownfield** or **greenfield** — from three signals: source
+   beyond scaffolding, workflow configuration, and more than 10 commits — and whether this run's goal
+   is to **create** the constitution or **update** it. With exactly one signal it asks you to settle
+   the reading.
+2. Reads `git log` and `git branch -a`, PR and issue templates, `CODEOWNERS`, CI workflows, commit and
+   changelog configuration, `CONTRIBUTING.md`, `specs/`, the constitution, and the sibling documents —
+   accepted entries only.
+3. Works nine lenses: methodology stack, work modes & classification, requirements intake, spec
+   lifecycle & traceability, branching & integration, review & merge gates, change records, AI
+   collaboration rules, and governance & evolution. In brownfield mode each reports current practice
+   with citations before proposing; in greenfield mode each offers defaults.
+4. Treats spec-driven development as the base, and offers TDD, BDD/ATDD, DDD, contract-first, and
+   ADR-driven as overlays, each with its evidence. An adopted overlay becomes obligations bound to
+   specify, plan, tasks, or implement — TDD's implement obligation is checked in `tasks.md` — with a
+   strictness (MUST or SHOULD) and a scope you choose.
+5. Asks you ten questions, one at a time. Each has at least four options, one recommended and one
+   **Skip**, and free text always works.
+6. Only after the last answer, writes `docs/ENGINEERING_METHODOLOGY.md` — or `ENGINEERING_METHODOLOGY.md`
+   at your declared artifact root — with a mode-choice table, branch-naming and commit-prefix references,
+   the obligations matrix, and a **Constitution input** section holding exactly what you accepted. It is
+   shaped by `engineering-methodology-template` (override at
+   `.specify/templates/overrides/engineering-methodology-template.md`).
+7. Ends with a ready-to-paste `/speckit-constitution` prompt, then lists the other constitution-feeding
+   agents you have not run yet.
+
+It never edits the constitution, never runs another spec-kit phase, and never proposes in a sibling's
+ground: test levels and coverage stay with `test-strategy`, environments and versioning with
+`deployment-strategy`, product technology and domain content with `domain-analyzer`. A hand-written
+methodology already at the path is read as evidence and replaced only with your consent.
+
+Usage (Claude):
+
+```
+/speckit-spectra-methodology
+```
+
+No arguments required. Re-running offers your previous answers as each question's proposed answer, keeps
+every guardrail's ID, and does not offer a declined one back to you as new. Delivery & workflow decisions
+made in an earlier domain analysis are read as prior answers.
 
 ---
 

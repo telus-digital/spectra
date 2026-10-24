@@ -631,10 +631,17 @@
         </li>
         <li>
           <span class="name">speckit.spectra.domain-analyzer</span>
-          <span class="cdesc">Say whether the project has a constitution — so whether this run creates or updates one — then scan the codebase, docs, and ADRs to infer its domain and work seven lenses. You decide each lens's candidate guardrails in the session, from at least four options with one recommended and one Skip. Only then does it write <code>docs/DOMAIN_ANALYSIS.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, with a Constitution input section and a ready-to-paste <code>/speckit-constitution</code> prompt. It never edits the constitution or source, and adopts nothing you did not choose. Overridable at <code>.specify/templates/overrides/domain-analysis-template.md</code>.</span>
+          <span class="cdesc">Say whether the project has a constitution — so whether this run creates or updates one — then scan the codebase, docs, and ADRs to infer its domain and work six lenses, handing workflow to <code>speckit.spectra.methodology</code>. You decide each lens's candidate guardrails in the session, from at least four options with one recommended and one Skip. Only then does it write <code>docs/DOMAIN_ANALYSIS.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, with a Constitution input section and a ready-to-paste <code>/speckit-constitution</code> prompt. It never edits the constitution or source, and adopts nothing you did not choose. Overridable at <code>.specify/templates/overrides/domain-analysis-template.md</code>.</span>
           <span class="args"><b>Arguments:</b> none required — runs on the whole project (ideal for brownfield). Optionally pass a domain hint to steer it.</span>
           <span class="lbl">Example (Claude)</span>
           <pre><code>/speckit-spectra-domain-analyzer this is a banking system</code></pre>
+        </li>
+        <li>
+          <span class="name">speckit.spectra.methodology</span>
+          <span class="cdesc">Say whether the project is brownfield or greenfield — and whether this run creates or updates the constitution — then read the history, PR templates, CI, and sibling documents and work nine lenses: methodology stack, work modes, requirements intake, spec lifecycle, branching, review gates, change records, AI collaboration, and governance. Spec-driven development is the base; TDD, BDD, DDD, contract-first, and ADR-driven overlays are offered with their evidence and become binding only as obligations tied to a spec-kit phase. You decide each in the session, ten questions one at a time, each with one recommended option and one Skip. Only then does it write an onboarding-grade <code>docs/ENGINEERING_METHODOLOGY.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, with a Constitution input section and a ready-to-paste <code>/speckit-constitution</code> prompt. It never edits the constitution, never runs another phase, and adopts nothing you did not choose. Overridable at <code>.specify/templates/overrides/engineering-methodology-template.md</code>.</span>
+          <span class="args"><b>Arguments:</b> none required — reads the whole project, brownfield or greenfield. Optionally a focus hint, and <code>--non-interactive</code>.</span>
+          <span class="lbl">Example (Claude)</span>
+          <pre><code>/speckit-spectra-methodology we are weighing TDD for new code</code></pre>
         </li>
         <li>
           <span class="name">speckit.spectra.deployment-strategy</span>

@@ -275,6 +275,7 @@ folder. Otherwise, and whenever there is no constitution, the root is `docs/`. T
 | Test strategy (T2) | `<root>/TEST_STRATEGY.md` | `<root>/test-strategy/TEST_STRATEGY.md` |
 | Deployment strategy (T2) | `<root>/DEPLOYMENT_STRATEGY.md` | — |
 | Domain analysis (T2) | `<root>/DOMAIN_ANALYSIS.md` | `.specify/memory/domain-analysis.md` |
+| Engineering methodology (T2) | `<root>/ENGINEERING_METHODOLOGY.md` | — |
 | Contributor guide (T2) | `CONTRIBUTING.md` | `.github/CONTRIBUTING.md` |
 
 **From a domain analysis, only accepted guardrails are standards.** `DOMAIN_ANALYSIS.md` records every
@@ -282,6 +283,12 @@ guardrail the domain analyzer offered, including those the SME rejected. Cite on
 is `accepted` — the Constitution input section, or an `accepted` record under a lens. A `declined`,
 `skipped`, or `not_asked` entry is never a finding source. In a file from before 1.23.0, which uses
 checkboxes, only `- [x]` items count.
+
+**From an engineering methodology, only accepted guardrails are standards.** `ENGINEERING_METHODOLOGY.md`
+records every guardrail the methodology agent offered — branch naming, merge gates, commit conventions,
+phase obligations — including those the team declined. Cite only entries whose `decision` is `accepted`:
+the Constitution input section, or an `accepted` record under a lens. A `declined`, `skipped`, or
+`not_asked` entry is never a finding source, and neither is a hand-written section describing practice.
 
 ADRs stay in T1. They are in this table only because they share the root lookup. Where both a canonical and
 a legacy file exist, the canonical one wins. No other path is tried: a policy document in a place Spectra

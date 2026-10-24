@@ -104,6 +104,7 @@ phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception 
 | ----- | ---------- | ------------ | ---- | ------ |
 | Guardrails | Foundation | Inception | Core | ✅ available |
 | Domain Analyzer | Foundation | Inception | Add-on | ✅ available |
+| Methodology Analyst | Foundation | Inception | Add-on | ✅ available |
 | KB Vault | Foundation | Inception | Add-on | ✅ available |
 | Test Strategy | Foundation | Inception | Add-on | ✅ available |
 | FDA 21 CFR Part 11 & IEC 62304 | Foundation | Inception | Add-on | 🚧 under dev |

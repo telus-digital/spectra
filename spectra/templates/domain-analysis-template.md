@@ -3,7 +3,7 @@
 <!--
   HOW TO USE THIS TEMPLATE
   - This document is produced by `speckit.spectra.domain-analyzer`, a foundation-phase agent. It infers
-    the project's business domain, works seven lenses, asks an SME to decide each lens's candidate
+    the project's business domain, works six lenses, asks an SME to decide each lens's candidate
     guardrails in the session, and only then writes this file. Its purpose is to be the input
     `/speckit-constitution` creates or updates the constitution from.
   - Delete any section that genuinely does not apply — remove it entirely rather than leaving "N/A". The
@@ -66,11 +66,8 @@
 ## Reliability & operability
 
 <!-- Testing and deployment policy is referred to speckit.spectra.test-strategy and
-     speckit.spectra.deployment-strategy, not proposed here. -->
-
-[CURRENT PRACTICE AND CANDIDATE RECORDS]
-
-## Delivery & workflow
+     speckit.spectra.deployment-strategy, and workflow — branching, review, commit conventions,
+     governance — to speckit.spectra.methodology, not proposed here. -->
 
 [CURRENT PRACTICE AND CANDIDATE RECORDS]
 
@@ -86,9 +83,10 @@
 ## Decisions and sources
 
 <!--
-  The eight questions: what was asked, the recommended option, the answer taken, and its disposition.
+  The seven questions: what was asked, the recommended option, the answer taken, and its disposition.
   Then the inputs read, anything expected and not readable, coverage of the analysis, and on a re-run what
-  changed since the previous version.
+  changed since the previous version — including any Delivery & workflow records from an earlier version,
+  kept under "Handed on to speckit.spectra.methodology".
 -->
 
 [DECISIONS, INPUTS, AND COVERAGE]

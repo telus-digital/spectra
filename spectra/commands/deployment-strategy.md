@@ -122,7 +122,7 @@ rather than from taste.
 |---|---|---|
 | **Environments & promotion** | which environments exist, what each proves, who uses it, how it is deployed, and the gate that moves a release into it | not the checks themselves — those are the pipeline's |
 | **Pipeline, artifact & traceability** | which checks run before merge and on merge and where each one gates; whether one artifact is built once and promoted unchanged; whether identifiers are immutable — never a floating tag such as `latest`; whether a running or published artifact traces back to its commit; provenance and SBOM where warranted | which tests exist is the test strategy's call: cite `TEST_STRATEGY.md`. This lens decides only where they gate |
-| **Release & versioning** | the branching model, how a release is cut, the versioning scheme, the hotfix path | not when to deploy to an environment — that is promotion |
+| **Release & versioning** | how a release is cut, the versioning scheme, the hotfix promotion path | not when to deploy to an environment — that is promotion; not the branching model — cite `ENGINEERING_METHODOLOGY.md`, or name `speckit.spectra.methodology` |
 | **Data & schema change** | how migrations run and in what order relative to the application, how compatibility with the previous version is kept, and the rule that rolling back the application does not roll back the database | not backup and restore — that is recovery |
 | **Rollback & recovery** | the application rollback path, with short concrete commands where the platform is known; recovery targets (RPO/RTO) as answered or as open questions; which recovery claims are **drilled** and which are **assumed** | not detection — that is operability |
 | **Operability & configuration** | health checks and smoke tests; what should be monitored and who owns it; scheduled and background workloads; how configuration and secrets reach each environment; what is managed as code and what was set up by hand; how drift is caught | policy and ownership only — R7 |
@@ -168,9 +168,11 @@ Inspect, where present:
    conventions, store metadata.
 9. **Operational definitions** — health endpoints, monitoring or alert definitions, scheduled-job
    manifests, ownership files such as `CODEOWNERS`.
-10. **Sibling strategy documents** — `TEST_STRATEGY.md` and `DOMAIN_ANALYSIS.md` at the resolved artifact
-    root (Step 3). The first settles which tests exist; the second may carry domain constraints — an
-    audit obligation, a residency rule — that shape the gates. From `DOMAIN_ANALYSIS.md`, only entries
+10. **Sibling strategy documents** — `TEST_STRATEGY.md`, `DOMAIN_ANALYSIS.md`, and
+    `ENGINEERING_METHODOLOGY.md` at the resolved artifact root (Step 3). The first settles which tests
+    exist; the second may carry domain constraints — an audit obligation, a residency rule — that shape
+    the gates; the third owns the branching model, so cite it for the branching model rather than
+    proposing one, using only its entries whose `decision` is `accepted`. From `DOMAIN_ANALYSIS.md`, only entries
     whose `decision` is `accepted` — the Constitution input section, or an `accepted` record under a lens —
     may shape a gate; a `declined`, `skipped`, or `not_asked` entry never does. In a file from before
     1.23.0, which uses checkboxes, only `- [x]` items count.
@@ -430,8 +432,10 @@ Lens by lens:
   exist; this lens decides only where they gate. **Where none exists:** Do not stop, and do not
   recommend which tests should exist. Report the checks CI actually runs today as `verified`, record the
   missing test strategy as a gap, and name `speckit.spectra.test-strategy` as the next step.
-- **Release & versioning** — the branching model as it is, the cutting of a release, the scheme, and the
-  hotfix path, including when a hotfix may bypass a review environment and who decides.
+- **Release & versioning** — the cutting of a release, the scheme, and the hotfix promotion path,
+  including when a hotfix may bypass a review environment and who decides. The branching model a release
+  is cut from is not this lens's to propose: cite it from `ENGINEERING_METHODOLOGY.md`, or name
+  `speckit.spectra.methodology` where that document does not exist.
 - **Data & schema change** — state, in these words or close to them, that rolling back the application
   does not roll back the database, and say what the project does about it: compatible-first migrations,
   a separate migration step, a recovery strategy.

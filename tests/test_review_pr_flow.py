@@ -692,5 +692,15 @@ class OnlyAcceptedGuardrailsAreStandards(States, unittest.TestCase):
         self.assertStates("only `- [x]` items count")
 
 
+class TheEngineeringMethodologyIsAStandard(States, unittest.TestCase):
+    """Spec 035 (E7): branch naming, PR gates, and commit conventions are exactly what a review checks."""
+
+    def test_it_is_a_t2_supporting_document(self):
+        self.assertStates("| Engineering methodology (T2) | `<root>/ENGINEERING_METHODOLOGY.md` | — |", text())
+
+    def test_only_accepted_guardrails_are_standards(self):
+        self.assertStates("From an engineering methodology, only accepted guardrails are standards.")
+
+
 if __name__ == "__main__":
     unittest.main()

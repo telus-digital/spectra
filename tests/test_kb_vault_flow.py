@@ -60,6 +60,7 @@ RESERVED = (
     "<artifact-root>/impact-analysis/",
     "| `<artifact-root>/` | `TEST_STRATEGY.md` |",
     "| `<artifact-root>/` | `DOMAIN_ANALYSIS.md` |",
+    "| `<artifact-root>/` | `ENGINEERING_METHODOLOGY.md` |",
     "<artifact-root>/defect-rca/",
 )
 
@@ -332,6 +333,33 @@ class NumberingIsComputedAtWriteTime(unittest.TestCase):
 
     def test_a_project_convention_beats_the_default(self):
         self.assertIn("wins over the `nnn-` default", lower())
+
+
+class TheMethodologyIsRoutedAndGuarded(unittest.TestCase):
+    """Spec 035 (E6): an absorbed methodology joins the singleton; the agent's own file is never edited."""
+
+    def test_the_reserved_row_names_the_singleton_and_its_template(self):
+        self.assertIn(
+            "| an engineering methodology | `<artifact-root>/` | `ENGINEERING_METHODOLOGY.md` | "
+            "`engineering-methodology-template` |",
+            text(),
+        )
+
+    def test_the_series_example_is_gone(self):
+        self.assertNotIn("docs/engineering-methodology/001-", text())
+
+    def test_the_agents_own_file_is_never_updated(self):
+        body = lower()
+        self.assertIn("`command: speckit.spectra.methodology`", body)
+        self.assertIn("produce no update row", body)
+        self.assertIn("leave the file unchanged", body)
+        self.assertIn("`/speckit.spectra.methodology`", body)
+
+    def test_a_hand_written_file_keeps_the_update_rules(self):
+        self.assertIn("without that front matter keeps the update rules", flat())
+
+    def test_the_report_lists_sources_referred_on(self):
+        self.assertIn("Sources referred on", flat())
 
 
 if __name__ == "__main__":

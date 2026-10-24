@@ -8,7 +8,7 @@ The rules pinned here (spec 034):
 
 - **The run states its goal first.** Whether a constitution exists decides whether this analysis creates
   one or updates it, so that is the first thing the SME hears.
-- **Seven fixed lenses, eight fixed questions.** A fixed set is what lets a reader tell "found nothing"
+- **Six fixed lenses, seven fixed questions.** A fixed set is what lets a reader tell "found nothing"
   from "never looked", and a fixed count is what lets the round be announced honestly.
 - **Every question offers at least four options, one recommended, one Skip.** And only a human choice
   adopts: Skip, silence, and a non-interactive run adopt nothing.
@@ -42,7 +42,6 @@ LENSES = (
     "Architecture & boundaries",
     "Technology & dependency policy",
     "Reliability & operability",
-    "Delivery & workflow",
 )
 
 
@@ -78,7 +77,7 @@ class TheGoalIsStatedFirst(unittest.TestCase):
         self.assertIn("when the goal is **update**", handoff)
 
 
-class SevenLensesAlwaysWorked(unittest.TestCase):
+class SixLensesAlwaysWorked(unittest.TestCase):
     def test_every_lens_is_named(self):
         text = COMMAND.read_text(encoding="utf-8")
         for lens in LENSES:
@@ -96,9 +95,17 @@ class SevenLensesAlwaysWorked(unittest.TestCase):
 
     def test_testing_and_deployment_are_referred_not_proposed(self):
         text = section("## Step 4")
-        self.assertIn("testing and deployment are referred, not proposed", text)
+        self.assertIn("testing, deployment, and workflow are referred, not proposed", text)
         self.assertIn("speckit.spectra.test-strategy", text)
         self.assertIn("speckit.spectra.deployment-strategy", text)
+        self.assertIn("speckit.spectra.methodology", text)
+
+    def test_delivery_and_workflow_is_no_longer_a_lens(self):
+        """Spec 035: the workflow lens belongs to `speckit.spectra.methodology` (E1, E3)."""
+        self.assertNotIn("**Delivery & workflow**", COMMAND.read_text(encoding="utf-8"))
+        template = TEMPLATE.read_text(encoding="utf-8")
+        self.assertNotIn("## Delivery & workflow", template)
+        self.assertIn("seven questions", flat(template))
 
     def test_every_candidate_says_whether_the_code_already_does_it(self):
         text = command()
@@ -108,11 +115,11 @@ class SevenLensesAlwaysWorked(unittest.TestCase):
 
 
 class TheClarificationRound(unittest.TestCase):
-    def test_eight_questions_one_per_turn(self):
+    def test_seven_questions_one_per_turn(self):
         text = section("## Step 5")
-        self.assertIn("always eight", text)
+        self.assertIn("always seven", text)
         self.assertIn("one question per turn", text)
-        self.assertIn("question 4 of 8", text)
+        self.assertIn("question 4 of 7", text)
 
     def test_at_least_four_options_one_recommended_one_skip(self):
         text = section("## Step 5")
@@ -206,6 +213,13 @@ class ReRunsRespectDecisions(unittest.TestCase):
     def test_only_accepted_items_are_marked_adopted(self):
         self.assertIn("never mark a declined, skipped, or `not_asked` candidate adopted", section("## Re-running"))
 
+    def test_prior_workflow_records_are_handed_on(self):
+        """Spec 035 (E2): kept, never deleted, and out of the Constitution input."""
+        text = section("## Re-running")
+        self.assertIn("handed on to `speckit.spectra.methodology`", text)
+        self.assertIn("leave the constitution input section", text)
+        self.assertIn("never deleted", text)
+
     def test_a_legacy_checkbox_file_is_read(self):
         """An unticked box cannot tell "reviewed and rejected" from "never reviewed", so it is asked again."""
         text = section("## Re-running")
@@ -219,7 +233,7 @@ class NonInteractive(unittest.TestCase):
     def test_never_inferred_and_adopts_nothing(self):
         text = section("## Non-interactive mode")
         self.assertIn("never infer it", text)
-        self.assertIn("ask **none** of the eight questions", text)
+        self.assertIn("ask **none** of the seven questions", text)
         self.assertIn("give no `/speckit-constitution` command", text)
 
 

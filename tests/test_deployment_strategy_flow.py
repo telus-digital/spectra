@@ -415,5 +415,22 @@ class NonServiceDeployables(unittest.TestCase):
         self.assertTrue(has("Never recommend infrastructure the evidence does not show"))
 
 
+class TheBranchingModelBelongsToTheMethodology(unittest.TestCase):
+    """Spec 035 (E5): one source per clause — deployment keeps the release cut, the scheme, and the hotfix
+    promotion; the branching model is the methodology's."""
+
+    def test_release_and_versioning_no_longer_decides_the_branching_model(self):
+        row = next(line for line in command_text().splitlines() if line.startswith("| **Release & versioning** |"))
+        decides = row.split("|")[2]
+        self.assertNotIn("branching model", decides)
+        self.assertIn("versioning scheme", decides)
+        self.assertIn("ENGINEERING_METHODOLOGY.md", row)
+        self.assertIn("speckit.spectra.methodology", row)
+
+    def test_the_methodology_is_read_as_a_sibling(self):
+        self.assertTrue(has("`ENGINEERING_METHODOLOGY.md`"))
+        self.assertTrue(has("cite it for the branching model"))
+
+
 if __name__ == "__main__":
     unittest.main()

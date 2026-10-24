@@ -3,6 +3,48 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.24.0] - 2026-10-24
+
+### Added
+- **`speckit.spectra.methodology` — the Methodology Analyst.** A foundation-phase agent that finds,
+  chooses, and records the team's engineering methodology, and hands it to the constitution. It follows the
+  shape of `domain-analyzer` and `test-strategy`: read, ask, then write once.
+  - **The mode and goal come first.** Brownfield or greenfield, from three named signals — source beyond
+    scaffolding, workflow configuration, more than 10 commits — with a mixed reading settled by the team
+    before any lens is worked; and whether the constitution will be created or updated.
+  - **Nine fixed lenses**: methodology stack, work modes & classification, requirements intake, spec
+    lifecycle & traceability, branching & integration, review & merge gates, change records, AI
+    collaboration rules, governance & evolution. Brownfield lenses report current practice with citations
+    first; greenfield lenses offer defaults, all `aspirational`.
+  - **Spec-driven development is the base.** TDD, BDD/ATDD, DDD, contract-first, and ADR-driven are offered
+    as overlays with their evidence, and enter the constitution only as obligations bound to a spec-kit
+    phase, from a closed obligations matrix. TDD's implement obligation is checked in `tasks.md`: the test
+    task records a failing run before its implementation task is ticked. Each overlay carries a strictness
+    and a scope, and an unpractised one binds new and changed code by default.
+  - **Ten questions, one per turn**, each with at least four options, one recommended, one Skip. Lens 8
+    offers three autonomy levels for AI agents, every phase a human checkpoint recommended.
+  - **One file**, `<artifact-root>/ENGINEERING_METHODOLOGY.md`, written after the round: onboarding-grade,
+    with a mode-choice table, branch-naming and commit-prefix references, the obligations matrix, a
+    Constitution input section, and Decisions and sources. A hand-written file already there is read as
+    evidence and replaced only with consent.
+  - **Sibling ground is referred, never proposed**: testing to `test-strategy`, environments, versioning,
+    and releases to `deployment-strategy`, product technology and domain content to `domain-analyzer`.
+- **`engineering-methodology-template`**, overridable at
+  `.specify/templates/overrides/engineering-methodology-template.md`.
+
+### Changed
+- **`domain-analyzer` hands Delivery & workflow to `methodology`.** Six lenses and seven questions.
+  Delivery & workflow records from an earlier run are kept under "Handed on to
+  `speckit.spectra.methodology`", leave the Constitution input section, and are never deleted; the
+  methodology agent reads them as prior answers.
+- **`deployment-strategy` no longer proposes the branching model.** Its Release & versioning lens keeps how
+  a release is cut, the versioning scheme, and the hotfix promotion path, and cites
+  `ENGINEERING_METHODOLOGY.md` for the branching model.
+- **`kb-vault` routes an absorbed methodology to `ENGINEERING_METHODOLOGY.md`** through its reserved map,
+  and refers it on, never updating, when that file was written by the methodology agent. Its report gains
+  a "Sources referred on" item.
+- **`review-pr` reads `ENGINEERING_METHODOLOGY.md` as a T2 standard**, citing accepted guardrails only.
+
 ## [1.23.0] - 2026-10-23
 
 ### Changed

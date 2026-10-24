@@ -1,5 +1,5 @@
 ---
-description: "Say first whether the project has a constitution — and so whether this run will create one or update it — then read the codebase, docs, and specs, infer the business domain, work seven fixed lenses, and ask eight questions one at a time, each with at least four options including a recommendation and Skip. Only after the last answer, write the decisions and an evidence-backed Constitution input section to <artifact-root>/DOMAIN_ANALYSIS.md, and hand it to /speckit-constitution with a ready-to-paste create or amend prompt. Never edits the constitution, never edits source, and adopts nothing a human did not choose."
+description: "Say first whether the project has a constitution — and so whether this run will create one or update it — then read the codebase, docs, and specs, infer the business domain, work six fixed lenses, and ask seven questions one at a time, each with at least four options including a recommendation and Skip. Only after the last answer, write the decisions and an evidence-backed Constitution input section to <artifact-root>/DOMAIN_ANALYSIS.md, and hand it to /speckit-constitution with a ready-to-paste create or amend prompt. Never edits the constitution, never edits source, and adopts nothing a human did not choose."
 ---
 
 # Analyze the project domain and decide its guardrails
@@ -31,7 +31,7 @@ flag:
 $ARGUMENTS
 
 **This command requires no arguments.** With empty input, analyze the whole project. If the user supplied
-a focus, weight your analysis toward it — but still work all seven lenses. A hint narrows nothing.
+a focus, weight your analysis toward it — but still work all six lenses. A hint narrows nothing.
 
 **The one flag** is `--non-interactive`: a declaration that no answer can be taken in this session. Remove
 it before reading what remains as the focus hint. An unrecognized flag is reported and ignored; it never
@@ -150,7 +150,7 @@ writing there publishes the document to the web or breaks a documentation build.
 - a Pages configuration pointing at the docs directory
 
 Finding any of them with no declared root, surface it, recommend `documents/`, and let the user choose
-— ask it before the clarification round, as its own question, and do not count it among the eight.
+— ask it before the clarification round, as its own question, and do not count it among the seven.
 **Where the choice cannot be obtained, take the non-publishing option** — an analysis written to the
 wrong folder is a nuisance, and one published to the web may not be.
 
@@ -175,7 +175,7 @@ so it is never ignored:
 
 Never move, rename, modify, or delete it yourself.
 
-## Step 4 — Work the seven lenses
+## Step 4 — Work the six lenses
 
 Every lens is worked on every run, and each feeds a section of the constitution. Spec Kit's default
 constitution has Core Principles, an additional-constraints section, Development Workflow, and
@@ -189,15 +189,16 @@ Governance; where the project's constitution exists, use **its** section names i
 | 4 | **Architecture & boundaries** | Layering, module boundaries and dependency direction, public interfaces others depend on, external integrations | Core Principles |
 | 5 | **Technology & dependency policy** | Languages, frameworks, and runtimes actually in use; how dependencies are added and pinned | Constraints |
 | 6 | **Reliability & operability** | Error-handling style, logging and observability, configuration and environments, migrations, backward compatibility | Constraints |
-| 7 | **Delivery & workflow** | Branching, review, commit conventions, versioning and release, documentation habits | Development Workflow / Governance |
 
 **Never omit a lens.** "Nothing to propose: no personal, payment, or health data in `db/schema.sql` or
 `src/models/`" is a useful sentence; silence is not.
 
-**Testing and deployment are referred, not proposed.** Lenses 6 and 7 stop at their edge: test levels,
+**Testing, deployment, and workflow are referred, not proposed.** Lens 6 stops at its edge: test levels,
 coverage floors, and UAT belong to `speckit.spectra.test-strategy`; environments, promotion, and rollback
-belong to `speckit.spectra.deployment-strategy`. Where the sibling document exists, cite it; where it does
-not, name the command that writes it. Do not draft a guardrail in their ground.
+belong to `speckit.spectra.deployment-strategy`. Workflow — branching, review, commit conventions,
+governance — belongs to `speckit.spectra.methodology`, which writes `ENGINEERING_METHODOLOGY.md`. Where the
+sibling document exists, cite it; where it does not, name the command that writes it. Do not draft a
+guardrail in their ground.
 
 **In brownfield mode, report what exists before proposing.** Each lens states its current practice with
 citations first, then its candidates.
@@ -240,13 +241,13 @@ those are what make the questions specific: by now every option can name real ca
 
 Before the first question, in one line: how many questions there are, and every way out of them.
 
-> Eight questions, one at a time — the domain first, then one per lens. Answer several at once if you
+> Seven questions, one at a time — the domain first, then one per lens. Answer several at once if you
 > already know them, say **use your defaults** to take every recommendation, or **skip** any one. Nothing
 > is written until the last answer.
 
-### The eight questions
+### The seven questions
 
-Always eight, so the count can be announced honestly.
+Always seven, so the count can be announced honestly.
 
 | # | What you ask | What it settles |
 |---|---|---|
@@ -257,7 +258,6 @@ Always eight, so the count can be announced honestly.
 | 5 | Lens 4 — Architecture & boundaries | Which structural rules are adopted |
 | 6 | Lens 5 — Technology & dependency policy | Which technology constraints are adopted |
 | 7 | Lens 6 — Reliability & operability | Which operational rules are adopted |
-| 8 | Lens 7 — Delivery & workflow | Which workflow and governance rules are adopted |
 
 **If question 1 changes the domain**, revisit every lens's candidates against the corrected domain
 before asking question 2. Candidates built on a reading the SME just rejected are not worth their turn.
@@ -266,7 +266,7 @@ before asking question 2. Candidates built on a reading the SME just rejected ar
 
 - **One question per turn.** End the turn and wait. A correction in question 1 changes every later
   question, and a batch forces each to be written as though the others did not exist.
-- **Number each one within the fixed total** — "Question 4 of 8" — so the SME can see how much is left.
+- **Number each one within the fixed total** — "Question 4 of 7" — so the SME can see how much is left.
 - **For a lens, list its candidates first**, numbered within the lens (`3.1`, `3.2`, …), each with its
   statement, `observed` or `aspirational`, confidence, and its evidence path, so options and free text
   can refer to them.
@@ -291,7 +291,7 @@ before asking question 2. Candidates built on a reading the SME just rejected ar
 Never drop a question and never renumber the rest. Turn it into a confirmation and keep its number, with
 four options still:
 
-> Question 3 of 8 — Data sensitivity & regulation: I found no personal, payment, or health data in
+> Question 3 of 7 — Data sensitivity & regulation: I found no personal, payment, or health data in
 > `db/schema.sql` or `src/models/`, so I have nothing to propose here.
 >
 > 1. **Confirm — nothing to adopt** *(recommended — the schema holds only build metadata)*
@@ -375,9 +375,8 @@ lenses:
   architecture-and-boundaries: proposed
   technology-and-dependency-policy: proposed
   reliability-and-operability: nothing_to_propose
-  delivery-and-workflow: proposed
 clarification:
-  asked: 8
+  asked: 7
   answered: 6
   questions:
     - n: 1
@@ -392,7 +391,7 @@ constitution_input: 9
 `mode` is `greenfield`, `brownfield`, or `mixed`. `constitution` is `present` or `absent`; `goal` is
 `create` or `update`. Each lens is `proposed` or `nothing_to_propose`. `disposition` is `answered`,
 `default_taken`, `skipped`, or `not_asked`. `constitution_input` counts the guardrails in that section.
-Carry **all eight** questions.
+Carry **all seven** questions.
 
 ### The candidate record
 
@@ -452,7 +451,8 @@ Report concisely, in this order:
 6. **What was decided** — per lens: accepted, declined, skipped; and how many accepted guardrails are
    `aspirational`, because those are the ones the code does not yet meet.
 7. On a re-run: what changed (see "Re-running").
-8. **The sibling agents** whose ground lenses 6 and 7 stopped at, where their documents do not exist.
+8. **The sibling agents** whose ground this analysis referred — test strategy, deployment strategy,
+   methodology — where their documents do not exist.
 
 The session gets the summary. The document gets the detail. Do not paste the document into the session.
 
@@ -509,6 +509,11 @@ until that command runs**, and that it will show its own sync impact report befo
   duplicate a principle. Never mark a declined, skipped, or `not_asked` candidate adopted.
 - **An `adopted` item is never reverted.** If the principle it names has since been removed or rewritten
   so it no longer covers the item, keep the status and **report the drift**; do not silently re-propose it.
+- **Delivery & workflow records from before 1.24.0 are handed on.** That lens now belongs to
+  `speckit.spectra.methodology`. Keep each prior record — its `id`, wording, evidence, basis, decision, and
+  status unchanged — in Decisions and sources under "Handed on to `speckit.spectra.methodology`". They
+  leave the Constitution input section, so the clause has one source, and they are never deleted:
+  `speckit.spectra.methodology` reads them as prior answers. Say how many were handed on in the report.
 - **A checkbox file from before 1.23.0** is read as a prior analysis: a `- [x]` item is `accepted`, and a
   `- [ ]` item is undecided — recorded `not_asked` until a question answers it — and is offered again in
   its lens's question, marked "unticked in the earlier version". An unticked box cannot tell "reviewed and
@@ -527,7 +532,7 @@ away every decision.
 
 Announce it once, up front, after Step 0. Then:
 
-- ask **none** of the eight questions, and record every one as `not_asked`;
+- ask **none** of the seven questions, and record every one as `not_asked`;
 - take the non-publishing option on any root question (Step 3);
 - write the document as normal, with every candidate's decision `not_asked` and an empty Constitution
   input section;
@@ -551,8 +556,7 @@ Last resort only — used when no template resolves at any layer in Step 6.
 ## Security & trust boundaries           <!-- as above -->
 ## Architecture & boundaries             <!-- as above -->
 ## Technology & dependency policy        <!-- as above -->
-## Reliability & operability             <!-- as above; testing and deployment referred -->
-## Delivery & workflow                   <!-- as above; testing and deployment referred -->
+## Reliability & operability             <!-- as above; testing, deployment, and workflow referred -->
 ## Constitution input                    <!-- accepted, not adopted; grouped by section; command-owned format -->
-## Decisions and sources                 <!-- the eight questions and answers, inputs read, coverage, what changed -->
+## Decisions and sources                 <!-- the seven questions and answers, inputs read, coverage, what changed -->
 ```

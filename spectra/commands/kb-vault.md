@@ -264,7 +264,7 @@ hand rather than yours.
 Work out what **kind** of document each source is, from its **content**. Never from its filename: a
 file called `notes.pdf` may be a decision record, and a file called `adr.docx` may be meeting minutes.
 
-A category is a lowercase kebab-case slug that would be a valid folder name — `engineering-methodology`,
+A category is a lowercase kebab-case slug that would be a valid folder name — `onboarding`,
 `ux-ui-standards`, `operating-procedures`, `glossary`. The set is **open-ended**: a supplied document
 of a kind nobody anticipated gets a derived slug, not a refusal and not a junk-drawer folder.
 
@@ -288,6 +288,7 @@ second set.
 | an impact analysis | `<artifact-root>/impact-analysis/` | `NNN-<kebab-title>.md` | `impact-analysis-template` |
 | a test strategy | `<artifact-root>/` | `TEST_STRATEGY.md` | `test-strategy-template` |
 | a domain analysis / guardrail proposal | `<artifact-root>/` | `DOMAIN_ANALYSIS.md` | `domain-analysis-template` |
+| an engineering methodology | `<artifact-root>/` | `ENGINEERING_METHODOLOGY.md` | `engineering-methodology-template` |
 | a deployment strategy | `<artifact-root>/` | `DEPLOYMENT_STRATEGY.md` | `deployment-strategy-template` |
 | a defect root cause analysis | `<artifact-root>/defect-rca/` | `NNN-<kebab-title>.md` | `defect-rca-template` |
 | anything else | `<artifact-root>/<category>/` | `NNN-<kebab-title>.md` | `<category>-template`, else `kb-document-template` |
@@ -295,6 +296,10 @@ second set.
 Without this map, a supplied PDF of past architecture decisions would land in a folder of its own
 beside the one `speckit.spectra.adr` maintains — two decision records, two numbering schemes, two
 shapes, and no rule for which is authoritative.
+
+An engineering methodology you write to `ENGINEERING_METHODOLOGY.md` carries no
+`command: speckit.spectra.methodology` front matter, so the next `speckit.spectra.methodology` run reads it
+as evidence of the team's current practice, not as one of its own prior runs.
 
 ## Step 7 — Look for what already exists
 
@@ -323,6 +328,14 @@ document; `adr-005.md` and `adr-006.md` certainly are not.
 A match produces an **update** row: its location is the matched file's existing path, wherever that is,
 and its notes carry any contradiction between the supplied source and what the file currently says. Do
 not resolve the contradiction in the written file — name it, and let the user decide (R7).
+
+**One match is never updated: a methodology the methodology agent wrote.** When the match is
+`<artifact-root>/ENGINEERING_METHODOLOGY.md` and its front matter has
+`command: speckit.spectra.methodology`, produce no update row. That file carries frozen guardrail IDs and
+the team's recorded decisions, which an in-place edit would not maintain. Leave the file unchanged, show
+the row as a referral to `/speckit.spectra.methodology` — the way to fold the source's content in — and
+list the source in the report (Step 12). A file at that path without that front matter keeps the update
+rules above.
 
 Say that the match is a judgement (R8). The user knows what their documents are about and you are
 guessing; a wrong match must cost them one sentence to correct, and correcting it must not cost them
@@ -362,7 +375,7 @@ Present the table:
 |---|---|---|---|
 | `adr` | The 2024 decision to move order processing onto a queue, with the alternatives weighed at the time | `docs/adr/ADR-007-queue-based-order-processing.md` | Create (folder exists) |
 | `ux-ui-standards` | Component spacing, type scale and colour tokens for the design system | `docs/ux-ui-standards/002-component-spacing-and-type.md` | Update — existing file |
-| `engineering-methodology` | Branching model, review expectations and the release train | `docs/engineering-methodology/001-branching-and-release.md` | Create (folder will be created) |
+| `engineering-methodology` | Branching model, review expectations and commit conventions | `docs/ENGINEERING_METHODOLOGY.md` | Create |
 ```
 
 Beneath it, one sentence each, only where they apply:
@@ -458,6 +471,9 @@ Close with:
 6. Conflicts left unresolved — with the constitution, or between a source and a document it updated.
 7. Where a written filename differs from the planned one because the sequence moved, say so.
 8. Where some writes succeeded and others failed, say exactly which did and which did not.
+9. Sources referred on — each source matched to a document another command owns and must update itself,
+   with the command named, e.g. `/speckit.spectra.methodology` for an `ENGINEERING_METHODOLOGY.md` it
+   wrote.
 
 Then tell the user plainly: the changes are **uncommitted**, they are in the working tree, and once
 they have looked them over they can commit. You do not stage them, commit them, branch, push, tag, or
