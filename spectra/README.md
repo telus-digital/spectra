@@ -98,8 +98,12 @@ Takes a short description of a decision and then:
    under `docs/adr/`, specs under `specs/`, and the relevant source code.
 2. Asks up to **5** clarifying questions, specific to your project, before drafting anything.
 3. Determines the next ADR number, drafts the ADR, and writes it to `docs/adr/ADR-NNN-<title>.md`.
-4. Checks the decision against your constitution and, if significant, **recommends** a constitution
-   update and offers to make it.
+4. Checks the decision against your constitution and, if significant, drafts the guardrails it would
+   make binding — only on its own ground, architecture-level choices; testing, deployment, languages and
+   frameworks, and workflow are referred to the agent that owns them. You approve, decline, or reword each,
+   and the ADR records the outcome in a **Constitution input** section with a ready-to-paste
+   `/speckit-constitution` line that cites the ADR. It **never edits the constitution** itself; with no
+   constitution yet, it keeps the guardrails for later and points you to the domain analyzer first.
 5. Suggests (does not run) the optional git commands to commit the new ADR.
 
 Usage (Claude):

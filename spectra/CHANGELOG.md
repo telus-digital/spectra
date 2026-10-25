@@ -3,6 +3,34 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.26.0] - 2026-10-24
+
+The ADR agent becomes the fifth constitution feeder: a significant decision reaches the constitution
+through `/speckit-constitution`, never by the agent editing it.
+
+### Changed
+- **`speckit.spectra.adr` never writes `.specify/memory/constitution.md`.** Step 7 used to offer the edit
+  and make it on agreement, which skipped the version bump, the sync impact report, and the propagation
+  `/speckit-constitution` owns. A significant decision now gets drafted guardrails as records with frozen
+  `adr-NNN-<section-slug>-<hash>` IDs, one approval step outside the five clarifying questions (approve,
+  revise the ADR first, talk it through, decline all; silence adopts nothing), and two sections added to
+  the ADR it just wrote: **Constitution guardrails** (every record offered) and **Constitution input**
+  (only the accepted ones). It prints one `/speckit-constitution` amend line naming the ADR's resolved
+  path and asking for the ADR to be cited as the source. Nothing accepted, no line. With no constitution
+  the goal is `pending`: the records are kept, no line is printed, and the domain analyzer is named first.
+  A non-significant ADR gets no section, and a template without these headings has them appended. Step 8
+  no longer suggests staging the constitution.
+- **The ADR agent drafts only on its own ground** — architecture-level choices, and architectural decisions
+  on security, data handling, or reliability. Testing, deployment, languages / frameworks / dependency
+  policy, the domain, and methodology are referred to the agent that owns them, with a re-run suggested.
+  A superseding ADR drafts `amends:` against the principle its predecessor introduced, and a `Superseded`
+  or `Deprecated` ADR's records never constrain.
+- **`domain-analyzer` shares that ground clause by clause.** Every lens except Technology & dependency
+  policy cites an accepted ADR record that covers a clause instead of drafting it, reading only ADRs whose
+  status is `Proposed` or `Accepted`. Technology & dependency policy stays its alone.
+- **`methodology` lists the ADR agent as a fifth feeder** in its sibling-ground table, and keeps it out of
+  the foundation sequence it suggests after its handoff.
+
 ## [1.25.0] - 2026-10-24
 
 The foundation agents now hand off to each other safely on a brownfield project: imported knowledge stays

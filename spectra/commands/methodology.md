@@ -261,7 +261,7 @@ propose: no PR or issue template, no ticket links in 312 commit subjects" is a u
 not. Lens 9 reports an existing Governance section as current practice and proposes nothing it already
 asserts.
 
-**Sibling ground is referred, not proposed.** Four agents feed the constitution, and each clause has one
+**Sibling ground is referred, not proposed.** Five agents feed the constitution, and each clause has one
 source. Where evidence touches ground another agent owns, cite it if it exists, or name the command that
 writes it — and draft no guardrail there:
 
@@ -271,6 +271,7 @@ writes it — and draft no guardrail there:
 | Environments, promotion, rollback, the versioning scheme, the release cut, hotfix promotion | `speckit.spectra.deployment-strategy` — `DEPLOYMENT_STRATEGY.md` |
 | Product languages, frameworks, dependency policy | `speckit.spectra.domain-analyzer` — `DOMAIN_ANALYSIS.md` |
 | Bounded contexts, invariants, glossary terms | `speckit.spectra.domain-analyzer` — `DOMAIN_ANALYSIS.md` |
+| Architecture-level choices recorded as decisions — datastores, messaging, architecture style, service and data boundaries, layering, integration patterns — and architectural decisions on security, data handling, or reliability | `speckit.spectra.adr` — `<artifact-root>/adr/` |
 | The BRD's structure | `speckit.spectra.brd` |
 
 Two overlays sit on a boundary, and the line is drawn the same way every run. **TDD governs *when* tests
@@ -710,7 +711,8 @@ speckit.spectra.domain-analyzer → speckit.spectra.methodology → speckit.spec
 ```
 
 Each one hands off its own `/speckit-constitution` line when it runs. No sibling's input is folded into
-this command's line — one source per clause.
+this command's line — one source per clause. `speckit.spectra.adr` also feeds the constitution, one
+decision at a time, and is not part of this sequence.
 
 ## Re-running on a project you have analysed before
 

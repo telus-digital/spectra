@@ -18,6 +18,17 @@ $ARGUMENTS
 If this is empty, ask the user for a one or two sentence description of the decision before
 continuing.
 
+## What this command never does
+
+No argument, approval, or instruction in the session enables any of these.
+
+| Never | Why |
+|---|---|
+| Write `.specify/memory/constitution.md` — in any run, approved or not | `/speckit-constitution` owns that file: its sync impact report, its version, its propagation into dependent templates |
+| Invoke `/speckit-constitution` | A portable command cannot rely on one agent's way of calling another, and chaining takes the user out of their own governance change |
+| Write any file other than the ADR — and, on supersession, the superseded ADR's status line | One decision, one record. Step 7 adds its sections to the ADR you wrote in Step 6 |
+| Adopt a guardrail nobody chose | Skip, silence, and a non-interactive run all adopt nothing. Step 7 |
+
 ## Step 1 — Gather project context (do this BEFORE asking anything)
 
 Read and internalize the relevant project context so your questions and the ADR itself are
@@ -49,8 +60,8 @@ specific to this codebase. Inspect, where present:
      ```
 
      Until that line exists you will ask again on the next run. Do **not** edit
-     `.specify/memory/constitution.md` for this — the only constitution change you may propose is the
-     one in Step 7, about the decision itself.
+     `.specify/memory/constitution.md` for this — the only constitution input you may draft is the one
+     in Step 7, about the decision itself, handed to `/speckit-constitution`.
    - From here on, `<artifact-root>/adr/` is this project's ADR folder — `docs/adr/` unless the root was
      declared or changed above.
 3. **Existing ADRs** — every `*.md` file under `<artifact-root>/adr/`. Use these to:
@@ -146,7 +157,8 @@ Filling rules:
   **Exception:** if the superseded ADR lives in one of the earlier locations from Step 1 (a legacy
   `Docs/ADR/`, or `docs/adr/` when the root is declared elsewhere), do not edit it there — those folders
   are read-only. Record the supersession in the new ADR's Context and tell the user which file to update
-  once they move it.
+  once they move it. Either way, if the superseded decision reached the constitution, Step 7 drafts the
+  matching constitution amendment.
 
 ## Step 6 — Write the file
 
@@ -188,7 +200,7 @@ structure, mention once that they can copy it to `.specify/templates/overrides/a
 and commit — every later ADR follows their version, and the override survives extension updates. Do not
 create that file yourself.
 
-## Step 7 — Check the ADR against the constitution (your recommendation)
+## Step 7 — Check the ADR against the constitution and hand off
 
 Compare the decision against `.specify/memory/constitution.md` and decide whether this is a
 **significant** ADR. Treat it as significant if it does any of the following:
@@ -198,27 +210,193 @@ Compare the decision against `.specify/memory/constitution.md` and decide whethe
 - contradicts, narrows, or extends an existing constitution principle,
 - establishes a convention future work is expected to follow.
 
-Then:
+**If it is not significant**, say so in one line with the reason, write no Constitution section, print
+no `/speckit-constitution` line, and continue to Step 8.
 
-- **If significant:** explicitly recommend to the user that the constitution be updated, and
-  state *what* you would add or change (quote the specific principle text you propose). Offer
-  to make the edit. Only modify `.specify/memory/constitution.md` if the user agrees. The
-  recommendation must come from you — do not wait to be asked.
-- **If not significant:** briefly note that the ADR does not warrant a constitution change and
-  why, then continue.
+**If it is significant**, the recommendation must come from you — do not wait to be asked. Work through
+the rest of this step.
+
+### The constitution check
+
+Read `.specify/memory/constitution.md` **semantically** — a section heading, plus normative keywords such
+as MUST or SHOULD, plus the subject matter. Never match on a string. Classify each guardrail the decision
+would make binding:
+
+| State | What you found | What you do |
+|---|---|---|
+| **embedded** | the constitution already states it | quote the governing clause; draft nothing |
+| **partial** | a clause exists but omits or contradicts part of it | quote it, name the gap, draft `amends: <principle>` |
+| **absent** | nothing normative covers it | draft it as `new` |
+| **no constitution** | the file does not exist | draft it as `new`; the goal is `pending` |
+| **sibling ground** | another feeder owns it | draft nothing on another feeder's ground; refer it (Sibling ground) |
+
+**Where an existing principle contradicts the decision**, surface the contradiction as a finding in its
+own right and draft the record as `amends:` that principle. Never draft a clause that silently overrides
+one.
+
+**When Step 5 recorded a supersession**, find the principle the superseded ADR introduced — by the
+`adr-NNN-` id in its Constitution input section, or by a citation of that ADR in the constitution — and
+draft the new record as `amends: <that principle>`. The constitution keeps only its latest sync impact
+report and an ADR written before 1.26.0 has no Constitution input section, so this lookup can come up
+empty; then draft against the principle the check matched, or as `new`. A reversed decision must never
+leave two contradictory clauses behind.
+
+### Sibling ground
+
+Five agents feed the constitution, and each clause has one source. **Your ground** is
+architecture-level choices — datastores, messaging and eventing infrastructure, architecture style (for
+example monolith, modular monolith, services), service and data boundaries and ownership, layering, and
+integration patterns — plus architectural decisions on security, data handling, or reliability (for
+example mTLS between services, a data-retention mechanism, an observability stack), and conventions future
+work must follow that no sibling owns. Ground shared with domain-analyzer is governed clause by clause.
+
+Everything else belongs to a sibling. Draft nothing on another feeder's ground:
+
+| Ground | Owner | Document you check |
+|---|---|---|
+| Test levels, coverage floor, the ratchet, UAT | `speckit.spectra.test-strategy` | `<artifact-root>/TEST_STRATEGY.md` |
+| Environments, promotion, rollback, the versioning scheme, the release cut, hotfix promotion | `speckit.spectra.deployment-strategy` | `<artifact-root>/DEPLOYMENT_STRATEGY.md` |
+| Languages, frameworks, runtimes, dependency policy; bounded contexts, invariants, glossary terms | `speckit.spectra.domain-analyzer` | `<artifact-root>/DOMAIN_ANALYSIS.md` |
+| Methodology overlays, work modes, branching, review gates, change records | `speckit.spectra.methodology` | `<artifact-root>/ENGINEERING_METHODOLOGY.md` |
+
+- **For each part of the decision on a sibling's ground**, name the owner, say whether its document exists
+  at the artifact root, and suggest the user re-run it — every one of them reads ADRs as evidence, so the
+  decision will be weighed in its own handoff. Record the referral in the `Constitution check:` line.
+- **Where that document exists**, read only records whose `decision` is `accepted` (in a checkbox-era file,
+  its `- [x]` items), and name any one this decision contradicts. A `declined`, `skipped`, or `not_asked`
+  record never constrains you.
+- **A decision naming a language, framework, or dependency rule is domain-analyzer's**, even when it is
+  recorded as an ADR. A mixed decision — "adopt event sourcing on Kafka, written in Kotlin" — drafts only
+  the architecture-level part and refers the rest.
+- **Ground shared with domain-analyzer** — every lens of its analysis except Technology & dependency policy
+  — is governed clause by clause: check the constitution and `DOMAIN_ANALYSIS.md`'s accepted records, cite
+  a clause that already covers the decision, and draft `amends:` where the decision changes one. Whichever
+  agent drafts a clause first is its source; domain-analyzer cites your accepted records in turn.
+- **Prior ADRs** — when you read other ADRs' Constitution input sections (for supersession, or to see what
+  is already decided), a `Superseded` or `Deprecated` ADR's records count only as the principle a
+  supersession amends, never as a constraint.
+
+### The draft
+
+Draft each guardrail in the constitution's voice — declarative and testable, MUST or SHOULD, with a brief
+rationale — so it needs minimal rewriting downstream. **Each drafted guardrail is a record:**
+
+```markdown
+- **<Guardrail statement — declarative and testable, MUST/SHOULD, with a brief rationale>**
+  - id: `adr-NNN-<section-slug>-<hash>`
+  - section: <Target constitution section>
+  - basis: observed | aspirational
+  - decision: accepted | declined | skipped | not_asked
+  - status: new | amends: <Principle name/number> | adopted: <Principle name/number>
+```
+
+Keys appear in exactly that order. The statement is the user's wording where they changed it.
+
+- **The ID is `adr-NNN-<section-slug>-<hash>`**: `NNN` is this ADR's number from Step 3, `<section-slug>`
+  the kebab-cased target section, and `<hash>` a short (8-char) hash of the normalized statement (trimmed,
+  lowercased, whitespace-collapsed). It is computed once, when first drafted, and frozen: a reword at the
+  gate keeps the ID. The number is what lets anyone trace a constitution clause back to this decision.
+- **`section`** uses the project constitution's own section names; Spec Kit's defaults where none exists.
+- **`basis`** is `observed` where the codebase already holds the rule, `aspirational` where it does not.
+- **`status`** is `adopted: …` where the constitution already carries the guardrail in substance.
+
+### The gate
+
+**Show every drafted record first**, with its statement, section, and basis. Then ask once. This question
+does not count against the five clarifying questions of Step 2.
+
+- **Approve it** — every shown record is `accepted`, except those the reply names: a record **named to
+  decline** is `declined`; a record **named to reword** is `accepted` with the new statement and **the
+  same id**.
+- **Revise the ADR first** — edit the ADR you wrote in Step 6 in place, re-draft the records, and offer
+  this same gate again.
+- **Talk it through** — nothing is decided until one of the others is chosen.
+- **Decline the whole gate** — every record is `skipped`.
+- **No answer, or a non-interactive run** — every record is `not_asked`. Silence adopts nothing.
+
+### The sections
+
+Add two sections to the ADR you wrote in Step 6 — in this run, and to no other file:
+
+1. `## Constitution guardrails` — every drafted record, accepted or not, so the ADR records what was
+   offered as well as what was chosen.
+2. `## Constitution input` — the section `/speckit-constitution` consumes. It holds exactly the records
+   whose `decision` is `accepted` and whose status is not `adopted: …` — nothing else.
+
+Fill them where the resolved template places either heading; otherwise append them after the template's
+last section, in that order, and say so once when you report. The format is this command's, and a template
+cannot change it. Open Constitution input with the check, the ADR's status, and the goal, then group the
+records by target section:
+
+```markdown
+## Constitution input
+
+Constitution check: <one line per state found — governing clauses quoted, contradictions and referrals named>
+ADR status at drafting: Proposed
+Goal: **update** the constitution at .specify/memory/constitution.md with the guardrails below.
+
+### <Target constitution section>
+
+- <Guardrail statement, as accepted>
+  - id: `adr-NNN-<section-slug>-<hash>`
+  - placement: add | amends: <Principle name/number>
+  - basis: observed | aspirational
+```
+
+The goal line is exactly one of:
+
+- `Goal: **update** the constitution at .specify/memory/constitution.md with the guardrails below.` — a
+  constitution exists and at least one record was accepted.
+- `Goal: **update** — nothing was accepted.` — a constitution exists and nothing was accepted. The section
+  says so in that one sentence and lists nothing.
+- `Goal: **pending** — no constitution exists; these records are for a later amend.` — there is no
+  constitution. The accepted records are listed all the same.
+
+### The invariant
+
+> **You never write `.specify/memory/constitution.md`.** Not on approval. Not when the file is missing.
+> Not when the user insists.
+
+Approval authorises records in the ADR you were already writing, and nothing else. `/speckit-constitution`
+owns the sync impact report, the MAJOR / MINOR / PATCH judgement, the version and amendment-date lines, and
+propagating the change into dependent templates and docs. If the user asks you to apply the change
+yourself, decline, say why, and give the line again.
+
+### The handoff
+
+When a constitution exists and at least one record was accepted, tell the user to run
+`/speckit-constitution` referencing this ADR. **Do not invoke it.** Give the ADR as a link to the path you
+actually wrote — resolved root, not the default — and the command as one ready-to-paste line:
+
+```text
+Next: run this to update your constitution from [ADR-007-split-billing-service.md](docs/adr/ADR-007-split-billing-service.md):
+
+/speckit-constitution Amend the constitution with every guardrail in the "Constitution input" section of docs/adr/ADR-007-split-billing-service.md, adding each under its section and applying "amends:" items as amendments to the principle they name, and cite ADR-007 as the source of each change
+```
+
+Substitute this ADR's path and number. The closing clause — cite ADR-NNN as the source of each change —
+stays in every line: it is what makes the constitution's own change record point back at this decision.
+
+State plainly that **nothing reaches the constitution until that command runs**. If the ADR's status is
+`Proposed`, add that they should run it once the decision is accepted. If nothing was accepted, say so and
+give no command: a prompt that adopts nothing invites a run that can only re-touch the constitution.
+
+**When there is no constitution**, give no command — one decision is no foundation for a whole
+constitution. Point the user to the foundation agents, `speckit.spectra.domain-analyzer` first, and say
+that once a constitution exists, the accepted records can be amended in from this ADR.
 
 ## Step 8 — Suggest committing the ADR (optional, do not run automatically)
 
 Do **not** run git commands yourself. Instead, present them as an optional suggestion the user
-can copy. Tailor the message and the file list to what you actually changed (include the
-constitution file only if it was edited, and use the real artifact root):
+can copy. Tailor the message and the file list to what you actually changed — the ADR, plus the
+superseded ADR when Step 5 updated its status line — and use the real artifact root:
 
 ```bash
 git add docs/adr/ADR-NNN-<kebab-case-title>.md
 git commit -m "docs(adr): ADR-NNN <title>"
 ```
 
-If a constitution update was made, suggest staging that file in the same commit. Make clear
+A constitution change is committed after `/speckit-constitution` runs, as its own change. Make clear
 this step is optional and the user can adjust the branch, message, or scope as they prefer.
 
 ---

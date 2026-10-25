@@ -284,5 +284,32 @@ class ImportedKnowledgeAndOwnership(unittest.TestCase):
         self.assertIn("show the document in the session instead", text)
 
 
+class GroundIsSharedWithTheAdrAgentClauseByClause(unittest.TestCase):
+    """037 D1–D3 — a recorded decision outranks an inference, one clause at a time."""
+
+    def test_lens_five_stays_this_commands_alone(self):
+        text = section("## Step 4")
+        self.assertIn("languages, frameworks, and runtimes", text)
+        self.assertIn("dependency", text)
+        self.assertIn("technology & dependency policy stays yours alone", text)
+
+    def test_step_one_reads_accepted_adr_records_only(self):
+        text = section("## Step 1")
+        self.assertIn("**accepted adr records**", text)
+        self.assertIn("`<artifact-root>/adr/`", text)
+        self.assertIn("only records whose `decision` is `accepted` constrain you", text)
+        self.assertIn("from adrs whose status line is `proposed` or `accepted`", text)
+        self.assertIn("`superseded` or `deprecated`", text)
+
+    def test_every_other_lens_cites_before_drafting(self):
+        text = section("## Step 4")
+        self.assertIn("the adr agent shares this ground, clause by clause", text)
+        self.assertIn("speckit.spectra.adr", text)
+        self.assertIn("every lens except technology & dependency policy", text)
+        self.assertIn("instead of drafting it", text)
+        self.assertIn("may be drafted from observation", text)
+        self.assertIn("drafts an amendment", text)
+
+
 if __name__ == "__main__":
     unittest.main()

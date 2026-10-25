@@ -902,7 +902,7 @@ on the existing Todo record, and compare dates as strings rather than Date objec
       <li>A Rollback Plan section follows Consequences, and no guidance comment or <code>[placeholder]</code> survived.</li>
       <li>The rollback plan is grounded (the storage format, older tasks saved without a due date) or says plainly what it does not know. Invented detail is a reason to send it back.</li>
       <li>The status is <code>Proposed</code>.</li>
-      <li>If the agent recommended a constitution change, you decided on purpose. It edits the constitution only if you agree.</li>
+      <li>If the decision was significant, the agent showed the constitution guardrails it drafted and you approved, declined, or reworded each on purpose. The ADR ends with a Constitution input section of what you accepted, after the Rollback Plan, and the agent printed a <code>/speckit-constitution</code> line for you to run. It never edited the constitution itself.</li>
     </ul>
     <div class="note"><span class="note-label">Wrong template?</span>If the report names <code>.specify/extensions/spectra/templates/adr-template.md</code>, your override was not picked up. Check the file name, the folder, and that the file is not empty &mdash; exactly the failure the path report exists to catch.</div>
 

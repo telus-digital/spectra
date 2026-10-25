@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.25.0"
+  version: "1.26.0"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
@@ -32,7 +32,7 @@ provides:
   commands:
     - name: "speckit.spectra.adr"
       file: "commands/adr.md"
-      description: "Create a new Architecture Decision Record from a short description, grounded in the codebase and constitution."
+      description: "Create a new Architecture Decision Record from a short description, grounded in the codebase and constitution, and hand any constitution change to /speckit-constitution."
     - name: "speckit.spectra.domain-analyzer"
       file: "commands/domain-analyzer.md"
       description: "Say whether the project has a constitution, infer its domain, work six lenses — handing workflow to speckit.spectra.methodology — and ask the SME seven questions to decide each lens's guardrails in the session — at least four options per question, one recommended, one Skip — then write the decisions and a Constitution input section to <artifact-root>/DOMAIN_ANALYSIS.md and hand it to /speckit-constitution to create or update the constitution. Reads documents imported by kb-vault as claimed, never as current practice, and replaces a DOMAIN_ANALYSIS.md it did not write only with consent."

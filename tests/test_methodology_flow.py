@@ -377,6 +377,7 @@ class SiblingGroundIsReferred(unittest.TestCase):
             "speckit.spectra.domain-analyzer",
             ("product languages", "frameworks", "dependency policy", "bounded contexts", "invariants", "glossary"),
         ),
+        ("speckit.spectra.adr", ("architecture-level choices", "layering", "security, data handling, or reliability")),
     )
 
     def test_each_owner_and_its_ground_is_named(self):
@@ -387,6 +388,20 @@ class SiblingGroundIsReferred(unittest.TestCase):
                 with self.subTest(owner=owner, ground=ground):
                     self.assertIn(owner, text)
                     self.assertIn(ground, text)
+
+    def test_five_agents_feed_the_constitution(self):
+        """037 M2 — the ADR agent is the fifth feeder."""
+        self.assertIn("five agents feed the constitution", section("## Step 4"))
+        self.assertNotIn("four agents feed", command())
+
+    def test_the_adr_agent_is_not_in_the_foundation_sequence(self):
+        """037 M3 — ADRs are written on demand, one per decision, not as a foundation step."""
+        text = COMMAND.read_text(encoding="utf-8")
+        start = text.index("**Then the other agents that feed the constitution.**")
+        fence = text.index("```text", start)
+        sequence = text[fence : text.index("```", fence + 3)]
+        self.assertIn("speckit.spectra.deployment-strategy", sequence)
+        self.assertNotIn("speckit.spectra.adr", sequence)
 
     def test_cite_the_document_or_name_the_command(self):
         self.assertIn("cite it if it exists, or name the command that writes it", section("## Step 4"))

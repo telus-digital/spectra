@@ -28,8 +28,12 @@ These ship in the `spectra` extension today. Install them all at once with
 
 **`speckit.spectra.adr`** — Create a context-aware Architecture Decision Record grounded in your codebase,
 prior ADRs, and the project constitution. It gathers project context, asks up to five clarifying
-questions, writes the ADR under `docs/adr/` — or the artifact root your constitution declares — and flags
-any constitution update the decision implies.
+questions, and writes the ADR under `docs/adr/` — or the artifact root your constitution declares. When the
+decision is significant, it drafts the constitution guardrails it implies, on its own ground —
+architecture-level choices — and refers testing, deployment, languages and frameworks, and workflow to
+the agent that owns them. You decide each guardrail; the ADR records the outcome in a Constitution input
+section and hands you a ready-to-paste `/speckit-constitution` line that cites it. It never edits the
+constitution.
 
 - **Arguments** — a one-or-two-sentence description of the decision. If omitted, the command asks you
   for one before drafting.
@@ -54,8 +58,8 @@ six lenses, handing workflow to the Methodology Analyst. It asks you to decide e
 options per question, one recommended and one Skip. Only then does it write `docs/DOMAIN_ANALYSIS.md` —
 or your declared artifact root — with a Constitution input section of what you accepted, and hand you a
 ready-to-paste `/speckit-constitution` prompt. Documents imported by kb-vault are read as what they
-*claim*, never as what the code does. It never edits the constitution or source, and adopts nothing you
-did not choose.
+*claim*, never as what the code does, and a guardrail you already accepted in an ADR is cited rather than
+drafted twice. It never edits the constitution or source, and adopts nothing you did not choose.
 
 - **Arguments** — none required. Optionally pass a focus or a domain hint to steer the analysis.
 - **Use it when** — bootstrapping constitution guardrails for a brownfield project (no args — it infers

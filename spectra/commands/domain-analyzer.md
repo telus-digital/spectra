@@ -109,6 +109,12 @@ Read and internalize the real project. Inspect, where present:
    **Only records whose `decision` is `accepted` constrain you** — in a checkbox-era file, written before
    1.25.0, only its `- [x]` items. A `declined`, `skipped`, or `not_asked` record is never treated as a
    constraint.
+
+   **Accepted ADR records** — the `## Constitution input` sections of the ADRs under `<artifact-root>/adr/`,
+   written by `speckit.spectra.adr`. Here too only records whose `decision` is `accepted` constrain you,
+   and only from ADRs whose status line is `Proposed` or `Accepted`; an ADR marked `Superseded` or
+   `Deprecated` never constrains you. An ADR without that section — written before 1.26.0, or not
+   significant — is ordinary documentation (item 4). How these records bear on your lenses is in Step 4.
 4. **Documentation** — `README*`, `CONTRIBUTING*`, ADRs, documentation directories, and specs under
    `specs/`. Strong domain evidence, cited `claimed` (R1a).
 5. **Imported knowledge** — `<artifact-root>/domain-analysis-source/`, and any document under the
@@ -239,6 +245,16 @@ belong to `speckit.spectra.deployment-strategy`. Workflow — branching, review,
 governance — belongs to `speckit.spectra.methodology`, which writes `ENGINEERING_METHODOLOGY.md`. Where the
 sibling document exists, cite it; where it does not, name the command that writes it. Do not draft a
 guardrail in their ground.
+
+**The ADR agent shares this ground, clause by clause.** Architecture-level choices — datastores,
+messaging, architecture style, service and data boundaries, integration patterns — and architectural
+decisions on security, data handling, or reliability are `speckit.spectra.adr`'s when recorded as a
+decision. Every lens except Technology & dependency policy still works what the code shows, but before
+drafting a clause, cite an accepted ADR record that covers it (Step 1) instead of drafting it. A clause no
+accepted ADR record covers may be drafted from observation. Whichever agent drafts a clause first is its
+source, and a later ADR that changes it drafts an amendment — never a second clause. Technology &
+dependency policy stays yours alone: an ADR naming a language, framework, or dependency rule is referred
+here, not drafted there.
 
 **In brownfield mode, report what exists before proposing.** Each lens states its current practice with
 citations first, then its candidates.
