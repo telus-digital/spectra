@@ -679,9 +679,10 @@ lines in `tasks.md` it observed passing, `uat-report.md` beside the spec, and th
 `specs/<feature>/uat/<run-stamp>/`, which a re-run adds to and never overwrites. A capture that might
 show a secret is masked or skipped, and the report records what was withheld.
 
-- **Arguments** — the feature directory (**required**, and never inferred — no branch name, no
-  `.specify/feature.json`, no picker). `--env <name>` to act on a named environment. `--non-interactive`
-  for CI.
+- **Arguments** — none needed: it finds the feature the way the implement command does
+  (`SPECIFY_FEATURE_DIRECTORY`, then `.specify/feature.json`) and names it before anything starts — no
+  branch name, no picker. A path to the feature directory or its `spec.md` only confirms it, and a
+  mismatch stops. `--env <name>` to act on a named environment. `--non-interactive` for CI.
 - **Use it when** — implementation is done and you want acceptance evidence before opening a pull
   request. After implement, an optional hook offers it ahead of `create-pr`; the hook only asks.
 - **Drivability is judged in its own session.** It states which tools it relied on; a scenario marked
@@ -691,8 +692,9 @@ show a secret is masked or skipped, and the report records what was withheld.
   the tracker — and keeps a cumulative run log.
 - **Examples (Claude)** —
   ```
+  /speckit-spectra-uat
+  /speckit-spectra-uat --env staging
   /speckit-spectra-uat specs/021-signed-webhooks
-  /speckit-spectra-uat --env staging specs/021-signed-webhooks
   ```
 
 <!-- SPECTRA:AGENT id=defect-rca -->

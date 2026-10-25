@@ -3,6 +3,32 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.28.0] - 2026-10-25
+
+UAT finds its feature the way the implement command does, so its ticks land in the feature that was just
+built and the after-implement offer needs no path.
+
+### Changed
+- **`speckit.spectra.uat` resolves the feature as Spec Kit's implement command does.** The project root
+  is `SPECIFY_INIT_DIR` or the nearest `.specify/`; the feature directory is `SPECIFY_FEATURE_DIRECTORY`,
+  then `feature_directory` in `.specify/feature.json`; a set-but-empty variable is unset; the directory
+  must hold a `tasks.md`. It never uses the branch name, modification times, a listing of `specs/`, or
+  session history, offers no picker, and never writes the feature record or creates a directory. The
+  resolved feature and its source are announced first, named again in the run confirmation, and recorded
+  in `uat-report.md` and the session report. Ticks, evidence, and the report go to that feature even if
+  the record changes mid-run.
+- **The path argument is optional, and a path naming a feature other than the active one now stops.**
+  Anyone who scripted the old required-path form gets a stop before anything is started: the run writes
+  nothing and names both directories, the source, and the two ways to switch — set
+  `SPECIFY_FEATURE_DIRECTORY` for the session, or change `feature_directory` in `.specify/feature.json`
+  for good. A path to the active feature directory or its `spec.md` still works as a confirmation.
+- **One read-only shell read** of `SPECIFY_INIT_DIR` and `SPECIFY_FEATURE_DIRECTORY`, once per run,
+  before the run confirmation. It starts no build, server, or process, so "nothing is started before the
+  run confirmation" still holds. If it is denied or fails, the run stops rather than fall back to
+  `.specify/feature.json` alone.
+- **The after-implement offer now needs no path.** This closes the candidate noted in 1.27.0; the hook
+  prompt itself is unchanged.
+
 ## [1.27.0] - 2026-10-25
 
 The test plan finds its feature the way the planning command does, so `test-plan.md` and `plan.md` always

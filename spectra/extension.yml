@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.27.0"
+  version: "1.28.0"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
@@ -65,7 +65,7 @@ provides:
       description: "Turn one specification into a stakeholder-facing test plan written beside it as test-plan.md — scope, risks, traceable test conditions, suggested UAT scenarios, regression scope, environment, and exit criteria — grounded in the project's own testing policy and its existing suite. It uses exactly the lenses the test strategy chose: a lens the strategy rules out is unavailable, and it says so loudly when the strategy predates UAT and regression or does not exist. It finds the feature the way the planning command does — SPECIFY_FEATURE_DIRECTORY, then .specify/feature.json — and says which one it used; a path argument only confirms it, and a mismatch stops, so the test plan and the plan always share a directory. Every acceptance criterion reaches a condition or a UAT scenario or is reported as uncovered, every user story gets a UAT scenario or a reason, and an ambiguous requirement gets a stated gap rather than an invented condition. Carries no checkbox in any section — it is approved, not tracked — and is offered by an optional hook after specify. It ends with a ready-to-paste planning prompt that writes the plan's testing obligations into plan.md, so the tasks include the tests and a final UAT phase the implement command does not execute. Writes one file, runs nothing, and makes no network request."
     - name: "speckit.spectra.uat"
       file: "commands/uat.md"
-      description: "Run user-acceptance testing for one feature, only on explicit request: read the UAT phase in its tasks.md and the Suggested UAT scenarios in its test-plan.md, start the build after your confirmation, perform the scenarios the agent can actually drive, save screenshots or transcripts as evidence beside the spec, tick only the UAT tasks it observed pass, and write uat-report.md. The feature path is required and never inferred. Human-only, failed, and blocked scenarios stay open with a reason. Never edits source, tests, CI, the spec, the test plan, or the constitution, never reproduces a secret, and makes no network request beyond what the build under test makes."
+      description: "Run user-acceptance testing for one feature, only on explicit request: read the UAT phase in its tasks.md and the Suggested UAT scenarios in its test-plan.md, start the build after your confirmation, perform the scenarios the agent can actually drive, save screenshots or transcripts as evidence beside the spec, tick only the UAT tasks it observed pass, and write uat-report.md. Finds the feature the way the implement command does — from SPECIFY_FEATURE_DIRECTORY or .specify/feature.json — names it before anything starts and in the run confirmation, and stops rather than guess. Human-only, failed, and blocked scenarios stay open with a reason. Never edits source, tests, CI, the spec, the test plan, or the constitution, never reproduces a secret, and makes no network request beyond what the build under test makes."
 
   # The section structure of every document Spectra produces. Both are resolved through Spec Kit's template
   # stack, so a project overrides one by dropping its own copy at .specify/templates/overrides/<name>.md —

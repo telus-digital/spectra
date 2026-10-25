@@ -948,8 +948,9 @@ An optional command that runs **after `implement`, only on your explicit request
 leaves the UAT phase in `tasks.md` open; you either perform those scenarios yourself and tick them, or hand
 the feature to this command. It:
 
-1. Resolves the feature you named. **It never guesses** — no branch name, no `.specify/feature.json`, no
-   picker. With no argument it asks and stops.
+1. Finds the feature **the way the implement command does** — `SPECIFY_FEATURE_DIRECTORY`, then
+   `.specify/feature.json` — and names it before anything starts and again in the run confirmation. No
+   branch name, no picker; where no feature resolves it stops and says how to set one.
 2. Reads the UAT phase in `tasks.md`, the scenarios in `test-plan.md`, the strategy's evidence rule, and
    the constitution.
 3. Reports incomplete implementation and asks before going on, then **shows the exact command** it would
@@ -975,10 +976,11 @@ After `implement`, an optional hook offers it ahead of `create-pr`. The hook onl
 Usage (Claude):
 
 ```
-/speckit-spectra-uat specs/021-signed-webhooks
+/speckit-spectra-uat
 ```
 
-The feature is required. Pass `--env <name-or-url>` to act on an environment other than a local build, or
+No path is needed; a path to the feature directory or its `spec.md` only confirms the resolved feature,
+and a mismatch stops before anything is started. Pass `--env <name-or-url>` to act on an environment other than a local build, or
 `--non-interactive` in CI, where it starts nothing and attempts nothing. The report is overridable at
 `.specify/templates/overrides/uat-report-template.md`.
 

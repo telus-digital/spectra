@@ -227,8 +227,9 @@
     <ol class="steps">
       <li><b>Earlier, <code>/speckit-spectra-test-plan</code></b> <span class="os">suggested UAT scenarios for every user
         story. <code>/speckit-tasks</code> turned them into a final UAT phase that <code>/speckit-implement</code> leaves open.</span></li>
-      <li><b>After implement, accept the hook's offer: <code>/speckit-spectra-uat specs/001-signup</code></b> <span class="os">
-        It shows the exact command it would use to start the build and waits for your confirmation.</span></li>
+      <li><b>After implement, accept the hook's offer: <code>/speckit-spectra-uat</code></b> <span class="os">
+        No path is needed: it finds the feature implement just built and names it. It shows that feature and the
+        exact command it would use to start the build, and waits for your confirmation.</span></li>
       <li><b>It performs the scenarios it can drive</b> <span class="os">and saves screenshots and transcripts under
         <code>specs/&lt;feature&gt;/uat/&lt;run&gt;/</code>. It ticks only what it saw pass. Human-only or failing
         scenarios stay open, with a reason.</span></li>

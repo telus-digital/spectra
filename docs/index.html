@@ -606,9 +606,9 @@
         <li>
           <span class="name">speckit.spectra.uat</span>
           <span class="cdesc">Perform a feature&rsquo;s user-acceptance scenarios on the real build — <b>after implementation, and only when you ask</b>. The test plan suggests the scenarios, the tasks command turns them into a final UAT phase, and the implement command leaves that phase open; you either tick it yourself or hand the feature to this command. It shows <b>the exact command</b> it would run to start the build and waits for your confirmation, performs only the scenarios its own session can drive, and captures screenshots, transcripts, and comparisons under <code>specs/&lt;feature&gt;/uat/&lt;run-stamp&gt;/</code>, never overwriting an earlier run. <b>It ticks only what it saw pass</b>, with the evidence linked; human-only, failed, and unreachable scenarios stay open with a reason, and a task a human ticked is never touched. It changes nothing it is accepting — no source, tests, spec, or test plan — never edits code to make a scenario pass, and masks or withholds any capture that might show a secret. An optional hook offers it after implement, ahead of the pull request. Writes <code>uat-report.md</code> beside the spec, overridable at <code>.specify/templates/overrides/uat-report-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> the feature directory (<b>required</b> — never inferred), plus <code>--env</code> to act on a named environment and <code>--non-interactive</code> for CI, where it starts nothing.</span>
+          <span class="args"><b>Arguments:</b> none needed — it finds the feature the way the implement command does and names it before anything starts. A path to the feature directory or its <code>spec.md</code> only confirms it, and a mismatch stops. <code>--env</code> to act on a named environment and <code>--non-interactive</code> for CI, where it starts nothing.</span>
           <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-uat specs/001-signup</code></pre>
+          <pre><code>/speckit-spectra-uat</code></pre>
         </li>
         <li>
           <span class="name">speckit.spectra.defect-rca</span>
