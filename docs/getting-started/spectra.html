@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Getting Started — SPECTRA Scenarios · SPECTRA</title>
+<meta name="description" content="How SPECTRA agents sit on top of Spec Kit, shown through real situations: building a constitution, importing documentation, test-first specs, UAT, defects, and more." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23a78bfa' d='M12 2 2 7l10 5 10-5-10-5Z'/%3E%3Cpath fill='%23a78bfa' opacity='.55' d='m2 12 10 5 10-5M2 17l10 5 10-5'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="getting-started.css" />
+</head>
+<body>
+<div class="topstack">
+<div class="sitebar">
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="../index.html" aria-label="SPECTRA — home">
+        <img class="logo" src="https://raw.githubusercontent.com/telus-digital/spectra/main/assets/TELUS_Digital_logo.png" alt="TELUS Digital" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-page" href="../index.html">Home</a>
+        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
+        <a class="nav-page" href="index.html" aria-current="page">Getting Started</a>
+        <a class="nav-page" href="../agents.html">Agent Roster</a>
+        <a class="nav-page" href="../e-learning/index.html">E-Learning</a>
+        <a class="nav-page" href="../case-studies/vibe-plan-spectra.html">Case Study</a>
+        <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
+      </nav>
+    </header>
+  </div>
+</div>
+<nav class="secnav" aria-label="Getting Started pages">
+  <div class="wrap">
+    <div class="secnav-track">
+      <a class="sn" href="index.html"><span class="sn-num">01</span><span class="sn-label">Spec-driven development</span></a>
+      <a class="sn" href="spectra.html" aria-current="page"><span class="sn-num">02</span><span class="sn-label">SPECTRA</span></a>
+    </div>
+  </div>
+</nav>
+</div>
+<div class="wrap">
+
+  <section class="hero">
+    <span class="eyebrow"><span class="dot"></span> Getting Started · 02</span>
+    <h1>SPECTRA on Spec Kit</h1>
+    <p class="tagline">Spec Kit gives you the loop. SPECTRA fills in what the loop assumes you already have.</p>
+    <p class="lede">
+      SPECTRA is a Spec Kit extension. It replaces nothing: <code>specify</code>, <code>plan</code>,
+      <code>tasks</code>, and <code>implement</code> still do the core work. SPECTRA agents sit around them,
+      before the first spec, between the phases, and after the build. Each one reads your project, asks you
+      what it cannot work out, writes a document for you to review, and hands off to the next command.
+    </p>
+  </section>
+
+  <section class="block" id="layers">
+    <div class="grid3">
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/></svg>
+        <h3>Before the first spec</h3>
+        <p>Domain, methodology, test and deployment strategy, and imported team knowledge, all feeding a constitution that reflects how the project really works.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="18" cy="18" r="2.5"/></svg>
+        <h3>Between the phases</h3>
+        <p>BRDs and impact analysis before specify, test plans after it, ADRs during planning. Each one is an input the next core phase reads.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>
+        <h3>After the build</h3>
+        <p>UAT with saved evidence, pull requests opened and reviewed against the spec they carry, and root-cause analysis when something breaks.</p>
+      </div>
+    </div>
+    <div class="legend">
+      <span><span class="chip">kb-vault</span>SPECTRA agent</span>
+      <span><span class="chip core">specify</span>Spec Kit core</span>
+      <span>Commands are shown in Claude Code's form (<code>/speckit-spectra-kb-vault</code>). Other agents use the dotted form, such as <code>/speckit.spectra.kb-vault</code>.</span>
+    </div>
+  </section>
+
+  <!-- Scenarios: a sticky sidebar beside the cards on wide screens, a pinned strip on narrow ones.
+       The sidebar's current item is lit by the scroll-spy at the bottom of the page. -->
+  <div class="scen-layout" id="scenarios">
+    <aside class="scen-nav" aria-label="Scenarios">
+      <span class="scen-nav-title">Scenarios</span>
+      <nav class="scen-nav-track">
+        <a href="#s-constitution"><span class="n">01</span><span class="t">Building the constitution<small>First day on a brownfield project</small></span></a>
+        <a href="#s-kb-vault"><span class="n">02</span><span class="t">Unstructured documentation<small>Wikis, PDFs, decks into the repo</small></span></a>
+        <a href="#s-requirement"><span class="n">03</span><span class="t">From a business ask to a spec<small>A vague request, made specifiable</small></span></a>
+        <a href="#s-tdd"><span class="n">04</span><span class="t">TDD on top of SDD<small>Test-first, enforced per phase</small></span></a>
+        <a href="#s-uat"><span class="n">05</span><span class="t">User acceptance testing<small>Proof it works, with evidence</small></span></a>
+        <a href="#s-status"><span class="n">06</span><span class="t">Specification status<small>Is this spec actually done?</small></span></a>
+        <a href="#s-adr"><span class="n">07</span><span class="t">A big decision mid-feature<small>Record it before you build on it</small></span></a>
+        <a href="#s-defect"><span class="n">08</span><span class="t">A production defect<small>Root cause first, then the fix</small></span></a>
+        <a href="#s-flaky"><span class="n">09</span><span class="t">A flaky test suite<small>CI that fails at random</small></span></a>
+        <a href="#s-pr"><span class="n">10</span><span class="t">Shipping and reviewing<small>PRs checked against their spec</small></span></a>
+      </nav>
+    </aside>
+    <div class="scen-body">
+    <h2><span class="num">01</span>Scenarios</h2>
+    <p class="muted">Pick the situation closest to yours.</p>
+
+  <!-- 01 -->
+  <article class="scenario" id="s-constitution">
+    <header><span class="n">01</span><h3>Building the constitution</h3></header>
+    <p class="when"><b>The situation:</b> your first time on a brownfield project. There is a codebase, years of
+      history, and a pile of documents that live outside the repository: an architecture deck, a QA handbook, a
+      hosting standard from the client. Spec Kit's <code>/speckit-constitution</code> needs principles to write
+      down, and nobody has them in one place.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">kb-vault</span><span class="chip">domain-analyzer</span><span class="chip">methodology</span><span class="chip">test-strategy</span><span class="chip">deployment-strategy</span><span class="chip core">constitution</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-kb-vault</code></b> <span class="os">with the external documents attached. It shows you a
+        table of where each one will land and waits for approval. Policy documents (a test handbook, a hosting standard)
+        go into their own <code>&lt;kind&gt;-source/</code> folders for the owning agent to read later.</span></li>
+      <li><b><code>/speckit-spectra-domain-analyzer</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        It infers the business domain from the code and docs, and you decide each candidate guardrail. Paste its
+        ready-made prompt to <b>create</b> the constitution. Add <code>Artifact root: docs/</code> on this first run.</span></li>
+      <li><b><code>/speckit-spectra-methodology</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        It reads the git history, PR templates, and CI to find how the team actually works, asks ten questions, and you
+        <b>amend</b> the constitution with the result.</span></li>
+      <li><b><code>/speckit-spectra-test-strategy</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        Test levels and a coverage floor no higher than today's baseline. <b>Amend</b> again.</span></li>
+      <li><b><code>/speckit-spectra-deployment-strategy</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        Environments, gates, rollback. <b>Amend</b> a final time.</span></li>
+    </ol>
+    <div class="callout">Run the constitution after each agent, not once at the end. Each later agent then finds a
+      ratified constitution, proposes only what it does not already say, and never offers you a rule twice. The
+      imported documents are treated as what someone <i>claimed</i>; the code and history decide what is actually true.</div>
+    <div class="outcome"><b>You end up with</b> a constitution built from evidence and your decisions, plus
+      <code>DOMAIN_ANALYSIS.md</code>, <code>ENGINEERING_METHODOLOGY.md</code>, <code>TEST_STRATEGY.md</code>, and
+      <code>DEPLOYMENT_STRATEGY.md</code> that explain where every rule came from.</div>
+    <p class="muted" style="font-size:14px;margin:12px 0 0"><b>Greenfield?</b> Skip the import and start at the domain
+      analyzer. The order is otherwise the same.</p>
+  </article>
+
+  <!-- 02 -->
+  <article class="scenario" id="s-kb-vault">
+    <header><span class="n">02</span><h3>Unstructured documentation</h3></header>
+    <p class="when"><b>The situation:</b> the knowledge your team relies on is scattered. ADRs from a previous vendor
+      sit in a PDF, the UX standards are a slide deck, the onboarding guide is a Word file, and a key diagram exists only
+      as a screenshot. Neither new people nor coding agents can find any of it.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">kb-vault</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b>Attach everything to <code>/speckit-spectra-kb-vault</code></b> <span class="os">(or dictate what you know
+        when there is nothing to attach). It works out what kind of document each source is and how this repository
+        already keeps its docs.</span></li>
+      <li><b>Review the plan table.</b> <span class="os">Category, description, destination, create or update. Nothing is
+        written until you approve. Changing anything re-presents the whole table.</span></li>
+      <li><b>Approve, then review the uncommitted Markdown.</b> <span class="os">ADRs join your existing <code>docs/adr/</code>
+        set with its numbering and template. Documents that match something already in the repo update it in place
+        instead of creating a duplicate. Everything else gets its own category folder with an index.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> the team's knowledge as Markdown in the repository, traceable to the
+      sources you supplied. kb-vault never invents content, never mines your code, and never commits.</div>
+  </article>
+
+  <!-- 03 -->
+  <article class="scenario" id="s-requirement">
+    <header><span class="n">03</span><h3>From a business ask to a spec</h3></header>
+    <p class="when"><b>The situation:</b> a stakeholder sends a two-line email: "support agents need to merge duplicate
+      tickets." You could paste it straight into <code>/speckit-specify</code>, but you would get a spec built on
+      assumptions, and nobody knows yet what in the system it would touch.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">brd</span><span class="chip">impact</span><span class="chip core">specify</span><span class="chip core">clarify</span><span class="chip core">checklist</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-brd</code></b> <span class="os">with the email text or attached document. It asks a few
+        questions only where the requirement has gaps, and writes a structured BRD without inventing requirements.</span></li>
+      <li><b><code>/speckit-spectra-impact</code></b> <span class="os">with a paragraph of intent. Before anyone commits, it
+        reports what the change would touch, with a <code>path:line</code> citation and confidence level for every finding.</span></li>
+      <li><b><code>/speckit-specify</code></b> <span class="os">fed the BRD, then <code>/speckit-clarify</code> to close
+        what is still vague.</span></li>
+      <li><b><code>/speckit-checklist</code></b> <span class="os">to score the spec for completeness and consistency before
+        planning.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> a spec grounded in a reviewed BRD and an evidence-backed impact analysis,
+      so the scope conversation happens before planning, not during code review.</div>
+  </article>
+
+  <!-- 04 -->
+  <article class="scenario" id="s-tdd">
+    <header><span class="n">04</span><h3>TDD on top of SDD</h3></header>
+    <p class="when"><b>The situation:</b> the team wants test-first development. Spec-driven development stays the base,
+      but tests should be agreed from the spec and written before the code they cover. "We do TDD" in a README is not
+      enough; it needs to be an obligation each phase actually checks.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">methodology</span><span class="chip core">constitution</span><span class="chip">test-strategy</span><span class="chip core">specify</span><span class="chip">test-plan</span><span class="chip core">plan</span><span class="chip core">tasks</span><span class="chip core">implement</span><span class="chip core">converge</span></div>
+    <span class="lbl">Once per project</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-methodology</code></b> <span class="os">Choose the TDD overlay (for example, "MUST for
+        features and fixes, new and changed code"). It becomes a set of obligations tied to Spec Kit phases, then goes
+        into the constitution through its ready-made prompt.</span></li>
+      <li><b><code>/speckit-spectra-test-strategy</code></b> <span class="os">so later test plans know which test levels
+        exist and what coverage floor applies.</span></li>
+    </ol>
+    <span class="lbl">For every feature</span>
+    <ol class="steps">
+      <li><b><code>/speckit-specify</code></b> <span class="os">writes the spec. A hook then offers the test plan.</span></li>
+      <li><b><code>/speckit-spectra-test-plan</code></b> <span class="os">turns the spec into a test plan stakeholders
+        approve: every acceptance criterion traced to a test condition or flagged as uncovered.</span></li>
+      <li><b><code>/speckit-plan</code></b> <span class="os">with the test plan's ready-made prompt, which adds a
+        <b>Testing obligations</b> section to <code>plan.md</code>.</span></li>
+      <li><b><code>/speckit-tasks</code></b> <span class="os">Each test task now precedes and blocks the implementation
+        task it covers.</span></li>
+      <li><b><code>/speckit-implement</code></b> <span class="os">A test task records a failing run before its
+        implementation task can be ticked. A bug fix starts with a failing regression test.</span></li>
+      <li class="gate"><b><code>/speckit-converge</code></b> <span class="os">checks the build against spec, plan, and
+        tasks, and appends anything missing as new tasks.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> test-first as a binding rule every phase enforces, with evidence in
+      <code>tasks.md</code> that each test failed before its code existed.</div>
+  </article>
+
+  <!-- 05 -->
+  <article class="scenario" id="s-uat">
+    <header><span class="n">05</span><h3>User acceptance testing</h3></header>
+    <p class="when"><b>The situation:</b> the feature is implemented and the unit tests pass. Before a PR goes up,
+      someone needs to confirm it works the way the user story described, on the real build, and keep proof.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">test-plan</span><span class="chip core">tasks</span><span class="chip core">implement</span><span class="chip">uat</span><span class="chip">create-pr</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b>Earlier, <code>/speckit-spectra-test-plan</code></b> <span class="os">suggested UAT scenarios for every user
+        story. <code>/speckit-tasks</code> turned them into a final UAT phase that <code>/speckit-implement</code> leaves open.</span></li>
+      <li><b>After implement, accept the hook's offer: <code>/speckit-spectra-uat specs/001-signup</code></b> <span class="os">
+        It shows the exact command it would use to start the build and waits for your confirmation.</span></li>
+      <li><b>It performs the scenarios it can drive</b> <span class="os">and saves screenshots and transcripts under
+        <code>specs/&lt;feature&gt;/uat/&lt;run&gt;/</code>. It ticks only what it saw pass. Human-only or failing
+        scenarios stay open, with a reason.</span></li>
+      <li><b>A person finishes the rest,</b> <span class="os">then <code>/speckit-spectra-create-pr</code> opens the PR.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> a <code>uat-report.md</code> and linked evidence for every ticked scenario.
+      The UAT agent never edits code to make a scenario pass.</div>
+  </article>
+
+  <!-- 06 -->
+  <article class="scenario" id="s-status">
+    <header><span class="n">06</span><h3>Specification status</h3></header>
+    <p class="when"><b>The situation:</b> a feature has been "nearly done" for a week. Every box in <code>tasks.md</code>
+      is ticked, but you are not sure the code matches what the spec promised, or whether the spec drifted while the
+      plan changed.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip core">analyze</span><span class="chip core">converge</span><span class="chip">uat</span><span class="chip">review-pr</span></div>
+    <span class="lbl">Ask, depending on where the feature is</span>
+    <ol class="steps">
+      <li><b>Before the build: <code>/speckit-analyze</code></b> <span class="os">Do the spec, plan, and tasks still agree?
+        Finds drift, gaps, and contradictions.</span></li>
+      <li><b>After the build: <code>/speckit-converge</code></b> <span class="os">Does the code deliver what the spec,
+        plan, and tasks say? Gaps become new tasks for implement.</span></li>
+      <li><b>Does it work for a user? <code>/speckit-spectra-uat</code></b> <span class="os">The UAT report shows which
+        scenarios passed with evidence and which are still open.</span></li>
+      <li><b>At the PR: <code>/speckit-spectra-review-pr</code></b> <span class="os">Catches what a diff-only review cannot:
+        a task marked complete but missing from the change, or scope no requirement authorized.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> a status you can defend: "converged, UAT 7 of 8 with evidence, one
+      scenario waiting on a human" instead of "should be done."</div>
+  </article>
+
+  <!-- 07 -->
+  <article class="scenario" id="s-adr">
+    <header><span class="n">07</span><h3>A big decision mid-feature</h3></header>
+    <p class="when"><b>The situation:</b> while planning, the team decides to move session storage from the database to
+      Redis. It will shape the next ten features, and in six months nobody will remember why.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip core">plan</span><span class="chip">adr</span><span class="chip">review-pr</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-adr We should move session storage to Redis</code></b> <span class="os">It reads the code,
+        earlier ADRs, and the constitution, asks a few questions, and writes the record under <code>docs/adr/</code>.</span></li>
+      <li><b><code>/speckit-plan</code></b> <span class="os">now plans against a recorded decision instead of a conversation.</span></li>
+      <li><b>Later, <code>/speckit-spectra-review-pr</code></b> <span class="os">flags any PR that uses a pattern an ADR rules out.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> the decision, its alternatives, and its consequences in the repository,
+      enforced at review time.</div>
+  </article>
+
+  <!-- 08 -->
+  <article class="scenario" id="s-defect">
+    <header><span class="n">08</span><h3>A production defect</h3></header>
+    <p class="when"><b>The situation:</b> a ticket comes in: orders are occasionally charged twice. The first plausible
+      code path is tempting, but it was patched last quarter too, and the bug came back.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">defect-rca</span><span class="chip core">specify</span><span class="chip core">implement</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-defect-rca https://github.com/acme/orders/issues/412</code></b> <span class="os">It reads
+        the code, commits, config, and tests before asking you anything, and checks whether this defect was analyzed before
+        and whether the earlier preventive actions were actually done.</span></li>
+      <li><b>Read the analysis.</b> <span class="os">Every claim cites a file and line. Rejected hypotheses are listed beside
+        the surviving one, and it says plainly when it has only reached the immediate cause rather than the systemic one.</span></li>
+      <li><b>Fix it through Spec Kit.</b> <span class="os">Specify the fix from the RCA. With the TDD overlay, implement
+        starts with a failing regression test.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> a root cause backed by evidence and a fix aimed at it, not the symptom.
+      The RCA agent fixes nothing and never touches your ticket.</div>
+  </article>
+
+  <!-- 09 -->
+  <article class="scenario" id="s-flaky">
+    <header><span class="n">09</span><h3>A flaky test suite</h3></header>
+    <p class="when"><b>The situation:</b> CI goes red one run in five on the same commit. People have started re-running
+      the pipeline until it passes, which means a real failure would be ignored too.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">flaky-test-detector</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-flaky-test-detector</code></b> <span class="os">It reads your test source (no CI
+        integration, no run history needed) and reports each likely flaky test with a confidence rating and a specific fix.</span></li>
+      <li><b>Approve a task list, prune it,</b> <span class="os">then approve again and it fixes what is left one item at a
+        time, ticking each off on disk so an interrupted session resumes where it stopped.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> causes removed, not hidden. Deleting assertions, skipping tests, and
+      adding retries are not allowed as fixes, and it never runs your suite.</div>
+  </article>
+
+  <!-- 10 -->
+  <article class="scenario" id="s-pr">
+    <header><span class="n">10</span><h3>Shipping and reviewing</h3></header>
+    <p class="when"><b>The situation:</b> the feature is built and accepted. It needs a correctly targeted PR, and the
+      reviewer needs to check it against what was agreed, not just read the diff.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">create-pr</span><span class="chip">review-pr</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-create-pr --issue 42</code></b> <span class="os">(also offered after implement). It offers
+        to commit and push, confirms once, and returns the PR URL.</span></li>
+      <li><b>The reviewer runs <code>/speckit-spectra-review-pr</code></b> <span class="os">It reads the spec, ADRs, and
+        constitution at the PR's own revision. Findings land on the line they are about, and only blockers and majors are
+        proposed by default.</span></li>
+      <li><b>You choose what to publish.</b> <span class="os">One review goes up under your own credentials, containing
+        only the findings you selected.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> a review measured against the spec, plan, and guardrails the PR carries,
+      without a flood of nitpicks.</div>
+  </article>
+
+    </div>
+  </div>
+
+  <section class="block" id="next">
+    <div class="panel" style="text-align:center;padding:30px 24px;background:rgba(167,139,250,0.06);border-color:rgba(167,139,250,0.30)">
+      <p style="color:var(--text);font-size:17px;margin:0 0 10px;font-weight:600">Ready to try one?</p>
+      <p style="color:var(--muted);font-size:15px;margin:0 auto 20px;max-width:560px">Install SPECTRA into a Spec Kit project
+        with one command, then pick the scenario closest to where you are.</p>
+      <div class="cta" style="justify-content:center">
+        <a class="btn btn-primary" href="../index.html#install">Install SPECTRA &nbsp;&rarr;</a>
+        <a class="btn btn-ghost" href="../agents.html">See every agent</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <span>SPECTRA · a curated catalog of Spec Kit extensions · by TELUS Digital</span>
+    <span><a href="https://github.com/telus-digital/spectra">github.com/telus-digital/spectra</a></span>
+    <span class="legal">Copyright 2026 TELUS Digital. Licensed under the <a href="https://github.com/telus-digital/spectra/blob/main/LICENSE">Apache License 2.0</a>; see <a href="https://github.com/telus-digital/spectra/blob/main/NOTICE">NOTICE</a>. The licence grants no trademark rights &mdash; "TELUS", "TELUS Digital", "Spectra", and the TELUS Digital logo are excluded, and forks must rebrand (<a href="https://github.com/telus-digital/spectra/blob/main/TRADEMARK.md">TRADEMARK.md</a>). Spectra agents produce drafts for human review; their output is not legal, regulatory, medical, financial, or compliance advice and does not constitute certification or audit.</span>
+  </footer>
+
+</div>
+<script>
+  // Keep anchor jumps clear of the sticky bars, and light the scenario being read in the sidebar —
+  // the same scroll-spy the home page's section rail uses.
+  (function () {
+    var stack = document.querySelector(".topstack");
+    var nav = document.querySelector(".scen-nav");
+    var track = document.querySelector(".scen-nav-track");
+    if (!stack || !nav || !track) return;
+    var links = Array.prototype.slice.call(track.querySelectorAll("a"));
+    var targets = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+    var narrow = window.matchMedia("(max-width: 960px)");
+
+    function measure() {
+      document.documentElement.style.setProperty("--stack-h", stack.offsetHeight + "px");
+      // On narrow screens the strip is pinned under the stack, so jumps must clear it too.
+      document.documentElement.style.setProperty("--strip-h", narrow.matches ? nav.offsetHeight + "px" : "0px");
+    }
+    measure();
+
+    var current = -1;
+    function activate(i) {
+      if (i === current) return;
+      current = i;
+      links.forEach(function (a, k) {
+        if (k === i) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      });
+      if (i < 0) return;
+      // Keep the lit item visible inside the sidebar (or the strip, which scrolls sideways).
+      var a = links[i];
+      if (narrow.matches) track.scrollLeft = Math.max(0, a.offsetLeft - (track.clientWidth - a.offsetWidth) / 2);
+      else if (a.offsetTop < nav.scrollTop || a.offsetTop + a.offsetHeight > nav.scrollTop + nav.clientHeight)
+        nav.scrollTop = a.offsetTop - nav.clientHeight / 2;
+    }
+
+    function spy() {
+      var line = stack.offsetHeight + (narrow.matches ? nav.offsetHeight : 0) + 40;
+      var idx = -1;
+      targets.forEach(function (t, i) { if (t && t.getBoundingClientRect().top <= line) idx = i; });
+      var last = targets[targets.length - 1];
+      if (last && last.getBoundingClientRect().bottom < line) idx = targets.length - 1;
+      activate(idx < 0 ? 0 : idx);
+    }
+
+    var queued = false;
+    function schedule() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; spy(); });
+    }
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", function () { measure(); schedule(); });
+    window.addEventListener("load", function () { measure(); spy(); });
+    spy();
+  })();
+</script>
+</body>
+</html>
