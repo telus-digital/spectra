@@ -505,8 +505,9 @@ What it refuses to do is as important as what it does:
 <!-- SPECTRA:AGENT id=test-plan -->
 ### Test Plan ✅
 
-**`speckit.spectra.test-plan`** — Get the tests **agreed before anyone writes them**. Hand it the path to
-a `spec.md` and it reads that specification, your constitution, your test strategy, your existing suite,
+**`speckit.spectra.test-plan`** — Get the tests **agreed before anyone writes them**. Run it after
+`specify` and it picks up the feature `specify` recorded — the same one `plan` will plan — then reads its
+specification, your constitution, your test strategy, your existing suite,
 and the source the feature touches, then writes one `test-plan.md` **beside the spec**: scope with real
 exclusions, a risk table that is a decision rather than an inventory, traceable test conditions,
 suggested UAT scenarios, a regression scope, environment and data, and an exit bar someone can make a
@@ -525,11 +526,13 @@ coverage in either direction without opening the code. The run tells you the cou
 
 What it refuses to do is as important as what it does:
 
-- **It will not guess which spec you meant.** No branch-name inference, no `.specify/feature.json`, no
-  most-recently-modified heuristic — and no picker either. With no argument it asks and stops, having read
-  nothing. This is deliberately less helpful than the rest of the workflow: the output is a document that
-  gets circulated and signed, and a plan built against the wrong spec reads as authoritative and is
-  undetectably wrong to whoever approves it. A picker is the same failure with extra steps.
+- **It finds the feature exactly as `plan` does, and no other way.** `SPECIFY_FEATURE_DIRECTORY` if set,
+  otherwise `.specify/feature.json` — the record `specify` writes — so the test plan and `plan.md` always
+  land in the same directory. No branch-name inference, no most-recently-modified heuristic, no picker.
+  It says which feature it resolved and from where before doing anything else, and records it in the
+  document, because a plan built against the wrong spec reads as authoritative to whoever approves it.
+  If nothing resolves, it stops and tells you how to choose a feature. It runs one read-only shell
+  command to see those two environment variables, and stops if that is refused rather than guess.
 - **It never invents the missing decision.** Where a requirement is too ambiguous to test, it says so and
   writes no condition for it. A plausible-looking condition would be worse than the gap, because it
   launders a guess into something a stakeholder approves — and the guess becomes a requirement nobody
@@ -559,13 +562,14 @@ What it refuses to do is as important as what it does:
   surface can actually be driven. The regression scope lists the existing tests that touch the feature's
   modules and must stay green, plus the additions its risks call for.
 
-- **Arguments** — the path to a `spec.md`, or to the feature directory containing it (**required**, and
-  never inferred). `--non-interactive` for CI.
+- **Arguments** — none needed. A path to the feature directory or its `spec.md` is accepted only as a
+  confirmation: if it names a different feature than the active one, the run stops and writes nothing.
+  `--non-interactive` for CI.
 - **Use it when** — a spec is finished, your team works test-first, and you want the test set reviewed and
   agreed before the implementation is planned. Skip it when nobody outside the implementing team needs to
   see the test set; it is an add-on. After `specify`, an optional hook offers it — the hook only asks, and
-  passes the spec `specify` just wrote, so the command still never infers which spec you meant.
-- **Where it writes** — `test-plan.md` in the directory of the spec you gave it. No sequence number, no
+  the run picks up the feature `specify` just recorded.
+- **Where it writes** — `test-plan.md` in the active feature's directory, beside its `spec.md`. No sequence number, no
   artifact subfolder, no `Artifact root:` resolution for the output. A test plan is *about one feature*, so
   its identity is that feature's directory, exactly as `spec.md` and `plan.md` beside it carry no number.
   It reads your declared artifact root for one purpose only — finding `TEST_STRATEGY.md`.
@@ -592,9 +596,9 @@ What it refuses to do is as important as what it does:
   constitution, commit, or make a network request. It writes exactly one file.
 - **Examples (Claude)** —
   ```
-  /speckit-spectra-test-plan specs/021-signed-webhooks/spec.md
+  /speckit-spectra-test-plan
   /speckit-spectra-test-plan specs/021-signed-webhooks
-  /speckit-spectra-test-plan --non-interactive specs/021-signed-webhooks/spec.md
+  /speckit-spectra-test-plan --non-interactive
   ```
 
 <!-- SPECTRA:AGENT id=flaky-test-detector -->

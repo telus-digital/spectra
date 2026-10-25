@@ -870,10 +870,11 @@ document's twelve sections are overridable at
 ## `speckit.spectra.test-plan` — Test Plan
 
 An optional command that runs **between `specify` and `plan`**, for teams who want the test set agreed
-before the implementation is designed. Hand it a specification and it:
+before the implementation is designed. Run it after `specify` and it:
 
-1. Resolves the spec you named — a `spec.md` path, or the feature directory containing one. **It never
-   guesses.** With no argument it asks and stops, having read nothing.
+1. Resolves the feature **exactly as `plan` does** — `SPECIFY_FEATURE_DIRECTORY`, then
+   `.specify/feature.json` — and says which one it picked and from where. **It never guesses**: if
+   nothing resolves it stops and tells you how to choose a feature.
 2. Reads your project — the spec in full, the constitution, your test strategy, existing tests and
    runner configuration, dependency manifests, CI definitions, and the source the feature touches.
 3. Resolves the **lens set** from your own `TEST_STRATEGY.md` where you have one, taking its lens names
@@ -892,10 +893,12 @@ UAT scenario, or the *explicitly not covered* list — never none of them. Every
 using your spec's own identifiers, so a reviewer can check coverage in either direction without reading
 code. The run reports the count: criteria covered out of criteria found.
 
-**It will not guess which spec you meant.** No branch-name inference, no `.specify/feature.json`, no
-most-recent-file heuristic, and no picker. This is deliberately less helpful than the rest of the
-workflow, because the output gets circulated and signed: a plan built against the wrong spec reads as
-authoritative and is undetectably wrong to whoever approves it.
+**It finds the feature the way `plan` does, and no other way.** The test plan and `plan.md` always land in
+the same directory, so the approved obligations reach the tasks. No branch-name inference, no
+most-recent-file heuristic, and no picker. The resolved feature and its source are announced first and
+recorded in the document, because a plan built against the wrong spec reads as authoritative to whoever
+approves it. A path argument only confirms the feature: one that names a different feature stops the
+run.
 
 **It never invents a decision your spec does not contain.** A requirement too ambiguous to test is
 reported as a gap naming what is missing — not given a plausible condition. A fabricated condition is
@@ -924,7 +927,7 @@ become a final phase titled "User Acceptance (UAT) — not executed by the imple
 ticks or `speckit.spectra.uat` performs on request.
 
 **It is offered, never run, after `specify`.** An optional hook asks whether to generate a test plan and
-passes the spec `specify` just wrote — so the command still never infers which spec you meant.
+uses the feature `specify` just recorded — no path needed.
 
 A re-run — usually after `clarify` changes the spec — reads the existing plan, states what would change
 before you answer, and carries forward every explicitly-not-covered decision or says it removed one.
@@ -932,10 +935,10 @@ before you answer, and carries forward every explicitly-not-covered decision or 
 Usage (Claude):
 
 ```
-/speckit-spectra-test-plan specs/021-signed-webhooks/spec.md
+/speckit-spectra-test-plan
 ```
 
-The spec path is required. Pass `--non-interactive` in CI: it will create a plan that does not exist, but
+No path is needed. Pass `--non-interactive` in CI: it will create a plan that does not exist, but
 never rewrite one that does. The document's seven sections are overridable at
 `.specify/templates/overrides/test-plan-template.md`.
 

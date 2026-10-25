@@ -61,8 +61,9 @@ OUTPUT_NAME = "test-plan.md"
 # one, and that is the thing that must never appear.
 CHECKBOX = re.compile(r"^[ \t]*[-*][ \t]\[[ xX]\]", re.M)
 
-# The sources of truth a command must never quietly start consulting to resolve its argument.
-INFERENCE_SOURCES = ("branch", "feature.json", "modification time")
+# The sources a command must never quietly start consulting to choose a feature. `.specify/feature.json` is
+# not among them: since spec 038 it is the planning command's own source, and so it is test-plan's.
+INFERENCE_SOURCES = ("branch", "modification time", "listing of `specs/`")
 
 
 def command_text() -> str:
@@ -82,6 +83,17 @@ def flat(text: str) -> str:
 
 def phrases() -> str:
     return flat(command_text())
+
+
+def section(heading: str) -> str:
+    """One `## ` section of the command, flattened: from its heading to the next `## ` heading."""
+    text = command_text()
+    start = text.index(heading)
+    end = text.find("\n## ", start + len(heading))
+    return flat(text[start:end if end != -1 else len(text)])
+
+
+STEP_1 = "## Step 1 — Resolve the feature"
 
 
 class TheCommandIsRegistered(unittest.TestCase):
@@ -106,30 +118,13 @@ class TheCommandIsRegistered(unittest.TestCase):
         self.assertIn("$ARGUMENTS", command_text())
 
 
-class TheSpecificationArgumentIsRequired(unittest.TestCase):
-    """Spec 021 FR-007 to FR-009 — the gate, and the refusal to be helpful past it."""
-
-    def test_it_states_the_argument_is_required(self):
-        text = phrases()
-        self.assertIn("required", text)
-        self.assertTrue(
-            "is required" in text,
-            "the command no longer states that its argument is required",
-        )
-
-    def test_an_empty_argument_stops_without_reading_or_writing(self):
-        text = phrases()
-        self.assertIn("if no path was supplied", text)
-        self.assertTrue(
-            "read nothing, analyze nothing, write nothing" in text,
-            "the empty-argument path no longer states that it reads and writes nothing; FR-009 "
-            "requires the gate to fire before any project analysis",
-        )
+class FeatureIsResolvedAsThePlannerDoes(unittest.TestCase):
+    """Spec 038 FR-001–FR-009, FR-023 — resolve as the planning command does, never otherwise."""
 
     def test_it_refuses_to_infer_the_specification(self):
-        """FR-008. The rule an agent breaks with good intentions."""
+        """FR-003, FR-016. The rule an agent breaks with good intentions."""
         text = phrases()
-        self.assertIn("never infer which specification", text)
+        self.assertIn("resolve only as the planning command does", text)
         for source in INFERENCE_SOURCES:
             with self.subTest(source=source):
                 self.assertIn(
@@ -139,6 +134,92 @@ class TheSpecificationArgumentIsRequired(unittest.TestCase):
                     "consult; an unnamed source is one a future edit will treat as permitted",
                 )
 
+    def test_it_resolves_in_the_planning_commands_order(self):
+        """FR-001, FR-001a — the order of Spec Kit's get_feature_paths, which the planner uses."""
+        step = section(STEP_1)
+        positions = [step.find(name) for name in
+                     ("specify_init_dir", "specify_feature_directory", ".specify/feature.json")]
+        self.assertNotIn(-1, positions, "Step 1 no longer names every source the planner reads")
+        self.assertEqual(positions, sorted(positions), "Step 1 names the sources out of the planner's order")
+        self.assertIn("nearest directory", step)
+        self.assertIn(".specify/", step)
+
+    def test_a_set_but_empty_variable_is_unset(self):
+        """FR-001 — the planner tests with -n, so an empty value is no value."""
+        step = section(STEP_1)
+        self.assertIn("set but empty", step)
+        self.assertIn("unset", step)
+
+    def test_the_specification_is_spec_md_in_the_feature_directory(self):
+        """FR-002."""
+        self.assertIn("spec.md in the feature directory", section(STEP_1).replace("`", ""))
+
+    def test_resolution_writes_nothing(self):
+        """FR-004 — the planner persists and creates; test-plan does neither."""
+        step = section(STEP_1)
+        self.assertIn("never writes `.specify/feature.json`", step)
+        self.assertIn("never creates the feature directory", step)
+
+    def test_one_shell_read_once_per_run(self):
+        """FR-005, research R2 — agent-agnostic, with both shells Spec Kit ships scripts for."""
+        step = section(STEP_1)
+        for phrase in ("exactly one shell read", "once per run", "specify_init_dir",
+                       "specify_feature_directory", "posix", "powershell"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, step)
+
+    def test_the_never_table_names_the_one_read(self):
+        """FR-005, plan C1 — the read is the only command run to resolve the feature."""
+        row = next(line for line in command_text().splitlines()
+                   if line.startswith("| Run, build, or install anything"))
+        self.assertIn("the only command run to resolve the feature", flat(row))
+
+    def test_the_governing_rule_resolves_as_the_planner_does(self):
+        """FR-016, analyze U1 — the rule every other rule narrows."""
+        rule = section("## The one rule that governs everything")
+        self.assertIn("resolved exactly as the planning command resolves it", rule)
+        self.assertNotIn("the specification you were handed", rule)
+        self.assertNotIn("never guess which specification was meant", rule)
+
+    def test_the_introduction_no_longer_says_it_is_handed_a_specification(self):
+        """Analyze U2."""
+        intro = flat(command_text().partition("## The one rule")[0])
+        self.assertNotIn("someone hands you a specification", intro)
+
+    def test_every_resolution_stop_is_listed(self):
+        """FR-001a, FR-005–FR-007 — each one writes nothing and emits no handoff."""
+        step = section(STEP_1)
+        for phrase in ("the shell read is denied or fails", "names no existing directory", "neither source",
+                       "cannot be parsed", "has no `spec.md`"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, step)
+
+    def test_an_unreadable_environment_never_falls_back(self):
+        """FR-005, clarification Q2 — the fallback would reintroduce the split."""
+        self.assertIn("never fall back to `.specify/feature.json` alone", phrases())
+
+    def test_the_remedy_block_names_both_ways_to_switch(self):
+        """FR-023 — and specify only as the way to create a feature."""
+        step = section(STEP_1)
+        self.assertIn("for this session", step)
+        self.assertIn("set specify_feature_directory=", step)
+        self.assertIn("for good", step)
+        self.assertIn('"feature_directory" in .specify/feature.json', step)
+        self.assertIn("to create a new feature, run the specify command", step)
+
+    def test_the_invoking_project_is_defined(self):
+        """Analyze U3 — SPECIFY_INIT_DIR can root resolution in another project."""
+        step = section(STEP_1)
+        self.assertIn("the invoking project is the nearest directory containing `.specify/`", step)
+        self.assertIn("regardless of `specify_init_dir`", step)
+        out_of_project = flat(command_text().partition("### The out-of-project stop")[2].partition("\n## ")[0])
+        self.assertIn("the invoking project (step 1)", out_of_project)
+
+    def test_the_skeleton_names_the_environment_read(self):
+        """Analyze I3."""
+        line = next(l for l in command_text().splitlines() if l.startswith("## Sources consulted and coverage"))
+        self.assertIn("environment read", line)
+
     def test_it_refuses_to_offer_a_picker(self):
         """A list the command assembled is the same failure with extra steps."""
         text = phrases()
@@ -146,13 +227,6 @@ class TheSpecificationArgumentIsRequired(unittest.TestCase):
             "do not offer a list" in text or "offering a picker" in text,
             "the command no longer rules out listing the specifications it can see",
         )
-
-    def test_it_resolves_a_directory_to_the_spec_inside_it(self):
-        text = phrases()
-        self.assertIn("a directory containing exactly one", text)
-
-    def test_it_does_not_choose_between_ambiguous_candidates(self):
-        self.assertIn("Do not choose", command_text())
 
     def test_it_stops_when_the_specification_is_outside_the_project(self):
         """FR-022 — the guard that replaces a fixed output folder's write-scope protection."""
@@ -162,6 +236,83 @@ class TheSpecificationArgumentIsRequired(unittest.TestCase):
             "stop before writing" in text,
             "the out-of-project path no longer stops before writing",
         )
+
+
+class AnArgumentOnlyConfirms(unittest.TestCase):
+    """Spec 038 FR-008, FR-009, research R3 — a path can confirm the feature, never choose it."""
+
+    def test_a_match_is_the_feature_directory_or_its_spec(self):
+        self.assertIn("the feature directory or its `spec.md`", section(STEP_1))
+
+    def test_spelling_is_normalized_before_comparing(self):
+        self.assertIn("trailing slash", section(STEP_1))
+
+    def test_any_other_path_stops_before_reading(self):
+        step = section(STEP_1)
+        self.assertIn("any other path", step)
+        self.assertIn("stop before reading the specification", step)
+
+    def test_the_mismatch_names_both_sides_and_the_source(self):
+        self.assertIn("the argument's path, the resolved directory, and its source", section(STEP_1))
+
+    def test_an_argument_never_replaces_resolution(self):
+        self.assertIn("an argument is never used in place of", section(STEP_1))
+
+
+class TheResolutionIsAnnounced(unittest.TestCase):
+    """Spec 038 FR-010–FR-012, research R5 — the approver can see which specification was used."""
+
+    def test_it_is_the_first_thing_said(self):
+        step = section(STEP_1)
+        self.assertIn("the first thing you say", step)
+        self.assertIn("feature: specs/", step)
+        self.assertIn("(from .specify/feature.json)", step)
+
+    def test_a_disagreeing_record_is_named(self):
+        self.assertIn("; .specify/feature.json names", section(STEP_1))
+
+    def test_the_identifying_block_records_the_source(self):
+        self.assertIn("resolved from", section("## Step 13 — The identifying block"))
+
+    def test_the_report_carries_the_source(self):
+        self.assertIn("the source the feature was resolved from", section("## Step 16 — Report"))
+
+    def test_the_environment_read_is_a_recorded_input(self):
+        """Analyze C1 — FR-005 requires the read to appear among the sources."""
+        step = section(STEP_1)
+        self.assertIn("record the read as an input", step)
+        self.assertIn("sources consulted and coverage", step)
+
+    def test_the_non_interactive_announcement_comes_first(self):
+        """Analyze I1 — two announcements, one order."""
+        self.assertIn("the non-interactive announcement comes first", section(STEP_1))
+        self.assertIn("before the feature line in step 1", section("## Non-interactive mode"))
+
+
+class NoStaleProse(unittest.TestCase):
+    """Spec 038 FR-018, FR-019 — every surface that describes the command describes the new contract."""
+
+    STALE_DESCRIPTION = ("requires the spec path", "never inferred")
+
+    def test_the_descriptions_no_longer_require_a_path(self):
+        front = flat(command_text().split("---", 2)[1])
+        manifest = MANIFEST.read_text(encoding="utf-8")
+        entry = flat(manifest.partition('name: "speckit.spectra.test-plan"')[2].partition("- name:")[0])
+        for text, where in ((front, "front matter"), (entry, "extension.yml")):
+            for phrase in self.STALE_DESCRIPTION:
+                with self.subTest(where=where, phrase=phrase):
+                    self.assertNotIn(phrase, text)
+
+    def test_the_prose_drops_the_feature_record_prohibition(self):
+        agents = h.repo_file("AGENTS_LIST.md").read_text(encoding="utf-8")
+        block = agents.partition("<!-- SPECTRA:AGENT id=test-plan -->")[2].partition("<!-- SPECTRA:AGENT id=")[0]
+        site = h.repo_file("docs", "index.html").read_text(encoding="utf-8")
+        card = site.partition('<span class="name">speckit.spectra.test-plan</span>')[2].partition("</li>")[0]
+        for text, where in ((block, "AGENTS_LIST.md"), (card, "docs/index.html")):
+            with self.subTest(where=where):
+                self.assertNotIn("no feature record", flat(text))
+                self.assertNotIn("never inferred", flat(text))
+        self.assertIn("<pre><code>/speckit-spectra-test-plan</code></pre>", card)
 
 
 class TraceabilityRunsBothWays(unittest.TestCase):
@@ -325,7 +476,7 @@ class ItHonoursTheWholeStrategy(unittest.TestCase):
     def test_step_one_counts_its_own_outcomes(self):
         """The defect spec 032 found: the prose said four, the table listed six."""
         text = command_text()
-        step = text[text.index("## Step 1 — Resolve the specification"):text.index("### Never infer")]
+        step = text[text.index("## Step 1 — Resolve the feature"):text.index("### Resolve only as the planning command does")]
         stated = re.search(r"(\w+) outcomes:", step).group(1).lower()
         words = {"four": 4, "five": 5, "six": 6, "seven": 7}
         rows = [line for line in step.splitlines() if line.startswith("| ") and not line.startswith("| Input")]
@@ -574,7 +725,13 @@ class TheHandoffIsPrintedNeverWired(unittest.TestCase):
         self.assertIn("the hook only asks", text)
 
     def test_the_hook_does_not_relax_the_never_infer_rule(self):
-        self.assertIn("reached through the hook or not", phrases())
+        self.assertIn("reached through the hook or not, the feature is resolved identically", phrases())
+
+    def test_the_handoff_waits_for_the_planner_to_agree(self):
+        """FR-014, research R4 — a parallel specify can move the feature record mid-run."""
+        step = section("## Step 17 — Hand the plan to the planner")
+        self.assertIn("the planning command would still resolve", step)
+        self.assertIn("re-read only `.specify/feature.json`", step)
 
     def test_it_writes_no_marker_into_the_specification(self):
         text = phrases()
@@ -592,10 +749,11 @@ class TheHandoffIsPrintedNeverWired(unittest.TestCase):
             "a mandatory test-plan hook would run on every feature in every install; spec 032 makes it "
             "an offer, never an automatic step",
         )
-        self.assertIn(
+        self.assertNotIn(
             "SPEC_FILE", after_specify,
-            "the hook prompt must tell the agent to pass the spec path, because test-plan never infers it",
+            "spec 038: test-plan resolves the feature specify recorded, so the hook passes no path",
         )
+        self.assertIn("feature", after_specify)
         self.assertNotIn("reported above", after_specify, "core specify prints hooks before SPEC_FILE")
 
     def test_the_prompt_writes_the_obligations_into_plan_md(self):
@@ -742,6 +900,12 @@ class NonInteractiveIsDeclaredNeverDetected(unittest.TestCase):
 
     def test_the_removed_criteria_never_return_as_instructions(self):
         self.assertNotIn("Detect a session that cannot answer", command_text())
+
+    def test_a_feature_that_does_not_resolve_still_stops(self):
+        """Plan C2 — the argument is optional now, so the stop moves to resolution."""
+        text = phrases()
+        self.assertIn("a feature that does not resolve still stops", text)
+        self.assertNotIn("an empty argument still stops", text)
 
     def test_the_rewrite_asymmetry_survives_alongside_it(self):
         """Two different asymmetries live in this section; neither may displace the other."""

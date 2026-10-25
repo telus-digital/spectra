@@ -3,6 +3,34 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.27.0] - 2026-10-25
+
+The test plan finds its feature the way the planning command does, so `test-plan.md` and `plan.md` always
+share a directory and the approved obligations reach the tasks.
+
+### Changed
+- **`speckit.spectra.test-plan` resolves the feature as Spec Kit's planning command does.** The project
+  root is `SPECIFY_INIT_DIR` or the nearest `.specify/`; the feature directory is
+  `SPECIFY_FEATURE_DIRECTORY`, then `feature_directory` in `.specify/feature.json`; a set-but-empty
+  variable is unset; the specification is that directory's `spec.md`. It never uses the branch name,
+  modification times, a listing of `specs/`, or session history, offers no picker, and never writes the
+  feature record or creates a directory. The resolved feature and its source are announced first and
+  recorded in the identifying block and the report.
+- **The path argument is optional, and a path naming a feature other than the active one now stops.**
+  Anyone who scripted the old required-path form gets a stop, not a silent split: the run writes nothing
+  and names both directories, the source, and the two ways to switch — set `SPECIFY_FEATURE_DIRECTORY`
+  for the session, or change `feature_directory` in `.specify/feature.json` for good. A path to the active
+  feature directory or its `spec.md` still works as a confirmation.
+- **One read-only shell read** of `SPECIFY_INIT_DIR` and `SPECIFY_FEATURE_DIRECTORY`, once per run, is the
+  only command run to resolve the feature. If it is denied or fails, the run stops rather than fall back
+  to `.specify/feature.json` alone. A `SPECIFY_INIT_DIR` that names another project trips the
+  out-of-project stop.
+- **The planning handoff is printed only when the planning command would resolve the same directory** —
+  checked again just before printing, so a parallel `specify` cannot redirect it.
+- **The after-specify hook no longer passes a path**; the run uses the feature specify just recorded.
+- `speckit.spectra.uat` still requires an explicit feature path. It is a candidate for the same change and
+  is unchanged here.
+
 ## [1.26.0] - 2026-10-24
 
 The ADR agent becomes the fifth constitution feeder: a significant decision reaches the constitution
