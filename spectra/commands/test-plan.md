@@ -852,8 +852,8 @@ Offer any of those three only if the user asks for it.
 - **This document states what will be verified. It does not produce the tests.** The task and
   implementation commands do that, from this plan.
 - **The guard that keeps UAT tasks open is the project's constitution.** The implement command reads the
-  constitution, and the testing amendment `speckit.spectra.test-strategy` drafts says UAT tasks are never
-  executed or marked complete by it. Without that clause, the phase title is a convention the implement
+  constitution, and the UAT guardrail `speckit.spectra.test-strategy` hands over in its Constitution input
+  section, once accepted and ratified, says UAT tasks are never executed or marked complete by it. Without that clause, the phase title is a convention the implement
   command is asked, not forced, to follow.
 - **Adjacent questions belong to adjacent agents.** `speckit.spectra.test-strategy` owns the
   project-wide policy and the coverage floor; `speckit.spectra.flaky-test-detector` owns tests that

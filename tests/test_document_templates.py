@@ -307,5 +307,16 @@ class TheConstitutionStatesTheRule(unittest.TestCase):
         )
 
 
+class TheStrategiesHandOffAConstitutionInput(unittest.TestCase):
+    """036 S3 — both strategy templates name the section every feeder hands to the constitution."""
+
+    def test_both_templates_carry_constitution_input(self):
+        for name in ("test-strategy-template.md", "deployment-strategy-template.md"):
+            with self.subTest(template=name):
+                text = (TEMPLATES_DIR / name).read_text(encoding="utf-8")
+                self.assertIn("\n## Constitution input\n", text)
+                self.assertNotIn("## Proposed constitution amendment", text)
+
+
 if __name__ == "__main__":
     unittest.main()

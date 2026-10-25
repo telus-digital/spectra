@@ -1,5 +1,5 @@
 ---
-description: "Absorb documents you supply — PDFs, Word files, images, or knowledge you dictate — and land them in the repository as Markdown, planned and approved before anything is written. Classifies each source, continues the project's own conventions, updates what already exists rather than duplicating it, and never commits."
+description: "Absorb documents you supply — PDFs, Word files, images, or knowledge you dictate — and land them in the repository as Markdown, planned and approved before anything is written. Classifies each source, continues the project's own conventions, updates what already exists rather than duplicating it, routes an imported domain analysis, methodology, test strategy or deployment strategy to its own source folder and refers it to the agent that owns the standing document — never writing that document itself — and never commits."
 ---
 
 # Build the Project's Knowledge Vault from What You Supply
@@ -207,7 +207,11 @@ highest priority first, and take the first readable, non-empty layer:
 `<name>` depends on the category (Step 5):
 
 - A category in the **reserved map** uses that agent's template — `adr-template`, `brd-template`,
-  `impact-analysis-template`, `test-strategy-template`, `domain-analysis-template`, `defect-rca-template`.
+  `impact-analysis-template`, `defect-rca-template`.
+- A **policy source** document — a domain analysis, engineering methodology, test strategy, or deployment
+  strategy, written to its `<kind>-source/` folder — resolves `<kind>-source-template`, then
+  `kb-document-template`, like any other category. It never takes the owning feeder's template: that
+  template shapes the standing document, which is the feeder's to write.
 - Any other category resolves `<category>-template` — so a project that drops
   `.specify/templates/overrides/ux-ui-standards-template.md` into its repository shapes every UX/UI
   standards document from then on, for everyone, permanently.
@@ -243,6 +247,12 @@ refused later.
 | Index | `<artifact-root>/<category>/README.md`, for a category folder you own |
 
 All paths are lowercase and project-relative.
+
+A create can never target one of the four singleton paths — `DOMAIN_ANALYSIS.md`,
+`ENGINEERING_METHODOLOGY.md`, `TEST_STRATEGY.md`, `DEPLOYMENT_STRATEGY.md` — and no update targets one
+either (Step 7). If the user asks for that, decline it the same way: say which agent owns the file, name
+the `-source` destination you will use instead (Step 6), and keep the row there. Running the owning
+command is how the source becomes that document.
 
 If the user asks you to put a **new** file somewhere outside the artifact root, do not do it and do not
 argue. Say what the scope is, name the destination you will use instead, and offer the two routes that
@@ -286,20 +296,34 @@ second set.
 | an architecture decision | `<artifact-root>/adr/` | `ADR-NNN-<kebab-title>.md` | `adr-template` |
 | a business requirements document | `<artifact-root>/brd/` | `NNN-<kebab-title>.md` | `brd-template` |
 | an impact analysis | `<artifact-root>/impact-analysis/` | `NNN-<kebab-title>.md` | `impact-analysis-template` |
-| a test strategy | `<artifact-root>/` | `TEST_STRATEGY.md` | `test-strategy-template` |
-| a domain analysis / guardrail proposal | `<artifact-root>/` | `DOMAIN_ANALYSIS.md` | `domain-analysis-template` |
-| an engineering methodology | `<artifact-root>/` | `ENGINEERING_METHODOLOGY.md` | `engineering-methodology-template` |
-| a deployment strategy | `<artifact-root>/` | `DEPLOYMENT_STRATEGY.md` | `deployment-strategy-template` |
 | a defect root cause analysis | `<artifact-root>/defect-rca/` | `NNN-<kebab-title>.md` | `defect-rca-template` |
+| a domain analysis, an engineering methodology, a test strategy, or a deployment strategy | `<artifact-root>/<kind>-source/` — `domain-analysis-source`, `engineering-methodology-source`, `test-strategy-source`, `deployment-strategy-source` | `NNN-<kebab-title>.md` | `<kind>-source-template`, else `kb-document-template` |
 | anything else | `<artifact-root>/<category>/` | `NNN-<kebab-title>.md` | `<category>-template`, else `kb-document-template` |
 
 Without this map, a supplied PDF of past architecture decisions would land in a folder of its own
 beside the one `speckit.spectra.adr` maintains — two decision records, two numbering schemes, two
 shapes, and no rule for which is authoritative.
 
-An engineering methodology you write to `ENGINEERING_METHODOLOGY.md` carries no
-`command: speckit.spectra.methodology` front matter, so the next `speckit.spectra.methodology` run reads it
-as evidence of the team's current practice, not as one of its own prior runs.
+### Policy sources go to their own folder, never to the singleton
+
+Four kinds of document are standing policies that another agent owns and hands to the constitution. Each
+lives in exactly one file, written only by its owner:
+
+| Kind | Source folder | Standing document | Owner |
+|---|---|---|---|
+| domain analysis / guardrail proposal | `domain-analysis-source` | `DOMAIN_ANALYSIS.md` | `speckit.spectra.domain-analyzer` |
+| engineering methodology | `engineering-methodology-source` | `ENGINEERING_METHODOLOGY.md` | `speckit.spectra.methodology` |
+| test strategy | `test-strategy-source` | `TEST_STRATEGY.md` | `speckit.spectra.test-strategy` |
+| deployment strategy | `deployment-strategy-source` | `DEPLOYMENT_STRATEGY.md` | `speckit.spectra.deployment-strategy` |
+
+A source of one of these kinds becomes a numbered document in its source folder — not the standing
+document. The standing document records decisions a team made in that agent's session, with frozen IDs
+and a Constitution input section; an imported PDF cannot carry those decisions, and a file at that path
+that pretends to would be read as one. The owner reads your source document as `claimed` evidence — what
+a document says, which the code does not confirm — and the source stays where you wrote it after the
+owner runs, as the permanent record of where the knowledge came from.
+
+Every such row names its owner, so the user knows which command turns the source into policy.
 
 ## Step 7 — Look for what already exists
 
@@ -329,13 +353,13 @@ A match produces an **update** row: its location is the matched file's existing 
 and its notes carry any contradiction between the supplied source and what the file currently says. Do
 not resolve the contradiction in the written file — name it, and let the user decide (R7).
 
-**One match is never updated: a methodology the methodology agent wrote.** When the match is
-`<artifact-root>/ENGINEERING_METHODOLOGY.md` and its front matter has
-`command: speckit.spectra.methodology`, produce no update row. That file carries frozen guardrail IDs and
-the team's recorded decisions, which an in-place edit would not maintain. Leave the file unchanged, show
-the row as a referral to `/speckit.spectra.methodology` — the way to fold the source's content in — and
-list the source in the report (Step 12). A file at that path without that front matter keeps the update
-rules above.
+**The four singletons are never matched.** `<artifact-root>/DOMAIN_ANALYSIS.md`,
+`ENGINEERING_METHODOLOGY.md`, `TEST_STRATEGY.md`, and `DEPLOYMENT_STRATEGY.md` are never shortlisted and
+never matched, whoever wrote them and whatever front matter they carry — a hand-written one included. Each
+belongs to the agent that owns it (Step 6), and an in-place edit would break the frozen IDs and recorded
+decisions it carries, or hand its owner text it would mistake for its own. A source of one of those kinds
+matches only an existing document in its own `-source` folder, under the two stages above; otherwise it is
+a create.
 
 Say that the match is a judgement (R8). The user knows what their documents are about and you are
 guessing; a wrong match must cost them one sentence to correct, and correcting it must not cost them
@@ -353,7 +377,7 @@ One row per document you intend to produce. For each, resolve:
 | Action | `create` or `update`, from Step 7 |
 | Sources | Which supplied sources feed it |
 | Template | The name Step 4 will resolve |
-| Notes | Contradictions, constitution conflicts, a folder that will be created |
+| Notes | Contradictions, constitution conflicts, a folder that will be created, the owning command for a policy source |
 
 **Numbering.** For a create, the sequence number is one greater than the highest found in the
 destination folder **and** in any superseded folder for that category, matched case-insensitively.
@@ -375,7 +399,7 @@ Present the table:
 |---|---|---|---|
 | `adr` | The 2024 decision to move order processing onto a queue, with the alternatives weighed at the time | `docs/adr/ADR-007-queue-based-order-processing.md` | Create (folder exists) |
 | `ux-ui-standards` | Component spacing, type scale and colour tokens for the design system | `docs/ux-ui-standards/002-component-spacing-and-type.md` | Update — existing file |
-| `engineering-methodology` | Branching model, review expectations and commit conventions | `docs/ENGINEERING_METHODOLOGY.md` | Create |
+| `engineering-methodology-source` | Branching model, review expectations and commit conventions | `docs/engineering-methodology-source/001-branching-review-and-commits.md` | Create — refer to `speckit.spectra.methodology` |
 ```
 
 Beneath it, one sentence each, only where they apply:
@@ -408,8 +432,9 @@ Then, in your own voice:
 - **A subset may be approved.** Write only the approved rows; name the rest in the report.
 - **The user may change**: a row's category, its filename, its category folder, whether it creates or
   updates, which existing file an update targets, and whether the row happens at all.
-- **The user may not change**: a create's destination to somewhere outside the resolved artifact root.
-  Answer that with the two routes in Step 5.
+- **The user may not change**: a create's destination to somewhere outside the resolved artifact root —
+  answer that with the two routes in Step 5 — or retarget a row at one of the four singletons — answer
+  that with its owner and the `-source` destination (Step 5).
 
 ## Step 10 — Write
 
@@ -443,16 +468,18 @@ desktop is a broken link the moment anyone else opens the document.
 For a category folder **you own**, maintain `<artifact-root>/<category>/README.md`:
 
 ```markdown
-# Engineering methodology
+# UX/UI standards
 
 <!-- Rebuilt by speckit.spectra.kb-vault. Rows follow the documents in this folder. -->
 
 | Document | Subject | Ingested |
 |---|---|---|
-| [001-branching-and-release.md](001-branching-and-release.md) | Branching model, review expectations, release train | 2026-09-11 |
+| [001-component-spacing-and-type.md](001-component-spacing-and-type.md) | Spacing, type scale and colour tokens for the design system | 2026-09-11 |
 ```
 
-- **Never introduce one into a reserved-map folder.** Those agents' conventions are not yours to change.
+- **Never introduce one into a reserved-map folder another agent owns** (`adr/`, `brd/`,
+  `impact-analysis/`, `defect-rca/`). Those agents' conventions are not yours to change. The four
+  `-source` folders are yours — only you write them — so they take an index like any category you own.
 - **Update, never replace, an index the project already keeps.** A hand-maintained index may carry
   columns a rebuild cannot know about; preserve them and fill the new row as far as you can.
 - **Rebuild rows from the documents present**, so a hand-added or hand-deleted file self-corrects.
@@ -471,9 +498,9 @@ Close with:
 6. Conflicts left unresolved — with the constitution, or between a source and a document it updated.
 7. Where a written filename differs from the planned one because the sequence moved, say so.
 8. Where some writes succeeded and others failed, say exactly which did and which did not.
-9. Sources referred on — each source matched to a document another command owns and must update itself,
-   with the command named, e.g. `/speckit.spectra.methodology` for an `ENGINEERING_METHODOLOGY.md` it
-   wrote.
+9. Sources referred on — every policy source, with the owning command that turns it into the standing
+   document (e.g. `speckit.spectra.test-strategy` for a document written to `test-strategy-source/`), and
+   any request to write a singleton that was declined.
 
 Then tell the user plainly: the changes are **uncommitted**, they are in the working tree, and once
 they have looked them over they can commit. You do not stage them, commit them, branch, push, tag, or

@@ -290,6 +290,17 @@ phase obligations — including those the team declined. Cite only entries whose
 the Constitution input section, or an `accepted` record under a lens. A `declined`, `skipped`, or
 `not_asked` entry is never a finding source, and neither is a hand-written section describing practice.
 
+**From a test strategy or a deployment strategy, only accepted guardrails are standards.**
+`TEST_STRATEGY.md` and `DEPLOYMENT_STRATEGY.md` record every guardrail their agents drafted, including
+those the team declined. Cite only records whose `decision` is `accepted`: the Constitution input section,
+or an `accepted` record elsewhere in the file. A `declined`, `skipped`, or `not_asked` record is never a
+finding source, and neither is a body section describing a recommendation that is not itself an accepted
+record. In a file from before 1.25.0, which uses a checkbox amendment, only `- [x]` items count. **A
+checkbox-era file with no `- [x]` item contributes no standard** — that is not an unreadable file. Say so
+in the coverage section, and name the remedy: re-run the owning agent
+(`speckit.spectra.test-strategy` or `speckit.spectra.deployment-strategy`) and accept the guardrails the
+team wants enforced.
+
 ADRs stay in T1. They are in this table only because they share the root lookup. Where both a canonical and
 a legacy file exist, the canonical one wins. No other path is tried: a policy document in a place Spectra
 doesn't write to is one this command cannot know is a policy. The absent-versus-unreachable rule below

@@ -702,5 +702,27 @@ class TheEngineeringMethodologyIsAStandard(States, unittest.TestCase):
         self.assertStates("From an engineering methodology, only accepted guardrails are standards.")
 
 
+class OnlyAcceptedStrategyGuardrailsAreStandards(States, unittest.TestCase):
+    """036 P1, P2 — a strategy records what the team declined as well as what it accepted."""
+
+    def test_only_accepted_records_are_cited(self):
+        self.assertStates("From a test strategy or a deployment strategy, only accepted guardrails are standards.")
+        self.assertStates("Cite only records whose `decision` is `accepted`")
+        self.assertStates("A `declined`, `skipped`, or `not_asked` record is never a finding source")
+
+    def test_a_body_recommendation_is_not_a_standard(self):
+        self.assertStates("neither is a body section describing a recommendation that is not itself an accepted record")
+
+    def test_a_checkbox_file_counts_only_ticked_items_and_says_when_none(self):
+        self.assertStates("In a file from before 1.25.0, which uses a checkbox amendment, only `- [x]` items count.")
+        self.assertStates("A checkbox-era file with no `- [x]` item contributes no standard")
+        self.assertStates("that is not an unreadable file")
+        self.assertStates("name the remedy")
+
+    def test_both_canonical_paths_and_the_legacy_path_are_still_found(self):
+        self.assertStates("| Test strategy (T2) | `<root>/TEST_STRATEGY.md` | `<root>/test-strategy/TEST_STRATEGY.md` |", text())
+        self.assertStates("| Deployment strategy (T2) | `<root>/DEPLOYMENT_STRATEGY.md` | — |", text())
+
+
 if __name__ == "__main__":
     unittest.main()

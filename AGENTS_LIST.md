@@ -53,8 +53,9 @@ creates or updates one, then scan the codebase, docs, and ADRs to infer the busi
 six lenses, handing workflow to the Methodology Analyst. It asks you to decide each lens's candidate guardrails in the session, with at least four
 options per question, one recommended and one Skip. Only then does it write `docs/DOMAIN_ANALYSIS.md` —
 or your declared artifact root — with a Constitution input section of what you accepted, and hand you a
-ready-to-paste `/speckit-constitution` prompt. It never edits the constitution or source, and adopts
-nothing you did not choose.
+ready-to-paste `/speckit-constitution` prompt. Documents imported by kb-vault are read as what they
+*claim*, never as what the code does. It never edits the constitution or source, and adopts nothing you
+did not choose.
 
 - **Arguments** — none required. Optionally pass a focus or a domain hint to steer the analysis.
 - **Use it when** — bootstrapping constitution guardrails for a brownfield project (no args — it infers
@@ -77,7 +78,8 @@ the base; test-first, behaviour-first, domain-first, contract-first, and ADR-dri
 with their evidence and enter the constitution only as obligations bound to a spec-kit phase. It asks
 you ten questions one at a time, then writes an onboarding-grade `docs/ENGINEERING_METHODOLOGY.md` — or
 your declared artifact root — with a Constitution input section, and hands you a ready-to-paste
-`/speckit-constitution` prompt. It never edits the constitution and adopts nothing you did not choose.
+`/speckit-constitution` prompt. Documents imported by kb-vault are read as what they *claim*, never as
+what the history shows. It never edits the constitution and adopts nothing you did not choose.
 
 - **Arguments** — none required. Optionally pass a focus hint, or `--non-interactive` to write the
   document without asking anything (and adopt nothing).
@@ -123,10 +125,13 @@ And "document the architecture" with nothing attached gets you a request for mat
 documentation reverse-engineered from your source code.
 
 **It joins your existing sets instead of starting new ones.** Where a supplied document is a kind
-Spectra already produces — an ADR, a BRD, an impact analysis, a test strategy, a deployment strategy, a
-defect RCA — it adopts that agent's folder, numbering and template. Without that rule, a PDF of past architecture decisions
+Spectra already produces — an ADR, a BRD, an impact analysis, a defect RCA — it adopts that agent's folder, numbering and template. Without that rule, a PDF of past architecture decisions
 would land in a folder of its own beside the one the ADR agent maintains: two decision records, two
-numbering schemes, and no rule for which is authoritative.
+numbering schemes, and no rule for which is authoritative. A domain analysis, engineering methodology,
+test strategy, or deployment strategy is different: those documents feed the constitution and belong to
+the agent that produces them, so kb-vault never writes them. It keeps the source as a **policy source** in
+its own `<kind>-source/` folder, and the plan and report name the agent to run next, which reads it as
+what the document *claims*.
 
 - **Arguments** — optional. Steering for the attached documents, or the knowledge itself when you have
   nothing to attach. With neither an argument nor a document it asks for material and stops.
@@ -154,8 +159,9 @@ numbering schemes, and no rule for which is authoritative.
 **`speckit.spectra.test-strategy`** — Decide how this project tests itself, once, at the start. It reads
 the repository, works out for itself whether this is greenfield or brownfield, and writes one strategy to
 `docs/TEST_STRATEGY.md` — or your declared artifact root — covering unit, integration, API
-contract, end-to-end, UAT, and regression testing plus a coverage floor. Then it drafts the constitution amendment that
-would hold every future work session to it, and hands that to `/speckit-constitution`.
+contract, end-to-end, UAT, and regression testing plus a coverage floor. Then it drafts the guardrails that
+would hold every future work session to it, records your decision on each, and hands a Constitution input
+section to `/speckit-constitution` — to create the constitution when there is none, or to update it.
 
 Before it writes, it asks you five things — one at a time, each arriving with the answer it would have
 chosen and the evidence behind it. Where the testing weight should sit, whether anything outside the
@@ -191,13 +197,14 @@ each surface this project actually has: a screenshot for a browser, a transcript
 call. **Regression** names the suite that must stay green, cites where it runs or says it runs nowhere
 automatically, and records whether a fixed defect earns a regression test. Both are marked applicable or
 not, with the reason, and both are recorded in the document's front matter — the lens set and which level
-owns what — so `test-plan` can read them rather than guess. The drafted constitution amendment gains a
-clause that keeps UAT out of the implement command's hands.
+owns what — so `test-plan` can read them rather than guess. The drafted guardrails gain one that keeps
+UAT out of the implement command's hands.
 
 Two things it will not do. **It never writes your constitution** — not on approval, not on a re-run, not
-if you insist. It drafts the amendment, shows it, records your approval in the strategy document, and
-tells you the command that applies it, because one command should own constitution edits and the sync
-impact report that goes with them. And **it never applies configuration**: the exact CI or coverage change
+if you insist. It drafts each guardrail under a frozen `ts-` ID, records whether you accepted, declined,
+or skipped it, and tells you the command that applies the accepted ones, because one command should own
+constitution edits and the sync impact report that goes with them. A document imported by kb-vault is
+read as what it *claims*, never as current practice. And **it never applies configuration**: the exact CI or coverage change
 is written out for you to make.
 
 Unlike the other document agents, it produces a **singleton** — one file at a fixed path, rewritten in
@@ -308,7 +315,8 @@ only** — there is no hook — since a reviewer should not be the author.
   ships **overrides older specs** on the same behaviour, so a deliberate behaviour change is never reported as
   a regression against the spec it replaced.
 - **Standards** — measured against a fixed chain: the constitution and ADRs, then the supporting documents
-  Spectra's own agents write (test strategy, deployment strategy, domain analysis) and the contributor guide,
+  Spectra's own agents write (test strategy, deployment strategy, domain analysis, engineering methodology —
+  only the guardrails each one *accepted*, never a declined one) and the contributor guide,
   then the codebase's own conventions, then a **seven-principle baseline** (B1–B7) cited by ID. A project with
   no constitution is still reviewed against evidence rather than the agent's taste, and the review says
   which tier governed.
@@ -350,8 +358,9 @@ only** — there is no hook — since a reviewer should not be the author.
 something running or published. It reads the repository — CI workflows, container and orchestration
 files, infrastructure code, migrations, specs, ADRs, and any test strategy or domain analysis already
 written — plus any local document you point it at, such as a client's hosting standard or an ops runbook.
-Then it writes one strategy to `docs/DEPLOYMENT_STRATEGY.md`, or your declared artifact root, and drafts
-the constitution amendment that would make the strategy's lasting rules binding.
+Then it writes one strategy to `docs/DEPLOYMENT_STRATEGY.md`, or your declared artifact root, drafts the
+strategy's lasting rules as guardrails, records your decision on each, and hands a Constitution input
+section to `/speckit-constitution` — to create the constitution or update it.
 
 It starts by working out **what ships**, from evidence rather than by asking: a running service, a static
 site, a library, a CLI or desktop tool, a mobile app, or infrastructure on its own. That classification

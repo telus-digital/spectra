@@ -379,10 +379,12 @@ class TheOutputFolderIsComputedPerDocument(unittest.TestCase):
         "<artifact-root>/adr/",
         "<artifact-root>/brd/",
         "<artifact-root>/impact-analysis/",
-        "| `<artifact-root>/` | `TEST_STRATEGY.md` |",
-        "| `<artifact-root>/` | `DOMAIN_ANALYSIS.md` |",
-        "| `<artifact-root>/` | `DEPLOYMENT_STRATEGY.md` |",
         "<artifact-root>/defect-rca/",
+        # Spec 036: the four policy kinds land in their own source series, never in the singleton.
+        "`domain-analysis-source`",
+        "`engineering-methodology-source`",
+        "`test-strategy-source`",
+        "`deployment-strategy-source`",
     )
 
     def test_the_command_ships(self):

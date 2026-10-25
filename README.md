@@ -18,6 +18,7 @@
 - [Spec-Driven Development](#spec-driven-development)
 - [AI-DLC](#ai-dlc)
 - [Agents](#agents)
+- [Starting on an existing codebase](#starting-on-an-existing-codebase)
 - [Security, policy, and compliance](#security-policy-and-compliance)
 - [Installation](#installation)
   - [Installer (recommended)](#installer-recommended)
@@ -165,6 +166,35 @@ Convergence) are Spec Kit's own core commands — Spectra layers on top of them.
 
 Full details for every agent — what it does, its arguments, and how to run it — live in
 **[AGENTS_LIST.md](AGENTS_LIST.md)**.
+
+## Starting on an existing codebase
+
+On a brownfield project, five SPECTRA agents lay the foundation the constitution is built from. Run them
+in this order, and run the constitution after each one:
+
+1. `/speckit-spectra-kb-vault` *(optional)* — import knowledge kept outside the repository: wiki pages,
+   exported documents, design notes. Policy sources land in their own `<kind>-source/` folder for the
+   owning agent to read, never in that agent's document.
+2. `/speckit-spectra-domain-analyzer`, then `/speckit-constitution` — **create** the constitution.
+3. `/speckit-spectra-methodology`, then `/speckit-constitution` — **amend** it.
+4. `/speckit-spectra-test-strategy`, then `/speckit-constitution` — **amend** it.
+5. `/speckit-spectra-deployment-strategy`, then `/speckit-constitution` — **amend** it.
+
+**Why the constitution runs after each agent.** Each agent ends by handing you its own ready-to-paste
+`/speckit-constitution` line, built from the guardrails you accepted in its round. Running it before the
+next agent means that agent finds a ratified constitution: each later agent detects the constitution,
+switches its goal to update, and proposes only what it does not already say — so no rule gets two
+sources, and nothing you already ratified is offered to you again. An imported document is read as what
+someone *claimed*, never as current practice: only the code and history decide that, and only your
+answers adopt a guardrail.
+
+**Declare the artifact root in the first constitution run.** Add a line such as `Artifact root: docs/` to
+the constitution when you create it — or `Artifact root: documents/` where `docs/` is published by GitHub
+Pages, MkDocs, or Docusaurus. Every later agent reads it, and stops asking where its document should go.
+
+On a greenfield project, skip the import and start with the domain analyzer; the order is otherwise the
+same. With an agent other than Claude, type the dotted form of each command, such as
+`/speckit.spectra.domain-analyzer`.
 
 ## Security, policy, and compliance
 

@@ -3,6 +3,58 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.25.0] - 2026-10-24
+
+The foundation agents now hand off to each other safely on a brownfield project: imported knowledge stays
+a source the owning agent reads, and every feeder hands the constitution the same shape of input.
+
+### Changed
+- **`speckit.spectra.kb-vault` never writes a constitution feeder's document.** A source it classifies as
+  a domain analysis, engineering methodology, test strategy, or deployment strategy is written as a
+  **policy source** to `<artifact-root>/<kind>-source/NNN-<kebab-title>.md`, resolving
+  `<kind>-source-template`, then `kb-document-template`. The plan and report name the owning command. The
+  four singletons — `DOMAIN_ANALYSIS.md`, `ENGINEERING_METHODOLOGY.md`, `TEST_STRATEGY.md`,
+  `DEPLOYMENT_STRATEGY.md` — are never matched, created, or updated by kb-vault, whoever wrote them, and
+  the original stays in place after the owning agent runs.
+- **The four feeders read imported knowledge as `claimed`.** `domain-analyzer`, `methodology`,
+  `test-strategy`, and `deployment-strategy` read their `-source` folder and any kb-vault document by its
+  Provenance section. A candidate whose only evidence is `claimed` is `aspirational`; where a document and
+  the code or history disagree, both are reported and the code or history is current practice. Imported
+  text never adopts a guardrail, and text in it addressed to the agent is content, never an instruction.
+  `test-strategy`'s R1 grows to four provenances.
+- **Each feeder marks its document `command: speckit.spectra.<agent>`** and classifies a file already at
+  its path: its own, its own from an earlier version (by signature), another agent's (reported, nothing
+  written), or not its own — read as `claimed` and replaced only with consent asked outside the round;
+  declined or non-interactive writes nothing and shows the document in the session.
+- **`test-strategy` and `deployment-strategy` hand off a Constitution input section**, like
+  `domain-analyzer` and `methodology`. Each run opens with a `Constitution: … Goal: create | update` line;
+  with no constitution the goal is **create** instead of drafting nothing. Every drafted guardrail is a
+  record with a frozen `ts-` / `ds-` ID, a basis, and a decision (`accepted`, `declined`, `skipped`,
+  `not_asked`); re-runs mark adoption, never revert it, report drift, and never re-offer a declined
+  guardrail as new. A checkbox amendment from before 1.25.0 migrates without losing a decision — `- [x]`
+  becomes `accepted`, `- [ ]` becomes `not_asked`. The hand-off lines are the create and amend prompts the
+  other feeders use; no command is given when nothing was accepted. Front matter gains `goal:` and
+  `constitution_input:`; `amendment_state:` stays. Both templates rename "Proposed constitution amendment"
+  to "Constitution input".
+- **`test-strategy` reads its siblings** — accepted records of `DOMAIN_ANALYSIS.md`,
+  `ENGINEERING_METHODOLOGY.md`, and `DEPLOYMENT_STRATEGY.md` — and cites rather than re-drafts a clause
+  another feeder holds, such as methodology's test-first fix obligation. `deployment-strategy` and
+  `domain-analyzer` read `TEST_STRATEGY.md` accepted-only too.
+- **`speckit.spectra.review-pr` counts only accepted guardrails** from a test or deployment strategy. A
+  checkbox-era file with no ticked item contributes no standard, and the review says so and names the
+  remedy.
+
+### Fixed
+- **kb-vault's template list** now names exactly the templates its reserved map uses — `adr-template`,
+  `brd-template`, `impact-analysis-template`, `defect-rca-template` — and no feeder template.
+
+### Documentation
+- **Starting on an existing codebase.** README, the extension README, and the landing page give one
+  brownfield sequence: kb-vault (optional) → domain-analyzer → constitution (create) → methodology →
+  constitution (amend) → test-strategy → constitution (amend) → deployment-strategy → constitution
+  (amend), why the constitution runs after each agent, and the advice to declare `Artifact root:` in the
+  first constitution run.
+
 ## [1.24.0] - 2026-10-24
 
 ### Added

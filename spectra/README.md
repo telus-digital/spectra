@@ -61,6 +61,35 @@ command doesn't show up, restart your agent so it re-scans its command/skill dir
 
 ---
 
+## Starting on an existing codebase
+
+On a brownfield project, five SPECTRA agents lay the foundation the constitution is built from. Run them
+in this order, and run the constitution after each one:
+
+1. `/speckit-spectra-kb-vault` *(optional)* — import knowledge kept outside the repository: wiki pages,
+   exported documents, design notes. Policy sources land in their own `<kind>-source/` folder for the
+   owning agent to read, never in that agent's document.
+2. `/speckit-spectra-domain-analyzer`, then `/speckit-constitution` — **create** the constitution.
+3. `/speckit-spectra-methodology`, then `/speckit-constitution` — **amend** it.
+4. `/speckit-spectra-test-strategy`, then `/speckit-constitution` — **amend** it.
+5. `/speckit-spectra-deployment-strategy`, then `/speckit-constitution` — **amend** it.
+
+**Why the constitution runs after each agent.** Each agent ends by handing you its own ready-to-paste
+`/speckit-constitution` line, built from the guardrails you accepted in its round. Running it before the
+next agent means that agent finds a ratified constitution: each later agent detects the constitution,
+switches its goal to update, and proposes only what it does not already say — so no rule gets two
+sources, and nothing you already ratified is offered to you again. An imported document is read as what
+someone *claimed*, never as current practice: only the code and history decide that, and only your
+answers adopt a guardrail.
+
+**Declare the artifact root in the first constitution run.** Add a line such as `Artifact root: docs/` to
+the constitution when you create it — or `Artifact root: documents/` where `docs/` is published by GitHub
+Pages, MkDocs, or Docusaurus. Every later agent reads it, and stops asking where its document should go.
+
+On a greenfield project, skip the import and start with the domain analyzer; the order is otherwise the
+same. With an agent other than Claude, type the dotted form of each command, such as
+`/speckit.spectra.domain-analyzer`.
+
 ## `speckit.spectra.adr` — Architecture Decision Records (ADR)
 
 Takes a short description of a decision and then:
@@ -270,15 +299,21 @@ and template:
 | an architecture decision | `<artifact-root>/adr/` | `adr-template` |
 | a business requirements document | `<artifact-root>/brd/` | `brd-template` |
 | an impact analysis | `<artifact-root>/impact-analysis/` | `impact-analysis-template` |
-| a test strategy | `<artifact-root>/TEST_STRATEGY.md` | `test-strategy-template` |
-| a domain analysis | `<artifact-root>/DOMAIN_ANALYSIS.md` | `domain-analysis-template` |
-| a deployment strategy | `<artifact-root>/DEPLOYMENT_STRATEGY.md` | `deployment-strategy-template` |
 | a defect root cause analysis | `<artifact-root>/defect-rca/` | `defect-rca-template` |
+| a domain analysis, an engineering methodology, a test strategy, or a deployment strategy | `<artifact-root>/<kind>-source/` | `<kind>-source-template`, else `kb-document-template` |
 | anything else | `<artifact-root>/<category>/` | `<category>-template`, else `kb-document-template` |
 
 Without that map, a PDF of past architecture decisions would land in a folder of its own beside the one
 `speckit.spectra.adr` maintains — two decision records, two numbering schemes, and no rule for which is
 authoritative.
+
+**It never writes the documents the constitution is built from.** `DOMAIN_ANALYSIS.md`,
+`ENGINEERING_METHODOLOGY.md`, `TEST_STRATEGY.md`, and `DEPLOYMENT_STRATEGY.md` each belong to the agent
+that produces them. A source of one of those kinds is kept as a **policy source** in its own
+`<kind>-source/` folder — `domain-analysis-source/`, `engineering-methodology-source/`,
+`test-strategy-source/`, `deployment-strategy-source/` — and the plan and report name the agent to run
+next. That agent reads it as what the document *claims*, never as what your code does, and your original
+stays in place after it runs.
 
 ### What it will not do
 
@@ -399,7 +434,8 @@ reviews one — judging it against **the intent and standards the PR carries**, 
 3. Reads the PR's **spec, plan, tasks, and ADRs at that revision**, and the **constitution and ADRs in
    force on the base branch**. The revision split is deliberate: it is what lets the agent notice a PR
    that changes the rules it is being measured against. Standards form a fixed chain — constitution and
-   ADRs, then the test strategy, deployment strategy, domain analysis and contributor guide, then the
+   ADRs, then the guardrails the test strategy, deployment strategy, domain analysis and engineering
+   methodology *accepted* — never a declined one — and the contributor guide, then the
    codebase's own conventions, then a seven-principle **Spectra baseline** (B1–B7) cited by ID — so a
    project with no constitution is still reviewed against evidence, and the review says which tier governed.
 4. Locates the governing spec from the PR's own diff, and — when the diff carries none — from a path you
@@ -727,8 +763,9 @@ features to plan. It:
    applicable with a named approach or not applicable with a stated reason.
 6. Derives a **coverage floor** from the baseline it could establish, with a ratchet toward the target.
 7. Writes one document to `docs/TEST_STRATEGY.md`, or `TEST_STRATEGY.md` at your declared artifact root.
-8. Checks whether the strategy is already in your constitution, drafts the amendment if it is not, and
-   hands it to `/speckit-constitution`.
+8. Checks whether the strategy is already in your constitution — or whether there is one at all — drafts
+   the guardrails it would make binding, records your decision on each, and hands a Constitution input
+   section to `/speckit-constitution`, to create the constitution or update it.
 
 The five questions are where the testing weight should sit, whether anything outside the repository
 depends on an interface here, which journeys justify an end-to-end test, what has broken that your tests
@@ -756,12 +793,15 @@ without that confirmation.
 or an AI agent only on explicit request — and what counts as evidence on each surface the project has.
 The regression lens names the suite that must stay green, where it runs, and whether a fixed defect earns
 a regression test. The lens set and the ownership map are recorded in the document's front matter, so
-`test-plan` reads them rather than guessing, and the drafted amendment keeps UAT tasks out of the
+`test-plan` reads them rather than guessing, and a drafted guardrail keeps UAT tasks out of the
 implement command's hands.
 
-It **never writes your constitution** — not on approval, not on a re-run. It drafts the amendment, shows
-it, records your decision in the strategy document, and names the command that applies it, so one command
-owns constitution edits and the sync impact report that goes with them. It **never applies configuration**
+It **never writes your constitution** — not on approval, not on a re-run. It drafts each guardrail under a
+frozen `ts-` ID, records whether you accepted, declined, or skipped it, and gives you the ready-to-paste
+`/speckit-constitution` line that applies the accepted ones, so one command owns constitution edits and the
+sync impact report that goes with them. On a re-run it marks what the constitution has since adopted,
+never offers a declined guardrail again as new, and reads a strategy from before 1.25.0 without losing a
+ticked decision. A document imported by kb-vault is read as what it *claims*, never as current practice. It **never applies configuration**
 either: the exact CI or coverage change is written out for you to make.
 
 Unlike the other document agents it produces a **singleton** — one file at a fixed path, rewritten in
@@ -797,8 +837,9 @@ running or published**. It:
    reporting today's state before recommending, or marked not applicable with a reason.
 5. Writes one document to `docs/DEPLOYMENT_STRATEGY.md`, or `DEPLOYMENT_STRATEGY.md` at your declared
    artifact root, with a Mermaid promotion diagram drawn only from the environments it lists.
-6. Checks your constitution, drafts an amendment carrying only durable invariants, and ends with a link
-   and a ready-to-paste `/speckit-constitution` line.
+6. Checks your constitution, drafts only durable invariants as guardrails under frozen `ds-` IDs, records
+   your decision on each, and ends with a link and a ready-to-paste `/speckit-constitution` line that hands
+   its Constitution input section over — to create the constitution or update it.
 
 **Every claim is `verified`, `claimed`, `stated`, or `convention`** — what the repository does, what a
 document says, what you answered, or a default with nothing behind it — so you can tell the workflow from

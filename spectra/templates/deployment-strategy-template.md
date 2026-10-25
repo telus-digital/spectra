@@ -155,20 +155,36 @@ flowchart LR
 |---|---|---|---|---|---|
 | [n] | [lens] | [deployable or "all"] | [recommendation] | [provenance] | [new / adopted / carried] |
 
-## Proposed constitution amendment
+## Constitution input
 
 <!--
-  The constitution's current state (embedded / partial / absent / no constitution), the governing
-  clause if one exists, any conflict, the approval outcome, the draft items, and how to apply them.
+  The section /speckit-constitution consumes. Its format is owned by the command, and this template
+  cannot change it: the command writes it here, or before the sources section if an override drops it.
+  It opens with the constitution check — its state, the governing clause where one exists, and any
+  conflict found — then one goal line — create the constitution, or update it — then lists, grouped by target
+  constitution section, exactly the guardrails the team accepted and the constitution has not yet
+  adopted, each with its frozen `ds-` id, its placement (add, or amends: <principle>), and its basis
+  (observed or aspirational). The full record of every drafted guardrail — statement, id, section,
+  basis, decision, status — sits with its lens in the body, accepted or not. Nothing here has been
+  written to the constitution; this command never writes that file.
 -->
 
-**State**: [EMBEDDED / PARTIAL / ABSENT / NO CONSTITUTION]
+**Already in the constitution?**: [EMBEDDED / PARTIAL / ABSENT / NO CONSTITUTION]
 
-**Approval**: [APPROVED / DECLINED / NOT ASKED]
+**Governing clause today**: [quoted text, where one exists]
 
-[AMENDMENT ITEMS]
+**Conflict found**: [where an existing principle contradicts a recommendation above, or "none"]
 
-**How to apply**: [the /speckit-constitution line]
+Goal: [**create** the constitution at `.specify/memory/constitution.md` / **update** the constitution] from the guardrails below.
+
+### [Target constitution section]
+
+- [Guardrail statement, as accepted]
+  - id: `ds-[section-slug]-[hash]`
+  - placement: [add | amends: <principle name>]
+  - basis: [observed | aspirational]
+
+**To apply it**: [the /speckit-constitution line for the goal, referencing DEPLOYMENT_STRATEGY.md — or, when nothing was accepted, one sentence saying so and no command]
 
 ## Sources consulted and coverage of analysis
 

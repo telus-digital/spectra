@@ -190,11 +190,18 @@
 |---|---|---|---|---|---|
 | 1 | [lens] | [surface] | [statement] | [path, or "convention", or "stated: Q<n>"] | [surface-specific / repository-wide] |
 
-## Proposed constitution amendment
+## Constitution input
 
 <!--
-  Drafted here; applied by `/speckit-constitution`. Nothing in this section has been written to the
-  constitution — this command never writes that file.
+  The section /speckit-constitution consumes. Its format is owned by the command, and this template
+  cannot change it: the command writes it here, or before the sources section if an override drops it.
+  It opens with the constitution check — its state, the governing clause where one exists, and any
+  conflict found — then one goal line — create the constitution, or update it — then lists, grouped by target
+  constitution section, exactly the guardrails the team accepted and the constitution has not yet
+  adopted, each with its frozen `ts-` id, its placement (add, or amends: <principle>), and its basis
+  (observed or aspirational). The full record of every drafted guardrail — statement, id, section,
+  basis, decision, status — sits with its lens in the body, accepted or not. Nothing here has been
+  written to the constitution; this command never writes that file.
 -->
 
 **Already in the constitution?**: [EMBEDDED / PARTIAL / ABSENT / NO CONSTITUTION]
@@ -203,17 +210,16 @@
 
 **Conflict found**: [where an existing principle contradicts a recommendation above, or "none"]
 
-**Approval**: [APPROVED / DECLINED / NOT ASKED]
+Goal: [**create** the constitution at `.specify/memory/constitution.md` / **update** the constitution] from the guardrails below.
 
-**Proposed text**:
+### [Target constitution section]
 
-```markdown
-- [ ] [statement in the constitution's voice, MUST/SHOULD, with a brief rationale]
-      section: [target section]
-      status: [add | amends: <principle name>]
-```
+- [Guardrail statement, as accepted]
+  - id: `ts-[section-slug]-[hash]`
+  - placement: [add | amends: <principle name>]
+  - basis: [observed | aspirational]
 
-**To apply it**: [the command the user runs, referencing this document]
+**To apply it**: [the /speckit-constitution line for the goal, referencing TEST_STRATEGY.md — or, when nothing was accepted, one sentence saying so and no command]
 
 ## Sources consulted and coverage of analysis
 

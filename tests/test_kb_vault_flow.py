@@ -38,6 +38,7 @@ Standard library only, like the rest of the suite.
 
 from __future__ import annotations
 
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -58,10 +59,30 @@ RESERVED = (
     "<artifact-root>/adr/",
     "<artifact-root>/brd/",
     "<artifact-root>/impact-analysis/",
-    "| `<artifact-root>/` | `TEST_STRATEGY.md` |",
-    "| `<artifact-root>/` | `DOMAIN_ANALYSIS.md` |",
-    "| `<artifact-root>/` | `ENGINEERING_METHODOLOGY.md` |",
     "<artifact-root>/defect-rca/",
+)
+
+# Spec 036: the four constitution-feeding singletons, each owned by exactly one agent. kb-vault never
+# writes one; a source of that kind lands in its `-source` folder and is referred to the owner.
+SINGLETONS = (
+    "DOMAIN_ANALYSIS.md",
+    "ENGINEERING_METHODOLOGY.md",
+    "TEST_STRATEGY.md",
+    "DEPLOYMENT_STRATEGY.md",
+)
+
+POLICY_SOURCES = {
+    "domain-analysis-source": "speckit.spectra.domain-analyzer",
+    "engineering-methodology-source": "speckit.spectra.methodology",
+    "test-strategy-source": "speckit.spectra.test-strategy",
+    "deployment-strategy-source": "speckit.spectra.deployment-strategy",
+}
+
+FEEDER_TEMPLATES = (
+    "domain-analysis-template",
+    "engineering-methodology-template",
+    "test-strategy-template",
+    "deployment-strategy-template",
 )
 
 
@@ -199,8 +220,7 @@ class ItJoinsExistingSetsRatherThanStartingNewOnes(unittest.TestCase):
                 self.assertIn(folder, text(), f"the reserved map no longer routes to {folder}")
 
     def test_it_adopts_the_owning_agents_template(self):
-        for template in ("adr-template", "brd-template", "impact-analysis-template",
-                         "test-strategy-template", "domain-analysis-template", "defect-rca-template"):
+        for template in ("adr-template", "brd-template", "impact-analysis-template", "defect-rca-template"):
             with self.subTest(template=template):
                 self.assertIn(template, text(), f"the reserved map no longer names {template}")
 
@@ -335,31 +355,92 @@ class NumberingIsComputedAtWriteTime(unittest.TestCase):
         self.assertIn("wins over the `nnn-` default", lower())
 
 
-class TheMethodologyIsRoutedAndGuarded(unittest.TestCase):
-    """Spec 035 (E6): an absorbed methodology joins the singleton; the agent's own file is never edited."""
+class PolicySourcesAreRoutedAndReferred(unittest.TestCase):
+    """Spec 036 (K1–K5): kb-vault never writes a constitution-feeding singleton.
 
-    def test_the_reserved_row_names_the_singleton_and_its_template(self):
-        self.assertIn(
-            "| an engineering methodology | `<artifact-root>/` | `ENGINEERING_METHODOLOGY.md` | "
-            "`engineering-methodology-template` |",
-            text(),
-        )
+    Before 1.25.0 an imported test strategy or domain analysis landed at the very path its owning agent
+    writes, and that agent then read it as one of its own prior runs — inheriting decisions nobody made, or
+    rewriting the imported text without asking. The source now lands in its own series folder and the
+    owning agent reads it as `claimed` evidence.
+    """
 
-    def test_the_series_example_is_gone(self):
-        self.assertNotIn("docs/engineering-methodology/001-", text())
+    def test_no_reserved_row_routes_to_a_singleton(self):
+        for name in SINGLETONS:
+            with self.subTest(singleton=name):
+                self.assertNotIn(f"| `<artifact-root>/` | `{name}` |", text())
 
-    def test_the_agents_own_file_is_never_updated(self):
+    def test_each_kind_has_its_source_folder_and_owner(self):
+        body = flat()
+        for folder, owner in POLICY_SOURCES.items():
+            with self.subTest(folder=folder):
+                self.assertIn(f"`{folder}`", body)
+                self.assertIn(f"`{owner}`", body)
+        self.assertIn("`<artifact-root>/<kind>-source/`", body)
+        self.assertIn("`<kind>-source-template`, else `kb-document-template`", body)
+
+    def test_a_singleton_is_never_a_match_candidate(self):
         body = lower()
-        self.assertIn("`command: speckit.spectra.methodology`", body)
-        self.assertIn("produce no update row", body)
-        self.assertIn("leave the file unchanged", body)
-        self.assertIn("`/speckit.spectra.methodology`", body)
+        self.assertIn("never shortlisted and never matched", body)
+        self.assertIn("whoever wrote them", body)
+        for name in SINGLETONS:
+            with self.subTest(singleton=name):
+                self.assertIn(name.lower(), body)
 
-    def test_a_hand_written_file_keeps_the_update_rules(self):
-        self.assertIn("without that front matter keeps the update rules", flat())
+    def test_a_request_to_write_a_singleton_is_declined(self):
+        body = lower()
+        self.assertIn("can never target one of the four singleton paths", body)
+        self.assertIn("retarget a row at one of the four singletons", body)
+
+    def test_the_report_refers_every_policy_source(self):
+        self.assertIn("every policy source, with the owning command", lower())
+
+    def test_the_old_methodology_note_is_gone(self):
+        self.assertNotIn("carries no `command: speckit.spectra.methodology` front matter", flat())
+        self.assertNotIn("One match is never updated: a methodology", flat())
+
+    def test_the_example_plan_no_longer_creates_a_singleton(self):
+        self.assertNotIn("| `docs/ENGINEERING_METHODOLOGY.md` | Create |", text())
+        self.assertIn("docs/engineering-methodology-source/001-", text())
 
     def test_the_report_lists_sources_referred_on(self):
         self.assertIn("Sources referred on", flat())
+
+
+class TemplateListMatchesTheMap(unittest.TestCase):
+    """036 K6, FR-024 — Step 4 names exactly the templates the reserved map uses, and no feeder's."""
+
+    RESERVED_TEMPLATES = {"adr-template", "brd-template", "impact-analysis-template", "defect-rca-template"}
+    NAME = re.compile(r"`([a-z][a-z-]*-template)`")
+
+    def _between(self, start: str, end: str) -> str:
+        body = text()
+        i = body.index(start)
+        return body[i : body.index(end, i)]
+
+    def test_step_four_lists_exactly_the_reserved_templates(self):
+        step4 = self._between("## Step 4", "## Step 5")
+        bullet = step4[step4.index("**reserved map**") :]
+        bullet = bullet[: bullet.index("\n- ")]
+        self.assertEqual(set(self.NAME.findall(bullet)), self.RESERVED_TEMPLATES)
+
+    def test_the_reserved_map_table_uses_the_same_templates(self):
+        step6 = self._between("## Step 6", "## Step 7")
+        rows = [line for line in step6.splitlines() if line.startswith("| ") and line.rstrip().endswith("|")]
+        named = set()
+        for row in rows:
+            named.update(self.NAME.findall(row.rsplit("|", 2)[-2]))
+        named.discard(TEMPLATE_NAME)
+        self.assertEqual(named, self.RESERVED_TEMPLATES)
+
+    def test_no_feeder_template_is_named(self):
+        for name in FEEDER_TEMPLATES:
+            with self.subTest(template=name):
+                self.assertNotIn(name, text())
+
+    def test_the_category_fallback_still_holds(self):
+        self.assertIn("`<category>-template`", text())
+        self.assertIn("resolves `<kind>-source-template`, then `kb-document-template`", flat())
+        self.assertIn("Where no layer yields `<category>-template`, resolve `kb-document-template`", flat())
 
 
 if __name__ == "__main__":
