@@ -21,11 +21,11 @@
       </a>
       <nav class="nav" aria-label="Primary">
         <a class="nav-page" href="../index.html">Home</a>
-        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
         <a class="nav-page" href="index.html" aria-current="page">Getting Started</a>
         <a class="nav-page" href="../agents.html">Agent Roster</a>
         <a class="nav-page" href="../e-learning/index.html">E-Learning</a>
         <a class="nav-page" href="../case-studies/vibe-plan-spectra.html">Case Study</a>
+        <a class="nav-page" href="../capability-brief.html">Capability Brief</a>
         <a class="nav-page" href="https://github.com/telus-digital/spectra">GitHub</a>
       </nav>
     </header>
@@ -267,16 +267,21 @@
     <p class="when"><b>The situation:</b> while planning, the team decides to move session storage from the database to
       Redis. It will shape the next ten features, and in six months nobody will remember why.</p>
     <span class="lbl">Agents</span>
-    <div class="chips"><span class="chip core">plan</span><span class="chip">adr</span><span class="chip">review-pr</span></div>
+    <div class="chips"><span class="chip">adr</span><span class="chip core">constitution</span><span class="chip core">plan</span><span class="chip">review-pr</span></div>
     <span class="lbl">The flow</span>
     <ol class="steps">
       <li><b><code>/speckit-spectra-adr We should move session storage to Redis</code></b> <span class="os">It reads the code,
-        earlier ADRs, and the constitution, asks a few questions, and writes the record under <code>docs/adr/</code>.</span></li>
-      <li><b><code>/speckit-plan</code></b> <span class="os">now plans against a recorded decision instead of a conversation.</span></li>
+        earlier ADRs, and the constitution, asks a few questions, and writes the record under <code>docs/adr/</code>. If the
+        decision is significant enough to govern later work, it also drafts guardrails for you to approve and ends with a
+        ready-made constitution prompt. It never edits the constitution itself.</span></li>
+      <li><b><code>/speckit-constitution</code></b> <span class="os">with that prompt, to <b>amend</b> the constitution. The new
+        rule cites the ADR it came from. If the agent judged the decision not significant, it says why and you skip this step.</span></li>
+      <li><b><code>/speckit-plan</code></b> <span class="os">now plans against a binding rule instead of a conversation, and its
+        Constitution Check tests the plan against it.</span></li>
       <li><b>Later, <code>/speckit-spectra-review-pr</code></b> <span class="os">flags any PR that uses a pattern an ADR rules out.</span></li>
     </ol>
     <div class="outcome"><b>You end up with</b> the decision, its alternatives, and its consequences in the repository,
-      enforced at review time.</div>
+      made binding in the constitution, and enforced at review time.</div>
   </article>
 
   <!-- 08 -->
