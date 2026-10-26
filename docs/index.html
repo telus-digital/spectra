@@ -284,18 +284,6 @@
   .tool-group > .tool-label { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
 
   /* Agents */
-  .ext header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .ext header h3 { font-size: 20px; margin: 0; }
-  .ext .badges { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--muted); }
-  .ext .desc { color: var(--muted); font-size: 14.5px; }
-  ul.cmds { list-style: none; margin: 16px 0 0; padding: 16px 0 0; border-top: 1px solid var(--border); }
-  ul.cmds > li { margin: 0 0 18px; }
-  ul.cmds > li:last-child { margin-bottom: 0; }
-  ul.cmds .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; color: var(--accent); font-weight: 700; }
-  ul.cmds .cdesc { display: block; margin-top: 6px; color: var(--muted); font-size: 14.5px; }
-  ul.cmds .args { display: block; margin-top: 7px; font-size: 13.5px; color: var(--muted); }
-  ul.cmds .args b { color: var(--text); }
-  ul.cmds .lbl { display: block; text-transform: uppercase; letter-spacing: .06em; font-size: 11.5px; color: var(--muted); margin: 10px 0 0; }
 
   footer.site {
     border-top: 1px solid var(--border); margin-top: 30px; padding: 26px 0 46px;
@@ -339,8 +327,6 @@
     <div class="secnav-track">
       <a class="sn" href="#prereqs"><span class="sn-num">01</span><span class="sn-label">Before you start</span></a>
       <a class="sn" href="#install"><span class="sn-num">02</span><span class="sn-label">Install &amp; use</span></a>
-      <a class="sn" href="#agents"><span class="sn-num">03</span><span class="sn-label">Agents</span></a>
-      <a class="sn" href="#brownfield"><span class="sn-num">04</span><span class="sn-label">Existing codebase</span></a>
     </div>
   </div>
 </nav>
@@ -506,7 +492,7 @@
               <b>Run the install inside your project.</b> <span class="os"><code>cd</code> into the project you want Spectra in, then:</span>
               <pre><code>spectra install</code></pre>
               <p class="more">It checks for the Spec Kit CLI (installing it if missing), confirms you’re in a Spec Kit project (offering <code>specify init</code> if not), registers the public Spectra catalog, and installs every extension the catalog advertises. Bare <code>spectra</code> just prints the banner and points at <code>--help</code> — <code>install</code> is the verb that changes anything.</p>
-              <div class="callout">When it finishes, <b>restart your AI agent</b> so it picks up the new commands. Then see <a href="#agents">Agents</a> below.</div>
+              <div class="callout">When it finishes, <b>restart your AI agent</b> so it picks up the new commands. Then see the <a href="getting-started/agents.html">agent reference</a>.</div>
             </li>
             <li>
                       <b>Work with your agents.</b> <span class="os">Top-level commands act on the project you're standing in.</span>
@@ -565,140 +551,6 @@
     <a class="btn btn-primary" href="e-learning/index.html">Start the E-Learning course &nbsp;&rarr;</a>
   </div>
 
-  <section class="block" id="agents">
-    <h2><span class="num">03</span>Agents</h2>
-    <p class="muted">Spectra ships as a <b>single extension</b> under the unified <code>speckit.spectra.*</code> namespace — install once and get every command. <b>Examples use Claude's trigger form</b> — a leading slash with dashes, like <code>/speckit-spectra-adr</code>. Other agents differ (kiro-cli uses <code>/speckit.spectra.adr</code>); your agent's own command list shows the exact trigger.</p>
-    <div class="panel ext">
-      <header>
-        <h3>Spectra</h3>
-        <span class="badges"><code>spectra</code> <span id="ext-version-inline">—</span></span>
-      </header>
-      <p class="desc" id="ext-description">—</p>
-      <ul class="cmds">
-        <li>
-          <span class="name">speckit.spectra.brd</span>
-          <span class="cdesc">Turn a raw business requirement — typed text or a <code>.docx</code>/<code>.pdf</code>/<code>.md</code>/<code>.txt</code> document — into a structured, specify-ready BRD written under <code>docs/brd/</code>, or wherever your constitution declares its <code>Artifact root:</code>. Reads project context, asks a few clarifying questions only when the requirement has gaps, and never invents requirements — then hands the result to the specify command. The 14-section structure is a template you can override per project at <code>.specify/templates/overrides/brd-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> the requirement as text, or a path to a requirement document. With no input it asks for one.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-brd Support agents need to merge duplicate customer tickets while preserving history</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.test-strategy</span>
-          <span class="cdesc">Decide how a project tests itself — <b>once, at the start</b>, alongside the constitution. It reads the repository, works out for itself whether this is greenfield or brownfield, then asks you <b>five things it cannot measure</b> — one question at a time, each carrying the answer it would have chosen and the evidence behind it — and writes one strategy to <code>docs/TEST_STRATEGY.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, covering unit, integration, API contract, end-to-end, UAT, and regression testing plus a coverage floor — UAT stating who may perform acceptance and what counts as evidence, regression naming the suite that must stay green. Every recommendation cites a path in your project, is explicitly marked as a convention, or is marked <code>stated</code> and names the question you answered — never neither, and <b>no answer ever moves a measured figure</b> — and it will not name a tool your stack cannot run, so the end-to-end lens resolves to browser, HTTP, CLI, or <b>none</b> rather than reaching for a browser driver a library will never use. In brownfield it reads your source rather than your README and <b>never proposes a floor above your current baseline</b>: coverage figures carry their provenance, and it runs nothing unless you confirm it. It <b>never writes your constitution</b> — it drafts the guardrails the strategy would make binding, records your decision on each under a frozen ID, and hands a <b>Constitution input</b> section to the constitution command with a ready-to-paste line: <b>create</b> when there is no constitution yet, <b>update</b> when there is. A document imported by kb-vault is read as what it <code>claimed</code>, never as what your repository does. Recommends CI and coverage configuration; never applies it. A singleton, rewritten in place, with Git carrying the history. Twelve sections, overridable at <code>.specify/templates/overrides/test-strategy-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> none required. Optionally a focus to weight the analysis — it never narrows the six mandatory lenses, or <code>--non-interactive</code> to skip the questions.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-test-strategy</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.impact</span>
-          <span class="cdesc">Find out what a proposed feature would actually touch — <b>before</b> anyone commits to building it. Give it one paragraph of intent and it scans the project, asks at most five questions about what the code cannot answer, and writes a numbered analysis under <code>docs/impact-analysis/</code>, or wherever your constitution declares its <code>Artifact root:</code>. Every finding carries a <code>path:line</code> citation and a confidence level; the impact rating comes from a defined trigger set rather than a judgement; and the output states how much of the repository it read, so a reviewer can tell &ldquo;checked and found nothing&rdquo; from &ldquo;did not check&rdquo;. It never claims there is no impact, never reproduces a secret it finds, and routes security and compliance questions to the agents that own them instead of answering them. Multi-repository systems are declared as text, a document, or a local directory read in place — it accepts no URL and makes no network request. Ten sections, overridable at <code>.specify/templates/overrides/impact-analysis-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> the feature intent as one paragraph (required), optional document paths (<code>.md</code>/<code>.txt</code>/<code>.pdf</code>/<code>.docx</code>), <code>--non-interactive</code> for CI, and five cap overrides for large repositories.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-impact We want to email customers who leave items in their cart for more than 24 hours</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.test-plan</span>
-          <span class="cdesc">Get the tests <b>agreed before anyone writes them</b>. Run it after <code>specify</code> and it writes one <code>test-plan.md</code> beside the feature&rsquo;s <code>spec.md</code> — scope with real exclusions, a risk table capped at five rows, traceable test conditions, suggested UAT scenarios, a regression scope, environment and data, and an exit bar someone can make a go/no-go call from. Built for teams that work test-first: the plan is circulated and approved, then fed to the planning command through a ready-to-paste prompt that records its obligations in <code>plan.md</code>, so the tasks include the tests it names and end in a UAT phase the implement command leaves open. An optional hook offers it right after specify. <b>Traceability runs both ways</b> — every acceptance criterion reaches a condition, a UAT scenario, or is reported as uncovered with a reason, and every condition names what it verifies using your spec&rsquo;s own identifiers, so a reviewer can check coverage without reading code. It <b>finds the feature the way the planning command does</b> and says which one it used — no branch-name inference, no picker — and stops rather than write into a feature the planner won&rsquo;t plan. Where a requirement is too vague to test it says so rather than inventing a condition. Level names come from your <code>TEST_STRATEGY.md</code> verbatim where you have one — a lens the strategy ruled out is unavailable, and with no strategy it uses the full default set and says so loudly — a declared coverage floor is carried in and attributed, and no tool is named that your manifests cannot run. Existing coverage is read from your test source, <b>never executed</b>. <b>No checkboxes anywhere</b>, exit criteria included — it is approved, not tracked. Seven sections, overridable at <code>.specify/templates/overrides/test-plan-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> none needed — it uses the feature <code>specify</code> recorded. A path to the feature directory or its <code>spec.md</code> only confirms it, and a mismatch stops. <code>--non-interactive</code> for CI.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-test-plan</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.uat</span>
-          <span class="cdesc">Perform a feature&rsquo;s user-acceptance scenarios on the real build — <b>after implementation, and only when you ask</b>. The test plan suggests the scenarios, the tasks command turns them into a final UAT phase, and the implement command leaves that phase open; you either tick it yourself or hand the feature to this command. It shows <b>the exact command</b> it would run to start the build and waits for your confirmation, performs only the scenarios its own session can drive, and captures screenshots, transcripts, and comparisons under <code>specs/&lt;feature&gt;/uat/&lt;run-stamp&gt;/</code>, never overwriting an earlier run. <b>It ticks only what it saw pass</b>, with the evidence linked; human-only, failed, and unreachable scenarios stay open with a reason, and a task a human ticked is never touched. It changes nothing it is accepting — no source, tests, spec, or test plan — never edits code to make a scenario pass, and masks or withholds any capture that might show a secret. An optional hook offers it after implement, ahead of the pull request. Writes <code>uat-report.md</code> beside the spec, overridable at <code>.specify/templates/overrides/uat-report-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> none needed — it finds the feature the way the implement command does and names it before anything starts. A path to the feature directory or its <code>spec.md</code> only confirms it, and a mismatch stops. <code>--env</code> to act on a named environment and <code>--non-interactive</code> for CI, where it starts nothing.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-uat</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.defect-rca</span>
-          <span class="cdesc">Take a defect down to its <b>root cause</b>, with the evidence read from your code rather than asked for. Give it a GitHub issue URL, a JIRA ticket reference, or a sentence describing what went wrong, and it reads the implicated code, the commits that touched it, the configuration and the tests before it asks you anything &mdash; then writes one advisory analysis under <code>docs/defect-rca/</code>, or wherever your constitution declares its <code>Artifact root:</code>. Every claim about the code cites a file and line; every claim that something is <i>absent</i> states what was searched for and where. It <b>checks whether you have analyzed this defect before</b>, at intake rather than after the fact &mdash; matching on implicated code, symptom, or root cause, never on title similarity &mdash; and gives each earlier preventive action a verdict of completed, not completed, or undeterminable, with a citation required for the first two. It <b>will not call the first plausible code path a root cause</b>: every probe names its layer on the symptom-to-systemic ladder, and a conclusion still sitting at &ldquo;immediate technical cause&rdquo; is reported as exactly that. Invalidated hypotheses appear in the document alongside the surviving one, because a table of nothing but confirmations is a justification rather than an analysis. It fixes nothing, writes no test, never touches your ticket, and <b>never asks you for a credential</b> &mdash; a missing GitHub CLI costs you a copy-paste, not the analysis. Six sections, overridable at <code>.specify/templates/overrides/defect-rca-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> the defect &mdash; a GitHub issue URL, a JIRA ticket reference, or a plain description (<b>required</b> &mdash; never inferred from your branch or your failing tests). Supplementary logs, configuration, and timelines can be pasted at any point.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-defect-rca https://github.com/acme/orders/issues/412</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.kb-vault</span>
-          <span class="cdesc">Get the knowledge your team already has <b>into the repository</b>, where people and coding agents can both read it. Attach the documents &mdash; a PDF of architecture decisions inherited from a previous team, a Word file describing the engineering workflow, a deck of UX/UI standards, a diagram exported as an image &mdash; or just describe what you know. It absorbs all of it, works out what kind of document each source is, learns how your project already keeps documentation, and <b>shows you a table before it writes anything</b>: category, description, destination, create or update. Then it stops and waits. An ambiguous answer writes nothing; any change re-presents the whole table. It <b>updates what you already have rather than duplicating it</b> &mdash; matching on subject and category, never on title similarity &mdash; editing the existing file in place, keeping its name and the hand-written sections your source never mentions. Where a supplied document is a kind Spectra already produces &mdash; an ADR, a BRD, an impact analysis, a defect RCA &mdash; it adopts that agent&rsquo;s folder, numbering and template, so it joins the existing set instead of starting a second one beside it. A domain analysis, engineering methodology, test strategy, or deployment strategy is kept as a <b>policy source</b> in its own <code>&lt;kind&gt;-source/</code> folder and referred to the agent that owns it: kb-vault never writes the documents those agents produce for the constitution. Everything else takes its own category folder under <code>docs/</code>, or wherever your constitution declares its <code>Artifact root:</code>, with an index maintained beside it. It <b>never invents and never mines your codebase</b>: every sentence traces to something you supplied, a template section with no source says so, a file it cannot read is named rather than guessed at, and &ldquo;document the architecture&rdquo; with nothing attached gets you a request for material. Originals stay outside the repository; you get Markdown. And it <b>never commits</b> &mdash; when the files are written it tells you they are uncommitted and hands the review back. Six sections, overridable at <code>.specify/templates/overrides/kb-document-template.md</code>, or per category at <code>.specify/templates/overrides/&lt;category&gt;-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> optional &mdash; steering for the attached documents, or knowledge dictated directly when you have nothing to attach. Documents are supplied as session attachments or readable paths. With neither, it asks for material and stops.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-kb-vault these are our UX standards and the old architecture decisions</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.adr</span>
-          <span class="cdesc">Create a context-aware Architecture Decision Record grounded in your codebase, prior ADRs, and constitution — it asks a few clarifying questions, then writes the ADR under <code>docs/adr/</code> (or your declared <code>Artifact root:</code>). When the decision is significant, it drafts the constitution guardrails it implies &mdash; architecture-level choices only, referring testing, deployment, languages and workflow to the agent that owns them &mdash; records what you accept in a <b>Constitution input</b> section, and hands you a ready-to-paste <code>/speckit-constitution</code> line that cites the ADR. It <b>never edits your constitution</b>. Its section structure is a template you can override per project at <code>.specify/templates/overrides/adr-template.md</code>. Use it when making a significant architecture or technology choice.</span>
-          <span class="args"><b>Arguments:</b> a short description of the decision. If omitted, you'll be asked for one before drafting.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-adr We should standardize on PostgreSQL for all primary data stores</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.domain-analyzer</span>
-          <span class="cdesc">Say whether the project has a constitution — so whether this run creates or updates one — then scan the codebase, docs, and ADRs to infer its domain and work six lenses, handing workflow to <code>speckit.spectra.methodology</code>. You decide each lens's candidate guardrails in the session, from at least four options with one recommended and one Skip. Only then does it write <code>docs/DOMAIN_ANALYSIS.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, with a Constitution input section and a ready-to-paste <code>/speckit-constitution</code> prompt. A guardrail you already accepted in an ADR is cited, not drafted twice. It never edits the constitution or source, and adopts nothing you did not choose. Overridable at <code>.specify/templates/overrides/domain-analysis-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> none required — runs on the whole project (ideal for brownfield). Optionally pass a domain hint to steer it.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-domain-analyzer this is a banking system</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.methodology</span>
-          <span class="cdesc">Say whether the project is brownfield or greenfield — and whether this run creates or updates the constitution — then read the history, PR templates, CI, and sibling documents and work nine lenses: methodology stack, work modes, requirements intake, spec lifecycle, branching, review gates, change records, AI collaboration, and governance. Spec-driven development is the base; TDD, BDD, DDD, contract-first, and ADR-driven overlays are offered with their evidence and become binding only as obligations tied to a spec-kit phase. You decide each in the session, ten questions one at a time, each with one recommended option and one Skip. Only then does it write an onboarding-grade <code>docs/ENGINEERING_METHODOLOGY.md</code>, or wherever your constitution declares its <code>Artifact root:</code>, with a Constitution input section and a ready-to-paste <code>/speckit-constitution</code> prompt. It never edits the constitution, never runs another phase, and adopts nothing you did not choose. Overridable at <code>.specify/templates/overrides/engineering-methodology-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> none required — reads the whole project, brownfield or greenfield. Optionally a focus hint, and <code>--non-interactive</code>.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-methodology we are weighing TDD for new code</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.deployment-strategy</span>
-          <span class="cdesc">Decide how a project gets from a merged change to something <b>running or published</b>. It reads your CI, container and orchestration files, infrastructure code, migrations, specs, and ADRs &mdash; plus any local document you point it at &mdash; works out <b>what ships</b> (service, static site, library, CLI, mobile app, or infrastructure), and writes one strategy to <code>docs/DEPLOYMENT_STRATEGY.md</code>, or wherever your constitution declares its <code>Artifact root:</code>. Six lenses: environments and promotion (with a Mermaid promotion diagram), pipeline and artifact traceability, release and versioning, data and schema change, rollback and recovery, and operability and configuration &mdash; each reporting what happens today before recommending. Every claim is marked <code>verified</code>, <code>claimed</code>, <code>stated</code>, or <code>convention</code>. It asks <b>five things it cannot read</b> &mdash; hosting, production approval, a pre-release environment, recovery targets, release cadence &mdash; one at a time, each with a recommendation, and <b>never invents</b> an account ID, a cluster name, or a recovery target: those become open questions. It drafts only durable invariants as guardrails, records your decision on each under a frozen ID, and hands a <b>Constitution input</b> section to the constitution command with a ready-to-paste <code>/speckit-constitution</code> line &mdash; to <b>create</b> the constitution or <b>update</b> it. It <b>never writes your constitution</b>, edits nothing else, runs nothing, and makes no network request. A singleton, rewritten in place. Overridable at <code>.specify/templates/overrides/deployment-strategy-template.md</code>.</span>
-          <span class="args"><b>Arguments:</b> none required. Optionally a focus, paths to local documents, and <code>--non-interactive</code>.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-deployment-strategy ./client/hosting-standard.md</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.create-pr</span>
-          <span class="cdesc">Open a correctly-targeted GitHub PR for the branch you're on — optionally linked to an issue, with the body built from an overridable <code>pr-template</code>. Offers to commit and push uncommitted work, asks once with everything on the table before creating anything, and returns the PR URL. Also offered automatically after <code>implement</code>.</span>
-          <span class="args"><b>Arguments:</b> none opens a <b>ready-for-review</b> PR (default); <code>--issue &lt;url-or-number&gt;</code> links an issue (you're asked once if omitted); <code>--draft</code> opens a draft; <code>--base &lt;branch&gt;</code> sets the base branch.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-create-pr --issue 42</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.review-pr</span>
-          <span class="cdesc">Review a GitHub pull request against the spec, ADRs, and constitution it <b>carries</b> — reading them at the PR's own revision, and the constitution in force on the base branch — plus the linked issue as optional extra context, which becomes the traceability baseline when there is no spec. The spec a PR ships <b>overrides older specs</b> on the same behaviour, and a project with no constitution is still measured against the guardrails its test and deployment strategies <b>accepted</b> &mdash; never a declined one &mdash; its own conventions, and a seven-principle baseline cited by ID. Blast radius, generation artifacts and test integrity are checked on every PR. Surfaces what a diff-only review cannot: a task marked complete but missing from the change, scope no requirement authorized, a pattern an ADR forbids. Every finding cites a file, a line, and its source, and lands <b>on the line it is about</b>, with an applicable <code>suggestion</code> where the fix is mechanical. <b>Only blockers and majors are proposed</b> — minors, nits and questions are listed by number but left out, so a one-word <code>yes</code> publishes just what should block the merge and takes the verdict that follows from it. <code>all</code> takes everything, any selection of your own still works, and an empty answer posts nothing. You see the exact review first, then one atomic review is published under your own credentials. The body's shape is a template you can override per project.</span>
-          <span class="args"><b>Arguments:</b> none offers the current branch's PR then lists open PRs to pick from; <code>&lt;url&gt;</code> or <code>&lt;number&gt;</code> reviews that PR; <code>--issue &lt;url-or-number&gt;</code> supplies the linked issue; <code>--since &lt;revision&gt;</code> re-reviews only the delta since a revision you reviewed before.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-review-pr https://github.com/acme/api/pull/142</code></pre>
-        </li>
-        <li>
-          <span class="name">speckit.spectra.flaky-test-detector</span>
-          <span class="cdesc">Find the tests that pass and fail on the same code — by <b>reading your test source</b>, with no CI integration, no results store, and no waiting for run history. Reports each candidate with a confidence rating and a specific fix, then stops. On your go-ahead it writes a task list to <code>.specify/memory/flaky-test-analysis.md</code> that you prune; on a second go-ahead it fixes what's left, ticking each item off on disk as it lands, so an interrupted session resumes exactly where it stopped. <b>It never runs anything</b> — not your suite, not a build, not even to check a fix worked — and a fix must remove the cause: deleting assertions, skipping tests, and adding retries are forbidden as remedies. Edits stay in test code, nothing is committed, and your constitution decides which fixes are allowed.</span>
-          <span class="args"><b>Arguments:</b> none analyzes the whole working tree; a path or suite name narrows the run — and before a narrowed run replaces a broader plan, it names the pending items that would be dropped.</span>
-          <span class="lbl">Example (Claude)</span>
-          <pre><code>/speckit-spectra-flaky-test-detector</code></pre>
-        </li>
-      </ul>
-    </div>
-
-    <div class="panel" style="text-align:center;padding:30px 24px;margin-top:24px">
-      <p style="color:var(--text);font-size:16px;margin:0 0 18px">Want to see every agent SPECTRA offers?</p>
-      <a class="btn btn-primary" href="agents.html">Click here to see the full list of agents &nbsp;&rarr;</a>
-    </div>
-  </section>
-
-  <section class="block" id="brownfield">
-    <h2><span class="num">04</span>Starting on an existing codebase</h2>
-    <p class="muted">On a brownfield project, five SPECTRA agents lay the foundation the constitution is built from. Run them in this order, and run the constitution after each one:</p>
-    <div class="panel">
-      <ol class="steps">
-        <li><b><code>/speckit-spectra-kb-vault</code> <span class="os">(optional)</span></b> <span class="os">Import knowledge kept outside the repository: wiki pages, exported documents, design notes. Policy sources land in their own <code>&lt;kind&gt;-source/</code> folder for the owning agent to read, never in that agent&rsquo;s document.</span></li>
-        <li><b><code>/speckit-spectra-domain-analyzer</code>, then <code>/speckit-constitution</code></b> <span class="os">&mdash; <b>create</b> the constitution.</span></li>
-        <li><b><code>/speckit-spectra-methodology</code>, then <code>/speckit-constitution</code></b> <span class="os">&mdash; <b>amend</b> it.</span></li>
-        <li><b><code>/speckit-spectra-test-strategy</code>, then <code>/speckit-constitution</code></b> <span class="os">&mdash; <b>amend</b> it.</span></li>
-        <li><b><code>/speckit-spectra-deployment-strategy</code>, then <code>/speckit-constitution</code></b> <span class="os">&mdash; <b>amend</b> it.</span></li>
-      </ol>
-      <p class="more"><b>Why the constitution runs after each agent.</b> Each agent ends by handing you its own ready-to-paste constitution line, built from the guardrails you accepted in its round. Running it before the next agent means that agent finds a ratified constitution: each later agent detects the constitution, switches its goal to update, and proposes only what it does not already say &mdash; so no rule gets two sources, and nothing you already ratified is offered to you again. An imported document is read as what someone <i>claimed</i>, never as current practice: only the code and history decide that, and only your answers adopt a guardrail.</p>
-      <p class="more"><b>Declare the artifact root in the first constitution run.</b> Add a line such as <code>Artifact root: docs/</code> to the constitution when you create it &mdash; or <code>Artifact root: documents/</code> where <code>docs/</code> is published by GitHub Pages, MkDocs, or Docusaurus. Every later agent reads it, and stops asking where its document should go.</p>
-      <p class="more">On a greenfield project, skip the import and start with the domain analyzer; the order is otherwise the same. Other agents type the dotted form, such as <code>/speckit.spectra.domain-analyzer</code>.</p>
-      <p class="more"><a href="getting-started/spectra.html#s-constitution">See the full walkthrough, and nine more scenarios &rarr;</a></p>
-    </div>
-  </section>
 
   <footer class="site">
     <span>SPECTRA · a curated catalog of Spec Kit extensions · by TELUS Digital</span>
@@ -732,7 +584,6 @@
   (function () {
     var pill = document.getElementById("ext-release");
     var label = document.getElementById("ext-version");
-    var inline = document.getElementById("ext-version-inline");
     if (!pill || !label) return;
     fetch("https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json")
       .then(function (r) { return r.ok ? r.json() : null; })
@@ -741,7 +592,6 @@
         if (!ext || !ext.version) return;
         label.textContent = "Agents v" + ext.version;
         pill.classList.add("show");
-        if (inline) inline.textContent = "v" + ext.version;
       })
       .catch(function () { /* leave the pill hidden */ });
   })();
@@ -845,22 +695,6 @@
         });
       });
     });
-  })();
-
-  // The extension description and the agent roster are read at page load for the same reason the two
-  // version numbers are (see Principle VI): a value typed into HTML is drift waiting to happen, while
-  // a value fetched from the artifact that defines it cannot drift. The description comes from
-  // catalog.json; the agents come from agents-list.json, the same file `spectra agent-list` reads.
-  (function () {
-    var target = document.getElementById("ext-description");
-    if (!target) return;
-    fetch("https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json")
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (data) {
-        var ext = data && data.extensions && data.extensions.spectra;
-        if (ext && ext.description) target.textContent = ext.description;
-      })
-      .catch(function () { /* leave the placeholder */ });
   })();
 
   // Section rail: keep the sticky offset current and light the section being read — the same

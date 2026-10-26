@@ -303,7 +303,7 @@ class NoStaleProse(unittest.TestCase):
         return flat(text[start : text.index("<!-- SPECTRA:AGENT id=", start + 1)])
 
     def landing_card(self) -> str:
-        text = h.repo_file("docs", "index.html").read_text(encoding="utf-8")
+        text = h.repo_file("docs", "getting-started", "agents.html").read_text(encoding="utf-8")
         start = text.index('<span class="name">speckit.spectra.adr</span>')
         return flat(text[start : text.index("</span>", text.index('class="cdesc"', start))])
 
@@ -321,7 +321,7 @@ class NoStaleProse(unittest.TestCase):
     def test_each_surface_names_the_handoff(self):
         for name, text in (
             ("AGENTS_LIST.md", self.agents_list_block()),
-            ("docs/index.html", self.landing_card()),
+            ("docs/getting-started/agents.html", self.landing_card()),
             ("spectra/README.md", self.extension_readme()),
         ):
             with self.subTest(surface=name):
@@ -330,7 +330,7 @@ class NoStaleProse(unittest.TestCase):
     def test_no_surface_says_it_edits_the_constitution(self):
         for name, text in (
             ("AGENTS_LIST.md", self.agents_list_block()),
-            ("docs/index.html", self.landing_card()),
+            ("docs/getting-started/agents.html", self.landing_card()),
             ("spectra/README.md", self.extension_readme()),
         ):
             for phrase in ("flags any constitution update", "offers to make it"):

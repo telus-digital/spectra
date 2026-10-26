@@ -303,7 +303,7 @@ class NoStaleProse(unittest.TestCase):
         for name, text, stale in (
             ("AGENTS_LIST.md", block, "**required**, and never inferred"),
             ("spectra/README.md", readme, "The feature is required."),
-            ("docs/index.html", card, "<b>required</b> — never inferred"),
+            ("docs/getting-started/agents.html", card, "<b>required</b> — never inferred"),
         ):
             with self.subTest(file=name):
                 self.assertNotIn(flat(stale), flat(text))
@@ -321,7 +321,7 @@ class NoStaleProse(unittest.TestCase):
 
     @staticmethod
     def uat_card() -> str:
-        html = h.repo_file("docs", "index.html").read_text(encoding="utf-8")
+        html = h.repo_file("docs", "getting-started", "agents.html").read_text(encoding="utf-8")
         start = html.index('<span class="name">speckit.spectra.uat</span>')
         return html[start:html.index("</li>", start)]
 

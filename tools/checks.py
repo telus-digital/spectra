@@ -48,6 +48,7 @@ MANIFEST = REPO_ROOT / "spectra" / "extension.yml"
 CATALOG = REPO_ROOT / "catalog.json"
 PACKAGE = REPO_ROOT / "docs" / "packages" / "spectra.zip"
 LANDING = REPO_ROOT / "docs" / "index.html"
+AGENTS_PAGE = REPO_ROOT / "docs" / "getting-started" / "agents.html"
 
 # FR-051/SC-010: the extension description is published in three places and must read identically in
 # all of them. `tests/test_ci_contract.py` asserts this string still matches `tests/helpers.py`, so
@@ -137,12 +138,14 @@ def check_description_parity() -> list:
             f"catalog.json describes the extension as {catalog_description!r}, "
             f"expected {DESCRIPTION!r}.")
 
-    try:
-        if DESCRIPTION in LANDING.read_text(encoding="utf-8"):
-            problems.append(
-                "docs/index.html hard-codes the description; it must fetch it from catalog.json.")
-    except OSError as exc:
-        problems.append(f"could not read docs/index.html ({exc}).")
+    for page in (LANDING, AGENTS_PAGE):
+        label = page.relative_to(REPO_ROOT).as_posix()
+        try:
+            if DESCRIPTION in page.read_text(encoding="utf-8"):
+                problems.append(
+                    f"{label} hard-codes the description; it must fetch it from catalog.json.")
+        except OSError as exc:
+            problems.append(f"could not read {label} ({exc}).")
     return problems
 
 

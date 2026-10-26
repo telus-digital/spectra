@@ -306,9 +306,9 @@ class NoStaleProse(unittest.TestCase):
     def test_the_prose_drops_the_feature_record_prohibition(self):
         agents = h.repo_file("AGENTS_LIST.md").read_text(encoding="utf-8")
         block = agents.partition("<!-- SPECTRA:AGENT id=test-plan -->")[2].partition("<!-- SPECTRA:AGENT id=")[0]
-        site = h.repo_file("docs", "index.html").read_text(encoding="utf-8")
+        site = h.repo_file("docs", "getting-started", "agents.html").read_text(encoding="utf-8")
         card = site.partition('<span class="name">speckit.spectra.test-plan</span>')[2].partition("</li>")[0]
-        for text, where in ((block, "AGENTS_LIST.md"), (card, "docs/index.html")):
+        for text, where in ((block, "AGENTS_LIST.md"), (card, "docs/getting-started/agents.html")):
             with self.subTest(where=where):
                 self.assertNotIn("no feature record", flat(text))
                 self.assertNotIn("never inferred", flat(text))

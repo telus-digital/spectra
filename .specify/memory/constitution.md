@@ -1,29 +1,35 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version: 1.12.0 → 1.13.0
-Bump type: MINOR — materially expanded guidance: a new named singleton. No principle added, removed,
-  or renumbered, and no rule changed.
-Rationale: feature 035 adds `speckit.spectra.methodology`, which writes one standing-policy document.
-  Principle VII requires a new singleton to be named in its singleton paragraph by amendment; a command
-  may not declare itself one.
+Version: 1.13.0 → 1.14.0
+Bump type: MINOR — materially changed guidance: a sync obligation moves to a different file and the
+  no-hard-coding rule extends to a second page. No principle added, removed, or renumbered.
+Rationale: the per-command listing moved off the landing page to a Getting Started page with a side
+  navigation pane. Principle V and the Development Workflow still named `docs/index.html` as the page
+  that lists commands, which no longer matched the site.
 
 Modified principles:
-  - VII (title unchanged)
-    - changed: "The three shipped singletons" → "The four shipped singletons"
-    - added: `<artifact-root>/ENGINEERING_METHODOLOGY.md` (`speckit.spectra.methodology`)
-    - added: note that ENGINEERING_METHODOLOGY.md never had an earlier location, so it needs no migration
+  - V (title unchanged)
+    - changed: the "same change" list now updates the command's card in
+      `docs/getting-started/agents.html`, not `docs/index.html`
+    - changed: `docs/getting-started/agents.html` added to the never-drift list
+    - changed: the no-hard-coding rule binds both the landing page and the agents page; both read the
+      extension version and description from `catalog.json`; `description-parity` enforces it on both
+    - corrected: the roster is read from `agents-list.json` by `docs/agents.html`, not by
+      `docs/index.html` (which never did)
+  - Additional Constraints → "No silent drift": the agents page added to the files to verify
+  - Development Workflow → Implement: the agents page card replaces the `docs/index.html` update
 
 Added sections: none
 Removed sections: none
 
-Templates requiring updates: none — plan/spec/tasks templates do not enumerate singletons.
-  ✅ .specify/templates/plan-template.md (Constitution Check unaffected)
+Templates requiring updates: none — plan/spec/tasks templates do not name the landing page.
+  ✅ .specify/templates/plan-template.md
   ✅ .specify/templates/spec-template.md
   ✅ .specify/templates/tasks-template.md
 
-Follow-up TODOs: none. The command, template and tests that rely on this amendment are tasks T004 onward
-  of specs/035-engineering-methodology-agent/tasks.md.
+Follow-up TODOs: none. SHIPPING.md, CONTRIBUTING.md, tools/checks.py and the tests were already
+  updated in the same uncommitted change.
 -->
 
 # Spectra Constitution
@@ -155,7 +161,9 @@ the extension MUST include, in the same change:
 - updating `catalog.json` — the single source of truth for the catalog — so the `spectra` entry
   (name, description, version, tags, command count, and `download_url`) matches `spectra/extension.yml`
   and the new zip;
-- updating `docs/index.html` so the landing page lists the extension and its commands;
+- adding or updating the command's card in `docs/getting-started/agents.html`, the page that lists
+  every shipped command with what it does, its arguments, and an example — the landing page
+  (`docs/index.html`) no longer lists commands;
 - regenerating every structured agent listing with `tools/generate_agent_docs.py`, and hand-writing the
   per-agent prose block a newly shipped agent needs; and
 - committing `agents-list.json`, `catalog.json`, `docs/`, `README.md`, `AGENTS_LIST.md`, and the
@@ -170,18 +178,23 @@ prose stays hand-authored and MUST NOT be generated; automation guarantees only 
 what it says. The division is by kind of content, not by file: if it is a table or a list, it is
 generated; if it is a paragraph, it is written.
 
-`catalog.json`, `docs/index.html`, `README.md`, `AGENTS_LIST.md`, and the published
-`docs/packages/spectra.zip` MUST never drift from the `spectra/` folder or from `agents-list.json`.
+`catalog.json`, `docs/index.html`, `docs/getting-started/agents.html`, `README.md`, `AGENTS_LIST.md`,
+and the published `docs/packages/spectra.zip` MUST never drift from the `spectra/` folder or from `agents-list.json`.
 
 This sync obligation governs the **catalog channel only** (the extension, its package, and the pages
 that link to them). The `spectra` CLI is a *separate* distribution channel with its own version and is
 NOT expected to move in lockstep with the catalog — it is governed by Principle VI.
 
-The landing page MUST NOT hard-code data that another artifact already defines — neither channel's
-version number, nor the extension's description, nor the agent roster. `docs/index.html` reads the
-extension version and description from `catalog.json`, the agent information from `agents-list.json`,
-and the CLI version from the newest published GitHub Release, all at page load. A value typed into HTML
-is drift waiting to happen; a value fetched from the artifact that defines it cannot drift.
+The published pages MUST NOT hard-code data that another artifact already defines — neither channel's
+version number, nor the extension's description, nor the agent roster. This binds both the landing page
+(`docs/index.html`) and the agents page (`docs/getting-started/agents.html`): each reads the extension
+version and description it shows from `catalog.json` at page load, and the landing page reads the CLI
+version from the newest published GitHub Release. The roster page (`docs/agents.html`) reads the agents
+from `agents-list.json`. The per-agent cards on the agents page are hand-written prose, like the prose
+blocks above, so they are authored rather than fetched. The `description-parity` check in
+`tools/checks.py` fails when either the landing page or the agents page hard-codes the extension
+description. A value typed into HTML is drift waiting to happen; a value fetched from the artifact that
+defines it cannot drift.
 
 Rationale: The repo is the catalog channel's only distribution point — users discover and install the
 extension entirely from it, against the raw `catalog.json`. A stale catalog or a missing zip ships a
@@ -413,8 +426,8 @@ being re-litigated per agent, which is exactly how the `adr`/`brd` divergence ar
   binding on downstream redistributors, so dropping it silently weakens the attribution requirement,
   and §6 withholds trademark rights that only `TRADEMARK.md` actually spells out. A consumer who has
   only the installed package MUST be able to read what the licence does not grant.
-- **No silent drift.** Before publishing, verify that `catalog.json`, `docs/packages/spectra.zip`, and
-  `docs/index.html` all agree with the `spectra/` folder and use the raw
+- **No silent drift.** Before publishing, verify that `catalog.json`, `docs/packages/spectra.zip`,
+  `docs/index.html`, and `docs/getting-started/agents.html` all agree with the `spectra/` folder and use the raw
   `raw.githubusercontent.com/telus-digital/spectra/main/...` URLs; any mismatch MUST be resolved first. CI
   enforces this: `.github/workflows/ci.yml` fails when `extension.yml` and `catalog.json` disagree on
   the version or the command count, when the committed zip has drifted from the `spectra/` folder, or
@@ -451,7 +464,8 @@ invokes each one, and the agent stops when it finishes and names the next.
    command file under `spectra/commands/`, register it in `spectra/extension.yml`, bump
    `extension.version` with a matching `spectra/CHANGELOG.md` entry, rebuild
    `docs/packages/spectra.zip` (a single top-level `spectra/` folder), update the `spectra` entry in
-   `catalog.json` (the single source of truth) and `docs/index.html`, register the agent in
+   `catalog.json` (the single source of truth) and the command's card in
+   `docs/getting-started/agents.html`, register the agent in
    `agents-list.json`, and regenerate the structured agent listings with
    `tools/generate_agent_docs.py` (Principle V). Where work is left unbuilt, the user may run
    `converge` to append it to `tasks.md` and then `implement` again; `converge` too is user-invoked
@@ -524,4 +538,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 1.13.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-24
+**Version**: 1.14.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-25

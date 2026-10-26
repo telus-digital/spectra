@@ -189,7 +189,12 @@ a.linkcard .arrow { display: inline-block; margin-top: 10px; color: var(--accent
   margin: 28px calc(50% - var(--scen-w) / 2) 0;
   display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 32px; align-items: start;
 }
-.scen-body > h2 { margin-top: 0; }
+/* The scenarios heading spans the same width as the layout under it, so it lines up with the sidebar. */
+.scen-head { --scen-w: min(1200px, calc(100vw - 44px)); margin-left: calc(50% - var(--scen-w) / 2); margin-right: calc(50% - var(--scen-w) / 2); }
+section.scen-head { padding-bottom: 0; }
+.scen-head h2 { margin-bottom: 6px; }
+.scen-head p { margin: 0; }
+.scen-head + .scen-layout { margin-top: 22px; }
 .scen-nav {
   position: sticky; top: calc(var(--stack-h, 96px) + 20px);
   max-height: calc(100vh - var(--stack-h, 96px) - 40px); overflow-y: auto; scrollbar-width: thin;
@@ -216,11 +221,12 @@ a.linkcard .arrow { display: inline-block; margin-top: 10px; color: var(--accent
 .scen-nav-track a[aria-current] .n { color: #B583F5; }
 .scen-nav-track a[aria-current] small { color: var(--muted); }
 .scen-nav-track a:focus-visible { outline: 2px solid #B583F5; outline-offset: -2px; border-radius: 6px; }
-article.scenario { scroll-margin-top: calc(var(--stack-h, 96px) + var(--strip-h, 0px) + 14px); }
+article.scenario, li.agent { scroll-margin-top: calc(var(--stack-h, 96px) + var(--strip-h, 0px) + 14px); }
 
 /* Narrow screens: the sidebar becomes a strip pinned under the site bars, like the section rail. */
 @media (max-width: 960px) {
   .scen-layout { margin: 28px 0 0; display: block; }
+  .scen-head { margin-left: 0; margin-right: 0; }
   .scen-nav {
     top: var(--stack-h, 96px); z-index: 50; max-height: none; overflow: visible;
     margin: 0 -22px 20px; padding: 0 22px;
@@ -257,8 +263,64 @@ article.scenario .when b { color: var(--text); font-weight: 600; }
   background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.22); font-size: 14.5px;
 }
 .outcome b { color: var(--green); font-weight: 600; }
-.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-top: 10px; }
-.legend .chip { margin-right: 6px; }
+
+/* SDD page: the core-practice card and the loop diagram (a ring on wide screens, a stack on narrow). */
+.card.core { border-color: rgba(167,139,250,0.55); background: rgba(167,139,250,0.08); position: relative; }
+.card .tag {
+  position: absolute; top: 16px; right: 16px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px;
+}
+.loop { padding: 22px 18px 18px; }
+.loop svg { display: block; width: 100%; height: auto; margin: 0 auto; }
+.loop .loop-ring { max-width: 760px; }
+.loop .loop-stack { display: none; max-width: 340px; }
+.lr-node { fill: var(--bg-2); stroke: var(--border); stroke-width: 1.2; }
+.lr-title { fill: var(--text); font: 600 17px Inter, system-ui, sans-serif; }
+.lr-sub { fill: var(--muted); font: 13px Inter, system-ui, sans-serif; }
+.lr-center { fill: var(--text); font: 600 19px Inter, system-ui, sans-serif; }
+.lr-note { fill: var(--accent-2); font: italic 13px Inter, system-ui, sans-serif; }
+.lr-arc { fill: none; stroke: var(--accent); stroke-width: 1.8; }
+.lr-arc.back { stroke-dasharray: 5 5; }
+.loop-key { display: flex; align-items: center; gap: 10px; justify-content: center; margin: 14px 0 0; color: var(--muted); font-size: 13.5px; text-align: left; }
+.loop-key .ck { flex: none; width: 16px; height: 16px; border-radius: 50%; background: var(--green); }
+#loop .grid3 { margin-top: 0; }
+@media (max-width: 640px) {
+  .loop .loop-ring { display: none; }
+  .loop .loop-stack { display: block; }
+}
+
+/* Agents page: one card per agent, with the command blocks and copy buttons the home page uses. */
+ul.cmds { list-style: none; margin: 0; padding: 0; }
+li.agent { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 0 0 22px; }
+li.agent > header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+li.agent > header .n { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); font-size: 15px; }
+li.agent > header h3 { font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+li.agent > header .phase { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; }
+ul.cmds .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; color: var(--accent); font-weight: 700; }
+ul.cmds .cdesc { display: block; margin-top: 10px; color: var(--muted); font-size: 14.5px; }
+ul.cmds .args { display: block; margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+ul.cmds .args b { color: var(--text); }
+ul.cmds .lbl { margin: 14px 0 0; }
+pre {
+  background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; overflow-x: auto; margin: 12px 0 0;
+}
+pre code { color: #ded7f5; background: none; border: 0; padding: 0; font-size: 13.5px; }
+.codewrap { position: relative; margin: 10px 0 0; }
+.codewrap pre { margin: 0; padding-right: 92px; }
+.copy-btn {
+  position: absolute; top: 8px; right: 8px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--muted); background: var(--code-bg);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 9px; cursor: pointer;
+  transition: color .15s ease, border-color .15s ease;
+}
+.copy-btn:hover { color: var(--text); border-color: var(--accent-2); }
+.copy-btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.copy-btn.copied { color: var(--green); border-color: var(--green); cursor: default; }
+.copy-btn svg { width: 14px; height: 14px; flex: none; }
 
 footer.site {
   border-top: 1px solid var(--border); margin-top: 30px; padding: 26px 0 46px;
@@ -271,7 +333,7 @@ footer.site .legal { flex: 0 0 100%; margin-top: 14px; padding-top: 14px; border
   header.site { flex-wrap: wrap; gap: 10px; }
   header.site .nav { gap: 4px; }
   header.site .nav a.nav-page { font-size: 13px; padding: 5px 10px; }
-  article.scenario { padding: 18px; }
+  article.scenario, li.agent { padding: 18px; }
 }
 @media (max-width: 560px) {
   .secnav a.sn { padding: 10px 10px 8px; gap: 6px; }

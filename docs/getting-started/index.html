@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Getting Started — Spec-Driven Development · SPECTRA</title>
+<title>Getting Started — SDD &amp; Spec Kit · SPECTRA</title>
 <meta name="description" content="What spec-driven development is, how GitHub Spec Kit puts it into practice, and where to start with Spec Kit before adding SPECTRA." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,8 +34,9 @@
 <nav class="secnav" aria-label="Getting Started pages">
   <div class="wrap">
     <div class="secnav-track">
-      <a class="sn" href="index.html" aria-current="page"><span class="sn-num">01</span><span class="sn-label">Spec-driven development</span></a>
-      <a class="sn" href="spectra.html"><span class="sn-num">02</span><span class="sn-label">SPECTRA</span></a>
+      <a class="sn" href="index.html" aria-current="page"><span class="sn-num">01</span><span class="sn-label">SDD &amp; Spec Kit</span></a>
+      <a class="sn" href="spectra.html"><span class="sn-num">02</span><span class="sn-label">SPECTRA in practice</span></a>
+      <a class="sn" href="agents.html"><span class="sn-num">03</span><span class="sn-label">Agent reference</span></a>
     </div>
   </div>
 </nav>
@@ -44,7 +45,7 @@
 
   <section class="hero">
     <span class="eyebrow"><span class="dot"></span> Getting Started · 01</span>
-    <h1>Spec-driven development</h1>
+    <h1>Spec-driven development &amp; Spec Kit</h1>
     <p class="tagline">Write down what you are building before an agent builds it.</p>
     <p class="lede">
       SPECTRA sits on top of GitHub Spec Kit, and Spec Kit is an implementation of an idea:
@@ -70,8 +71,94 @@
     </div>
   </section>
 
-  <section class="block" id="principles">
-    <h2><span class="num">02</span>What changes</h2>
+  <section class="block" id="ai-native">
+    <h2><span class="num">02</span>Part of AI-native engineering</h2>
+    <p class="muted">In AI-native engineering, agents write most of the code. Engineers direct them: they write the
+      specifications, manage what the agents know, and check what comes back. It rests on four practices, and
+      spec-driven development is the one the other three are organized around.</p>
+    <div class="grid2">
+      <div class="card core">
+        <span class="tag">The core</span>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
+        <h3>Spec-driven development</h3>
+        <p>Requirements and a plan are written down and agreed before any agent generates code.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+        <h3>Context engineering</h3>
+        <p>Agents get lasting rules, project conventions, and the right documents, so they work from the facts of
+          this project instead of guessing.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="3.5"/><path d="M5 20c.8-3.6 3.6-6 7-6s6.2 2.4 7 6"/></svg>
+        <h3>Human orchestration</h3>
+        <p>The engineer's job moves from typing code to deciding what happens next, setting limits, and reviewing
+          what each step produced.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        <h3>Rigorous verification</h3>
+        <p>Tests, reviews, and quality gates decide whether the output is accepted. Nothing is taken on trust
+          because an agent produced it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="loop">
+    <h2><span class="num">03</span>The spec-driven loop</h2>
+    <p class="muted">Every feature goes around the same loop. Each phase writes a document, and the spec at the
+      centre is what every later phase reads and is checked against.</p>
+    <div class="panel loop">
+<svg class="loop-ring" viewBox="0 0 760 452" role="img" aria-labelledby="loop-t loop-d" xmlns="http://www.w3.org/2000/svg">
+<title id="loop-t">The spec-driven development loop</title>
+<desc id="loop-d">Specify, plan, tasks, implement, verify, arranged in a loop around the specification. A human checkpoint sits between every phase, and gaps found in verification go back into the spec.</desc>
+<defs><marker id="loop-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="var(--accent)"/></marker></defs>
+<circle cx="380" cy="236" r="82" fill="rgba(167,139,250,0.10)" stroke="var(--accent)" stroke-width="1.5"/>
+<text x="380" y="228" text-anchor="middle" class="lr-center">The spec</text>
+<text x="380" y="252" text-anchor="middle" class="lr-sub">source of truth</text>
+<text x="380" y="270" text-anchor="middle" class="lr-sub">every phase reads</text>
+<path class="lr-arc" d="M473.9 81.0 A262 166 0 0 1 583.6 131.5" marker-end="url(#loop-arrow)"/>
+<g transform="translate(534.0 101.7)"><circle r="10.5" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<path class="lr-arc" d="M642.0 236.0 A262 166 0 0 1 592.0 333.6" marker-end="url(#loop-arrow)"/>
+<g transform="translate(629.2 287.3)"><circle r="10.5" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<path class="lr-arc" d="M461.0 393.9 A262 166 0 0 1 299.0 393.9" marker-end="url(#loop-arrow)"/>
+<g transform="translate(380.0 402.0)"><circle r="10.5" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<path class="lr-arc" d="M168.0 333.6 A262 166 0 0 1 118.0 236.0" marker-end="url(#loop-arrow)"/>
+<g transform="translate(130.8 287.3)"><circle r="10.5" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<path class="lr-arc back" d="M176.4 131.5 A262 166 0 0 1 286.1 81.0" marker-end="url(#loop-arrow)"/>
+<g transform="translate(226.0 101.7)"><circle r="10.5" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="212.0" y="81.7" text-anchor="end" class="lr-note">gaps go back</text>
+<text x="212.0" y="98.7" text-anchor="end" class="lr-note">into the spec</text>
+<g transform="translate(296.0 41.0)"><rect width="168" height="58" rx="12" class="lr-node"/><text x="84.0" y="24" text-anchor="middle" class="lr-title">Specify</text><text x="84.0" y="43" text-anchor="middle" class="lr-sub">what and why</text></g>
+<g transform="translate(545.2 155.7)"><rect width="168" height="58" rx="12" class="lr-node"/><text x="84.0" y="24" text-anchor="middle" class="lr-title">Plan</text><text x="84.0" y="43" text-anchor="middle" class="lr-sub">how, within constraints</text></g>
+<g transform="translate(450.0 341.3)"><rect width="168" height="58" rx="12" class="lr-node"/><text x="84.0" y="24" text-anchor="middle" class="lr-title">Tasks</text><text x="84.0" y="43" text-anchor="middle" class="lr-sub">ordered, testable steps</text></g>
+<g transform="translate(142.0 341.3)"><rect width="168" height="58" rx="12" class="lr-node"/><text x="84.0" y="24" text-anchor="middle" class="lr-title">Implement</text><text x="84.0" y="43" text-anchor="middle" class="lr-sub">agents write the code</text></g>
+<g transform="translate(46.8 155.7)"><rect width="168" height="58" rx="12" class="lr-node"/><text x="84.0" y="24" text-anchor="middle" class="lr-title">Verify</text><text x="84.0" y="43" text-anchor="middle" class="lr-sub">does it match the spec?</text></g>
+</svg>
+<svg class="loop-stack" viewBox="0 0 320 466" role="img" aria-labelledby="loop-ts" xmlns="http://www.w3.org/2000/svg">
+<title id="loop-ts">The spec-driven development loop: specify, plan, tasks, implement, verify, with a human checkpoint between each phase; gaps go back into the spec.</title>
+<defs><marker id="loop-arrow-s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="var(--accent)"/></marker></defs>
+<g transform="translate(20 20)"><rect width="236" height="54" rx="12" class="lr-node"/><text x="16" y="23" class="lr-title">Specify</text><text x="16" y="42" class="lr-sub">what and why</text></g>
+<path class="lr-arc" d="M60 76 V105" marker-end="url(#loop-arrow-s)"/>
+<g transform="translate(88 91.0)"><circle r="9" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g transform="translate(20 108)"><rect width="236" height="54" rx="12" class="lr-node"/><text x="16" y="23" class="lr-title">Plan</text><text x="16" y="42" class="lr-sub">how, within constraints</text></g>
+<path class="lr-arc" d="M60 164 V193" marker-end="url(#loop-arrow-s)"/>
+<g transform="translate(88 179.0)"><circle r="9" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g transform="translate(20 196)"><rect width="236" height="54" rx="12" class="lr-node"/><text x="16" y="23" class="lr-title">Tasks</text><text x="16" y="42" class="lr-sub">ordered, testable steps</text></g>
+<path class="lr-arc" d="M60 252 V281" marker-end="url(#loop-arrow-s)"/>
+<g transform="translate(88 267.0)"><circle r="9" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g transform="translate(20 284)"><rect width="236" height="54" rx="12" class="lr-node"/><text x="16" y="23" class="lr-title">Implement</text><text x="16" y="42" class="lr-sub">agents write the code</text></g>
+<path class="lr-arc" d="M60 340 V369" marker-end="url(#loop-arrow-s)"/>
+<g transform="translate(88 355.0)"><circle r="9" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g transform="translate(20 372)"><rect width="236" height="54" rx="12" class="lr-node"/><text x="16" y="23" class="lr-title">Verify</text><text x="16" y="42" class="lr-sub">does it match the spec?</text></g>
+<path class="lr-arc back" d="M258 399.0 H286 V47.0 H262" marker-end="url(#loop-arrow-s)"/>
+<g transform="translate(286 223.0)"><circle r="9" fill="var(--green)"/><path d="M-4.5 0.5 -1.2 3.8 4.8 -2.8" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text transform="translate(304 223.0) rotate(90)" text-anchor="middle" class="lr-note">gaps go back into the spec</text>
+</svg>
+      <p class="loop-key"><span class="ck"></span>A human checkpoint: you review what the phase wrote before the next
+        one starts.</p>
+    </div>
+    <span class="lbl">What changes</span>
     <div class="grid3">
       <div class="card">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
@@ -92,11 +179,35 @@
   </section>
 
   <section class="block" id="spec-kit">
-    <h2><span class="num">03</span>Spec Kit, phase by phase</h2>
+    <h2><span class="num">04</span>Spec Kit: SDD in practice</h2>
     <p class="muted">GitHub's <a href="https://github.com/github/spec-kit">Spec Kit</a> is an open-source toolkit
       for SDD. It installs as the <code>specify</code> CLI, sets up a project's <code>.specify/</code> folder,
       and gives your coding agent a slash command for each phase. It works with Claude Code, GitHub Copilot,
-      Cursor, Codex, and many others.</p>
+      Cursor, Codex, and many others. It puts the spec-driven loop into practice, together with the other three
+      practices:</p>
+    <div class="grid3">
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="3.5"/><path d="M5 20c.8-3.6 3.6-6 7-6s6.2 2.4 7 6"/></svg>
+        <h3>Human orchestration</h3>
+        <p><b>You run every phase.</b> Each phase is a slash command you type. The agent does that phase's work and
+          stops, and nothing moves on until you start the next command.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+        <h3>Context engineering</h3>
+        <p><b>Everything lives in the repository.</b> The constitution sits in <code>.specify/memory/</code>, and each
+          feature's spec, plan, and tasks sit together in <code>specs/&lt;feature&gt;/</code>, versioned with the code.
+          Every phase reads what came before it, not the chat history.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        <h3>Rigorous verification</h3>
+        <p><b>A human in the loop after every phase.</b> Each phase ends in a file you review and approve. Along the
+          way, clarify questions the gaps, the plan is checked against the constitution, analyze cross-checks the
+          documents, and converge checks the build against all of them.</p>
+      </div>
+    </div>
+    <span class="lbl">Phase by phase</span>
     <div class="phases">
       <div class="phase">
         <span class="pnum">FOUNDATION</span>
@@ -140,15 +251,20 @@
         <p>Execute the tasks in order, building to the spec.</p>
         <span class="pout">code + tests</span>
       </div>
+      <div class="phase">
+        <span class="pnum">07 · CONVERGE</span>
+        <span class="pcmd">/speckit.converge</span>
+        <p>Check the finished build against spec, plan, and tasks, and append any gaps as new tasks.</p>
+        <span class="pout">tasks.md (updated)</span>
+      </div>
     </div>
     <p class="muted" style="margin-top:14px;font-size:14px">Also available: <code>/speckit.checklist</code> scores the
-      spec's quality ("unit tests for requirements"), and <code>/speckit.converge</code> checks a finished build against
-      its spec and appends any gaps as new tasks. The exact trigger form depends on your agent; Claude Code, for
+      spec's quality ("unit tests for requirements"). The exact trigger form depends on your agent; Claude Code, for
       example, uses <code>/speckit-specify</code>.</p>
   </section>
 
   <section class="block" id="start">
-    <h2><span class="num">04</span>Start with Spec Kit</h2>
+    <h2><span class="num">05</span>Start with Spec Kit</h2>
     <p class="muted">If you have never used Spec Kit, get one feature through it on its own before adding anything on
       top. These two pages from the official docs are the best place to start.</p>
     <div class="links">

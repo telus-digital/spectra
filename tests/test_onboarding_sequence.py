@@ -1,7 +1,7 @@
 """The brownfield onboarding sequence is told the same way everywhere a newcomer might read it (spec 036).
 
 Three hand-written surfaces carry a "Starting on an existing codebase" section: the repository README,
-the extension README, and the published landing page. Each lists the five foundation agents in order with
+the extension README, and the published Getting Started scenarios page. Each lists the five foundation agents in order with
 a constitution run after every feeder. A sequence that drifted on one surface would send a newcomer to run
 the agents in an order where a later one re-proposes what an earlier one already ratified — so the order
 is asserted here, against each surface and against the methodology agent's own next-agent line.
@@ -21,7 +21,7 @@ import helpers as h  # noqa: E402
 SURFACES = {
     "README.md": h.repo_file("README.md"),
     "spectra/README.md": h.repo_file("spectra", "README.md"),
-    "docs/index.html": h.repo_file("docs", "index.html"),
+    "docs/getting-started/spectra.html": h.repo_file("docs", "getting-started", "spectra.html"),
 }
 METHODOLOGY = h.repo_file("spectra", "commands", "methodology.md")
 
@@ -42,11 +42,11 @@ TOKEN = re.compile(r"speckit-(?:spectra-)?(kb-vault|domain-analyzer|methodology|
 
 
 def section(path: Path) -> str:
-    """The text of the onboarding section, from its heading to the next heading of the same level."""
+    """The text of the onboarding section, from its heading to the end of its section or scenario."""
     text = path.read_text(encoding="utf-8")
     if path.suffix == ".html":
-        start = text.index(f"{HEADING}</h2>")
-        end = text.index("</section>", start)
+        start = text.index(f"{HEADING}</h3>")
+        end = text.index("</article>", start)
     else:
         start = text.index(f"## {HEADING}")
         end = text.find("\n## ", start + 1)
@@ -104,7 +104,7 @@ class TheSectionExplainsItself(unittest.TestCase):
         for name, path in SURFACES.items():
             with self.subTest(surface=name):
                 text = path.read_text(encoding="utf-8")
-                at = text.index(f"{HEADING}</h2>" if path.suffix == ".html" else f"## {HEADING}")
+                at = text.index(f"{HEADING}</h3>" if path.suffix == ".html" else f"## {HEADING}")
                 for start in (m.start() for m in re.finditer(r"<!-- SPECTRA:GENERATED START", text)):
                     end = text.index("<!-- SPECTRA:GENERATED END", start)
                     self.assertFalse(start < at < end, f"{name}: the section sits inside a generated region")

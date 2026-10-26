@@ -45,6 +45,7 @@ spectra/
 ├── docs/                          # downloadable package + static landing assets (committed)
 │   ├── index.html                 #   landing page: the extension + its install command
 │   ├── agents.html                #   the agent roster, rendered from agents-list.json
+│   ├── getting-started/           #   SDD primer, SPECTRA scenarios, and one card per shipped agent
 │   ├── capability-brief.html      #   static capability brief
 │   ├── e-learning/                #   the course handbook
 │   ├── packages/spectra.zip       #   the one downloadable package (top-level spectra/ folder)
@@ -252,7 +253,8 @@ output before moving on:
    [`agents-list.json`](agents-list.json) — the **single source of truth for the roster** — bumps the
    extension `version` with a matching `spectra/CHANGELOG.md` entry, rebuilds
    `docs/packages/spectra.zip` with `python tools/build_package.py`, updates the `spectra` entry's
-   `version` and command count in `catalog.json`, and updates `docs/index.html`.
+   `version` and command count in `catalog.json`, and adds the command's card to
+   `docs/getting-started/agents.html`.
 5. **Regenerate the agent listings** — `python tools/generate_agent_docs.py`. Every *structured*
    listing of agents is generated from the roster, so you never hand-edit one: the Agents table in
    [README.md](README.md), the Spec Kit core and Roadmap sections of [AGENTS_LIST.md](AGENTS_LIST.md),

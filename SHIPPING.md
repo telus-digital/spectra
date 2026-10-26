@@ -287,7 +287,7 @@ Once the command file exists, Principle V requires all of this **in the same cha
 3. Bump `extension.version` in `spectra/extension.yml`, with a matching `spectra/CHANGELOG.md` entry.
    Renaming or removing a command is MAJOR.
 4. Mirror the version into `catalog.json`, along with `updated_at` and the command count.
-5. Update `docs/index.html` so the landing page lists the command. Do **not** put a version or the
+5. Add the command's card to `docs/getting-started/agents.html`. Do **not** put a version or the
    extension description there — the page fetches both at load time, and the checks enforce it.
 6. `python tools/build_package.py` — rebuild `docs/packages/spectra.zip`. Required whenever *any*
    file under `spectra/` changes, including `TRADEMARK.md` and `CHANGELOG.md`.

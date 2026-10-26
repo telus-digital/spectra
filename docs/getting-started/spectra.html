@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Getting Started — SPECTRA Scenarios · SPECTRA</title>
+<title>Getting Started — SPECTRA in Practice · SPECTRA</title>
 <meta name="description" content="How SPECTRA agents sit on top of Spec Kit, shown through real situations: building a constitution, importing documentation, test-first specs, UAT, defects, and more." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,8 +34,9 @@
 <nav class="secnav" aria-label="Getting Started pages">
   <div class="wrap">
     <div class="secnav-track">
-      <a class="sn" href="index.html"><span class="sn-num">01</span><span class="sn-label">Spec-driven development</span></a>
-      <a class="sn" href="spectra.html" aria-current="page"><span class="sn-num">02</span><span class="sn-label">SPECTRA</span></a>
+      <a class="sn" href="index.html"><span class="sn-num">01</span><span class="sn-label">SDD &amp; Spec Kit</span></a>
+      <a class="sn" href="spectra.html" aria-current="page"><span class="sn-num">02</span><span class="sn-label">SPECTRA in practice</span></a>
+      <a class="sn" href="agents.html"><span class="sn-num">03</span><span class="sn-label">Agent reference</span></a>
     </div>
   </div>
 </nav>
@@ -44,7 +45,7 @@
 
   <section class="hero">
     <span class="eyebrow"><span class="dot"></span> Getting Started · 02</span>
-    <h1>SPECTRA on Spec Kit</h1>
+    <h1>SPECTRA in practice</h1>
     <p class="tagline">Spec Kit gives you the loop. SPECTRA fills in what the loop assumes you already have.</p>
     <p class="lede">
       SPECTRA is a Spec Kit extension. It replaces nothing: <code>specify</code>, <code>plan</code>,
@@ -72,11 +73,11 @@
         <p>UAT with saved evidence, pull requests opened and reviewed against the spec they carry, and root-cause analysis when something breaks.</p>
       </div>
     </div>
-    <div class="legend">
-      <span><span class="chip">kb-vault</span>SPECTRA agent</span>
-      <span><span class="chip core">specify</span>Spec Kit core</span>
-      <span>Commands are shown in Claude Code's form (<code>/speckit-spectra-kb-vault</code>). Other agents use the dotted form, such as <code>/speckit.spectra.kb-vault</code>.</span>
-    </div>
+  </section>
+
+  <section class="block scen-head">
+    <h2>Scenarios</h2>
+    <p class="muted">Pick the situation closest to yours.</p>
   </section>
 
   <!-- Scenarios: a sticky sidebar beside the cards on wide screens, a pinned strip on narrow ones.
@@ -85,25 +86,91 @@
     <aside class="scen-nav" aria-label="Scenarios">
       <span class="scen-nav-title">Scenarios</span>
       <nav class="scen-nav-track">
-        <a href="#s-constitution"><span class="n">01</span><span class="t">Building the constitution<small>First day on a brownfield project</small></span></a>
-        <a href="#s-kb-vault"><span class="n">02</span><span class="t">Unstructured documentation<small>Wikis, PDFs, decks into the repo</small></span></a>
-        <a href="#s-requirement"><span class="n">03</span><span class="t">From a business ask to a spec<small>A vague request, made specifiable</small></span></a>
-        <a href="#s-tdd"><span class="n">04</span><span class="t">TDD on top of SDD<small>Test-first, enforced per phase</small></span></a>
-        <a href="#s-uat"><span class="n">05</span><span class="t">User acceptance testing<small>Proof it works, with evidence</small></span></a>
-        <a href="#s-status"><span class="n">06</span><span class="t">Specification status<small>Is this spec actually done?</small></span></a>
-        <a href="#s-adr"><span class="n">07</span><span class="t">A big decision mid-feature<small>Record it before you build on it</small></span></a>
-        <a href="#s-defect"><span class="n">08</span><span class="t">A production defect<small>Root cause first, then the fix</small></span></a>
-        <a href="#s-flaky"><span class="n">09</span><span class="t">A flaky test suite<small>CI that fails at random</small></span></a>
-        <a href="#s-pr"><span class="n">10</span><span class="t">Shipping and reviewing<small>PRs checked against their spec</small></span></a>
+        <a href="#s-brownfield"><span class="n">01</span><span class="t">Starting on an existing codebase<small>The foundation, in order</small></span></a>
+        <a href="#s-greenfield"><span class="n">02</span><span class="t">Greenfield<small>A new project, from nothing</small></span></a>
+        <a href="#s-constitution"><span class="n">03</span><span class="t">Building the constitution<small>First day on a brownfield project</small></span></a>
+        <a href="#s-kb-vault"><span class="n">04</span><span class="t">Unstructured documentation<small>Wikis, PDFs, decks into the repo</small></span></a>
+        <a href="#s-requirement"><span class="n">05</span><span class="t">From a business ask to a spec<small>A vague request, made specifiable</small></span></a>
+        <a href="#s-tdd"><span class="n">06</span><span class="t">TDD on top of SDD<small>Test-first, enforced per phase</small></span></a>
+        <a href="#s-uat"><span class="n">07</span><span class="t">User acceptance testing<small>Proof it works, with evidence</small></span></a>
+        <a href="#s-status"><span class="n">08</span><span class="t">Specification status<small>Is this spec actually done?</small></span></a>
+        <a href="#s-adr"><span class="n">09</span><span class="t">A big decision mid-feature<small>Record it before you build on it</small></span></a>
+        <a href="#s-defect"><span class="n">10</span><span class="t">A production defect<small>Root cause first, then the fix</small></span></a>
+        <a href="#s-flaky"><span class="n">11</span><span class="t">A flaky test suite<small>CI that fails at random</small></span></a>
+        <a href="#s-pr"><span class="n">12</span><span class="t">Shipping and reviewing<small>PRs checked against their spec</small></span></a>
       </nav>
     </aside>
     <div class="scen-body">
-    <h2><span class="num">01</span>Scenarios</h2>
-    <p class="muted">Pick the situation closest to yours.</p>
 
   <!-- 01 -->
+  <article class="scenario" id="s-brownfield">
+    <header><span class="n">01</span><h3>Starting on an existing codebase</h3></header>
+    <p class="when"><b>The situation:</b> you are bringing SPECTRA into a brownfield project and want the short
+      version: which agents lay the foundation the constitution is built from, and in what order.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip">kb-vault</span><span class="chip">domain-analyzer</span><span class="chip">methodology</span><span class="chip">test-strategy</span><span class="chip">deployment-strategy</span><span class="chip core">constitution</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b><code>/speckit-spectra-kb-vault</code> (optional)</b> <span class="os">Import knowledge kept outside the
+        repository: wiki pages, exported documents, design notes. Policy sources land in their own
+        <code>&lt;kind&gt;-source/</code> folder for the owning agent to read, never in that agent&rsquo;s document.</span></li>
+      <li><b><code>/speckit-spectra-domain-analyzer</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        <b>Create</b> the constitution.</span></li>
+      <li><b><code>/speckit-spectra-methodology</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        <b>Amend</b> it.</span></li>
+      <li><b><code>/speckit-spectra-test-strategy</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        <b>Amend</b> it.</span></li>
+      <li><b><code>/speckit-spectra-deployment-strategy</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
+        <b>Amend</b> it.</span></li>
+    </ol>
+    <div class="callout"><b>Why the constitution runs after each agent.</b> Each agent ends by handing you its own
+      ready-to-paste constitution line, built from the guardrails you accepted in its round. Running it before the next
+      agent means that agent finds a ratified constitution: each later agent detects the constitution, switches its goal
+      to update, and proposes only what it does not already say, so no rule gets two sources and nothing you already
+      ratified is offered to you again.
+      An imported document is read as what someone <i>claimed</i>, never as current practice: only the code and history
+      decide that, and only your answers adopt a guardrail.</div>
+    <div class="callout"><b>Optional: declare the artifact root in the first constitution run.</b> You can add a line
+      such as <code>Artifact root: docs/</code> when you create the constitution, or <code>Artifact root: documents/</code>
+      where <code>docs/</code> is published by GitHub Pages, MkDocs, or Docusaurus. Every later agent reads it and
+      stops asking where its document should go. Without it, each agent asks you.</div>
+    <div class="outcome"><b>You end up with</b> a ratified constitution built up one agent at a time. For what each
+      step reads, asks, and writes, see <a href="#s-constitution">Building the constitution</a>.</div>
+  </article>
+
+  <!-- 02 -->
+  <article class="scenario" id="s-greenfield">
+    <header><span class="n">02</span><h3>Greenfield</h3></header>
+    <p class="when"><b>The situation:</b> a new project with no code yet. There is no history to read and nothing to
+      import, so the job is to agree the rules first and then build the app's foundation as your first spec.</p>
+    <span class="lbl">Agents</span>
+    <div class="chips"><span class="chip core">constitution</span><span class="chip">test-strategy</span><span class="chip core">specify</span><span class="chip core">plan</span><span class="chip core">tasks</span><span class="chip core">implement</span><span class="chip core">converge</span></div>
+    <span class="lbl">The flow</span>
+    <ol class="steps">
+      <li><b>Build your constitution first.</b> <span class="os">Run <code>/speckit-constitution</code> with a prompt
+        describing the principles you want, for example <code>/speckit-constitution Create principles focused on code
+        quality, testing, and maintainability.</code> Every later phase checks its work against the constitution, so it
+        comes before any spec.</span></li>
+      <li><b><code>/speckit-spectra-test-strategy</code> &rarr; <code>/speckit-constitution</code> (optional)</b>
+        <span class="os">If you want testing rules in place from day one, decide them now and <b>amend</b> the
+        constitution with the agent's ready-made prompt. You can also add a test strategy later.</span></li>
+      <li><b>Write your first spec: the foundation.</b> <span class="os">It usually bootstraps the app: project
+        structure, tooling, and the first runnable skeleton.</span>
+        <span class="os">For example: <code>/speckit-specify Build a photo organizer with albums grouped by date and a
+        tile preview of each album.</code></span></li>
+      <li><b>Plan it, then build it.</b> <span class="os"><code>/speckit-plan Use Vite with vanilla JavaScript. Keep
+        images local and store metadata in SQLite.</code>, then <code>/speckit-tasks</code> and
+        <code>/speckit-implement</code>.</span></li>
+      <li class="gate"><b><code>/speckit-converge</code></b> <span class="os">checks the build against spec, plan, and
+        tasks, and appends anything missing as new tasks.</span></li>
+    </ol>
+    <div class="outcome"><b>You end up with</b> a constitution in place before the first line of code, and a
+      foundation built through the same spec-driven loop every later feature will use.</div>
+  </article>
+
+  <!-- 03 -->
   <article class="scenario" id="s-constitution">
-    <header><span class="n">01</span><h3>Building the constitution</h3></header>
+    <header><span class="n">03</span><h3>Building the constitution</h3></header>
     <p class="when"><b>The situation:</b> your first time on a brownfield project. There is a codebase, years of
       history, and a pile of documents that live outside the repository: an architecture deck, a QA handbook, a
       hosting standard from the client. Spec Kit's <code>/speckit-constitution</code> needs principles to write
@@ -117,7 +184,7 @@
         go into their own <code>&lt;kind&gt;-source/</code> folders for the owning agent to read later.</span></li>
       <li><b><code>/speckit-spectra-domain-analyzer</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
         It infers the business domain from the code and docs, and you decide each candidate guardrail. Paste its
-        ready-made prompt to <b>create</b> the constitution. Add <code>Artifact root: docs/</code> on this first run.</span></li>
+        ready-made prompt to <b>create</b> the constitution. Optionally, add <code>Artifact root: docs/</code> on this first run.</span></li>
       <li><b><code>/speckit-spectra-methodology</code> &rarr; <code>/speckit-constitution</code></b> <span class="os">
         It reads the git history, PR templates, and CI to find how the team actually works, asks ten questions, and you
         <b>amend</b> the constitution with the result.</span></li>
@@ -132,13 +199,11 @@
     <div class="outcome"><b>You end up with</b> a constitution built from evidence and your decisions, plus
       <code>DOMAIN_ANALYSIS.md</code>, <code>ENGINEERING_METHODOLOGY.md</code>, <code>TEST_STRATEGY.md</code>, and
       <code>DEPLOYMENT_STRATEGY.md</code> that explain where every rule came from.</div>
-    <p class="muted" style="font-size:14px;margin:12px 0 0"><b>Greenfield?</b> Skip the import and start at the domain
-      analyzer. The order is otherwise the same.</p>
   </article>
 
-  <!-- 02 -->
+  <!-- 04 -->
   <article class="scenario" id="s-kb-vault">
-    <header><span class="n">02</span><h3>Unstructured documentation</h3></header>
+    <header><span class="n">04</span><h3>Unstructured documentation</h3></header>
     <p class="when"><b>The situation:</b> the knowledge your team relies on is scattered. ADRs from a previous vendor
       sit in a PDF, the UX standards are a slide deck, the onboarding guide is a Word file, and a key diagram exists only
       as a screenshot. Neither new people nor coding agents can find any of it.</p>
@@ -159,9 +224,9 @@
       sources you supplied. kb-vault never invents content, never mines your code, and never commits.</div>
   </article>
 
-  <!-- 03 -->
+  <!-- 05 -->
   <article class="scenario" id="s-requirement">
-    <header><span class="n">03</span><h3>From a business ask to a spec</h3></header>
+    <header><span class="n">05</span><h3>From a business ask to a spec</h3></header>
     <p class="when"><b>The situation:</b> a stakeholder sends a two-line email: "support agents need to merge duplicate
       tickets." You could paste it straight into <code>/speckit-specify</code>, but you would get a spec built on
       assumptions, and nobody knows yet what in the system it would touch.</p>
@@ -182,9 +247,9 @@
       so the scope conversation happens before planning, not during code review.</div>
   </article>
 
-  <!-- 04 -->
+  <!-- 06 -->
   <article class="scenario" id="s-tdd">
-    <header><span class="n">04</span><h3>TDD on top of SDD</h3></header>
+    <header><span class="n">06</span><h3>TDD on top of SDD</h3></header>
     <p class="when"><b>The situation:</b> the team wants test-first development. Spec-driven development stays the base,
       but tests should be agreed from the spec and written before the code they cover. "We do TDD" in a README is not
       enough; it needs to be an obligation each phase actually checks.</p>
@@ -216,9 +281,9 @@
       <code>tasks.md</code> that each test failed before its code existed.</div>
   </article>
 
-  <!-- 05 -->
+  <!-- 07 -->
   <article class="scenario" id="s-uat">
-    <header><span class="n">05</span><h3>User acceptance testing</h3></header>
+    <header><span class="n">07</span><h3>User acceptance testing</h3></header>
     <p class="when"><b>The situation:</b> the feature is implemented and the unit tests pass. Before a PR goes up,
       someone needs to confirm it works the way the user story described, on the real build, and keep proof.</p>
     <span class="lbl">Agents</span>
@@ -239,9 +304,9 @@
       The UAT agent never edits code to make a scenario pass.</div>
   </article>
 
-  <!-- 06 -->
+  <!-- 08 -->
   <article class="scenario" id="s-status">
-    <header><span class="n">06</span><h3>Specification status</h3></header>
+    <header><span class="n">08</span><h3>Specification status</h3></header>
     <p class="when"><b>The situation:</b> a feature has been "nearly done" for a week. Every box in <code>tasks.md</code>
       is ticked, but you are not sure the code matches what the spec promised, or whether the spec drifted while the
       plan changed.</p>
@@ -262,9 +327,9 @@
       scenario waiting on a human" instead of "should be done."</div>
   </article>
 
-  <!-- 07 -->
+  <!-- 09 -->
   <article class="scenario" id="s-adr">
-    <header><span class="n">07</span><h3>A big decision mid-feature</h3></header>
+    <header><span class="n">09</span><h3>A big decision mid-feature</h3></header>
     <p class="when"><b>The situation:</b> while planning, the team decides to move session storage from the database to
       Redis. It will shape the next ten features, and in six months nobody will remember why.</p>
     <span class="lbl">Agents</span>
@@ -285,9 +350,9 @@
       made binding in the constitution, and enforced at review time.</div>
   </article>
 
-  <!-- 08 -->
+  <!-- 10 -->
   <article class="scenario" id="s-defect">
-    <header><span class="n">08</span><h3>A production defect</h3></header>
+    <header><span class="n">10</span><h3>A production defect</h3></header>
     <p class="when"><b>The situation:</b> a ticket comes in: orders are occasionally charged twice. The first plausible
       code path is tempting, but it was patched last quarter too, and the bug came back.</p>
     <span class="lbl">Agents</span>
@@ -306,9 +371,9 @@
       The RCA agent fixes nothing and never touches your ticket.</div>
   </article>
 
-  <!-- 09 -->
+  <!-- 11 -->
   <article class="scenario" id="s-flaky">
-    <header><span class="n">09</span><h3>A flaky test suite</h3></header>
+    <header><span class="n">11</span><h3>A flaky test suite</h3></header>
     <p class="when"><b>The situation:</b> CI goes red one run in five on the same commit. People have started re-running
       the pipeline until it passes, which means a real failure would be ignored too.</p>
     <span class="lbl">Agents</span>
@@ -324,9 +389,9 @@
       adding retries are not allowed as fixes, and it never runs your suite.</div>
   </article>
 
-  <!-- 10 -->
+  <!-- 12 -->
   <article class="scenario" id="s-pr">
-    <header><span class="n">10</span><h3>Shipping and reviewing</h3></header>
+    <header><span class="n">12</span><h3>Shipping and reviewing</h3></header>
     <p class="when"><b>The situation:</b> the feature is built and accepted. It needs a correctly targeted PR, and the
       reviewer needs to check it against what was agreed, not just read the diff.</p>
     <span class="lbl">Agents</span>
