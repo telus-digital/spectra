@@ -29,6 +29,8 @@ for the authoritative manifest and command-naming rules.
 ```
 spectra/
 ├── catalog.json                   # THE catalog — single source of truth; install points here
+├── agents/                        # THE agent source — one <id>.md per agent, plus _phases.md
+├── agents-list.json               # the published roster, generated from agents/ (never hand-edit)
 ├── VERSION                        # THE CLI version — single source of truth; the release tag must match
 ├── pyproject.toml                 # packaging for the `spectra-cli` uv tool
 ├── spectra_cli/                   # THE CLI (installed as `spectra`; NOT the extension)
@@ -44,7 +46,7 @@ spectra/
 │   └── AI-Native.png               #   AI-assisted vs AI-native diagram
 ├── docs/                          # downloadable package + static landing assets (committed)
 │   ├── index.html                 #   landing page: the extension + its install command
-│   ├── agents.html                #   the agent roster, rendered from agents-list.json
+│   ├── agents.html                #   the agent roster, read from agents-list.json at load time
 │   ├── getting-started/           #   SDD primer, SPECTRA scenarios, and one card per shipped agent
 │   ├── capability-brief.html      #   static capability brief
 │   ├── e-learning/                #   the course handbook
@@ -249,32 +251,56 @@ output before moving on:
    command — the artifact-root output convention.
 3. **Tasks** — `/speckit.tasks` (`/speckit-tasks`). Produces the dependency-ordered `tasks.md`.
 4. **Implement** — `/speckit.implement` (`/speckit-implement`). Executes the tasks: it adds the
-   command file under `spectra/commands/`, registers it in `spectra/extension.yml`, adds the agent to
-   [`agents-list.json`](agents-list.json) — the **single source of truth for the roster** — bumps the
+   command file under `spectra/commands/`, registers it in `spectra/extension.yml`, writes the agent's
+   file under [`agents/`](agents/) — the **only source of truth for agent information** — bumps the
    extension `version` with a matching `spectra/CHANGELOG.md` entry, rebuilds
-   `docs/packages/spectra.zip` with `python tools/build_package.py`, updates the `spectra` entry's
-   `version` and command count in `catalog.json`, and adds the command's card to
-   `docs/getting-started/agents.html`.
-5. **Regenerate the agent listings** — `python tools/generate_agent_docs.py`. Every *structured*
-   listing of agents is generated from the roster, so you never hand-edit one: the Agents table in
-   [README.md](README.md), the Spec Kit core and Roadmap sections of [AGENTS_LIST.md](AGENTS_LIST.md),
-   and the Commands table in [`spectra/README.md`](spectra/README.md). Those regions are delimited by
-   `<!-- SPECTRA:GENERATED START id=… -->` markers and carry a do-not-edit notice; anything outside
-   them is yours.
-6. **Write the prose the generator will not.** A newly *shipped* agent needs a hand-authored block in
-   `AGENTS_LIST.md` — what it does, its arguments, when to use it, worked examples — introduced by an
-   anchor naming the agent's roster id:
+   `docs/packages/spectra.zip` with `python3 tools/build_package.py`, and updates the `spectra`
+   entry's `version` and command count in `catalog.json`.
+5. **Write the agent's file.** `agents/<id>.md` holds everything about the agent: a flat
+   `key: value` header, then — for a shipped agent — its long description in Markdown:
 
-   ```markdown
-   <!-- SPECTRA:AGENT id=your-agent -->
-   ### Your Agent ✅
+   ````markdown
+   ---
+   id: your-agent
+   title: Your Agent
+   command: speckit.spectra.your-agent
+   provider: spectra
+   type: add-on
+   phase: testing-quality
+   order: 45
+   status: available
+   summary: One line for the roster table.
+   manifest: The command description shown in extension.yml and the command file.
+   ---
+
+   The lead paragraph — it becomes the card's description on the website.
+
+   ## Arguments
+
+   What to pass.
+
+   ## Use it when
+
+   When it fits.
+
+   ## Examples
+
    ```
+   /speckit-spectra-your-agent
+   ```
+   ````
 
-   The anchor keys the prose to the agent by **id**, not by heading text, so a title can be reworded
-   without breaking anything. `python tools/generate_agent_docs.py --check` fails if a shipped agent
-   has no prose block, if a prose block exists for an agent the roster does not ship, if a
-   hand-written heading has drifted from the canonical title, or if the roster and the manifest
-   disagree about the shipped set. CI runs the same command.
+   `order` places the agent within its phase; leave gaps (10, 20, …) so one can be inserted later. A
+   planned agent is header-only, with no `command` or `manifest`. Any `##` section after Examples is
+   a guide and appears only in the long-form outputs.
+6. **Regenerate** — `python3 tools/generate_agent_docs.py`. It renders `agents-list.json`, the Agents
+   table in [README.md](README.md), every agent section of [AGENTS_LIST.md](AGENTS_LIST.md), the
+   Commands table and per-agent sections of [`spectra/README.md`](spectra/README.md), the sidebar and
+   card on `docs/getting-started/agents.html`, and the command's `description:` line in
+   `spectra/extension.yml` and its command file. Never edit those by hand — the regions carry a
+   do-not-edit notice, and `python3 tools/generate_agent_docs.py --check` (which CI runs) fails on any
+   output that differs from what `agents/` renders, on a source that breaks the format, and on any
+   disagreement between `agents/` and `extension.yml` about the shipped set.
 7. **Test locally.** Install your working copy with `--dev` and exercise it end to end — see
    [Test the extension locally](#test-the-extension-locally). Iterate by re-running `/speckit.implement`
    or editing the generated files directly.
@@ -348,10 +374,12 @@ maintained by hand and committed:
   Spec Kit expects). Rebuilt with `python tools/build_package.py` whenever the extension changes or is
   released; entries are written in sorted order with a fixed timestamp, so rebuilding an unchanged
   folder produces a byte-identical archive.
-- `agents-list.json` (repo root) — the public, machine-readable **agent roster**, and the single source
-  of truth for what Spectra offers. Read at run time by `spectra agent-list` and by the landing page,
-  and consumed by `tools/generate_agent_docs.py` to rewrite every structured agent listing. Adding an
-  agent here is what makes it visible everywhere.
+- `agents/` (repo root) — one Markdown file per agent plus `_phases.md`: the **only source of truth for
+  agent information**. Adding an agent here and running `tools/generate_agent_docs.py` is what makes it
+  visible everywhere.
+- `agents-list.json` (repo root) — the public, machine-readable **agent roster**, generated from
+  `agents/` and committed. Read at run time by `spectra agent-list` and by `docs/agents.html`; its
+  schema is fixed because installed CLIs depend on it. Never edit it by hand.
 - `docs/index.html` — the landing page that walks users through adding the catalog, then installing
   the extension by name.
 - `assets/TELUS_Digital_logo.png` — the one logo, used by the README and the landing page.

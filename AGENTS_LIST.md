@@ -23,31 +23,8 @@ manifest name (`speckit.spectra.<command>`) is the same everywhere.
 These ship in the `spectra` extension today. Install them all at once with
 `specify extension add spectra`, then restart your AI agent so it picks up the commands.
 
-<!-- SPECTRA:AGENT id=adr -->
-### Architecture Decision Records (ADR) ✅
-
-**`speckit.spectra.adr`** — Create a context-aware Architecture Decision Record grounded in your codebase,
-prior ADRs, and the project constitution. It gathers project context, asks up to five clarifying
-questions, and writes the ADR under `docs/adr/` — or the artifact root your constitution declares. When the
-decision is significant, it drafts the constitution guardrails it implies, on its own ground —
-architecture-level choices — and refers testing, deployment, languages and frameworks, and workflow to
-the agent that owns them. You decide each guardrail; the ADR records the outcome in a Constitution input
-section and hands you a ready-to-paste `/speckit-constitution` line that cites it. It never edits the
-constitution.
-
-- **Arguments** — a one-or-two-sentence description of the decision. If omitted, the command asks you
-  for one before drafting.
-- **Use it when** — you're making a significant architecture or technology choice and want it captured
-  and checked against the constitution as you decide.
-- **Where it writes** — `docs/adr/` by default, or the `Artifact root:` your constitution declares. It
-  checks whether `docs/` is a published site source (Pages, MkDocs, Docusaurus) and asks first if it is.
-- **Template** — `adr-template.md`. Override it at `.specify/templates/overrides/adr-template.md` to change the
-  sections; the override is committed, team-wide, and survives extension updates. Each run reports which
-  template it used.
-- **Example (Claude)** —
-  ```
-  /speckit-spectra-adr We should standardize on PostgreSQL for all primary data stores
-  ```
+<!-- SPECTRA:GENERATED START id=agents-list-shipped -->
+<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
 
 <!-- SPECTRA:AGENT id=domain-analyzer -->
 ### Domain Analyzer ✅
@@ -70,6 +47,46 @@ drafted twice. It never edits the constitution or source, and adopts nothing you
   /speckit-spectra-domain-analyzer
   /speckit-spectra-domain-analyzer this is a banking system
   ```
+
+#### How it works
+
+It is built for an existing codebase that has never had a constitution, and it works with one that has.
+
+1. Says first whether it found `.specify/memory/constitution.md`, and so whether this run's goal is to
+   **create** the constitution or **update** it.
+2. Reads your project — constitution, docs and specs, source code and dependency manifests, and any
+   prior analysis — and infers your business domain from the evidence.
+3. Works six lenses: domain and business rules, data sensitivity and regulation, security and trust
+   boundaries, architecture and boundaries, technology and dependency policy, and reliability and
+   operability. Each candidate guardrail cites a file and says whether the code already follows it
+   (`observed`) or not (`aspirational`). Testing, deployment, and workflow policy are left to
+   `test-strategy`, `deployment-strategy`, and `methodology`.
+4. Asks you seven questions, one at a time: the domain, then one per lens. Each has at least four
+   options, one recommended and one **Skip**, and free text always works.
+5. Only after the last answer, writes `docs/DOMAIN_ANALYSIS.md` — or `DOMAIN_ANALYSIS.md` at your
+   declared artifact root — recording every candidate and decision, plus the **Constitution input**
+   section holding exactly what you accepted. It is shaped by `domain-analysis-template` (override at
+   `.specify/templates/overrides/domain-analysis-template.md`).
+6. Ends with a link to the file and a ready-to-paste `/speckit-constitution` prompt that creates or
+   amends the constitution from that section.
+
+Skip, an unanswered question, and `--non-interactive` all adopt nothing.
+
+#### Re-running and upgrading
+
+Re-running offers your previous answers as each question's proposed answer, so it confirms rather than
+asks again. A guardrail you reworded keeps its ID, and one you declined is not offered back to you as
+new. An accepted guardrail the constitution now carries is marked `status: adopted` and leaves the
+Constitution input section, so a second `/speckit-constitution` run does not adopt it twice.
+
+From an earlier version:
+
+- An analysis left at `.specify/memory/domain-analysis.md` is read on the next run, so your decisions
+  carry over; the command reports it and leaves it for you to remove.
+- A checkbox file is read as your prior decisions: ticked means accepted, and unticked items are asked
+  about again, since an unticked box cannot say whether anyone looked at it.
+- Delivery and workflow decisions are kept as a record, handed on to `methodology`, and leave the
+  Constitution input section.
 
 <!-- SPECTRA:AGENT id=methodology -->
 ### Methodology Analyst ✅
@@ -94,6 +111,44 @@ what the history shows. It never edits the constitution and adopts nothing you d
   /speckit-spectra-methodology
   /speckit-spectra-methodology we are weighing TDD for new code
   ```
+
+#### How it works
+
+1. Says first whether the project is **brownfield** or **greenfield** — from three signals: source
+   beyond scaffolding, workflow configuration, and more than 10 commits — and whether this run's goal
+   is to **create** the constitution or **update** it. With exactly one signal it asks you to settle
+   the reading.
+2. Reads `git log` and `git branch -a`, PR and issue templates, `CODEOWNERS`, CI workflows, commit and
+   changelog configuration, `CONTRIBUTING.md`, `specs/`, the constitution, and the sibling documents —
+   accepted entries only.
+3. Works nine lenses: methodology stack, work modes and classification, requirements intake, spec
+   lifecycle and traceability, branching and integration, review and merge gates, change records, AI
+   collaboration rules, and governance and evolution. In brownfield mode each reports current practice
+   with citations before proposing; in greenfield mode each offers defaults.
+4. Treats spec-driven development as the base, and offers TDD, BDD/ATDD, DDD, contract-first, and
+   ADR-driven as overlays, each with its evidence. An adopted overlay becomes obligations bound to
+   specify, plan, tasks, or implement — TDD's implement obligation is checked in `tasks.md` — with a
+   strictness (MUST or SHOULD) and a scope you choose.
+5. Asks you ten questions, one at a time. Each has at least four options, one recommended and one
+   **Skip**, and free text always works.
+6. Only after the last answer, writes `docs/ENGINEERING_METHODOLOGY.md` — or `ENGINEERING_METHODOLOGY.md`
+   at your declared artifact root — with a mode-choice table, branch-naming and commit-prefix references,
+   the obligations matrix, and a **Constitution input** section holding exactly what you accepted. It is
+   shaped by `engineering-methodology-template` (override at
+   `.specify/templates/overrides/engineering-methodology-template.md`).
+7. Ends with a ready-to-paste `/speckit-constitution` prompt, then lists the other constitution-feeding
+   agents you have not run yet.
+
+It never edits the constitution, never runs another spec-kit phase, and never proposes in a sibling's
+ground: test levels and coverage stay with `test-strategy`, environments and versioning with
+`deployment-strategy`, product technology and domain content with `domain-analyzer`. A hand-written
+methodology already at the path is read as evidence and replaced only with your consent.
+
+#### Re-running and upgrading
+
+Re-running offers your previous answers as each question's proposed answer, keeps every guardrail's ID,
+and does not offer a declined one back to you as new. Delivery and workflow decisions made in an earlier
+domain analysis are read as prior answers.
 
 <!-- SPECTRA:AGENT id=kb-vault -->
 ### KB Vault ✅
@@ -156,6 +211,71 @@ what the document *claims*.
   /speckit-spectra-kb-vault
   /speckit-spectra-kb-vault these are our UX standards and the old architecture decisions
   ```
+
+#### The plan is the safety mechanism
+
+This is the only Spectra document command that gates on approval rather than showing you the result,
+and the reason is that it is aimed at repositories that **already** have documentation. An unwanted new
+file is noticeable; an unwanted *update* to a document someone else wrote is not. So a comment on the
+plan is not approval of it, any change re-presents the whole table, and an ambiguous answer writes
+nothing. Declining costs you nothing — `git status` is unchanged.
+
+You can move a row to a different category folder, rename it, drop it, split it, merge it, or convert a
+create into an update. The one thing you cannot do is send a **new** file outside your artifact root;
+ask for that and it offers the two routes that get you there properly — the `Artifact root:` declaration
+line, or a `git mv` you run afterwards.
+
+#### It joins your existing sets instead of starting new ones
+
+Where a supplied document is a kind Spectra already produces, it adopts that agent's folder, numbering
+and template:
+
+| If the source is | Folder | Template |
+| --- | --- | --- |
+| an architecture decision | `<artifact-root>/adr/` | `adr-template` |
+| a business requirements document | `<artifact-root>/brd/` | `brd-template` |
+| an impact analysis | `<artifact-root>/impact-analysis/` | `impact-analysis-template` |
+| a defect root cause analysis | `<artifact-root>/defect-rca/` | `defect-rca-template` |
+| a domain analysis, an engineering methodology, a test strategy, or a deployment strategy | `<artifact-root>/<kind>-source/` | `<kind>-source-template`, else `kb-document-template` |
+| anything else | `<artifact-root>/<category>/` | `<category>-template`, else `kb-document-template` |
+
+**It never writes the documents the constitution is built from.** `DOMAIN_ANALYSIS.md`,
+`ENGINEERING_METHODOLOGY.md`, `TEST_STRATEGY.md`, and `DEPLOYMENT_STRATEGY.md` each belong to the agent
+that produces them. A source of one of those kinds is kept as a **policy source** in its own
+`<kind>-source/` folder — `domain-analysis-source/`, `engineering-methodology-source/`,
+`test-strategy-source/`, `deployment-strategy-source/` — and the plan and report name the agent to run
+next. That agent reads it as what the document *claims*, never as what your code does, and your original
+stays in place after it runs.
+
+#### What it will not do
+
+It never invents. Every substantive sentence traces to something you supplied; a template section with
+no source says so instead of being filled; a file it cannot read is named and its content requested
+rather than guessed at from the filename. It never mines your codebase for content — it reads your
+project to decide *where* a document goes and *what shape* it takes, never what it says, so "document
+the architecture" with nothing attached gets you a request for material. Your supplied originals stay
+outside the repository; you get Markdown. And it never stages, commits, branches, pushes, tags or opens
+a pull request — when the files are written it tells you they are uncommitted and hands the review back.
+
+#### Change the shape of your knowledge documents
+
+The default structure is a shipped template. To change it for your whole team, permanently, copy it to
+`.specify/templates/overrides/kb-document-template.md` and commit it — or shape a single category with
+`.specify/templates/overrides/<category>-template.md`, which applies even to a category Spectra has
+never heard of. Do **not** edit the installed copy under `.specify/extensions/`: the next extension
+update replaces it. Every run reports which template it resolved, by full path, so an override that
+failed to apply is visible rather than silent.
+
+#### How it works
+
+1. Absorbs every supplied source in full, reporting per file whether it could read it.
+2. Resolves your artifact root, then reads how your project already keeps documentation — folders,
+   numbering, document shapes, templates, indexes.
+3. Classifies each source into a category, from its content rather than its filename.
+4. Looks for a document you already have about the same subject, and plans an **update** to it rather
+   than a second file beside it.
+5. Shows you a table — category, description, destination, create or update — and **stops**.
+6. Writes only after you approve, and only what the approved table says.
 
 <!-- SPECTRA:AGENT id=test-strategy -->
 ### Test Strategy ✅
@@ -225,186 +345,33 @@ anything that links to it should not break every time you refresh it.
   /speckit-spectra-test-strategy focus on the API contract boundary with the payments service
   ```
 
-<!-- SPECTRA:AGENT id=create-pr -->
-### Create PR ✅
+#### How it works
 
-**`speckit.spectra.create-pr`** — Open a correctly-targeted GitHub PR for the branch you are on, optionally
-linked to an issue, with the body built from an overridable PR template. It asks once with everything on the
-table before creating anything, and returns the PR URL. Also offered automatically by an `after_implement`
-hook once `implement` finishes, so you don't have to invoke it by hand.
+1. Reads your project — constitution, specs, docs, dependency manifests, test and coverage
+   configuration, CI definitions, and, in a brownfield repository, the source itself.
+2. **Classifies the project greenfield, brownfield, or mixed from evidence**, never by asking you, and
+   reports the signals that decided it — including any that pointed the other way.
+3. Identifies the **testable surfaces**, so a monorepo does not get one answer for three stacks.
+4. Asks you its five questions, one at a time.
+5. Works six lenses — unit, integration, API contract, end-to-end, UAT, regression — each either
+   applicable with a named approach or not applicable with a stated reason.
+6. Derives a **coverage floor** from the baseline it could establish, with a ratchet toward the target.
+7. Writes one document to `docs/TEST_STRATEGY.md`, or `TEST_STRATEGY.md` at your declared artifact root.
+8. Checks whether the strategy is already in your constitution — or whether there is one at all —
+   drafts the guardrails it would make binding, records your decision on each, and hands a
+   Constitution input section to `/speckit-constitution`.
 
-`gh` is required at run time, and the command **gates on it before doing anything else**: if `gh` is
-missing or unauthenticated it stops immediately — before reading the constitution, before deriving a base
-branch, before touching the remote — and names which of the two failed, because the remedies differ
-(install the CLI, or `gh auth login`). Nothing is mutated on that path, and a missing `gh` never produces
-a `gh` command you cannot run. A remote that isn't on GitHub stops the same way, with a scope statement.
-Failures *after* the gate degrade instead: you get the manual `git push` + `gh pr create` commands with
-the derived base branch filled in, plus an explicit statement of whether the branch already reached the
-remote.
+It runs nothing without your explicit confirmation — not even your coverage tool.
 
-**Works from any branch** — a `fix/…` or chore branch is fine; only a detached HEAD and a branch that is
-already the base are refused. A spec branch simply contributes more to the body (`spec.md`, `plan.md`,
-`tasks.md`), while the **Changes** section always comes from the real diff against the base.
+#### Re-running and upgrading
 
-**Uncommitted work is offered a commit, not a warning.** A dirty tree gets the file list and the question
-*"should I proceed with committing and pushing first?"* — yes behaves like an ordinary commit-and-push, no
-opens the PR from committed work and says what was excluded. Credential-shaped filenames are called out
-before anything is staged, and `--no-verify` is never used.
+On a re-run it marks what the constitution has since adopted, never offers a declined guardrail again
+as new, and reads a strategy from before 1.25.0 without losing a ticked decision.
 
-- **Arguments** — all optional:
-  - *(none)* — open a **ready-for-review** PR (the default).
-  - `--issue <url-or-number>` — the issue this PR addresses. Omit it and you are asked once; skipping the
-    question writes no issue section at all.
-  - `--draft` — open the PR as a **draft** instead.
-  - `--base <branch>` — use this base branch (still shown in the final summary).
-- **Template** — `pr-template.md`: Summary, Related Issues, Type of Change, Changes, How to Test, Evidence,
-  Breaking Changes, Notes for Reviewers — and deliberately **no self-certification checklist**. Override it
-  at `.specify/templates/overrides/pr-template.md`; the override is committed, team-wide, and survives
-  extension updates. Trimming **Related Issues** does not unlink the PR: an issue you passed is appended with
-  a note rather than dropped.
-- **Linked issues** — GitHub honours closing keywords **only** on PRs targeting the default branch, so the
-  command writes `Closes #42` there and a plain `#42` reference anywhere else, telling you that merging will
-  not auto-close it. Cross-repository issues are referenced by full URL.
-- **Base branch** — a promotion flow documented in the constitution or the `git` extension config is used
-  and cited. With nothing documented the command *proposes* a base and asks at the final gate, so you can
-  answer "no, use dev" without restarting.
-- **Use it when** — a piece of work is ready for review and you want the PR opened against the right base,
-  shaped like your team's template, without running `git`/`gh` by hand.
-- **Examples (Claude)** —
-  ```
-  /speckit-spectra-create-pr
-  /speckit-spectra-create-pr --draft
-  /speckit-spectra-create-pr --base develop
-  ```
+#### Change the shape of the strategy
 
-<!-- SPECTRA:AGENT id=review-pr -->
-### Review PR ✅
-
-**`speckit.spectra.review-pr`** — Review a GitHub pull request against **the intent and standards it
-carries**, not just the diff. It reads the PR's spec, plan, tasks, and ADRs *at the PR's own head
-revision*, plus the constitution and ADRs in force on the **base** branch, then reports findings that a
-diff-only reviewer cannot produce: a task marked complete but absent from the change, scope no
-requirement authorized, a pattern an ADR forbids. Every finding cites a file, a line, and the clause,
-requirement, or principle it rests on — anything that cannot be anchored and sourced is not reported at
-all.
-
-Then the reviewer takes over, starting from a deliberately narrow default. **Only blockers and majors are
-proposed** — minors, nits and questions are shown to you, enumerated by number, but are not in the
-proposal. Answering `yes` publishes exactly those and submits the verdict that follows from them; `all`
-takes everything, and any selection of your own still works. You see the exact text before anything is
-posted. One review event goes to the pull request under your own `gh` credentials, containing only what
-you accepted — and the published body declares that it was AI-assisted and human-curated.
-
-The default is a proposal, never an assumption: an empty or absent answer posts nothing, which is a
-normal outcome rather than a failure. That is the whole point of the narrow default — a short, correct,
-human-endorsed review beats thirty findings that bury the two that matter, and a blank prompt in front of
-sixteen findings is answered `all` far more often than it is answered carefully.
-
-Like `create-pr`, this command **hard-stops** when `gh` is missing or unauthenticated, naming which of
-the two failed — neither command can deliver its product without reading GitHub through `gh`. What
-differs is what each hands over after that gate: `create-pr` gives you the `git`/`gh` commands to finish
-by hand, this one gives you the rendered review body to post yourself. It is deliberately **on demand
-only** — there is no hook — since a reviewer should not be the author.
-
-- **Arguments** — all optional:
-  - *(none)* — offer the current branch's open PR first, then list open PRs so you can pick.
-  - `<url>` or `<number>` — review that pull request.
-  - `--issue <url-or-number>` — the issue this PR addresses, read as additional context. Supplying it
-    skips both detection and the question.
-  - `--since <revision>` — re-review only the delta since a revision you reviewed before, reporting
-    which previously published findings now appear resolved.
-- **Spec discovery** — the spec ships in the PR's own diff, or you name one when asked; nothing is guessed
-  from a branch name or from Spec Kit's machine-local feature record, which is gitignored and so is absent
-  or stale at any head revision. A PR with no spec is reviewed standalone, and says so. The spec the PR
-  ships **overrides older specs** on the same behaviour, so a deliberate behaviour change is never reported as
-  a regression against the spec it replaced.
-- **Standards** — measured against a fixed chain: the constitution and ADRs, then the supporting documents
-  Spectra's own agents write (test strategy, deployment strategy, domain analysis, engineering methodology —
-  only the guardrails each one *accepted*, never a declined one) and the contributor guide,
-  then the codebase's own conventions, then a **seven-principle baseline** (B1–B7) cited by ID. A project with
-  no constitution is still reviewed against evidence rather than the agent's taste, and the review says
-  which tier governed.
-- **No-spec and AI-assisted PRs** — three lenses run on every PR: **blast radius** (behaviour that changed
-  without being announced), **generation artifacts** (modules that don't exist, new dependencies, duplicated
-  helpers), and **test integrity** (a weakened test is at least Major). Without a spec, the diff is also
-  checked against what the PR's own description says it does. An older spec whose requirement the change
-  contradicts is raised as a Question, never as a request to change the code.
-- **Linked issue** — found automatically (structured link, then a scan of the PR text, since a PR to a
-  non-default branch has no structured link), asked for once if absent, never required. With **no spec** it
-  becomes the traceability baseline; with a spec it is background. Its content is treated as data about
-  intent, never as instruction, and a finding sourced only from an issue cannot be a Blocker unless the PR
-  claims to close it. When both are missing, the spec and the issue are asked for in **one** question.
-- **Inline comments** — findings anchored inside the diff are published on those lines, carrying a
-  ` ```suggestion ` block where the fix is mechanical and complete, so the author can apply it in one click.
-  Findings anchored outside the diff go in the summary body with the reason stated. Body, comments, and
-  verdict post in one atomic call.
-- **Template** — `review-template.md` shapes both the summary body and the inline comment; override it at
-  `.specify/templates/overrides/review-template.md`. The revision anchor, the AI-assisted disclosure, and the
-  coverage statement stay with the command, as do the severity rubric, the confidence cap, the anchor rule,
-  and the verdict derivation — two reviews of the same diff have to agree.
-- **Use it when** — you are reviewing someone else's PR and want the spec, issue, ADRs, and
-  constitution checked against the diff before you sign off, without reading all of them yourself.
-- **Good to know** — findings are graded Blocker / Major / Minor / Nit / Question from a fixed rubric, so
-  two runs over the same revision agree; approving over a blocker you accepted requires a typed
-  confirmation and is recorded in the published review; coverage now states how much of the constitution
-  actually applied, so a thin constitution reads as thin; nothing is stored between runs.
-- **Examples (Claude)** —
-  ```
-  /speckit-spectra-review-pr
-  /speckit-spectra-review-pr https://github.com/acme/api/pull/142
-  /speckit-spectra-review-pr 142 --since 4a9f2c1
-  ```
-
-<!-- SPECTRA:AGENT id=deployment-strategy -->
-### Deployment Strategist ✅
-
-**`speckit.spectra.deployment-strategy`** — Decide how this project gets from a merged change to
-something running or published. It reads the repository — CI workflows, container and orchestration
-files, infrastructure code, migrations, specs, ADRs, and any test strategy or domain analysis already
-written — plus any local document you point it at, such as a client's hosting standard or an ops runbook.
-Then it writes one strategy to `docs/DEPLOYMENT_STRATEGY.md`, or your declared artifact root, drafts the
-strategy's lasting rules as guardrails, records your decision on each, and hands a Constitution input
-section to `/speckit-constitution` — to create the constitution or update it.
-
-It starts by working out **what ships**, from evidence rather than by asking: a running service, a static
-site, a library, a CLI or desktop tool, a mobile app, or infrastructure on its own. That classification
-changes what every lens means. For a library, "deploy" means publish, environments are release channels,
-and rollback is yank-or-supersede; for a mobile app, store review is a gate your team does not control. It
-will not recommend a cluster rollback to a package that has no cluster.
-
-Six lenses, every one addressed or marked not applicable with a reason: **environments and promotion**
-(with a Mermaid promotion diagram drawn only from the environments it lists), **pipeline, artifact and
-traceability**, **release and versioning**, **data and schema change**, **rollback and recovery**, and
-**operability and configuration**. On an established project each lens reports what happens today before
-proposing anything. Every claim carries one of four provenances — `verified` from what the repository
-does, `claimed` from what a document says, `stated` from an answer you gave, or `convention` — because
-deployment docs drift from deployment reality faster than almost anything else, and you should be able to
-tell the workflow from the wiki.
-
-Before it writes, it asks five things the repository cannot settle, once for the whole project and one at
-a time, each with a recommendation and the evidence behind it: where it is hosted, who approves a
-production deploy, whether a pre-release environment exists or is wanted, availability and recovery
-targets, and release cadence. Say "use your defaults" and it takes every recommendation. It **never
-invents a value only the client or ops owner can supply** — account IDs, cluster names, domains, who gets
-paged, recovery targets nobody set. Those go in an open-questions section with the role that can answer
-them. Operability stays at the level of what should be monitored and who owns it; ask in the session if
-you want to go deeper.
-
-It **never writes your constitution**. It checks whether the constitution already carries a deployment
-policy, drafts only durable invariants — same artifact promoted unchanged, explicit production approval,
-no floating tags, compatible migrations, a documented rollback path — and ends with a link to the file
-and a ready-to-paste `/speckit-constitution` line. It never edits source, CI, manifests, or infrastructure
-code, runs nothing, and makes no network request. Like the test strategy, it is a singleton, rewritten in
-place on a re-run, with your previous answers offered back for confirmation.
-
-- **Arguments** — none required. Optionally a focus, paths to local documents, and `--non-interactive`.
-- **Use it when** — a project is about to ship its first release, or an established project's deployment
-  practice has grown by accretion and needs writing down as one policy.
-- **Examples (Claude)** —
-  ```
-  /speckit-spectra-deployment-strategy
-  /speckit-spectra-deployment-strategy ./client/hosting-standard.md focus on the pre-release gate
-  ```
+The document's twelve sections are overridable at
+`.specify/templates/overrides/test-strategy-template.md`.
 
 <!-- SPECTRA:AGENT id=brd -->
 ### BRD Generator ✅
@@ -433,6 +400,49 @@ Questions). It then tells you to run the specify command with the BRD; its only 
   /speckit-spectra-brd Support agents need to merge duplicate customer tickets while preserving history
   /speckit-spectra-brd reqs/ticket-merge-brief.docx
   ```
+
+#### How it works
+
+1. Reads the requirement — inline text, or a `.docx`/`.pdf`/`.md`/`.txt` document whose text it
+   extracts. Unreadable or image-only files are reported, not fabricated.
+2. Reads project context — the shipped BRD template, the constitution, existing BRDs under `docs/brd/`,
+   and prior specs — to ground and deconflict, without adding scope the requirement didn't state.
+3. Writes one BRD to `docs/brd/NNN-<title>.md` (folder created automatically, numbered zero-padded to
+   three digits, never overwriting), following the canonical template — genuine unknowns become Open
+   Questions and adopted defaults become Assumptions.
+4. Reports the path and tells you to run the Spec Kit **specify** command with the BRD.
+
+Its only write is the BRD file; it never edits your spec, constitution, or source, and never invokes
+`specify` itself.
+
+#### Publishing and upgrading
+
+`Artifact root: documents/` in `.specify/memory/constitution.md` sends BRDs to `documents/brd/` instead
+of `docs/brd/`. The command checks whether `docs/` is a published site source before defaulting there
+and asks first if it is; a BRD carries stakeholders, revenue targets, and competitive rationale, so
+publishing one by accident is the mistake worth one question. Unanswered, it picks the non-publishing
+folder.
+
+Upgrading from an older version? A `brds/` folder from before 1.6.0 is read for context and numbering,
+so the next BRD continues the sequence; the command says once where BRDs live now and offers a
+`git mv`. Nothing in the old folder is moved or modified.
+
+#### Change the shape of your BRDs
+
+Same mechanism as the ADR agent, with `brd-template.md`:
+
+```bash
+mkdir -p .specify/templates/overrides
+cp .specify/extensions/spectra/templates/brd-template.md .specify/templates/overrides/brd-template.md
+```
+
+Commit it, and every BRD follows your structure — the 14 shipped sections are a default, not a fixed contract.
+Resolution order, the reported template path, and the survives-updates guarantee are identical to the ADR
+agent's, described [above](#change-the-shape-of-your-adrs).
+
+One caveat worth knowing: **Section 6 — User Journeys** is what the Spec Kit `specify` command leans on most
+heavily. Dropping it is allowed, and the command will say it did so, but expect the resulting spec to have
+thinner user stories.
 
 <!-- SPECTRA:AGENT id=impact -->
 ### Impact Analyzer ✅
@@ -492,7 +502,7 @@ What it refuses to do is as important as what it does:
   committed, team-wide, and survives extension updates. Each run reports which template it used. The
   citation rule, the confidence levels, the rating triggers, and the coverage statement stay with the
   command — a template shapes the document, not the standards.
-- **It does not** design the solution, estimate in story points, write requirements, create or link a
+- **What it does not do** — It does not design the solution, estimate in story points, write requirements, create or link a
   spec, or touch `specs/`. An impact analysis and a specification are independent; feed one into the other
   by hand if you want to.
 - **Examples (Claude)** —
@@ -501,6 +511,56 @@ What it refuses to do is as important as what it does:
   /speckit-spectra-impact Add a nickname field to accounts reqs/nickname-brief.docx
   /speckit-spectra-impact --non-interactive Retire the v1 pricing endpoint
   ```
+
+#### Change the shape of your impact analyses
+
+Same mechanism as the ADR and BRD agents, with `impact-analysis-template.md`:
+
+```bash
+mkdir -p .specify/templates/overrides
+cp .specify/extensions/spectra/templates/impact-analysis-template.md \
+   .specify/templates/overrides/impact-analysis-template.md
+```
+
+Commit it, and every analysis follows your structure — the ten shipped sections are a default, not a fixed
+contract. Delete a section, including a whole lens, and the command notes the omission rather than putting it
+back. Resolution order, the reported template path, and the survives-updates guarantee are identical to the
+ADR agent's, described [above](#change-the-shape-of-your-adrs).
+
+What an override **cannot** change is the part that makes the document usable at a gate: citations, confidence
+levels, the rating and its trigger, the coverage statement, the no-absence-of-impact phrasing, and the refusal
+to reproduce a secret. Those live in the command. Drop *Sources consulted* and the section goes — the command
+still tells you what it read and what it could not reach.
+
+#### How it works
+
+1. Reads the project — the constitution, existing specs, source, ADRs, API contracts, migrations, tests,
+   CI. Where specs and a constitution exist it orients on them and reads code to confirm and extend them;
+   where they do not, it reconstructs the same understanding from source and says so. Which mode it ran
+   is in the output.
+2. Asks, before scanning, whether this repository is the whole system.
+3. Scans in five bounded phases — structural map, term expansion across naming conventions, a
+   role-weighted seed search, two-hop graph expansion, and two sweeps for what static reading misses:
+   dynamic dispatch and string-keyed registries, then every contract identifier (tables, columns,
+   endpoints, events, topics, config keys, flags, env vars) swept as a raw string across the whole
+   project.
+4. Asks at most 5 clarifying questions, generated from what the scan found ambiguous, each with options
+   and a recommendation grounded in a cited finding. Pressing enter accepts the recommendation and
+   records the answer as unconfirmed.
+5. Analyzes through five core lenses — blast radius, data, behavioural change, risk and reversibility,
+   effort and sequencing — plus security/privacy and compliance lenses that fire on trigger and route to
+   the agent that owns the question rather than answering it.
+6. Writes one analysis plus the index, and reports coverage.
+
+#### Numbering, interruptions, and the publishing check
+
+The next number is one greater than the highest present, not a count of the files. An interrupted run
+leaves the folder untouched and consumes no number.
+
+An impact analysis also says where secrets live, which is one more reason the `docs/` publishing check
+asks first. Unanswered, it picks the non-publishing folder.
+
+Nothing under `specs/` is written or depended on, and there is no `spec_refs` field.
 
 <!-- SPECTRA:AGENT id=test-plan -->
 ### Test Plan ✅
@@ -592,7 +652,7 @@ What it refuses to do is as important as what it does:
   committed, team-wide, and survives extension updates. Each run reports which template it used. The
   traceability invariant, the no-checkbox rule, the cited-absence rule, the priority derivation, and the
   coverage statement stay with the command — a template shapes the document, not the standards.
-- **It does not** write tests, generate tasks, modify your spec, touch test or CI configuration, edit the
+- **What it does not do** — It does not write tests, generate tasks, modify your spec, touch test or CI configuration, edit the
   constitution, commit, or make a network request. It writes exactly one file.
 - **Examples (Claude)** —
   ```
@@ -600,6 +660,178 @@ What it refuses to do is as important as what it does:
   /speckit-spectra-test-plan specs/021-signed-webhooks
   /speckit-spectra-test-plan --non-interactive
   ```
+
+#### How it works
+
+1. Resolves the feature exactly as `plan` does and says which one it picked and from where.
+2. Reads your project — the spec in full, the constitution, your test strategy, existing tests and runner
+   configuration, dependency manifests, CI definitions, and the source the feature touches.
+3. Resolves the lens set from your own `TEST_STRATEGY.md` where you have one.
+4. Turns every acceptance criterion into a test condition or a UAT scenario — or reports it as uncovered,
+   with a reason. A requirement too ambiguous to test is reported as a gap naming what is missing.
+5. Derives the risk table from stated triggers and the strategy's known risk areas, and condition
+   priority from your spec's own story priorities.
+6. Suggests UAT scenarios and a regression scope.
+7. Writes one `test-plan.md` beside the spec, reports the count — criteria covered out of criteria
+   found — then prints the planning prompt that consumes it.
+
+The final UAT phase in `tasks.md` is one a human ticks, or that `speckit.spectra.uat` performs on
+request.
+
+#### Unattended runs
+
+Pass `--non-interactive` in CI: it will create a plan that does not exist, but never rewrite one that
+does.
+
+<!-- SPECTRA:AGENT id=adr -->
+### Architecture Decision Records (ADR) ✅
+
+**`speckit.spectra.adr`** — Create a context-aware Architecture Decision Record grounded in your codebase,
+prior ADRs, and the project constitution. It gathers project context, asks up to five clarifying
+questions, and writes the ADR under `docs/adr/` — or the artifact root your constitution declares. When the
+decision is significant, it drafts the constitution guardrails it implies, on its own ground —
+architecture-level choices — and refers testing, deployment, languages and frameworks, and workflow to
+the agent that owns them. You decide each guardrail; the ADR records the outcome in a Constitution input
+section and hands you a ready-to-paste `/speckit-constitution` line that cites it. It never edits the
+constitution.
+
+- **Arguments** — a one-or-two-sentence description of the decision. If omitted, the command asks you
+  for one before drafting.
+- **Use it when** — you're making a significant architecture or technology choice and want it captured
+  and checked against the constitution as you decide.
+- **Where it writes** — `docs/adr/` by default, or the `Artifact root:` your constitution declares. It
+  checks whether `docs/` is a published site source (Pages, MkDocs, Docusaurus) and asks first if it is.
+- **Template** — `adr-template.md`. Override it at `.specify/templates/overrides/adr-template.md` to change the
+  sections; the override is committed, team-wide, and survives extension updates. Each run reports which
+  template it used.
+- **Example (Claude)** —
+  ```
+  /speckit-spectra-adr We should standardize on PostgreSQL for all primary data stores
+  ```
+
+#### Change the shape of your ADRs
+
+The ADR's section structure comes from `adr-template.md`, shipped with the extension. To use your own — extra
+sections your governance requires, or fewer than the default — copy it into your project's override slot and
+edit it there:
+
+```bash
+mkdir -p .specify/templates/overrides
+cp .specify/extensions/spectra/templates/adr-template.md .specify/templates/overrides/adr-template.md
+```
+
+Commit that file. Every ADR from then on follows your structure, for everyone on the team, and **the override
+survives extension updates** because it lives outside the extension's own directory. The command resolves the
+template in this order and uses the first one it can read:
+
+1. `.specify/templates/overrides/adr-template.md` — yours
+2. `.specify/presets/<preset-id>/templates/adr-template.md` — an installed preset
+3. `.specify/extensions/spectra/templates/adr-template.md` — the shipped default
+4. `.specify/templates/adr-template.md` — a core template, if you keep one there
+5. a skeleton inside the command itself — only when there is no `.specify/` at all
+
+Every run tells you which template it used, so an override that isn't being picked up is obvious. Sections you
+delete stay deleted: the command follows your template and mentions what it left out rather than adding it
+back. Do **not** edit the copy under `.specify/extensions/` — extension files are replaced when the extension
+updates, and your edit goes with them.
+
+#### How it works
+
+Takes a short description of a decision and then:
+
+1. Reads your project context — the constitution (`.specify/memory/constitution.md`), existing ADRs under
+   `docs/adr/`, specs under `specs/`, and the relevant source code.
+2. Asks up to 5 clarifying questions, specific to your project, before drafting anything.
+3. Determines the next ADR number, drafts the ADR, and writes it to `docs/adr/ADR-NNN-<title>.md` —
+   `docs/adr/` is created automatically, and numbers are zero-padded to three digits.
+4. Checks the decision against your constitution and, if significant, drafts the guardrails it would
+   make binding. You approve, decline, or reword each. With no constitution yet, it keeps the guardrails
+   for later and points you to the domain analyzer first.
+5. Suggests (does not run) the optional git commands to commit the new ADR.
+
+#### Somewhere other than docs/?
+
+One line in `.specify/memory/constitution.md` moves every Spectra document agent at once:
+
+```text
+Artifact root: documents/
+```
+
+The command reads that line and writes to `documents/adr/` instead. It offers the line but never adds it
+for you.
+
+The published-site check looks for `mkdocs.yml`, `docusaurus.config.*`, `docs/_config.yml`,
+`docs/.nojekyll`, `docs/index.html`, `docs/conf.py`, or a Pages configuration pointing at `docs` — and
+asks before defaulting there, since that would publish the ADR or add it to a generated docs build.
+
+#### Upgrading from an older version?
+
+If the project still has a `Docs/ADR/` folder from before 1.6.0, the command reads it for context and
+continues its numbering, tells you once where ADRs live now, and offers a `git mv` you can run. It never
+moves or edits anything in the old folder.
+
+<!-- SPECTRA:AGENT id=uat -->
+### UAT Runner ✅
+
+**`speckit.spectra.uat`** — Perform a feature's user-acceptance scenarios on the real build, after
+implementation, **only when you ask**. The test plan suggests the scenarios, `tasks` turns them into a
+final UAT phase, and the implement command leaves that phase open. From there you choose: perform UAT
+yourself and tick the tasks, or hand the feature to this command and let the agent perform the scenarios
+it can drive — with screenshots, transcripts, and comparisons as evidence.
+
+**It ticks only what it saw pass.** A tick in `tasks.md` is a claim that acceptance happened, so a
+scenario is marked done only when the agent observed its outcome, and the tick carries a link to the
+evidence. A `human` scenario, a failed one, and one the agent could not reach stay open with a reason. A
+task a human already ticked is never touched, and a pass is never reverted.
+
+**It starts nothing before you confirm.** It shows the exact command it would run to start the build and
+waits. Decline and every scenario is reported blocked, not failed. It acts on a locally started build
+unless you name an environment with `--env`, and it makes no network request beyond what the build under
+test makes. `--non-interactive` starts nothing and attempts nothing.
+
+**It changes nothing it is accepting** — not source, not tests, not configuration, not the spec, not the
+test plan, not the constitution. It never edits code to make a scenario pass. Its writes are the `[UAT]`
+lines in `tasks.md` it observed passing, `uat-report.md` beside the spec, and the evidence under
+`specs/<feature>/uat/<run-stamp>/`, which a re-run adds to and never overwrites. A capture that might
+show a secret is masked or skipped, and the report records what was withheld.
+
+- **Arguments** — none needed: it finds the feature the way the implement command does
+  (`SPECIFY_FEATURE_DIRECTORY`, then `.specify/feature.json`) and names it before anything starts — no
+  branch name, no picker. A path to the feature directory or its `spec.md` only confirms it, and a
+  mismatch stops. `--env <name>` to act on a named environment. `--non-interactive` for CI.
+- **Use it when** — implementation is done and you want acceptance evidence before opening a pull
+  request. After implement, an optional hook offers it ahead of `create-pr`; the hook only asks.
+- **Drivability is judged in its own session.** It states which tools it relied on; a scenario marked
+  `agent` that this session cannot reach becomes *awaiting human* rather than a guess.
+- **Template** — `uat-report-template.md`. Override it at
+  `.specify/templates/overrides/uat-report-template.md`. The report carries no checkboxes — `tasks.md` is
+  the tracker — and keeps a cumulative run log.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-uat
+  /speckit-spectra-uat --env staging
+  /speckit-spectra-uat specs/021-signed-webhooks
+  ```
+
+#### How it works
+
+1. Finds the feature the way the implement command does, and names it before anything starts and again
+   in the run confirmation. Where no feature resolves, it stops and says how to set one.
+2. Reads the UAT phase in `tasks.md`, the scenarios in `test-plan.md`, the strategy's evidence rule, and
+   the constitution.
+3. Reports incomplete implementation and asks before going on, then shows the exact command it would run
+   to start the build and waits for your confirmation.
+4. Performs only the `agent` and `either` scenarios it can drive with the tools available in its own
+   session.
+5. Captures evidence — screenshots, transcripts, comparisons — under
+   `specs/<feature>/uat/<YYYYMMDD-HHMMSS>/`, never overwriting an earlier run.
+6. Ticks only the UAT tasks it observed pass, appending a link to the evidence, and writes
+   `uat-report.md` beside the spec.
+
+#### Other environments
+
+`--env` takes a name or a URL: pass `--env <name-or-url>` to act on an environment other than a local
+build.
 
 <!-- SPECTRA:AGENT id=flaky-test-detector -->
 ### Flaky Test Detector ✅
@@ -654,48 +886,49 @@ silently. There is exactly one analysis file at any time.
   /speckit-spectra-flaky-test-detector api/
   ```
 
-<!-- SPECTRA:AGENT id=uat -->
-### UAT Runner ✅
+#### The list is meant to outlive the session
 
-**`speckit.spectra.uat`** — Perform a feature's user-acceptance scenarios on the real build, after
-implementation, **only when you ask**. The test plan suggests the scenarios, `tasks` turns them into a
-final UAT phase, and the implement command leaves that phase open. From there you choose: perform UAT
-yourself and tick the tasks, or hand the feature to this command and let the agent perform the scenarios
-it can drive — with screenshots, transcripts, and comparisons as evidence.
+There is exactly **one** analysis file, at `.specify/memory/flaky-test-analysis.md`, at any time. Close
+your terminal mid-run and the file is still exactly true — progress is written after every single fix, not
+batched at the end — so the next run picks up the remaining items without re-analysing and without
+discarding the pruning you did. A completed list is never replaced without asking. A file it cannot parse
+is never overwritten silently; it says what it could not read and waits. And before a run scoped to one
+suite replaces a plan covering more, it names the pending items that would be dropped.
 
-**It ticks only what it saw pass.** A tick in `tasks.md` is a claim that acceptance happened, so a
-scenario is marked done only when the agent observed its outcome, and the tick carries a link to the
-evidence. A `human` scenario, a failed one, and one the agent could not reach stay open with a reason. A
-task a human already ticked is never touched, and a pass is never reverted.
+The file is yours to edit. Delete rows to exclude those tests, reword a suggested fix and it acts on your
+wording, tick an item yourself and it skips it. Only structural damage — a missing `## Tasks` heading,
+rows it cannot resolve — counts as unreadable.
 
-**It starts nothing before you confirm.** It shows the exact command it would run to start the build and
-waits. Decline and every scenario is reported blocked, not failed. It acts on a locally started build
-unless you name an environment with `--env`, and it makes no network request beyond what the build under
-test makes. `--non-interactive` starts nothing and attempts nothing.
+#### Confidence, and what it is not
 
-**It changes nothing it is accepting** — not source, not tests, not configuration, not the spec, not the
-test plan, not the constitution. It never edits code to make a scenario pass. Its writes are the `[UAT]`
-lines in `tasks.md` it observed passing, `uat-report.md` beside the spec, and the evidence under
-`specs/<feature>/uat/<run-stamp>/`, which a re-run adds to and never overwrites. A capture that might
-show a secret is masked or skipped, and the report records what was withheld.
+High, Medium, or Low, rating **the strength of the evidence in your source**, not a measured failure rate.
+High requires the triggering construct in the test's own body or its direct fixtures, citable by line.
+With no run history there is no denominator, so the command emits no percentage, score, or flakiness
+index — inventing one would be the easiest way to sound authoritative and be wrong.
 
-- **Arguments** — none needed: it finds the feature the way the implement command does
-  (`SPECIFY_FEATURE_DIRECTORY`, then `.specify/feature.json`) and names it before anything starts — no
-  branch name, no picker. A path to the feature directory or its `spec.md` only confirms it, and a
-  mismatch stops. `--env <name>` to act on a named environment. `--non-interactive` for CI.
-- **Use it when** — implementation is done and you want acceptance evidence before opening a pull
-  request. After implement, an optional hook offers it ahead of `create-pr`; the hook only asks.
-- **Drivability is judged in its own session.** It states which tools it relied on; a scenario marked
-  `agent` that this session cannot reach becomes *awaiting human* rather than a guess.
-- **Template** — `uat-report-template.md`. Override it at
-  `.specify/templates/overrides/uat-report-template.md`. The report carries no checkboxes — `tasks.md` is
-  the tracker — and keeps a cumulative run log.
-- **Examples (Claude)** —
-  ```
-  /speckit-spectra-uat
-  /speckit-spectra-uat --env staging
-  /speckit-spectra-uat specs/021-signed-webhooks
-  ```
+Your project's constitution binds the fix it chooses. If a guardrail rules out the only available remedy —
+no mocking libraries, no new test dependencies — the item is left open with that rule named, rather than
+producing a change your own review would reject.
+
+#### How it works
+
+It is the only Spectra agent that edits code you wrote.
+
+1. Reads `.specify/memory/flaky-test-analysis.md` first, before anything else, and branches on what it
+   finds.
+2. Identifies your test suites from the working tree — runner configuration, test scripts in the project
+   manifest, directory conventions, filename patterns — and reports each with its framework and file
+   count before naming a single candidate. Several suites in several languages are fine.
+3. Reads the tests for the eight signal categories: timing and async, isolation and shared state,
+   unmocked external dependencies, non-determinism, brittle assertions, parallel-execution conflicts,
+   environment coupling, and existing retry or known-flaky annotations.
+4. Reports the ranked table and stops, asking before it writes anything.
+5. On your go-ahead writes the plan, then stops again and tells you to delete the rows you disagree with.
+6. On a second go-ahead works the surviving rows in file order, ticking each `[x]` on disk as it lands,
+   and closes with what it fixed, what it left open and why, and every file it touched.
+
+A fix may create a helper or a mock where it needs one, and it will say so — but it never touches
+production source and never adds a new dependency.
 
 <!-- SPECTRA:AGENT id=defect-rca -->
 ### Defect Root Cause Analysis ✅
@@ -750,6 +983,368 @@ evidence that would settle it rather than promoting a guess into the heading.
   /speckit-spectra-defect-rca orders intermittently return 500 under concurrent load
   ```
 
+#### How it works
+
+Run it when a defect has been found — by a failing test, by QE, or in production. Hand it the defect and
+it:
+
+1. Resolves the **channel** from what you gave it — a GitHub issue URL, a JIRA ticket reference, or a
+   plain description — and says which one it picked before doing anything else.
+2. Reads your project: the constitution, the implicated code, the commits that touched it, the
+   configuration, the tests. It says what it examined *and what it did not*.
+3. Searches your **existing analyses** for this defect, and surfaces any match while the investigation
+   is still open.
+4. Builds a MECE hypothesis tree, tests what the repository can settle, and asks at most five questions
+   per round about the things it cannot.
+5. Writes one analysis to `docs/defect-rca/NNN-<slug>.md` — or wherever your declared artifact root puts
+   it — plus a rebuilt folder index.
+
+**It reads the code before it asks you anything.** Which function handles the retry, whether the timeout
+is configurable, when the offending line last changed, whether a test covers that path — those are its
+questions to answer, not yours. Every claim it makes about the code cites the file and line; every claim
+that something is *absent* states what it searched for and where.
+
+An evidence table of nothing but confirmations leaves a reader unable to tell what was ruled out, so they
+cannot tell how much to trust what was not — which is why invalidated hypotheses stay in the document.
+
+#### The document
+
+**The filename names the symptom, never the cause.** `order-submission-500s`, not `missing-pool-limit`.
+A cause-named file is wrong exactly when the analysis turns out to be interesting — and the flat
+directory stays scannable, which is what keeps the recurrence search cheap.
+
+**Conclusions stay yours.** Beyond fixing nothing and writing no test, it changes no configuration. The
+document carries an advisory status line naming a human owner, and that line is never softened or
+dropped.
+
+The document's six sections are overridable at `.specify/templates/overrides/defect-rca-template.md`.
+
+<!-- SPECTRA:AGENT id=create-pr -->
+### Create PR ✅
+
+**`speckit.spectra.create-pr`** — Open a correctly-targeted GitHub PR for the branch you are on, optionally
+linked to an issue, with the body built from an overridable PR template. It asks once with everything on the
+table before creating anything, and returns the PR URL. Also offered automatically by an `after_implement`
+hook once `implement` finishes, so you don't have to invoke it by hand.
+
+`gh` is required at run time, and the command **gates on it before doing anything else**: if `gh` is
+missing or unauthenticated it stops immediately — before reading the constitution, before deriving a base
+branch, before touching the remote — and names which of the two failed, because the remedies differ
+(install the CLI, or `gh auth login`). Nothing is mutated on that path, and a missing `gh` never produces
+a `gh` command you cannot run. A remote that isn't on GitHub stops the same way, with a scope statement.
+Failures *after* the gate degrade instead: you get the manual `git push` + `gh pr create` commands with
+the derived base branch filled in, plus an explicit statement of whether the branch already reached the
+remote.
+
+**Works from any branch** — a `fix/…` or chore branch is fine; only a detached HEAD and a branch that is
+already the base are refused. A spec branch simply contributes more to the body (`spec.md`, `plan.md`,
+`tasks.md`), while the **Changes** section always comes from the real diff against the base.
+
+**Uncommitted work is offered a commit, not a warning.** A dirty tree gets the file list and the question
+*"should I proceed with committing and pushing first?"* — yes behaves like an ordinary commit-and-push, no
+opens the PR from committed work and says what was excluded. Credential-shaped filenames are called out
+before anything is staged, and `--no-verify` is never used.
+
+- **Arguments** — all optional:
+  - *(none)* — open a **ready-for-review** PR (the default).
+  - `--issue <url-or-number>` — the issue this PR addresses. Omit it and you are asked once; skipping the
+    question writes no issue section at all.
+  - `--draft` — open the PR as a **draft** instead.
+  - `--base <branch>` — use this base branch (still shown in the final summary).
+- **Use it when** — a piece of work is ready for review and you want the PR opened against the right base,
+  shaped like your team's template, without running `git`/`gh` by hand.
+- **Template** — `pr-template.md`: Summary, Related Issues, Type of Change, Changes, How to Test, Evidence,
+  Breaking Changes, Notes for Reviewers — and deliberately **no self-certification checklist**. Override it
+  at `.specify/templates/overrides/pr-template.md`; the override is committed, team-wide, and survives
+  extension updates. Trimming **Related Issues** does not unlink the PR: an issue you passed is appended with
+  a note rather than dropped.
+- **Linked issues** — GitHub honours closing keywords **only** on PRs targeting the default branch, so the
+  command writes `Closes #42` there and a plain `#42` reference anywhere else, telling you that merging will
+  not auto-close it. Cross-repository issues are referenced by full URL.
+- **Base branch** — a promotion flow documented in the constitution or the `git` extension config is used
+  and cited. With nothing documented the command *proposes* a base and asks at the final gate, so you can
+  answer "no, use dev" without restarting.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-create-pr
+  /speckit-spectra-create-pr --draft
+  /speckit-spectra-create-pr --base develop
+  ```
+
+#### One thing to know about linked issues
+
+GitHub interprets closing keywords **only when a PR targets the repository's default branch**. On any other
+base they are ignored: no link is created and merging closes nothing. So the command writes `Closes #42`
+only when the base *is* the default branch. Targeting a `dev` in a promotion flow, it writes a plain `#42`
+reference instead — which still records a cross-reference on the issue — and tells you auto-close will not
+happen on this merge. An issue in another repository is referenced by full URL, never with a keyword.
+
+#### Change the shape of your PRs
+
+The body's structure comes from `pr-template.md`. Override it exactly like the ADR and BRD templates:
+
+```bash
+mkdir -p .specify/templates/overrides
+cp .specify/extensions/spectra/templates/pr-template.md .specify/templates/overrides/pr-template.md
+```
+
+Commit it, and every PR the command opens follows your structure — resolution order, the reported template
+path, and the survives-updates guarantee are identical to the ADR agent's, described
+[above](#change-the-shape-of-your-adrs). Sections you delete stay deleted.
+
+The shipped template has **no self-certification checklist** on purpose: an agent cannot honestly tick "I
+have self-reviewed the full diff". If your override adds one, the command leaves those boxes unchecked and
+tells you it left them for you.
+
+One thing the template does *not* control: whether the PR is linked to the issue you passed. Trim the
+**Related Issues** section and the command appends a short one rather than dropping the link — saying that it
+did. Keep the section if you would rather choose where it sits.
+
+**GitHub only** in this version (via the `gh` CLI), and `gh` is required at run time rather than
+optional: without it the command stops with the remedy instead of half-running. Failures *after* that
+gate — a protected base branch, a token without push permission, a fork restriction — degrade to the
+manual `git push` + `gh pr create` commands (including the base branch it derived) plus an explicit
+statement of whether the branch already reached the remote.
+
+#### How it works
+
+When you accept the hook's offer (or run it directly) it:
+
+1. **Gates on `gh` first**, stopping before anything else if it is missing or unauthenticated.
+2. Confirms the remote is on GitHub. A missing remote, or one on another host, stops with a scope
+   statement rather than a `gh` fallback that could not work.
+3. Checks the branch, refusing only a detached HEAD and a branch that is already the base.
+4. Detects an **existing open PR** and returns its link instead of opening a duplicate.
+5. Determines the **base branch**. A promotion flow documented in the constitution's *Version Control &
+   Branching Strategy* section or `.specify/extensions/git/git-config.yml` is used and cited. With nothing
+   documented it proposes one — the branch yours appears to be cut from, else the repository default.
+6. **Offers to commit and push** when the working tree is dirty. Clean tree, unpushed commits — it asks
+   to push.
+7. **Asks for a linked issue** if you did not pass `--issue`, and accepts a skip.
+8. **Resolves the PR template**, fills it from the real diff, and reports which template it used.
+9. **Asks once, with everything on the table**: source → base and where the base came from, the issue or
+   nothing, draft or ready, the template path, and anything it has already done. Nothing is created
+   before you say yes.
+10. Opens the PR with `gh` and returns the URL.
+
+Its mutations are the Git and remote actions needed to open the PR — including a commit **when you ask for
+one** — and nothing else: never your source, spec, plan, tasks, or constitution.
+
+<!-- SPECTRA:AGENT id=review-pr -->
+### Review PR ✅
+
+**`speckit.spectra.review-pr`** — Review a GitHub pull request against **the intent and standards it
+carries**, not just the diff. It reads the PR's spec, plan, tasks, and ADRs *at the PR's own head
+revision*, plus the constitution and ADRs in force on the **base** branch, then reports findings that a
+diff-only reviewer cannot produce: a task marked complete but absent from the change, scope no
+requirement authorized, a pattern an ADR forbids. Every finding cites a file, a line, and the clause,
+requirement, or principle it rests on — anything that cannot be anchored and sourced is not reported at
+all.
+
+Then the reviewer takes over, starting from a deliberately narrow default. **Only blockers and majors are
+proposed** — minors, nits and questions are shown to you, enumerated by number, but are not in the
+proposal. Answering `yes` publishes exactly those and submits the verdict that follows from them; `all`
+takes everything, and any selection of your own still works. You see the exact text before anything is
+posted. One review event goes to the pull request under your own `gh` credentials, containing only what
+you accepted — and the published body declares that it was AI-assisted and human-curated.
+
+The default is a proposal, never an assumption: an empty or absent answer posts nothing, which is a
+normal outcome rather than a failure. That is the whole point of the narrow default — a short, correct,
+human-endorsed review beats thirty findings that bury the two that matter, and a blank prompt in front of
+sixteen findings is answered `all` far more often than it is answered carefully.
+
+Like `create-pr`, this command **hard-stops** when `gh` is missing or unauthenticated, naming which of
+the two failed — neither command can deliver its product without reading GitHub through `gh`. What
+differs is what each hands over after that gate: `create-pr` gives you the `git`/`gh` commands to finish
+by hand, this one gives you the rendered review body to post yourself. It is deliberately **on demand
+only** — there is no hook — since a reviewer should not be the author.
+
+- **Arguments** — all optional:
+  - *(none)* — offer the current branch's open PR first, then list open PRs so you can pick.
+  - `<url>` or `<number>` — review that pull request.
+  - `--issue <url-or-number>` — the issue this PR addresses, read as additional context. Supplying it
+    skips both detection and the question.
+  - `--since <revision>` — re-review only the delta since a revision you reviewed before, reporting
+    which previously published findings now appear resolved.
+- **Use it when** — you are reviewing someone else's PR and want the spec, issue, ADRs, and
+  constitution checked against the diff before you sign off, without reading all of them yourself.
+- **Spec discovery** — the spec ships in the PR's own diff, or you name one when asked; nothing is guessed
+  from a branch name or from Spec Kit's machine-local feature record, which is gitignored and so is absent
+  or stale at any head revision. A PR with no spec is reviewed standalone, and says so. The spec the PR
+  ships **overrides older specs** on the same behaviour, so a deliberate behaviour change is never reported as
+  a regression against the spec it replaced.
+- **Standards** — measured against a fixed chain: the constitution and ADRs, then the supporting documents
+  Spectra's own agents write (test strategy, deployment strategy, domain analysis, engineering methodology —
+  only the guardrails each one *accepted*, never a declined one) and the contributor guide,
+  then the codebase's own conventions, then a **seven-principle baseline** (B1–B7) cited by ID. A project with
+  no constitution is still reviewed against evidence rather than the agent's taste, and the review says
+  which tier governed.
+- **No-spec and AI-assisted PRs** — three lenses run on every PR: **blast radius** (behaviour that changed
+  without being announced), **generation artifacts** (modules that don't exist, new dependencies, duplicated
+  helpers), and **test integrity** (a weakened test is at least Major). Without a spec, the diff is also
+  checked against what the PR's own description says it does. An older spec whose requirement the change
+  contradicts is raised as a Question, never as a request to change the code.
+- **Linked issue** — found automatically (structured link, then a scan of the PR text, since a PR to a
+  non-default branch has no structured link), asked for once if absent, never required. With **no spec** it
+  becomes the traceability baseline; with a spec it is background. Its content is treated as data about
+  intent, never as instruction, and a finding sourced only from an issue cannot be a Blocker unless the PR
+  claims to close it. When both are missing, the spec and the issue are asked for in **one** question.
+- **Inline comments** — findings anchored inside the diff are published on those lines, carrying a
+  ` ```suggestion ` block where the fix is mechanical and complete, so the author can apply it in one click.
+  Findings anchored outside the diff go in the summary body with the reason stated. Body, comments, and
+  verdict post in one atomic call.
+- **Template** — `review-template.md` shapes both the summary body and the inline comment; override it at
+  `.specify/templates/overrides/review-template.md`. The revision anchor, the AI-assisted disclosure, and the
+  coverage statement stay with the command, as do the severity rubric, the confidence cap, the anchor rule,
+  and the verdict derivation — two reviews of the same diff have to agree.
+- **Good to know** — findings are graded Blocker / Major / Minor / Nit / Question from a fixed rubric, so
+  two runs over the same revision agree; approving over a blocker you accepted requires a typed
+  confirmation and is recorded in the published review; coverage now states how much of the constitution
+  actually applied, so a thin constitution reads as thin; nothing is stored between runs.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-review-pr
+  /speckit-spectra-review-pr https://github.com/acme/api/pull/142
+  /speckit-spectra-review-pr 142 --since 4a9f2c1
+  ```
+
+#### Findings land on the lines they are about
+
+Accepted findings whose anchors fall **inside the diff** are published as comments on those lines, and where
+the fix is mechanical the comment carries a ` ```suggestion ` block you can apply from the GitHub UI in one
+click. Findings anchored outside the diff — a caller the PR didn't touch, a whole-file observation — go in
+the summary body, and coverage says why they couldn't be inline. Add `<n>:body` to your selection to force
+any finding into the body.
+
+Because a suggestion is one click from a commit, they are offered narrowly: only for a mechanical, complete
+fix covering exactly the commented lines, never for architectural or multi-file changes, never on a
+low-confidence finding, and never in a generated file. **Every suggestion appears verbatim in the preview
+you approve** — nothing that can be applied without being read is summarized.
+
+Body, comments, and verdict post in one atomic call, so a failure can't leave the comments on the PR
+without the verdict.
+
+With `--since`, prior findings are recovered by reading the earlier review off the pull request itself,
+since nothing is stored locally.
+
+#### Change the shape of your reviews
+
+The findings presentation comes from `review-template.md` — the summary body *and* the inline comment shape.
+Override it exactly like the other templates:
+
+```bash
+mkdir -p .specify/templates/overrides
+cp .specify/extensions/spectra/templates/review-template.md .specify/templates/overrides/review-template.md
+```
+
+Three things are **not** the template's to change, and survive any override: the
+`<!-- spectra:review-pr revision=… -->` anchor that `--since` and self-review detection depend on, the
+AI-assisted disclosure line, and the **Coverage and limits** section — the one that stops a review implying
+assurance it didn't earn.
+
+Judgment isn't overridable either. The severity rubric and its floors, the confidence cap, the anchor rule,
+the selection grammar, and how the verdict is derived stay in the command, because two reviews of the same
+diff have to agree. The template governs how findings *read*, not what counts as a Blocker.
+
+Deliberately **on demand only** — there is no hook, because a reviewer should not be the author.
+**GitHub only** in this version (via the `gh` CLI), and single-body reviews only; line-anchored inline
+comments are a follow-on. Failures *after* the `gh` gate — a fork restriction, insufficient permission —
+degrade to handing you the rendered review body for manual posting.
+
+#### How it works
+
+It covers the last fully manual gate in the lifecycle: where `create-pr` opens a pull request, this
+reviews one. It:
+
+1. **Gates on `gh` first**, stopping before any analysis.
+2. Resolves the target — a URL, a number, or a pick from the repository's open PRs — and **pins the
+   review to one head revision**, reported everywhere and re-checked before publishing.
+3. Reads the PR's spec, plan, tasks, and ADRs at that revision, and the constitution and ADRs in force on
+   the base branch. The revision split is deliberate: it is what lets the agent notice a PR that changes
+   the rules it is being measured against.
+4. Locates the governing spec as described under Spec discovery. Spec Kit's machine-local feature record
+   is `.specify/feature.json`, which is why it is never used to guess.
+5. Reads the **linked issue as optional extra context**. Where the issue and the spec disagree, that is a
+   Question naming both.
+6. Runs **traceability in both directions** (work claimed complete but absent; changes no task
+   authorized), **guardrails** with the violated clause quoted, and **craft** lenses chosen from what the
+   diff actually touches — reporting which lenses did not run, and why. Among the generation artifacts, a
+   new dependency is always raised.
+7. Grades every finding from the fixed rubric, with a separate confidence axis that caps severity: a
+   low-confidence finding becomes a Question rather than a Blocker.
+8. Presents the findings numbered and ranked, with a severity tally, its own reading of the change, a
+   recommended verdict, and a mandatory **coverage-and-limits** statement.
+9. Hands control back from the narrow default, shows you the exact review — body *and* every inline
+   comment — and only then posts a single review event.
+
+Its only mutation is publishing that one review, after an explicit go-ahead. It never edits source, the
+spec, the plan, the tasks, or the constitution, never touches your working tree, and holds no credentials
+of its own.
+
+<!-- SPECTRA:AGENT id=deployment-strategy -->
+### Deployment Strategist ✅
+
+**`speckit.spectra.deployment-strategy`** — Decide how this project gets from a merged change to
+something running or published. It reads the repository — CI workflows, container and orchestration
+files, infrastructure code, migrations, specs, ADRs, and any test strategy or domain analysis already
+written — plus any local document you point it at, such as a client's hosting standard or an ops runbook.
+Then it writes one strategy to `docs/DEPLOYMENT_STRATEGY.md`, or your declared artifact root, drafts the
+strategy's lasting rules as guardrails, records your decision on each, and hands a Constitution input
+section to `/speckit-constitution` — to create the constitution or update it.
+
+It starts by working out **what ships**, from evidence rather than by asking: a running service, a static
+site, a library, a CLI or desktop tool, a mobile app, or infrastructure on its own. That classification
+changes what every lens means. For a library, "deploy" means publish, environments are release channels,
+and rollback is yank-or-supersede; for a mobile app, store review is a gate your team does not control. It
+will not recommend a cluster rollback to a package that has no cluster.
+
+Six lenses, every one addressed or marked not applicable with a reason: **environments and promotion**
+(with a Mermaid promotion diagram drawn only from the environments it lists), **pipeline, artifact and
+traceability**, **release and versioning**, **data and schema change**, **rollback and recovery**, and
+**operability and configuration**. On an established project each lens reports what happens today before
+proposing anything. Every claim carries one of four provenances — `verified` from what the repository
+does, `claimed` from what a document says, `stated` from an answer you gave, or `convention` — because
+deployment docs drift from deployment reality faster than almost anything else, and you should be able to
+tell the workflow from the wiki.
+
+Before it writes, it asks five things the repository cannot settle, once for the whole project and one at
+a time, each with a recommendation and the evidence behind it: where it is hosted, who approves a
+production deploy, whether a pre-release environment exists or is wanted, availability and recovery
+targets, and release cadence. Say "use your defaults" and it takes every recommendation. It **never
+invents a value only the client or ops owner can supply** — account IDs, cluster names, domains, who gets
+paged, recovery targets nobody set. Those go in an open-questions section with the role that can answer
+them. Operability stays at the level of what should be monitored and who owns it; ask in the session if
+you want to go deeper.
+
+It **never writes your constitution**. It checks whether the constitution already carries a deployment
+policy, drafts only durable invariants — same artifact promoted unchanged, explicit production approval,
+no floating tags, compatible migrations, a documented rollback path — and ends with a link to the file
+and a ready-to-paste `/speckit-constitution` line. It never edits source, CI, manifests, or infrastructure
+code, runs nothing, and makes no network request. Like the test strategy, it is a singleton, rewritten in
+place on a re-run, with your previous answers offered back for confirmation.
+
+- **Arguments** — none required. Optionally a focus, paths to local documents, and `--non-interactive`.
+- **Use it when** — a project is about to ship its first release, or an established project's deployment
+  practice has grown by accretion and needs writing down as one policy.
+- **Examples (Claude)** —
+  ```
+  /speckit-spectra-deployment-strategy
+  /speckit-spectra-deployment-strategy ./client/hosting-standard.md focus on the pre-release gate
+  ```
+
+#### What it reads and records
+
+Besides the CI, container, orchestration, infrastructure and migration files, it reads your constitution,
+specs, ADRs, docs, and release configuration, and any `TEST_STRATEGY.md` or `DOMAIN_ANALYSIS.md` already
+written.
+
+A `convention` claim is a default with nothing behind it. Each guardrail it drafts is recorded under a
+frozen `ds-` ID along with your decision on it.
+
+The document's twelve sections are overridable at
+`.specify/templates/overrides/deployment-strategy-template.md`.
+<!-- SPECTRA:GENERATED END id=agents-list-shipped -->
+
 ---
 
 ## Spec Kit core agents
@@ -758,7 +1353,7 @@ Available today, but shipped by **Spec Kit** itself — Spectra layers on top of
 beyond Spec Kit is needed; run them with their built-in commands.
 
 <!-- SPECTRA:GENERATED START id=agents-list-speckit-core -->
-<!-- Generated from agents-list.json — do not edit by hand. Run: python tools/generate_agent_docs.py -->
+<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
 
 ### Guardrails — `speckit.constitution` ✅
 
@@ -835,7 +1430,7 @@ Planned agents, grouped by SDLC phase. Descriptions reflect intended scope; the 
 each one ships. All are **🚧 under development**.
 
 <!-- SPECTRA:GENERATED START id=agents-list-roadmap -->
-<!-- Generated from agents-list.json — do not edit by hand. Run: python tools/generate_agent_docs.py -->
+<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
 
 ### Foundation
 

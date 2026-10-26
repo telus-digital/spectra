@@ -1,5 +1,5 @@
 ---
-description: "Create a context-aware Architecture Decision Record (ADR) grounded in the codebase, prior ADRs, and the project constitution."
+description: "Create a new Architecture Decision Record from a short description, grounded in the codebase and constitution, and hand any constitution change to /speckit-constitution."
 ---
 
 # Create an Architecture Decision Record

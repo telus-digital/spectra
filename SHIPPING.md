@@ -51,7 +51,7 @@ live; [the commands at the end of this section](#confirming-the-settings) show i
   `spectra cli version` and `spectra cli update` run outside a Spec Kit project. It also checks that the wheel ships `spectra_cli/` only (never `tools/`,
   `tests/` or `agents-list.json`), and that bare `spectra` writes nothing to the current directory.
 - **`Catalog and package stay in sync`** runs the four checks in `tools/checks.py`, the same code the
-  pre-flight runs: the generated listings match `agents-list.json`; `extension.yml`, `catalog.json`
+  pre-flight runs: every generated output matches what `agents/` renders; `extension.yml`, `catalog.json`
   and the zip agree; every published copy of the description agrees; and the zip matches `spectra/`.
 - **`CodeQL finds no high-severity issues`**: see [the CodeQL check](#the-codeql-check).
 
@@ -281,18 +281,20 @@ and the full test suite, pushes nothing, and does not mind a dirty tree.
 Authoring is [`CONTRIBUTING.md` → Add a new command](CONTRIBUTING.md#add-a-new-command-use-the-spec-kit-workflow).
 Once the command file exists, Principle V requires all of this **in the same change**:
 
-1. Register the agent in [`agents-list.json`](agents-list.json) — the single source of truth for the
-   roster.
+1. Create or edit the agent's file under [`agents/`](agents/) — the only source of truth for agent
+   information. A shipped agent's file carries its `manifest` description and its long description.
 2. Register the command in `spectra/extension.yml`, and any template under `provides.templates`.
 3. Bump `extension.version` in `spectra/extension.yml`, with a matching `spectra/CHANGELOG.md` entry.
    Renaming or removing a command is MAJOR.
 4. Mirror the version into `catalog.json`, along with `updated_at` and the command count.
-5. Add the command's card to `docs/getting-started/agents.html`. Do **not** put a version or the
-   extension description there — the page fetches both at load time, and the checks enforce it.
+5. Nothing to hand-edit on `docs/getting-started/agents.html`: the command's sidebar entry and card
+   are generated from `agents/`. Do **not** put a version or the extension description on that page —
+   it fetches both at load time, and the checks enforce it.
 6. `python tools/build_package.py` — rebuild `docs/packages/spectra.zip`. Required whenever *any*
    file under `spectra/` changes, including `TRADEMARK.md` and `CHANGELOG.md`.
-7. `python tools/generate_agent_docs.py` — regenerate the structured listings.
-8. Hand-write the prose block a newly shipped agent needs in `AGENTS_LIST.md`.
+7. `python3 tools/generate_agent_docs.py` — render `agents-list.json`, every listing and card, and
+   the command's description lines in `extension.yml` and its command file. Run it before step 6 when
+   the description changed, since the zip carries those lines.
 
 Then:
 

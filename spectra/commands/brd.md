@@ -1,5 +1,5 @@
 ---
-description: "Transform a raw business requirement — inline text or a document file (.docx/.pdf/.md/.txt) — into a structured, specify-ready Business Requirements Document written under docs/brd/ (or the project's declared artifact root), working interactively with clarifying questions."
+description: "Transform a raw business requirement (inline text or a .docx/.pdf/.md/.txt document) into a structured, specify-ready BRD under docs/brd/ (or the project's declared artifact root), asking clarifying questions when needed, then hand off to the specify command."
 ---
 
 # Generate a Business Requirements Document (BRD)

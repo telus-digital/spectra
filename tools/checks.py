@@ -7,7 +7,7 @@
 `tools/` reaches a user's machine.
 
 Constitution Principle V says `catalog.json`, `docs/index.html`, the generated agent listings and the
-published zip must never drift from the `spectra/` folder or from `agents-list.json`. These are the
+published zip must never drift from the `spectra/` folder or from `agents/`. These are the
 assertions that enforce it. They used to live as inline shell inside `.github/workflows/ci.yml`, which
 meant `tools/ship.py` could only re-check them by reimplementing them — a second definition that would
 drift from the first, which is the exact failure mode Principle V exists to prevent. Defining them
@@ -63,16 +63,16 @@ DESCRIPTION_LINE = re.compile(r'^  description: "(.*)"$', re.M)
 
 
 def check_generated_listings() -> list:
-    """The generated agent listings still match `agents-list.json`.
+    """Every generated agent output still matches what `agents/` renders.
 
-    Delegates to the generator rather than restating any of its rules: it owns the regions, the prose
-    anchors, the title containment and the roster/manifest agreement. It prints its own detail, so all
-    that is added here is a one-line verdict.
+    Delegates to the generator rather than restating any of its rules: it owns the source format, the
+    regions and named lines, the generated roster, the source/manifest agreement and the narrative-page
+    guard. It prints its own detail, so all that is added here is a one-line verdict.
     """
     if generate_agent_docs.run(check=True) == 0:
         return []
     return ["the generated agent listings are out of date or incomplete (detail above). "
-            "Run: python tools/generate_agent_docs.py"]
+            "Edit agents/<id>.md, then run: python3 tools/generate_agent_docs.py"]
 
 
 def check_catalog_parity() -> list:

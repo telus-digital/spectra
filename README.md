@@ -99,7 +99,7 @@ phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception 
 **Status:** ✅ available today · 🚧 under development.
 
 <!-- SPECTRA:GENERATED START id=readme-agents-table -->
-<!-- Generated from agents-list.json — do not edit by hand. Run: python tools/generate_agent_docs.py -->
+<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
 
 | Agent | SDLC phase | AI-DLC phase | Type | Status |
 | ----- | ---------- | ------------ | ---- | ------ |

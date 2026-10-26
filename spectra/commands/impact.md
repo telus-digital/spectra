@@ -1,5 +1,5 @@
 ---
-description: "Produce a codebase-grounded feature impact analysis — what a proposed change would touch, with cited evidence and a stated coverage boundary — written under docs/impact-analysis/ (or the project's declared artifact root) for a stakeholder go / no-go decision before any specification work begins."
+description: "Produce a codebase-grounded feature impact analysis for a stakeholder go / no-go decision before any specification work begins — cited findings, a defined impact rating, at most five clarifying questions, and a stated coverage boundary — written under docs/impact-analysis/ (or the project's declared artifact root). Makes no network request and accepts no repository URL: other systems are declared as text, a document, or a local directory read in place."
 ---
 
 # Produce a Feature Impact Analysis

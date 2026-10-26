@@ -1,5 +1,5 @@
 ---
-description: "Review a GitHub pull request against the spec, plan, tasks, ADRs, and constitution it carries, then publish a single human-curated review — severity-ranked, evidence-anchored, and containing only the findings the reviewer accepted."
+description: "Review a GitHub pull request against its spec, its linked issue (optional, via --issue), the ADRs, and the constitution, then publish one human-curated review — an overridable summary body plus line-anchored comments with applicable code suggestions — proposing blockers and majors by default so a one-word yes publishes only what should block the merge. From a test, deployment, or domain strategy and the engineering methodology, only accepted guardrails are standards."
 ---
 
 # Review a Pull Request Against the Intent and Standards It Carries

@@ -1,5 +1,5 @@
 ---
-description: "Say first whether the project has a constitution — and so whether this run will create one or update it — then read the codebase, docs, and specs, infer the business domain, work six fixed lenses, and ask seven questions one at a time, each with at least four options including a recommendation and Skip. Only after the last answer, write the decisions and an evidence-backed Constitution input section to <artifact-root>/DOMAIN_ANALYSIS.md, and hand it to /speckit-constitution with a ready-to-paste create or amend prompt. Never edits the constitution, never edits source, and adopts nothing a human did not choose."
+description: "Say whether the project has a constitution, infer its domain, work six lenses — handing workflow to speckit.spectra.methodology — and ask the SME seven questions to decide each lens's guardrails in the session — at least four options per question, one recommended, one Skip — then write the decisions and a Constitution input section to <artifact-root>/DOMAIN_ANALYSIS.md and hand it to /speckit-constitution to create or update the constitution. Reads documents imported by kb-vault as claimed, never as current practice, and replaces a DOMAIN_ANALYSIS.md it did not write only with consent."
 ---
 
 # Analyze the project domain and decide its guardrails

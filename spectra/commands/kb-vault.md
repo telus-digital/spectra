@@ -1,5 +1,5 @@
 ---
-description: "Absorb documents you supply — PDFs, Word files, images, or knowledge you dictate — and land them in the repository as Markdown, planned and approved before anything is written. Classifies each source, continues the project's own conventions, updates what already exists rather than duplicating it, routes an imported domain analysis, methodology, test strategy or deployment strategy to its own source folder and refers it to the agent that owns the standing document — never writing that document itself — and never commits."
+description: "Absorb documents the user supplies — PDFs, Word files, images, or dictated knowledge — classify them, and land them as Markdown under the project's artifact root, planned and approved before anything is written. Updates an existing document rather than duplicating it, and never commits. A domain analysis, engineering methodology, test strategy, or deployment strategy is kept as a policy source in its own <kind>-source folder and referred to the agent that owns it — kb-vault never writes the documents those agents feed the constitution."
 ---
 
 # Build the Project's Knowledge Vault from What You Supply

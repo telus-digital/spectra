@@ -1,5 +1,5 @@
 ---
-description: "Guide a hypothesis-driven root cause analysis of a defect supplied as a JIRA ticket, a GitHub issue URL, or a plain description — gathering evidence from the code, checking whether this defect has been analyzed before, and writing one advisory analysis under docs/defect-rca/ (or the project's declared artifact root) with corrective and preventive actions."
+description: "Guide a hypothesis-driven root cause analysis of a defect from a JIRA ticket, a GitHub issue URL, or a plain description — gathering evidence from the code, surfacing any prior analysis of the same defect, and writing one advisory analysis under the project's artifact root."
 ---
 
 # Analyze a Defect to Its Root Cause

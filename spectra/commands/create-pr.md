@@ -1,5 +1,5 @@
 ---
-description: "Open a correctly-targeted GitHub pull request for the current branch, optionally linked to an issue, with the body built from an overridable PR template and one final confirmation before anything is created."
+description: "Open a correctly-targeted GitHub PR for the current branch — optionally linked to an issue via --issue — with the body built from the overridable pr-template, one final confirmation before anything is created, and the PR URL returned."
 ---
 
 # Open a Pull Request

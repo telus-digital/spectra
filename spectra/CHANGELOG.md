@@ -3,6 +3,20 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.29.0] - 2026-10-25
+
+Every agent's descriptions now come from one source, so the copies a user sees agree.
+
+### Changed
+- **Each command's description is the same everywhere.** The `description:` line in each command file's
+  front matter now matches its entry in `extension.yml`; thirteen command files had drifted. Both are
+  rendered from the agent's file under `agents/` in the repository.
+- **The extension README's per-agent sections are regenerated** from the same source as `AGENTS_LIST.md`,
+  so the two carry identical text. Each section now opens with the agent's lead paragraph, then its
+  arguments, when to use it, and examples, followed by the guides that were in the README before —
+  including each agent's step-by-step *How it works* and its re-run and upgrade notes.
+- No command's behavior changes.
+
 ## [1.28.0] - 2026-10-25
 
 UAT finds its feature the way the implement command does, so its ticks land in the feature that was just

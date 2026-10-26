@@ -301,6 +301,29 @@ ul.cmds .cdesc { display: block; margin-top: 10px; color: var(--muted); font-siz
 ul.cmds .args { display: block; margin-top: 10px; font-size: 13.5px; color: var(--muted); }
 ul.cmds .args b { color: var(--text); }
 ul.cmds .lbl { margin: 14px 0 0; }
+ul.cmds .args ul { margin: 6px 0 0; padding-left: 20px; }
+
+/* The collapsed full reference at the foot of each card: the agent's whole description, generated
+   from agents/ like the rest of the card, opened in place with no script. */
+details.fullref { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 12px; }
+details.fullref > summary {
+  cursor: pointer; width: fit-content; font-size: 13px; font-weight: 600; color: var(--accent-2);
+  list-style: none;
+}
+details.fullref > summary::-webkit-details-marker { display: none; }
+details.fullref > summary::before { content: "▸ "; display: inline-block; width: 1.1em; }
+details.fullref[open] > summary::before { content: "▾ "; }
+details.fullref > summary:hover { color: var(--text); }
+.fullref-body { margin-top: 12px; font-size: 14.5px; color: var(--muted); overflow-wrap: anywhere; }
+.fullref-body > p, .fullref-body li { margin: 0 0 10px; }
+.fullref-body b, .fullref-body h4 { color: var(--text); }
+.fullref-body h4 { font-size: 15px; margin: 22px 0 8px; }
+.fullref-body ul, .fullref-body ol { margin: 0 0 12px; padding-left: 22px; }
+.fullref-body ul.items { padding-left: 18px; }
+.fullref-body pre { margin: 10px 0 12px; }
+.fullref-body table { display: block; overflow-x: auto; border-collapse: collapse; margin: 0 0 12px; font-size: 13.5px; }
+.fullref-body th, .fullref-body td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+.fullref-body th { color: var(--text); }
 pre {
   background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
   padding: 14px 16px; overflow-x: auto; margin: 12px 0 0;

@@ -17,39 +17,42 @@ Two independently-versioned things live in this repo. Know which one you are cha
 
 - **`spectra/`** — the Spec Kit extension (the agents). Markdown + YAML, no code. Versioned in
   `spectra/extension.yml`, mirrored into `catalog.json`, shipped from `main` over raw URLs. Never
-  tagged. Adding or changing a command means updating `extension.yml`, `spectra/CHANGELOG.md`,
-  `agents-list.json`, `catalog.json`, `docs/packages/spectra.zip`, and `docs/index.html` in the same
-  change (Principle V).
+  tagged. Adding or changing a command means updating `agents/<id>.md`, `extension.yml`,
+  `spectra/CHANGELOG.md`, `catalog.json`, and `docs/packages/spectra.zip`, then regenerating, in the
+  same change (Principle V).
 - **`spectra_cli/`** — the `spectra` command that manages Spectra in a project. Python, stdlib
   only, installed as a `uv` tool. Versioned in the root `VERSION` file and released by pushing a bare
   semver git tag. Git tags and GitHub Releases belong to this channel exclusively (Principle VI).
 
 Never bump one channel because the other moved.
 
-## The roster is the source of truth
+## `agents/` is the source of truth
 
-`agents-list.json` at the repository root declares which agents Spectra offers. Every **structured**
-listing of agents is generated from it and must not be hand-edited:
+Every fact about an agent lives in `agents/<id>.md` — a flat `key: value` header (id, title, command,
+provider, type, phase, order, status, summary, manifest) and, for a shipped Spectra agent, a Markdown
+body holding its long description. Phases live in `agents/_phases.md`. Nothing about an agent is
+written anywhere else: every listing is rendered from that source and must not be hand-edited.
 
-| Generated region | File |
+| Generated output | File |
 | --- | --- |
+| whole file | `agents-list.json` |
 | `readme-agents-table` | `README.md` |
-| `agents-list-speckit-core` | `AGENTS_LIST.md` |
-| `agents-list-roadmap` | `AGENTS_LIST.md` |
-| `spectra-readme-commands` | `spectra/README.md` |
+| `agents-list-shipped`, `agents-list-speckit-core`, `agents-list-roadmap` | `AGENTS_LIST.md` |
+| `spectra-readme-commands`, `spectra-readme-agents` | `spectra/README.md` |
+| `agents-page-nav`, `agents-page-cards` | `docs/getting-started/agents.html` |
+| each command's `description:` line | `spectra/extension.yml`, `spectra/commands/<id>.md` |
 
 ```bash
-python tools/generate_agent_docs.py            # rewrite the generated regions
-python tools/generate_agent_docs.py --check    # what CI runs
-python tools/build_package.py                  # rebuild docs/packages/spectra.zip
+python3 tools/generate_agent_docs.py            # render every output from agents/
+python3 tools/generate_agent_docs.py --check    # what CI runs
+python3 tools/build_package.py                  # rebuild docs/packages/spectra.zip
 ```
 
-The division is by kind of content, not by file: **if it is a table or a list, it is generated; if it
-is a paragraph, it is written.** Per-agent prose stays hand-authored, anchored by
-`<!-- SPECTRA:AGENT id=… -->` so it is keyed to the agent's stable id rather than its title — a title
-can be reworded without breaking anything. `--check` fails if a shipped agent has no prose block, if a
-prose block exists for an agent the roster does not ship, if a hand-written heading has drifted from a
-canonical title, or if the roster and the manifest disagree about the shipped set.
+To change an agent, edit `agents/<id>.md` and run the generator. `--check` fails if any output differs
+from what `agents/` renders (a stale output or a hand edit), if the source breaks the format, if
+`agents/` and `spectra/extension.yml` disagree about the shipped set, or if a page names a
+`speckit.spectra.*` command that `agents/` does not ship. Body Markdown is a fixed subset (no raw HTML,
+no `###`); the generator refuses anything else and names the file and line.
 
 ## The command surface
 

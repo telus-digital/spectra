@@ -1,31 +1,43 @@
 #!/usr/bin/env python3
 # Copyright 2026 TELUS Digital
 # SPDX-License-Identifier: Apache-2.0
-"""Rewrite the structured agent listings from `agents-list.json`.
+"""Render every agent output from `agents/`, the only source of truth for agent information.
 
 **Maintainer tooling. Not shipped.** `pyproject.toml` lists its packages explicitly
 (`packages = ["spectra_cli"]`), so nothing under `tools/` reaches a user's machine, and the shipped
 CLI gains no dependency from anything here.
 
-Run it after editing the roster::
+Run it after editing anything under `agents/`::
 
-    python tools/generate_agent_docs.py            # rewrite the generated regions
-    python tools/generate_agent_docs.py --check    # verify without writing (what CI runs)
+    python3 tools/generate_agent_docs.py            # rewrite every output
+    python3 tools/generate_agent_docs.py --check    # verify without writing (what CI runs)
 
-Four regions are owned in full and rewritten on every run; everything outside them is hand-written
-and left byte-identical. The division is by kind of content, not by file: **if it is a table or a
-list, it is generated; if it is a paragraph, it is written.** Roughly forty of the forty-plus roster
-entries are pure classification — title, phase, type, status — and those are exactly the entries that
-rot silently. The handful of shipped agents carrying real explanatory prose keep it hand-authored,
-with `--check` asserting only that the prose *exists*, never what it says.
+Each agent is one file, `agents/<id>.md` — a flat header of facts and, for an agent Spectra ships, its
+long description — and the phases live in `agents/_phases.md` (see `tools/agent_source.py`). From that
+source this script writes, and `--check` verifies (constitution Principle V):
 
-The roster is loaded through :mod:`spectra_cli.roster`, the same parser the CLI uses, so the two can
-never disagree about what a valid roster is. The dependency runs tools -> package, never the reverse.
+- `agents-list.json`, whole — the published roster that installed CLIs and `docs/agents.html` read at
+  run time, byte-for-byte in the shape they have always read;
+- marked regions: the README Agents table, every agent section of `AGENTS_LIST.md`, the Commands table
+  and per-agent sections of `spectra/README.md`, and the sidebar and cards of
+  `docs/getting-started/agents.html`;
+- named lines: each Spectra command's `description:` in `spectra/extension.yml` and in its command
+  file's front matter, both from the same manifest description.
+
+Prose is written by a person, once, in `agents/`. The two long-form outputs carry identical text for
+each agent and differ only in framing. A stale output and a hand-edited one fail `--check` the same
+way: the output differs from what the source renders.
+
+The built roster is passed through :mod:`spectra_cli.roster`, the parser the CLI itself uses, before
+anything is written, so the generator can never publish a roster the CLI would reject. The dependency
+runs tools -> package, never the reverse.
 """
 
 from __future__ import annotations
 
 import argparse
+import html
+import json
 import re
 import sys
 import textwrap
@@ -33,34 +45,48 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import agent_source  # noqa: E402
+import markdown_subset as md  # noqa: E402
 from spectra_cli import roster as roster_module  # noqa: E402
 
-ROSTER = REPO_ROOT / "agents-list.json"
-MANIFEST = REPO_ROOT / "spectra" / "extension.yml"
+SCHEMA_VERSION = "1.0"
 
-# Hand-written documentation wraps at 100 columns; generated content matches so the diff between a
-# hand-maintained table and its generated replacement is about content, not reflow.
+# Hand-written documentation wraps at 100 columns; generated tables and lists match so the diff
+# between a hand-maintained listing and its generated replacement is about content, not reflow.
+# Prose is never rewrapped: it keeps the line breaks its author gave it in `agents/`.
 WRAP = 100
 
 START_MARKER = "<!-- SPECTRA:GENERATED START id={region} -->"
 END_MARKER = "<!-- SPECTRA:GENERATED END id={region} -->"
-NOTICE = ("<!-- Generated from agents-list.json — do not edit by hand. "
-          "Run: python tools/generate_agent_docs.py -->")
+NOTICE = ("<!-- Generated from agents/ — do not edit by hand. "
+          "Run: python3 tools/generate_agent_docs.py -->")
 
-ANCHOR = re.compile(r"<!--\s*SPECTRA:AGENT id=([a-z0-9-]+)\s*-->")
 MANIFEST_COMMAND = re.compile(r'^    - name: "(speckit\.spectra\.[^"]+)"$', re.M)
+COMMAND_MENTION = re.compile(r"(?:speckit\.spectra\.|/speckit-spectra-)([a-z0-9]+(?:-[a-z0-9]+)*)")
 
 TYPE_LABELS = {"core": "Core", "add-on": "Add-on"}
 STATUS_LABELS = {"available": "✅ available", "planned": "🚧 under dev"}
 
 
 class GeneratorError(Exception):
-    """Something is wrong with the roster, a marker, or a document. Message names the culprit."""
+    """Something is wrong with a marker, a line target, or a document. Message names the culprit."""
+
+
+def _paths():
+    """Every path the generator touches, resolved against REPO_ROOT at call time (tests move it)."""
+    return {
+        "agents": REPO_ROOT / "agents",
+        "roster": REPO_ROOT / "agents-list.json",
+        "manifest": REPO_ROOT / "spectra" / "extension.yml",
+        "commands": REPO_ROOT / "spectra" / "commands",
+        "docs": REPO_ROOT / "docs",
+    }
 
 
 # --------------------------------------------------------------------------- #
-# Renderers
+# Structured listings (from the roster built out of agents/)
 # --------------------------------------------------------------------------- #
 
 def _claude_trigger(command: str) -> str:
@@ -80,7 +106,7 @@ def _wrap(text: str, indent: str = "", subsequent: str = None) -> list:
     ) or [indent.rstrip()]
 
 
-def render_readme_table(roster) -> list:
+def render_readme_table(roster, source) -> list:
     """The Agents table, plus the sentence naming which available agents are Spec Kit's own.
 
     That sentence enumerates nine agent titles. It is classification wearing prose clothing, and it
@@ -108,7 +134,7 @@ def render_readme_table(roster) -> list:
     return lines + [""] + _wrap(sentence)
 
 
-def render_speckit_core(roster) -> list:
+def render_speckit_core(roster, source) -> list:
     """One subsection per Spec Kit-provided agent: title, command, description, how to run it."""
     lines = []
     for agent in roster.agents:
@@ -124,7 +150,7 @@ def render_speckit_core(roster) -> list:
     return lines
 
 
-def render_roadmap(roster) -> list:
+def render_roadmap(roster, source) -> list:
     """Planned agents, grouped under their phase title, in roster order."""
     lines = []
     for phase, agents in roster.grouped():
@@ -141,12 +167,11 @@ def render_roadmap(roster) -> list:
     return lines
 
 
-def render_spectra_commands(roster) -> list:
+def render_spectra_commands(roster, source) -> list:
     """The extension README's Commands table.
 
-    No Effect column: the roster does not model per-agent effect, and inventing a field to reproduce
-    one column would be the wrong trade. `spectra/extension.yml` declares `effect: read-write` for
-    the extension as a whole, and the prose around this table says so.
+    No Effect column: the source does not model per-agent effect. `spectra/extension.yml` declares
+    `effect: read-write` for the extension as a whole, and the prose around this table says so.
     """
     lines = [
         "| Command | What it does |",
@@ -157,17 +182,198 @@ def render_spectra_commands(roster) -> list:
     return lines
 
 
+# --------------------------------------------------------------------------- #
+# Long descriptions — the same text, framed for each output
+# --------------------------------------------------------------------------- #
+
+def _examples_label(agent) -> str:
+    return "Example (Claude)" if len(agent.body.examples) == 1 else "Examples (Claude)"
+
+
+def _label(agent, section) -> str:
+    return _examples_label(agent) if section.label == agent_source.EXAMPLES else section.label
+
+
+def _opens_with_paragraph(lines) -> bool:
+    first = lines[0]
+    return not (first.startswith("```") or first.startswith("|") or md.BULLET.match(first)
+                or md.ORDERED.match(first))
+
+
+def _items_markdown(agent) -> list:
+    """The labelled facts as one list: `- **Label** — text`, continuation indented two spaces."""
+    out = []
+    for section in agent.body.items:
+        label = _label(agent, section)
+        lines = section.lines
+        if _opens_with_paragraph(lines):
+            out.append(f"- **{label}**{section.joiner}{lines[0]}")
+            rest = lines[1:]
+        else:
+            out.append(f"- **{label}** —")
+            rest = lines
+        out.extend(("  " + line) if line.strip() else "" for line in rest)
+    return out
+
+
+def _body_markdown(agent, guide_heading: str) -> list:
+    """Further prose, the item list, and the guides: everything after the lead, as Markdown."""
+    body = agent.body
+    out = []
+    if body.further:
+        out += [""] + body.further
+    out += [""] + _items_markdown(agent)
+    for guide in body.guides:
+        out += ["", f"{guide_heading} {guide.label}", ""] + guide.lines
+    return out
+
+
+def render_agents_list_shipped(roster, source) -> list:
+    """Every shipped agent's section of `AGENTS_LIST.md`, in roster order.
+
+    Each section is preceded by a `SPECTRA:AGENT` anchor keyed to the agent's stable id; tests and
+    readers slice the file on it.
+    """
+    lines = []
+    for agent in source.shipped():
+        if lines:
+            lines.append("")
+        lines.append(f"<!-- SPECTRA:AGENT id={agent.id} -->")
+        lines.append(f"### {agent.title} ✅")
+        lines.append("")
+        lead = agent.body.lead
+        lines.append(f"**`{agent.command}`** — {lead[0]}")
+        lines.extend(lead[1:])
+        lines.extend(_body_markdown(agent, "####"))
+    return lines
+
+
+def render_spectra_readme_agents(roster, source) -> list:
+    """The extension README's per-agent sections — the same text as `AGENTS_LIST.md`."""
+    lines = []
+    for agent in source.shipped():
+        if lines:
+            lines += ["", "---", ""]
+        lines.append(f"## `{agent.command}` — {agent.title}")
+        lines.append("")
+        lines.extend(agent.body.lead)
+        lines.extend(_body_markdown(agent, "###"))
+    return lines
+
+
+# --------------------------------------------------------------------------- #
+# The Agent reference page
+# --------------------------------------------------------------------------- #
+
+def _esc(text: str) -> str:
+    return html.escape(text, quote=False)
+
+
+def _section_html(agent, section) -> str:
+    blocks = md.parse(section.lines, section.content_line)
+    label = f"<b>{md.inline_html(_label(agent, section), section.line)}</b>"
+    if blocks and isinstance(blocks[0], md.Paragraph):
+        joiner = _esc(section.joiner)
+        return (label + joiner + md.inline_html(blocks[0].text, blocks[0].line)
+                + md.to_html(blocks[1:]))
+    return label + md.to_html(blocks)
+
+
+def full_reference_html(agent) -> list:
+    """The whole long description as block HTML, one top-level block per line."""
+    body = agent.body
+    parts = ["<p>" + md.inline_html("\n".join(body.lead), body.lead_line) + "</p>"]
+    if body.further:
+        parts += [md.to_html([block]) for block in md.parse(body.further, body.further_line)]
+    items = "".join(f"<li>{_section_html(agent, section)}</li>" for section in body.items)
+    parts.append(f'<ul class="items">{items}</ul>')
+    for guide in body.guides:
+        parts.append(f"<h4>{md.inline_html(guide.label, guide.line)}</h4>")
+        parts += [md.to_html([block]) for block in md.parse(guide.lines, guide.content_line)]
+    return [part.replace("\n", " ") if not part.startswith(("<pre>", "<pre ")) else part
+            for part in parts]
+
+
+PAGE_INDENT = "        "
+
+
+def render_agents_page_nav(roster, source) -> list:
+    return [
+        PAGE_INDENT + f'<a href="#a-{agent.id}"><span class="n">{agent.number:02d}</span><span class="t">'
+        f"{_esc(agent.title)}<small>{agent.id}</small></span></a>"
+        for agent in source.shipped()
+    ]
+
+
+def render_agents_page_cards(roster, source) -> list:
+    """One card per shipped agent (contracts/agents-page-markup.md)."""
+    lines = []
+    for agent in source.shipped():
+        card = []
+        body = agent.body
+        arguments = body.item("Arguments")
+        blocks = md.parse(arguments.lines, arguments.content_line)
+        args = (md.inline_html(blocks[0].text, blocks[0].line).replace("\n", " ")
+                + md.to_html(blocks[1:]).replace("\n", " "))
+        card += [
+            f'<li class="agent" id="a-{agent.id}">',
+            f'  <header><span class="n">{agent.number:02d}</span><h3>{_esc(agent.title)}</h3>'
+            f'<span class="phase">{_esc(source.phase(agent.phase).title)}</span></header>',
+            f'  <span class="name">{agent.command}</span>',
+            '  <span class="cdesc">'
+            + md.inline_html("\n".join(body.lead), body.lead_line).replace("\n", " ") + "</span>",
+            f'  <div class="args"><b>Arguments:</b> {args}</div>',
+            f'  <span class="lbl">{_examples_label(agent)}</span>',
+        ]
+        card += [f"  <pre><code>{_esc(example)}</code></pre>" for example in body.examples]
+        card += ['  <details class="fullref">',
+                  "    <summary>Full reference</summary>",
+                  '    <div class="fullref-body">']
+        lines += [PAGE_INDENT + line for line in card]
+        for part in full_reference_html(agent):
+            first, *rest = part.split("\n")
+            lines.append(PAGE_INDENT + "      " + first)
+            lines.extend(rest)   # inside <pre>: whitespace is content, never indent it
+        lines += [PAGE_INDENT + line for line in ("    </div>", "  </details>", "</li>")]
+    return lines
+
+
+# --------------------------------------------------------------------------- #
+# Outputs
+# --------------------------------------------------------------------------- #
+
+# region id -> (file, renderer, indent). Markdown regions put a blank line after the notice.
 REGIONS = {
-    "readme-agents-table": ("README.md", render_readme_table),
-    "agents-list-speckit-core": ("AGENTS_LIST.md", render_speckit_core),
-    "agents-list-roadmap": ("AGENTS_LIST.md", render_roadmap),
-    "spectra-readme-commands": ("spectra/README.md", render_spectra_commands),
+    "readme-agents-table": ("README.md", render_readme_table, None),
+    "agents-list-shipped": ("AGENTS_LIST.md", render_agents_list_shipped, None),
+    "agents-list-speckit-core": ("AGENTS_LIST.md", render_speckit_core, None),
+    "agents-list-roadmap": ("AGENTS_LIST.md", render_roadmap, None),
+    "spectra-readme-commands": ("spectra/README.md", render_spectra_commands, None),
+    "spectra-readme-agents": ("spectra/README.md", render_spectra_readme_agents, None),
+    "agents-page-nav": ("docs/getting-started/agents.html", render_agents_page_nav, "        "),
+    "agents-page-cards": ("docs/getting-started/agents.html", render_agents_page_cards, "        "),
 }
 
 
-# --------------------------------------------------------------------------- #
-# Marked regions
-# --------------------------------------------------------------------------- #
+def render_roster_json(source) -> str:
+    data = {
+        "schema_version": SCHEMA_VERSION,
+        "phases": [{"id": p.id, "title": p.title, "aidlc": p.aidlc} for p in source.phases],
+        "agents": [agent.roster_entry() for agent in source.agents],
+    }
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+
+
+def build_roster(source):
+    """The roster as the CLI would read it, or raise: nothing is written from a roster it rejects."""
+    data = json.loads(render_roster_json(source))
+    try:
+        return roster_module.parse(data, strict=True)
+    except roster_module.RosterError as exc:
+        named = re.search(r"agent(?: id)? '([a-z0-9-]+)'", str(exc))
+        where = f"agents/{named.group(1)}.md" if named else "agents/"
+        raise GeneratorError(f"{where}: the roster it builds is invalid ({exc}).") from exc
+
 
 def _locate(text: str, region: str, relative_path: str):
     """(start_of_body, end_of_body) for a region, or raise.
@@ -178,16 +384,13 @@ def _locate(text: str, region: str, relative_path: str):
     start = START_MARKER.format(region=region)
     end = END_MARKER.format(region=region)
 
-    if text.count(start) == 0:
-        raise GeneratorError(f"{relative_path}: missing start marker for region {region!r}.")
-    if text.count(start) > 1:
-        raise GeneratorError(f"{relative_path}: start marker for region {region!r} appears "
-                             f"{text.count(start)} times.")
-    if text.count(end) == 0:
-        raise GeneratorError(f"{relative_path}: missing end marker for region {region!r}.")
-    if text.count(end) > 1:
-        raise GeneratorError(f"{relative_path}: end marker for region {region!r} appears "
-                             f"{text.count(end)} times.")
+    for marker, kind in ((start, "start"), (end, "end")):
+        count = text.count(marker)
+        if count == 0:
+            raise GeneratorError(f"{relative_path}: missing {kind} marker for region {region!r}.")
+        if count > 1:
+            raise GeneratorError(f"{relative_path}: {kind} marker for region {region!r} appears "
+                                 f"{count} times.")
 
     body_start = text.index(start) + len(start)
     body_end = text.index(end)
@@ -201,127 +404,143 @@ def _known_region_ids(text: str) -> set:
     return set(re.findall(r"<!--\s*SPECTRA:GENERATED START id=([a-z0-9-]+)\s*-->", text))
 
 
-def render_region(region: str, roster) -> str:
+def render_region(region: str, roster, source) -> str:
     """The full body of a region, including its do-not-edit notice.
 
     Line endings are always `\\n`, whatever the platform, so a Windows checkout does not look drifted
     to CI.
     """
-    _, renderer = REGIONS[region]
-    lines = renderer(roster)
-    return "\n" + NOTICE + "\n\n" + "\n".join(lines) + "\n"
+    _, renderer, indent = REGIONS[region]
+    lines = renderer(roster, source)
+    if indent is None:
+        return "\n" + NOTICE + "\n\n" + "\n".join(lines) + "\n"
+    # HTML renderers indent their own lines (the inside of a <pre> must not be indented), so only
+    # the notice and the end marker are placed here.
+    return "\n" + indent + NOTICE + "\n" + "\n".join(lines) + "\n" + indent
 
 
-def apply_regions(roster, *, write: bool):
-    """Rewrite (or compare) every region. Returns the list of paths whose content differs."""
-    by_file = {}
-    for region, (relative_path, _) in REGIONS.items():
-        by_file.setdefault(relative_path, []).append(region)
+def _description_line(manifest: str) -> str:
+    return 'description: "' + manifest.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
-    stale = []
-    for relative_path, regions in sorted(by_file.items()):
-        path = REPO_ROOT / relative_path
-        try:
-            original = path.read_text(encoding="utf-8")
-        except OSError as exc:
-            raise GeneratorError(f"{relative_path}: could not be read ({exc}).") from exc
 
-        unknown = _known_region_ids(original) - set(REGIONS)
+def _named_lines(source):
+    """(relative path, selector pattern, replacement line) for every generator-owned line."""
+    targets = []
+    for agent in source.shipped():
+        targets.append((
+            "spectra/extension.yml",
+            re.compile(r'^(    - name: "' + re.escape(agent.command) + r'"\n      file: "[^"\n]+"\n)'
+                       r'      description: .*$', re.M),
+            "      " + _description_line(agent.manifest),
+        ))
+        targets.append((
+            f"spectra/commands/{agent.id}.md",
+            re.compile(r"\A(---\n(?:(?!---\n)[^\n]*\n)*?)description: .*$", re.M),
+            _description_line(agent.manifest),
+        ))
+    return targets
+
+
+def render_outputs(source, roster):
+    """{relative path: (original text, rendered text)} for every output, without writing anything."""
+    rendered = {}
+
+    def current(relative_path):
+        if relative_path not in rendered:
+            path = REPO_ROOT / relative_path
+            try:
+                # Decoded from bytes so a CRLF checkout compares as stale and is rewritten with `\n`;
+                # `read_text` would normalize the endings and hide the difference.
+                text = path.read_bytes().decode("utf-8")
+            except (OSError, UnicodeDecodeError) as exc:
+                raise GeneratorError(f"{relative_path}: could not be read ({exc}).") from exc
+            rendered[relative_path] = [text, text.replace("\r\n", "\n")]
+        return rendered[relative_path]
+
+    roster_text = render_roster_json(source)
+    if (REPO_ROOT / "agents-list.json").exists():
+        current("agents-list.json")[1] = roster_text
+    else:
+        rendered["agents-list.json"] = ["", roster_text]
+
+    for region, (relative_path, _, _) in REGIONS.items():
+        entry = current(relative_path)
+        unknown = _known_region_ids(entry[0]) - {r for r, (p, _, _) in REGIONS.items()
+                                                 if p == relative_path}
         if unknown:
             raise GeneratorError(f"{relative_path}: unknown generated region(s) "
                                  f"{', '.join(sorted(unknown))}.")
+        body_start, body_end = _locate(entry[1], region, relative_path)
+        entry[1] = entry[1][:body_start] + render_region(region, roster, source) + entry[1][body_end:]
 
-        updated = original
-        for region in regions:
-            body_start, body_end = _locate(updated, region, relative_path)
-            updated = updated[:body_start] + render_region(region, roster) + updated[body_end:]
+    for relative_path, selector, line in _named_lines(source):
+        entry = current(relative_path)
+        matches = list(selector.finditer(entry[1]))
+        if len(matches) != 1:
+            raise GeneratorError(f"{relative_path}: expected exactly one generated description line, "
+                                 f"found {len(matches)}.")
+        match = matches[0]
+        entry[1] = entry[1][:match.start()] + match.group(1) + line + entry[1][match.end():]
 
-        if updated != original:
-            stale.append(relative_path)
-            if write:
-                # Written as bytes on purpose. `Path.write_text(newline=...)` only exists on Python
-                # 3.10+, and `pyproject.toml` declares a 3.9 floor — but the deeper reason is that
-                # bypassing the text layer entirely is a stronger guarantee than asking it for `\n`:
-                # `read_text` already normalized any CRLF input, so encoding the result cannot
-                # reintroduce a platform-specific ending. That is what keeps a Windows checkout from
-                # looking drifted to CI (FR-050).
-                path.write_bytes(updated.encode("utf-8"))
-    return stale
+    return {path: (old, new) for path, (old, new) in rendered.items()}
 
 
 # --------------------------------------------------------------------------- #
 # Verification
 # --------------------------------------------------------------------------- #
 
-def check_prose_anchors(roster) -> list:
-    """Every shipped agent has a prose block, and no prose block exists for anything else.
-
-    Matched by stable id, never by heading text: a title is display text and is free to change, so
-    matching on it would break the moment an agent is renamed — which is exactly what this change
-    does to the PR agent.
-    """
-    problems = []
-    path = REPO_ROOT / "AGENTS_LIST.md"
-    text = path.read_text(encoding="utf-8")
-    anchored = ANCHOR.findall(text)
-
-    duplicates = {value for value in anchored if anchored.count(value) > 1}
-    for value in sorted(duplicates):
-        problems.append(f"AGENTS_LIST.md: prose anchor for {value!r} appears more than once.")
-
-    shipped = {agent.id for agent in roster.shipped()}
-    for agent_id in sorted(shipped - set(anchored)):
-        problems.append(
-            f"AGENTS_LIST.md: no prose block for shipped agent {agent_id!r}. Write one, anchored "
-            f"with <!-- SPECTRA:AGENT id={agent_id} -->.")
-    for agent_id in sorted(set(anchored) - shipped):
-        known = roster.by_id(agent_id)
-        reason = "is not listed as shipped by Spectra" if known else "is not in the roster"
-        problems.append(f"AGENTS_LIST.md: prose block for {agent_id!r}, which {reason}.")
-    return problems
-
-
-def check_title_containment(roster) -> list:
-    """Each shipped agent's canonical title appears in `spectra/README.md`.
-
-    Deliberately weak — substring presence, not structural equality. It exists to catch a
-    hand-written heading drifting away from the roster, which is a real failure that already happened
-    four times over for one agent. Anything stronger would mean generating the prose, and the whole
-    point of the split is that we do not.
-    """
-    problems = []
-    relative_path = "spectra/README.md"
-    text = (REPO_ROOT / relative_path).read_text(encoding="utf-8")
-    for agent in roster.shipped():
-        if agent.title not in text:
-            problems.append(
-                f"{relative_path}: does not mention the canonical title for {agent.id!r} "
-                f"({agent.title!r}). A heading has drifted from the roster.")
-    return problems
-
-
-def check_manifest_agreement(roster) -> list:
-    """The roster and the manifest agree on membership and on command strings — and only those.
-
-    Descriptions are deliberately not compared. The manifest's are consumed by Spec Kit and the
-    user's coding agent at install time; the roster's are one-liners for a table. Forcing them equal
-    would make one of the two worse.
-    """
+def check_manifest_agreement(source) -> list:
+    """The shipped sources and the manifest agree on membership, and every command has its file."""
+    paths = _paths()
     problems = []
     try:
-        text = MANIFEST.read_text(encoding="utf-8")
+        text = paths["manifest"].read_text(encoding="utf-8")
     except OSError as exc:
         return [f"spectra/extension.yml: could not be read ({exc})."]
 
     manifest_commands = set(MANIFEST_COMMAND.findall(text))
-    roster_commands = {agent.command: agent.id for agent in roster.shipped()}
+    shipped = {agent.command: agent.id for agent in source.shipped()}
 
-    for command in sorted(manifest_commands - set(roster_commands)):
-        problems.append(f"spectra/extension.yml registers {command!r}, which the roster does not "
-                        "list as a shipped Spectra agent.")
-    for command in sorted(set(roster_commands) - manifest_commands):
-        problems.append(f"agents-list.json lists {roster_commands[command]!r} with command "
-                        f"{command!r}, which spectra/extension.yml does not register.")
+    for command in sorted(manifest_commands - set(shipped)):
+        problems.append(f"spectra/extension.yml registers {command!r}, which no agents/ file "
+                        "declares as a shipped Spectra agent.")
+    for command in sorted(set(shipped) - manifest_commands):
+        problems.append(f"agents/{shipped[command]}.md declares {command!r}, which "
+                        "spectra/extension.yml does not register.")
+    for agent in source.shipped():
+        if not (paths["commands"] / f"{agent.id}.md").is_file():
+            problems.append(f"agents/{agent.id}.md: shipped, but spectra/commands/{agent.id}.md "
+                            "does not exist.")
+    return problems
+
+
+def _outside_regions(text: str) -> str:
+    return re.sub(r"<!-- SPECTRA:GENERATED START.*?<!-- SPECTRA:GENERATED END id=[a-z0-9-]+ -->",
+                  "", text, flags=re.S)
+
+
+def check_command_mentions(source, outputs) -> list:
+    """No page names a Spectra command that agents/ does not ship (FR-024)."""
+    shipped = {agent.id for agent in source.shipped()}
+    texts = []
+    docs = REPO_ROOT / "docs"
+    if docs.is_dir():
+        for path in sorted(docs.rglob("*")):
+            if path.suffix in (".html", ".md") and "packages" not in path.relative_to(docs).parts:
+                relative = path.relative_to(REPO_ROOT).as_posix()
+                text = (outputs[relative][1] if relative in outputs
+                        else path.read_text(encoding="utf-8"))
+                texts.append((relative, text))
+    for relative in ("README.md", "spectra/README.md"):
+        if relative in outputs:
+            texts.append((relative, _outside_regions(outputs[relative][1])))
+
+    problems = []
+    for relative, text in texts:
+        for name in sorted(set(COMMAND_MENTION.findall(text))):
+            if name not in shipped:
+                problems.append(f"{relative}: names speckit.spectra.{name}, which agents/ does not "
+                                "ship.")
     return problems
 
 
@@ -329,51 +548,57 @@ def check_manifest_agreement(roster) -> list:
 # Entry point
 # --------------------------------------------------------------------------- #
 
+def _report(prefix, problems):
+    print(f"{prefix}: {len(problems)} problem(s) found:", file=sys.stderr)
+    for problem in problems:
+        print(f"  - {problem}", file=sys.stderr)
+
+
 def run(check: bool) -> int:
     try:
-        roster = roster_module.load(ROSTER, strict=True)
-    except roster_module.RosterError as exc:
-        print(f"error: agents-list.json: {exc}", file=sys.stderr)
+        source = agent_source.load(_paths()["agents"])
+    except agent_source.SourceError as exc:
+        _report("error", exc.problems)
         return 1
 
-    problems = []
+    # A membership mismatch would otherwise surface as a missing description line, which names the
+    # symptom rather than the cause.
+    mismatch = check_manifest_agreement(source)
+    if mismatch:
+        _report("error", mismatch)
+        return 1
+
     try:
-        stale = apply_regions(roster, write=not check)
-    except GeneratorError as exc:
+        roster = build_roster(source)
+        outputs = render_outputs(source, roster)
+    except (GeneratorError, md.MarkdownError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    if check:
-        for relative_path in stale:
-            problems.append(
-                f"{relative_path}: a generated region does not match agents-list.json. "
-                "Run: python tools/generate_agent_docs.py")
-        problems += check_prose_anchors(roster)
-        problems += check_title_containment(roster)
-        problems += check_manifest_agreement(roster)
+    stale = sorted(path for path, (old, new) in outputs.items() if old != new)
+    problems = check_command_mentions(source, outputs)
 
+    if check:
+        problems = [f"{path}: does not match what agents/ renders. "
+                    "Run: python3 tools/generate_agent_docs.py" for path in stale] + problems
         if problems:
-            print(f"error: {len(problems)} problem(s) found:", file=sys.stderr)
-            for problem in problems:
-                print(f"  - {problem}", file=sys.stderr)
+            _report("error", problems)
             return 1
-        print(f"agents-list.json ({len(roster.agents)} agents) matches every generated region; "
-              f"{len(roster.shipped())} prose blocks present; roster and manifest agree.")
+        print(f"agents/ ({len(source.agents)} agents, {len(source.shipped())} shipped) matches every "
+              f"generated output ({len(outputs)} files); the manifest agrees.")
         return 0
 
-    # Writing mode still runs the assertions that do not depend on generated content, so a
-    # maintainer who forgets a prose block finds out now rather than in CI.
-    problems += check_prose_anchors(roster)
-    problems += check_manifest_agreement(roster)
-    if stale:
-        for relative_path in stale:
-            print(f"rewrote {relative_path}")
-    else:
-        print("every generated region was already current")
+    for relative_path in stale:
+        # Written as bytes on purpose. `Path.write_text(newline=...)` only exists on Python 3.10+,
+        # and `pyproject.toml` declares a 3.9 floor — but the deeper reason is that bypassing the
+        # text layer is a stronger guarantee than asking it for `\n`: `read_text` already normalized
+        # any CRLF input, so encoding the result cannot reintroduce a platform-specific ending.
+        (REPO_ROOT / relative_path).write_bytes(outputs[relative_path][1].encode("utf-8"))
+        print(f"rewrote {relative_path}")
+    if not stale:
+        print("every generated output was already current")
     if problems:
-        print(f"warning: {len(problems)} problem(s) remain:", file=sys.stderr)
-        for problem in problems:
-            print(f"  - {problem}", file=sys.stderr)
+        _report("warning", problems)
         return 1
     return 0
 
@@ -381,7 +606,7 @@ def run(check: bool) -> int:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         prog="generate_agent_docs",
-        description="Rewrite the structured agent listings from agents-list.json.",
+        description="Render every agent output from agents/.",
     )
     parser.add_argument("--check", action="store_true",
                         help="verify without writing; exit non-zero on any mismatch")
