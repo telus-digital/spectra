@@ -3,6 +3,14 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.29.1] - 2026-10-25
+
+### Fixed
+- **Five command descriptions are reworded so GitHub can render their agent pages.** The descriptions for
+  `deployment-strategy`, `impact`, `test-plan`, `test-strategy`, and `uat` each had a colon followed by
+  a space, which is not valid in YAML front matter, so GitHub showed an "Error in user YAML" banner.
+  Those colons are now semicolons or dashes. The meaning is unchanged, and no command's behavior changes.
+
 ## [1.29.0] - 2026-10-25
 
 Every agent's descriptions now come from one source, so the copies a user sees agree.

@@ -63,7 +63,7 @@ you want to.
 def header(**fields):
     base = {"id": "demo", "title": "Demo", "command": "speckit.spectra.demo", "provider": "spectra",
             "type": "add-on", "phase": "foundation", "order": "10", "status": "available",
-            "summary": "Does a thing: with a colon, \"quotes\" — and a dash.",
+            "summary": "Does a thing:with a colon, \"quotes\" — and a dash.",
             "manifest": "Do the thing."}
     base.update(fields)
     return "---\n" + "".join(f"{k}: {v}\n" for k, v in base.items() if v is not None) + "---\n"
@@ -142,7 +142,7 @@ class ValidSource(Base):
     def test_header_values_are_literal(self):
         self.box.write("demo.md", header() + BODY)
         self.assertEqual(self.box.load().agents[0].summary,
-                         "Does a thing: with a colon, \"quotes\" — and a dash.")
+                         "Does a thing:with a colon, \"quotes\" — and a dash.")
 
     def test_order_is_phase_then_order(self):
         self.box.write("b.md", header(id="b", command="speckit.plan", provider="speckit", type="core",
@@ -180,6 +180,13 @@ class HeaderRules(Base):
         text = header().replace("title: Demo\n", "title: Demo\ntitle: Again\n") + BODY
         self.assertProblem(self.problems_for("demo.md", text), "agents/demo.md:4",
                            "`title` appears twice")
+
+    def test_value_must_be_valid_yaml_front_matter(self):
+        for bad in ("Does a thing: and then another", "Does a thing #tagged", "Ends in a colon:",
+                    "[bracketed] start", "\"quoted\" start", "* starred"):
+            with self.subTest(value=bad):
+                self.assertProblem(self.problems_for("demo.md", header(summary=bad) + BODY),
+                                   "agents/demo.md:", "`summary` is not valid YAML front matter")
 
     def test_line_without_key_value(self):
         text = header().replace("title: Demo\n", "title Demo\n") + BODY

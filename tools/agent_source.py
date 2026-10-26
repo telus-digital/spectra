@@ -32,6 +32,8 @@ import markdown_subset as md
 PHASES_FILE = "_phases.md"
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 HEADER_LINE = re.compile(r"^([a-z]+): (.*)$")
+# GitHub renders the header as YAML front matter, so a value must also be a valid plain YAML scalar.
+YAML_UNSAFE = re.compile(r": | #|:$|^[-?:,\[\]{}#&*!|>'\"%@`]")
 
 AGENT_KEYS = ("id", "title", "command", "provider", "type", "phase", "order", "status", "summary",
               "manifest")
@@ -172,6 +174,10 @@ def _read_header(lines, start, name, problems):
                 problems.append(f"{name}:{number}: `{key}` appears twice in the header.")
             elif not value:
                 problems.append(f"{name}:{number}: `{key}` has no value.")
+            elif YAML_UNSAFE.search(value):
+                problems.append(f"{name}:{number}: `{key}` is not valid YAML front matter, so "
+                                "GitHub cannot render the file; reword it to avoid `: `, ` #`, a "
+                                "trailing `:`, and a leading YAML indicator character.")
             else:
                 fields[key] = value
                 lines_of[key] = number

@@ -8,7 +8,7 @@ phase: requirements-discovery
 order: 30
 status: available
 summary: Find out what a proposed feature would actually touch, with cited evidence, before anyone commits to building it.
-manifest: Produce a codebase-grounded feature impact analysis for a stakeholder go / no-go decision before any specification work begins — cited findings, a defined impact rating, at most five clarifying questions, and a stated coverage boundary — written under docs/impact-analysis/ (or the project's declared artifact root). Makes no network request and accepts no repository URL: other systems are declared as text, a document, or a local directory read in place.
+manifest: Produce a codebase-grounded feature impact analysis for a stakeholder go / no-go decision before any specification work begins — cited findings, a defined impact rating, at most five clarifying questions, and a stated coverage boundary — written under docs/impact-analysis/ (or the project's declared artifact root). Makes no network request and accepts no repository URL; other systems are declared as text, a document, or a local directory read in place.
 ---
 
 Find out what a proposed feature would actually touch, **before** anyone
