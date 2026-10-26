@@ -17,11 +17,14 @@ import subprocess
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
-ITEM = re.compile(r"^- \*\*(.+?)\*\*( — | —$|\s|$)(.*)$")
+# The last commit before feature 040: the copies the seed was taken from. Pinned, because `main`
+# now carries the generated outputs and would compare them with themselves.
+BASE = "1e724abfe668e06c90c9ee6c4ff7a2df93d0d3e7"
+ITEM = re.compile(r"^- \*\*(.+?)\*\*( —(?: |(?=$))|\s|$)(.*)$")
 
 
 def old(path):
-    return subprocess.run(["git", "show", f"main:{path}"], cwd=REPO, check=True,
+    return subprocess.run(["git", "show", f"{BASE}:{path}"], cwd=REPO, check=True,
                           capture_output=True, text=True).stdout
 
 

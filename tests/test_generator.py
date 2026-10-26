@@ -464,7 +464,7 @@ class AgentReferencePage(unittest.TestCase):
             with self.subTest(agent=agent.id):
                 lead = "\n".join(agent.body.lead)
                 cdesc = card(self.page, agent.id).split('class="cdesc">')[1].split("</span>")[0]
-                for inner in re.findall(r"\*\*(.+?)\*\*", lead, re.S):
+                if re.search(r"\*\*(.+?)\*\*", lead, re.S):
                     self.assertIn("<b>", cdesc)
                 for inner in re.findall(r"`([^`]+)`", lead):
                     self.assertIn(f"<code>{html.escape(inner, quote=False)}</code>", cdesc)
