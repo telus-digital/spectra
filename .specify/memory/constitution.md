@@ -148,8 +148,8 @@ the repository reads correctly for someone who never runs it:
 - `agents-list.json` — the published, machine-readable roster read at run time by `spectra agent-list`
   and by `docs/agents.html`. It is a **generated output** with an unchanged schema, field names, and
   order, and MUST NOT be edited by hand; installed copies of the CLI depend on its shape.
-- the Agents table in `README.md`, the Commands table and per-agent sections of `spectra/README.md`,
-  and every agent section of `AGENTS_LIST.md`;
+- the Agents table and every agent section of `AGENTS_LIST.md`, and the Commands table and per-agent
+  sections of `spectra/README.md`;
 - each Spectra command's description in `spectra/extension.yml` and in its command file's front matter,
   both rendered from the same manifest description;
 - the sidebar and per-agent cards of `docs/getting-started/agents.html`.
@@ -463,7 +463,7 @@ invokes each one, and the agent stops when it finishes and names the next.
    `extension.version` with a matching `spectra/CHANGELOG.md` entry, rebuild
    `docs/packages/spectra.zip` (a single top-level `spectra/` folder), update the `spectra` entry in
    `catalog.json` (the single source of truth), add or update the agent's file under `agents/`, and
-   regenerate every agent output — `agents-list.json`, the README files, `AGENTS_LIST.md`, the manifest
+   regenerate every agent output — `agents-list.json`, `spectra/README.md`, `AGENTS_LIST.md`, the manifest
    and command-file descriptions, and the Agent reference page — with `tools/generate_agent_docs.py`
    (Principle V). Where work is left unbuilt, the user may run
    `converge` to append it to `tasks.md` and then `implement` again; `converge` too is user-invoked
@@ -536,4 +536,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 2.1.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-25
+**Version**: 2.1.1 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-26

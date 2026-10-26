@@ -1,9 +1,6 @@
 # Spectra Agents — full reference
 
-What every agent does, its status, and how to run it where available. For the at-a-glance roster
-(SDLC phase, AI-DLC phase, type, status), see the [Agents table in the README](README.md#agents).
-
-**Status:** ✅ available today · 🚧 under development.
+What every agent does, its status, and how to run it where available.
 
 Every Spectra command lives under the unified `speckit.spectra.*` namespace. Triggers below use
 **Claude's form** (`/speckit-spectra-<command>`). Other agents register the same command under a
@@ -12,9 +9,163 @@ manifest name (`speckit.spectra.<command>`) is the same everywhere.
 
 ## Contents
 
-- [Shipped Spectra agents](#shipped-spectra-agents) — installable from the catalog today
+- [Agents at a glance](#agents-at-a-glance) — every agent, its phase, type, and status
 - [Spec Kit core agents](#spec-kit-core-agents) — available, shipped by Spec Kit itself
+- [Shipped Spectra agents](#shipped-spectra-agents) — installable from the catalog today
 - [Roadmap](#roadmap) — under development, grouped by SDLC phase
+
+---
+
+## Agents at a glance
+
+Every Spectra roster is built from two kinds of agents — a required **core** that runs the SDLC
+end-to-end, plus optional **add-ons** you switch on as the domain demands. The roster spans the SDLC
+phases below, each also mapped onto the [**AI-DLC**](README.md#ai-dlc) phases (Inception → Construction → Operation).
+
+**Status:** ✅ available today · 🚧 under development.
+
+<!-- SPECTRA:GENERATED START id=agents-list-table -->
+<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
+
+| Agent | SDLC phase | AI-DLC phase | Type | Status |
+| ----- | ---------- | ------------ | ---- | ------ |
+| [Guardrails](#guardrails--speckitconstitution-) | Foundation | Inception | Core | ✅ available |
+| [Domain Analyzer](#domain-analyzer-) | Foundation | Inception | Add-on | ✅ available |
+| [Methodology Analyst](#methodology-analyst-) | Foundation | Inception | Add-on | ✅ available |
+| [KB Vault](#kb-vault-) | Foundation | Inception | Add-on | ✅ available |
+| [Test Strategy](#test-strategy-) | Foundation | Inception | Add-on | ✅ available |
+| [FDA 21 CFR Part 11 & IEC 62304](#foundation) | Foundation | Inception | Add-on | 🚧 under dev |
+| [ISO 27001 / 27701](#foundation) | Foundation | Inception | Add-on | 🚧 under dev |
+| [Requirements Analyst](#requirements-analyst--speckitspecify-) | Requirements & Discovery | Inception | Core | ✅ available |
+| [BRD Generator](#brd-generator-) | Requirements & Discovery | Inception | Add-on | ✅ available |
+| [Impact Analyzer](#impact-analyzer-) | Requirements & Discovery | Inception | Add-on | ✅ available |
+| [Test Plan](#test-plan-) | Requirements & Discovery | Inception | Add-on | ✅ available |
+| [Clarifier](#clarifier--speckitclarify-) | Requirements & Discovery | Inception | Add-on | ✅ available |
+| [Requirements Quality](#requirements-quality--speckitchecklist-) | Requirements & Discovery | Inception | Add-on | ✅ available |
+| [GDPR Compliance](#requirements--discovery) | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
+| [Canadian Privacy — PIPEDA / PHIPA / Law 25](#requirements--discovery) | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
+| [EU AI Act & Responsible-AI Governance](#requirements--discovery) | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
+| [Legal-Obligation Extraction](#requirements--discovery) | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
+| [Architecture Planner](#architecture-planner--speckitplan-) | Architecture & Design | Construction | Core | ✅ available |
+| [Architecture Decision Records (ADR)](#architecture-decision-records-adr-) | Architecture & Design | Construction | Add-on | ✅ available |
+| [Architecture Reviewer](#architecture--design) | Architecture & Design | Construction | Add-on | 🚧 under dev |
+| [HIPAA Compliance](#architecture--design) | Architecture & Design | Construction | Add-on | 🚧 under dev |
+| [PCI-DSS](#architecture--design) | Architecture & Design | Construction | Add-on | 🚧 under dev |
+| [Threat Modeling](#architecture--design) | Architecture & Design | Construction | Add-on | 🚧 under dev |
+| [Performance & Scalability](#architecture--design) | Architecture & Design | Construction | Add-on | 🚧 under dev |
+| [Data Governance & Privacy Engineering](#architecture--design) | Architecture & Design | Construction | Add-on | 🚧 under dev |
+| [API Design & Contract](#architecture--design) | Architecture & Design | Construction | Add-on | 🚧 under dev |
+| [Task Planner](#task-planner--speckittasks-) | Planning | Construction | Core | ✅ available |
+| [Consistency](#consistency--speckitanalyze-) | Planning | Construction | Add-on | ✅ available |
+| [Implementation](#implementation--speckitimplement-) | Implementation | Construction | Core | ✅ available |
+| [Dependency & Supply-Chain](#implementation) | Implementation | Construction | Add-on | 🚧 under dev |
+| [Database & Data-Layer](#implementation) | Implementation | Construction | Add-on | 🚧 under dev |
+| [Documentation Quality](#implementation) | Implementation | Construction | Add-on | 🚧 under dev |
+| [Technical-Debt & Maintainability](#implementation) | Implementation | Construction | Add-on | 🚧 under dev |
+| [Testing](#testing--speckitimplement-) | Testing & Quality | Construction | Core | ✅ available |
+| [Convergence](#convergence--speckitconverge-) | Testing & Quality | Construction | Core | ✅ available |
+| [UAT Runner](#uat-runner-) | Testing & Quality | Construction | Add-on | ✅ available |
+| [Test Coverage Analyst](#testing--quality) | Testing & Quality | Construction | Add-on | 🚧 under dev |
+| [Test Automation Analyst](#testing--quality) | Testing & Quality | Construction | Add-on | 🚧 under dev |
+| [Flaky Test Detector](#flaky-test-detector-) | Testing & Quality | Construction | Add-on | ✅ available |
+| [Defect Root Cause Analysis](#defect-root-cause-analysis-) | Testing & Quality | Construction | Add-on | ✅ available |
+| [Security Analyst](#testing--quality) | Testing & Quality | Construction | Add-on | 🚧 under dev |
+| [Accessibility & WCAG Compliance](#testing--quality) | Testing & Quality | Construction | Add-on | 🚧 under dev |
+| [Carbon & Green-Software](#testing--quality) | Testing & Quality | Construction | Add-on | 🚧 under dev |
+| [Internationalization Readiness](#testing--quality) | Testing & Quality | Construction | Add-on | 🚧 under dev |
+| [Responsible-AI & Bias](#testing--quality) | Testing & Quality | Construction | Add-on | 🚧 under dev |
+| [Create PR](#create-pr-) | Deployment & Operations | Operation | Core | ✅ available |
+| [Review PR](#review-pr-) | Deployment & Operations | Operation | Core | ✅ available |
+| [Deployment Strategist](#deployment-strategist-) | Deployment & Operations | Operation | Add-on | ✅ available |
+| [Operations Monitor](#deployment--operations) | Deployment & Operations | Operation | Add-on | 🚧 under dev |
+| [Incident Responder](#deployment--operations) | Deployment & Operations | Operation | Add-on | 🚧 under dev |
+| [SOC 2](#deployment--operations) | Deployment & Operations | Operation | Add-on | 🚧 under dev |
+| [SOX Change-Management](#deployment--operations) | Deployment & Operations | Operation | Add-on | 🚧 under dev |
+| [Infrastructure-as-Code Analysis](#deployment--operations) | Deployment & Operations | Operation | Add-on | 🚧 under dev |
+| [Cost & FinOps](#deployment--operations) | Deployment & Operations | Operation | Add-on | 🚧 under dev |
+| [Observability Readiness](#deployment--operations) | Deployment & Operations | Operation | Add-on | 🚧 under dev |
+
+The agents marked ✅ that aren't shipped by Spectra (Guardrails, Requirements Analyst, Clarifier,
+Requirements Quality, Architecture Planner, Task Planner, Consistency, Implementation, Testing,
+Convergence) are Spec Kit's own core commands — Spectra layers on top of them.
+<!-- SPECTRA:GENERATED END id=agents-list-table -->
+
+---
+
+## Spec Kit core agents
+
+Available today, but shipped by **Spec Kit** itself — Spectra layers on top of them. No installation
+beyond Spec Kit is needed; run them with their built-in commands.
+
+<!-- SPECTRA:GENERATED START id=agents-list-speckit-core -->
+<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
+
+### Guardrails — `speckit.constitution` ✅
+
+Encode your coding, security, and architecture standards once, so every downstream agent inherits
+them.
+
+- **Run it (Claude)** — `/speckit-constitution`
+
+### Requirements Analyst — `speckit.specify` ✅
+
+Turn a BRD or product brief into structured user stories with clear, testable acceptance criteria.
+
+- **Run it (Claude)** — `/speckit-specify`
+
+### Clarifier — `speckit.clarify` ✅
+
+Interrogate vague or missing requirements up front, before they turn into expensive rework.
+
+- **Run it (Claude)** — `/speckit-clarify`
+
+### Requirements Quality — `speckit.checklist` ✅
+
+Score the spec for completeness, clarity, and consistency — effectively unit tests for your
+requirements.
+
+- **Run it (Claude)** — `/speckit-checklist`
+
+### Architecture Planner — `speckit.plan` ✅
+
+Produce the technical plan and tech-stack decisions, choosing the design patterns that fit the
+problem.
+
+- **Run it (Claude)** — `/speckit-plan`
+
+### Task Planner — `speckit.tasks` ✅
+
+Break the plan into an ordered, dependency-aware task list, ready to sync straight to an issue
+tracker.
+
+- **Run it (Claude)** — `/speckit-tasks`
+
+### Consistency — `speckit.analyze` ✅
+
+Cross-check spec, plan, and tasks for drift, gaps, and contradictions before the build kicks off.
+
+- **Run it (Claude)** — `/speckit-analyze`
+
+### Implementation — `speckit.implement` ✅
+
+Execute the task list in dependency order, building to spec with tests written alongside the code.
+
+- **Run it (Claude)** — `/speckit-implement`
+
+### Testing — `speckit.implement` ✅
+
+Generate unit, integration, smoke, and end-to-end tests mapped to acceptance criteria — run inside
+the Implementation agent, not as a separate command.
+
+- **Run it (Claude)** — `/speckit-implement`
+
+### Convergence — `speckit.converge` ✅
+
+Check the finished build against its spec, plan, and tasks, and append any gaps as new tasks —
+looping with Implementation until the code converges; it never edits code itself.
+
+- **Run it (Claude)** — `/speckit-converge`
+<!-- SPECTRA:GENERATED END id=agents-list-speckit-core -->
 
 ---
 
@@ -1344,83 +1495,6 @@ frozen `ds-` ID along with your decision on it.
 The document's twelve sections are overridable at
 `.specify/templates/overrides/deployment-strategy-template.md`.
 <!-- SPECTRA:GENERATED END id=agents-list-shipped -->
-
----
-
-## Spec Kit core agents
-
-Available today, but shipped by **Spec Kit** itself — Spectra layers on top of them. No installation
-beyond Spec Kit is needed; run them with their built-in commands.
-
-<!-- SPECTRA:GENERATED START id=agents-list-speckit-core -->
-<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
-
-### Guardrails — `speckit.constitution` ✅
-
-Encode your coding, security, and architecture standards once, so every downstream agent inherits
-them.
-
-- **Run it (Claude)** — `/speckit-constitution`
-
-### Requirements Analyst — `speckit.specify` ✅
-
-Turn a BRD or product brief into structured user stories with clear, testable acceptance criteria.
-
-- **Run it (Claude)** — `/speckit-specify`
-
-### Clarifier — `speckit.clarify` ✅
-
-Interrogate vague or missing requirements up front, before they turn into expensive rework.
-
-- **Run it (Claude)** — `/speckit-clarify`
-
-### Requirements Quality — `speckit.checklist` ✅
-
-Score the spec for completeness, clarity, and consistency — effectively unit tests for your
-requirements.
-
-- **Run it (Claude)** — `/speckit-checklist`
-
-### Architecture Planner — `speckit.plan` ✅
-
-Produce the technical plan and tech-stack decisions, choosing the design patterns that fit the
-problem.
-
-- **Run it (Claude)** — `/speckit-plan`
-
-### Task Planner — `speckit.tasks` ✅
-
-Break the plan into an ordered, dependency-aware task list, ready to sync straight to an issue
-tracker.
-
-- **Run it (Claude)** — `/speckit-tasks`
-
-### Consistency — `speckit.analyze` ✅
-
-Cross-check spec, plan, and tasks for drift, gaps, and contradictions before the build kicks off.
-
-- **Run it (Claude)** — `/speckit-analyze`
-
-### Implementation — `speckit.implement` ✅
-
-Execute the task list in dependency order, building to spec with tests written alongside the code.
-
-- **Run it (Claude)** — `/speckit-implement`
-
-### Testing — `speckit.implement` ✅
-
-Generate unit, integration, smoke, and end-to-end tests mapped to acceptance criteria — run inside
-the Implementation agent, not as a separate command.
-
-- **Run it (Claude)** — `/speckit-implement`
-
-### Convergence — `speckit.converge` ✅
-
-Check the finished build against its spec, plan, and tasks, and append any gaps as new tasks —
-looping with Implementation until the code converges; it never edits code itself.
-
-- **Run it (Claude)** — `/speckit-converge`
-<!-- SPECTRA:GENERATED END id=agents-list-speckit-core -->
 
 ---
 

@@ -93,78 +93,8 @@ validates at a gate, AI drafts and builds, the team reviews** — and the same a
 ## Agents
 
 Every Spectra roster is built from two kinds of agents — a required **core** that runs the SDLC
-end-to-end, plus optional **add-ons** you switch on as the domain demands. The roster spans the SDLC
-phases below, each also mapped onto the [**AI-DLC**](#ai-dlc) phases (Inception → Construction → Operation).
-
-**Status:** ✅ available today · 🚧 under development.
-
-<!-- SPECTRA:GENERATED START id=readme-agents-table -->
-<!-- Generated from agents/ — do not edit by hand. Run: python3 tools/generate_agent_docs.py -->
-
-| Agent | SDLC phase | AI-DLC phase | Type | Status |
-| ----- | ---------- | ------------ | ---- | ------ |
-| Guardrails | Foundation | Inception | Core | ✅ available |
-| Domain Analyzer | Foundation | Inception | Add-on | ✅ available |
-| Methodology Analyst | Foundation | Inception | Add-on | ✅ available |
-| KB Vault | Foundation | Inception | Add-on | ✅ available |
-| Test Strategy | Foundation | Inception | Add-on | ✅ available |
-| FDA 21 CFR Part 11 & IEC 62304 | Foundation | Inception | Add-on | 🚧 under dev |
-| ISO 27001 / 27701 | Foundation | Inception | Add-on | 🚧 under dev |
-| Requirements Analyst | Requirements & Discovery | Inception | Core | ✅ available |
-| BRD Generator | Requirements & Discovery | Inception | Add-on | ✅ available |
-| Impact Analyzer | Requirements & Discovery | Inception | Add-on | ✅ available |
-| Test Plan | Requirements & Discovery | Inception | Add-on | ✅ available |
-| Clarifier | Requirements & Discovery | Inception | Add-on | ✅ available |
-| Requirements Quality | Requirements & Discovery | Inception | Add-on | ✅ available |
-| GDPR Compliance | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
-| Canadian Privacy — PIPEDA / PHIPA / Law 25 | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
-| EU AI Act & Responsible-AI Governance | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
-| Legal-Obligation Extraction | Requirements & Discovery | Inception | Add-on | 🚧 under dev |
-| Architecture Planner | Architecture & Design | Construction | Core | ✅ available |
-| Architecture Decision Records (ADR) | Architecture & Design | Construction | Add-on | ✅ available |
-| Architecture Reviewer | Architecture & Design | Construction | Add-on | 🚧 under dev |
-| HIPAA Compliance | Architecture & Design | Construction | Add-on | 🚧 under dev |
-| PCI-DSS | Architecture & Design | Construction | Add-on | 🚧 under dev |
-| Threat Modeling | Architecture & Design | Construction | Add-on | 🚧 under dev |
-| Performance & Scalability | Architecture & Design | Construction | Add-on | 🚧 under dev |
-| Data Governance & Privacy Engineering | Architecture & Design | Construction | Add-on | 🚧 under dev |
-| API Design & Contract | Architecture & Design | Construction | Add-on | 🚧 under dev |
-| Task Planner | Planning | Construction | Core | ✅ available |
-| Consistency | Planning | Construction | Add-on | ✅ available |
-| Implementation | Implementation | Construction | Core | ✅ available |
-| Dependency & Supply-Chain | Implementation | Construction | Add-on | 🚧 under dev |
-| Database & Data-Layer | Implementation | Construction | Add-on | 🚧 under dev |
-| Documentation Quality | Implementation | Construction | Add-on | 🚧 under dev |
-| Technical-Debt & Maintainability | Implementation | Construction | Add-on | 🚧 under dev |
-| Testing | Testing & Quality | Construction | Core | ✅ available |
-| Convergence | Testing & Quality | Construction | Core | ✅ available |
-| UAT Runner | Testing & Quality | Construction | Add-on | ✅ available |
-| Test Coverage Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
-| Test Automation Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
-| Flaky Test Detector | Testing & Quality | Construction | Add-on | ✅ available |
-| Defect Root Cause Analysis | Testing & Quality | Construction | Add-on | ✅ available |
-| Security Analyst | Testing & Quality | Construction | Add-on | 🚧 under dev |
-| Accessibility & WCAG Compliance | Testing & Quality | Construction | Add-on | 🚧 under dev |
-| Carbon & Green-Software | Testing & Quality | Construction | Add-on | 🚧 under dev |
-| Internationalization Readiness | Testing & Quality | Construction | Add-on | 🚧 under dev |
-| Responsible-AI & Bias | Testing & Quality | Construction | Add-on | 🚧 under dev |
-| Create PR | Deployment & Operations | Operation | Core | ✅ available |
-| Review PR | Deployment & Operations | Operation | Core | ✅ available |
-| Deployment Strategist | Deployment & Operations | Operation | Add-on | ✅ available |
-| Operations Monitor | Deployment & Operations | Operation | Add-on | 🚧 under dev |
-| Incident Responder | Deployment & Operations | Operation | Add-on | 🚧 under dev |
-| SOC 2 | Deployment & Operations | Operation | Add-on | 🚧 under dev |
-| SOX Change-Management | Deployment & Operations | Operation | Add-on | 🚧 under dev |
-| Infrastructure-as-Code Analysis | Deployment & Operations | Operation | Add-on | 🚧 under dev |
-| Cost & FinOps | Deployment & Operations | Operation | Add-on | 🚧 under dev |
-| Observability Readiness | Deployment & Operations | Operation | Add-on | 🚧 under dev |
-
-The agents marked ✅ that aren't shipped by Spectra (Guardrails, Requirements Analyst, Clarifier,
-Requirements Quality, Architecture Planner, Task Planner, Consistency, Implementation, Testing,
-Convergence) are Spec Kit's own core commands — Spectra layers on top of them.
-<!-- SPECTRA:GENERATED END id=readme-agents-table -->
-
-Full details for every agent — what it does, its arguments, and how to run it — live in
+end-to-end, plus optional **add-ons** you switch on as the domain demands. The full roster — each
+agent's SDLC and AI-DLC phase, type, and status, then what it does and how to run it — lives in
 **[AGENTS_LIST.md](AGENTS_LIST.md)**.
 
 ## Starting on an existing codebase
@@ -243,7 +173,7 @@ Inheriting the perimeter is the floor, not the ceiling. Spectra is also built to
   change can be traced back to the intent that authorized it.
 - **Dedicated compliance agents.** The roster covers GDPR, HIPAA, SOC 2, PCI-DSS, ISO 27001/27701,
   SOX, the EU AI Act, Canadian privacy (PIPEDA / PHIPA / Law 25), FDA 21 CFR Part 11 / IEC 62304, and
-  WCAG. **Most are still under development** — check the [status column](#agents) before depending on
+  WCAG. **Most are still under development** — check their status in [AGENTS_LIST.md](AGENTS_LIST.md#agents-at-a-glance) before depending on
   one.
 
 ### Supply chain

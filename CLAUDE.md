@@ -36,8 +36,7 @@ written anywhere else: every listing is rendered from that source and must not b
 | Generated output | File |
 | --- | --- |
 | whole file | `agents-list.json` |
-| `readme-agents-table` | `README.md` |
-| `agents-list-shipped`, `agents-list-speckit-core`, `agents-list-roadmap` | `AGENTS_LIST.md` |
+| `agents-list-table`, `agents-list-shipped`, `agents-list-speckit-core`, `agents-list-roadmap` | `AGENTS_LIST.md` |
 | `spectra-readme-commands`, `spectra-readme-agents` | `spectra/README.md` |
 | `agents-page-nav`, `agents-page-cards` | `docs/getting-started/agents.html` |
 | each command's `description:` line | `spectra/extension.yml`, `spectra/commands/<id>.md` |

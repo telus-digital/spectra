@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import helpers as h  # noqa: E402
 
-OUTPUTS = ("agents-list.json", "README.md", "AGENTS_LIST.md", "spectra/README.md",
+OUTPUTS = ("agents-list.json", "AGENTS_LIST.md", "spectra/README.md",
            "spectra/extension.yml", "docs/getting-started/agents.html")
 LONG_FORM = ("AGENTS_LIST.md", "spectra/README.md", "docs/getting-started/agents.html")
 
@@ -247,7 +247,7 @@ class OneEditEverywhere(unittest.TestCase):
 
     def test_a_hand_edit_in_any_generated_output_fails_check_and_names_it(self):
         edits = (
-            ("README.md", "| Guardrails |", "| Guardrails EDITED |"),
+            ("AGENTS_LIST.md", "| [Guardrails](", "| [Guardrails EDITED]("),
             ("AGENTS_LIST.md", "### Domain Analyzer ✅", "### Domain Analyser ✅"),
             ("spectra/README.md", "## `speckit.spectra.uat` — UAT Runner", "## `speckit.spectra.uat` — UAT"),
             ("docs/getting-started/agents.html", "<h3>Create PR</h3>", "<h3>Open PR</h3>"),
@@ -300,12 +300,12 @@ class InvalidInputWritesNothing(unittest.TestCase):
 
     def test_a_missing_end_marker_fails_and_leaves_the_file_unwritten(self):
         with sandbox() as root:
-            path = root / "README.md"
-            edit(root, "README.md", "<!-- SPECTRA:GENERATED END id=readme-agents-table -->", "")
+            path = root / "AGENTS_LIST.md"
+            edit(root, "AGENTS_LIST.md", "<!-- SPECTRA:GENERATED END id=agents-list-table -->", "")
             broken = path.read_text(encoding="utf-8")
             code, out = run(root)
             self.assertEqual(code, 1)
-            self.assertIn("README.md: missing end marker", out)
+            self.assertIn("AGENTS_LIST.md: missing end marker", out)
             self.assertEqual(path.read_text(encoding="utf-8"), broken)
 
     def test_a_missing_start_marker_fails(self):
@@ -317,10 +317,10 @@ class InvalidInputWritesNothing(unittest.TestCase):
 
     def test_a_duplicated_region_fails(self):
         with sandbox() as root:
-            path = root / "README.md"
+            path = root / "AGENTS_LIST.md"
             path.write_text(path.read_text(encoding="utf-8")
-                            + "\n<!-- SPECTRA:GENERATED START id=readme-agents-table -->\n"
-                              "<!-- SPECTRA:GENERATED END id=readme-agents-table -->\n",
+                            + "\n<!-- SPECTRA:GENERATED START id=agents-list-table -->\n"
+                              "<!-- SPECTRA:GENERATED END id=agents-list-table -->\n",
                             encoding="utf-8")
             code, out = run(root)
         self.assertEqual(code, 1)
@@ -328,7 +328,7 @@ class InvalidInputWritesNothing(unittest.TestCase):
 
     def test_an_unknown_region_id_fails_rather_than_being_ignored(self):
         with sandbox() as root:
-            path = root / "README.md"
+            path = root / "AGENTS_LIST.md"
             path.write_text(path.read_text(encoding="utf-8")
                             + "\n<!-- SPECTRA:GENERATED START id=invented-region -->\n"
                               "<!-- SPECTRA:GENERATED END id=invented-region -->\n",
@@ -358,7 +358,7 @@ class AddingAnAgent(unittest.TestCase):
             code, out = run(root)
             self.assertEqual(code, 0, out)
             self.assertEqual(changed(before, root),
-                             {"agents/demo.md", "agents-list.json", "README.md", "AGENTS_LIST.md"})
+                             {"agents/demo.md", "agents-list.json", "AGENTS_LIST.md"})
             roadmap = (root / "AGENTS_LIST.md").read_text(encoding="utf-8").split(
                 "SPECTRA:GENERATED START id=agents-list-roadmap")[1]
             self.assertIn("**Demo Agent** (Add-on) — A demonstration.", roadmap)
@@ -410,7 +410,7 @@ class AddingAnAgent(unittest.TestCase):
             edit(root, "agents/gdpr.md", "title: GDPR Compliance", "title: GDPR Readiness")
             code, out = run(root)
             self.assertEqual(code, 0, out)
-            for relative in ("README.md", "AGENTS_LIST.md", "agents-list.json"):
+            for relative in ("AGENTS_LIST.md", "agents-list.json"):
                 text = (root / relative).read_text(encoding="utf-8")
                 self.assertIn("GDPR Readiness", text)
                 self.assertNotIn("GDPR Compliance", text)
@@ -502,13 +502,25 @@ class Renderers(unittest.TestCase):
     def render(self, renderer):
         return "\n".join(renderer(self.roster, self.source))
 
-    def test_the_readme_table_has_one_row_per_agent(self):
-        rows = [line for line in gen.render_readme_table(self.roster, self.source)
+    def test_the_agents_table_has_one_row_per_agent(self):
+        rows = [line for line in gen.render_agents_table(self.roster, self.source)
                 if line.startswith("| ")]
         self.assertEqual(len(rows) - 2, len(self.roster.agents))  # minus header and separator
 
-    def test_the_readme_table_names_every_spec_kit_agent_in_its_sentence(self):
-        rendered = self.render(gen.render_readme_table)
+    def test_every_agent_name_in_the_table_links_to_a_heading_in_the_same_file(self):
+        text = h.repo_file("AGENTS_LIST.md").read_text(encoding="utf-8")
+        anchors, seen = set(), {}
+        for heading in re.findall(r"^#{1,6} (.+)$", text, re.M):
+            slug = gen._github_anchor(heading)
+            anchors.add(slug if slug not in seen else f"{slug}-{seen[slug]}")
+            seen[slug] = seen.get(slug, 0) + 1
+        links = re.findall(r"^\| \[[^\]]+\]\(#([^)]+)\) \|", text, re.M)
+        self.assertEqual(len(links), len(self.roster.agents))
+        for target in links:
+            self.assertIn(target, anchors)
+
+    def test_the_agents_table_names_every_spec_kit_agent_in_its_sentence(self):
+        rendered = self.render(gen.render_agents_table)
         for agent in self.roster.agents:
             if agent.provider == "speckit" and agent.available:
                 self.assertIn(agent.title, rendered)
@@ -565,7 +577,7 @@ class WritePath(unittest.TestCase):
 
     def test_crlf_input_is_normalized_rather_than_preserved(self):
         with sandbox() as root:
-            path = root / "README.md"
+            path = root / "AGENTS_LIST.md"
             path.write_bytes(path.read_bytes().replace(b"\n", b"\r\n"))
             code, out = run(root)
             self.assertEqual(code, 0, out)

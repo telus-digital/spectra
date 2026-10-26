@@ -18,7 +18,7 @@ source this script writes, and `--check` verifies (constitution Principle V):
 
 - `agents-list.json`, whole — the published roster that installed CLIs and `docs/agents.html` read at
   run time, byte-for-byte in the shape they have always read;
-- marked regions: the README Agents table, every agent section of `AGENTS_LIST.md`, the Commands table
+- marked regions: the Agents table and every agent section of `AGENTS_LIST.md`, the Commands table
   and per-agent sections of `spectra/README.md`, and the sidebar and cards of
   `docs/getting-started/agents.html`;
 - named lines: each Spectra command's `description:` in `spectra/extension.yml` and in its command
@@ -106,8 +106,29 @@ def _wrap(text: str, indent: str = "", subsequent: str = None) -> list:
     ) or [indent.rstrip()]
 
 
-def render_readme_table(roster, source) -> list:
+def _github_anchor(heading: str) -> str:
+    """The fragment GitHub gives a Markdown heading: lowercased, punctuation and emoji dropped, each
+    space a hyphen. Unique headings only — GitHub suffixes repeats, and no agent heading repeats."""
+    return re.sub(r"[^\w\- ]", "", heading.strip().lower()).replace(" ", "-")
+
+
+def _agent_heading(agent, phase_title: str) -> str:
+    """The `AGENTS_LIST.md` heading that describes this agent.
+
+    It mirrors what the section renderers write: a shipped agent and a Spec Kit core agent each have
+    their own heading, while a planned agent is a list item under its phase's Roadmap heading.
+    """
+    if agent.provider == "speckit":
+        return f"{agent.title} — `{agent.command}` ✅"
+    if agent.available:
+        return f"{agent.title} ✅"
+    return phase_title
+
+
+def render_agents_table(roster, source) -> list:
     """The Agents table, plus the sentence naming which available agents are Spec Kit's own.
+
+    Each agent's name links to its section further down the same file.
 
     That sentence enumerates nine agent titles. It is classification wearing prose clothing, and it
     would drift on the very first roster change while every table around it stayed correct — so the
@@ -122,7 +143,8 @@ def render_readme_table(roster, source) -> list:
     ]
     for agent in roster.agents:
         lines.append(
-            f"| {agent.title} | {titles[agent.phase]} | {aidlc[agent.phase]} "
+            f"| [{agent.title}](#{_github_anchor(_agent_heading(agent, titles[agent.phase]))}) "
+            f"| {titles[agent.phase]} | {aidlc[agent.phase]} "
             f"| {TYPE_LABELS[agent.type]} | {STATUS_LABELS[agent.status]} |"
         )
 
@@ -344,7 +366,7 @@ def render_agents_page_cards(roster, source) -> list:
 
 # region id -> (file, renderer, indent). Markdown regions put a blank line after the notice.
 REGIONS = {
-    "readme-agents-table": ("README.md", render_readme_table, None),
+    "agents-list-table": ("AGENTS_LIST.md", render_agents_table, None),
     "agents-list-shipped": ("AGENTS_LIST.md", render_agents_list_shipped, None),
     "agents-list-speckit-core": ("AGENTS_LIST.md", render_speckit_core, None),
     "agents-list-roadmap": ("AGENTS_LIST.md", render_roadmap, None),
@@ -534,6 +556,8 @@ def check_command_mentions(source, outputs) -> list:
     for relative in ("README.md", "spectra/README.md"):
         if relative in outputs:
             texts.append((relative, _outside_regions(outputs[relative][1])))
+        elif (REPO_ROOT / relative).is_file():
+            texts.append((relative, (REPO_ROOT / relative).read_text(encoding="utf-8")))
 
     problems = []
     for relative, text in texts:
