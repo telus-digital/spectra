@@ -265,7 +265,7 @@
     </ol>
     <span class="lbl">For every feature</span>
     <ol class="steps">
-      <li><b><code>/speckit-specify</code></b> <span class="os">writes the spec. A hook then offers the test plan.</span></li>
+      <li><b><code>/speckit-specify</code></b> <span class="os">writes the spec. A hook then offers the test plan, and offers it again after <code>/speckit-clarify</code>.</span></li>
       <li><b><code>/speckit-spectra-test-plan</code></b> <span class="os">turns the spec into a test plan stakeholders
         approve: every acceptance criterion traced to a test condition or flagged as uncovered.</span></li>
       <li><b><code>/speckit-plan</code></b> <span class="os">with the test plan's ready-made prompt, which adds a
@@ -275,7 +275,7 @@
       <li><b><code>/speckit-implement</code></b> <span class="os">A test task records a failing run before its
         implementation task can be ticked. A bug fix starts with a failing regression test.</span></li>
       <li class="gate"><b><code>/speckit-converge</code></b> <span class="os">checks the build against spec, plan, and
-        tasks, and appends anything missing as new tasks.</span></li>
+        tasks, and appends anything missing as new tasks. A hook then offers UAT.</span></li>
     </ol>
     <div class="outcome"><b>You end up with</b> test-first as a binding rule every phase enforces, with evidence in
       <code>tasks.md</code> that each test failed before its code existed.</div>
@@ -293,6 +293,7 @@
       <li><b>Earlier, <code>/speckit-spectra-test-plan</code></b> <span class="os">suggested UAT scenarios for every user
         story. <code>/speckit-tasks</code> turned them into a final UAT phase that <code>/speckit-implement</code> leaves open.</span></li>
       <li><b>After implement, accept the hook's offer: <code>/speckit-spectra-uat</code></b> <span class="os">
+        Implement's hooks offer converge first, then UAT, then a PR; converge offers UAT again once it finishes.
         No path is needed: it finds the feature implement just built and names it. It shows that feature and the
         exact command it would use to start the build, and waits for your confirmation.</span></li>
       <li><b>It performs the scenarios it can drive</b> <span class="os">and saves screenshots and transcripts under

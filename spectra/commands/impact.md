@@ -40,7 +40,7 @@ them.
 |---|---|
 | Accept, request, or use a repository URL, credential, token, or login | Spectra opens no channel your coding agent does not already use. A run of this command makes **no network request of any kind** — no clone, no download, no API call, no raw fetch. |
 | Write outside the project you were invoked in | A declared directory belonging to another system is **read in place**: never created in, modified, deleted from, or copied. |
-| Create, reference, or link a specification | An impact analysis and a specification are independent processes. Nothing under `specs/` is written or depended on, and the document carries no `spec_refs` field in any form. |
+| Create, reference, or link a specification | An impact analysis and a specification are independent processes. Nothing under `specs/` is written or depended on, and the document carries no `spec_refs` field in any form. A pointer to Spec Kit's specify command in the session report is permitted: it writes nothing and adds no reference to the document. |
 | Edit the constitution, create a branch, or commit | Producing a document is not a licence to edit governance or history. |
 | Reproduce a secret value | See "Secrets are located, never quoted" below. |
 | Run, build, install, or execute anything | You read and you write two files. |
@@ -719,9 +719,37 @@ and how many were defaulted · whether a prior analysis was superseded, or left 
 Mention once, and only once, that a team can reshape every future analysis by copying the resolved template
 to `.specify/templates/overrides/impact-analysis-template.md` and committing it.
 
+### The next step
+
+After "Status is draft…", end every run that wrote an analysis with one closing block — the same block
+whatever the rating. The go / no-go decision is the stakeholders', made after this session; the block only
+shortens the path once they have made it. Name the command as **Spec Kit's specify command** and render it
+in whatever invocation syntax this agent uses; do not spell it for one agent.
+
+````text
+**Next step** — `<the specify command>`, if your stakeholders approve: the go / no-go decision is your
+stakeholders'; if they approve, this is the next step.
+
+```text
+Specify <feature name>. Impact analysis: <the analysis path> (impact: <rating> — <trigger that fired>).
+External contract changes needing human verification: <each one, or "none identified">.
+The spec must account for the findings, risks, and open questions in that analysis.
+```
+````
+
+- **The prompt carries the analysis:** the feature name, the analysis path, the rating and its trigger,
+  the external contract changes needing human verification, and the instruction to account for the
+  findings, risks, and open questions. The prompt is the only content of its code block, so it pastes
+  unchanged after the specify command.
+- **The pointer never states, implies, or predicts the decision.** It is worded conditionally on every
+  run, high rating or low. It changes nothing in the document: `status` stays `draft`, and no spec
+  reference is added.
+- A run that wrote no analysis prints no block.
+- The block runs nothing and asks no question. The user decides whether to run the specify command.
+
 **Nothing you say in this session may contain**: a secret value · a claim that there is no impact · a
 compliance verdict or certification claim · prose about a lens the repository cannot evidence · a silent
-truncation.
+truncation · a prediction of the stakeholders' decision.
 
 ## Non-interactive mode
 

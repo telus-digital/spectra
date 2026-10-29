@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spectra"
   name: "Spectra"
-  version: "1.29.1"
+  version: "1.30.0"
   description: "TELUS Digital - Agentic software engineering across the entire SDLC."
   category: "workflow"
   effect: "read-write"
@@ -13,8 +13,9 @@ extension:
   homepage: "https://github.com/telus-digital/spectra/tree/main/spectra"
 
 requires:
-  # Bump this to the spec-kit version you actually test against.
-  speckit_version: ">=0.11.0"
+  # Bump this to the spec-kit version you actually test against. 0.11.2 is the first release with the
+  # converge command and its after_converge event, both of which the hooks below use.
+  speckit_version: ">=0.11.2"
   tools:
     # Used by speckit.spectra.create-pr and speckit.spectra.review-pr at runtime. Kept optional at the
     # extension level because adr, brd, and domain-analyzer never touch GitHub — marking gh required
@@ -62,7 +63,7 @@ provides:
       description: "Produce a codebase-grounded feature impact analysis for a stakeholder go / no-go decision before any specification work begins — cited findings, a defined impact rating, at most five clarifying questions, and a stated coverage boundary — written under docs/impact-analysis/ (or the project's declared artifact root). Makes no network request and accepts no repository URL; other systems are declared as text, a document, or a local directory read in place."
     - name: "speckit.spectra.test-plan"
       file: "commands/test-plan.md"
-      description: "Turn one specification into a stakeholder-facing test plan written beside it as test-plan.md — scope, risks, traceable test conditions, suggested UAT scenarios, regression scope, environment, and exit criteria — grounded in the project's own testing policy and its existing suite. It uses exactly the lenses the test strategy chose; a lens the strategy rules out is unavailable, and it says so loudly when the strategy predates UAT and regression or does not exist. It finds the feature the way the planning command does — SPECIFY_FEATURE_DIRECTORY, then .specify/feature.json — and says which one it used; a path argument only confirms it, and a mismatch stops, so the test plan and the plan always share a directory. Every acceptance criterion reaches a condition or a UAT scenario or is reported as uncovered, every user story gets a UAT scenario or a reason, and an ambiguous requirement gets a stated gap rather than an invented condition. Carries no checkbox in any section — it is approved, not tracked — and is offered by an optional hook after specify. It ends with a ready-to-paste planning prompt that writes the plan's testing obligations into plan.md, so the tasks include the tests and a final UAT phase the implement command does not execute. Writes one file, runs nothing, and makes no network request."
+      description: "Turn one specification into a stakeholder-facing test plan written beside it as test-plan.md — scope, risks, traceable test conditions, suggested UAT scenarios, regression scope, environment, and exit criteria — grounded in the project's own testing policy and its existing suite. It uses exactly the lenses the test strategy chose; a lens the strategy rules out is unavailable, and it says so loudly when the strategy predates UAT and regression or does not exist. It finds the feature the way the planning command does — SPECIFY_FEATURE_DIRECTORY, then .specify/feature.json — and says which one it used; a path argument only confirms it, and a mismatch stops, so the test plan and the plan always share a directory. Every acceptance criterion reaches a condition or a UAT scenario or is reported as uncovered, every user story gets a UAT scenario or a reason, and an ambiguous requirement gets a stated gap rather than an invented condition. Carries no checkbox in any section — it is approved, not tracked — and is offered by an optional hook after specify or clarify. It ends with a ready-to-paste planning prompt that writes the plan's testing obligations into plan.md, so the tasks include the tests and a final UAT phase the implement command does not execute. Writes one file, runs nothing, and makes no network request."
     - name: "speckit.spectra.uat"
       file: "commands/uat.md"
       description: "Run user-acceptance testing for one feature, only on explicit request — read the UAT phase in its tasks.md and the Suggested UAT scenarios in its test-plan.md, start the build after your confirmation, perform the scenarios the agent can actually drive, save screenshots or transcripts as evidence beside the spec, tick only the UAT tasks it observed pass, and write uat-report.md. Finds the feature the way the implement command does — from SPECIFY_FEATURE_DIRECTORY or .specify/feature.json — names it before anything starts and in the run confirmation, and stops rather than guess. Human-only, failed, and blocked scenarios stay open with a reason. Never edits source, tests, CI, the spec, the test plan, or the constitution, never reproduces a secret, and makes no network request beyond what the build under test makes."
@@ -122,15 +123,35 @@ provides:
       description: "Default shape for a knowledge document ingested by speckit.spectra.kb-vault, used where no category-specific template resolves. Override at .specify/templates/overrides/kb-document-template.md, or shape one category with .specify/templates/overrides/<category>-template.md. The traceability rule, the gap-not-invention rule, provenance, and the prohibition on reproducing a secret stay with the command."
 
 hooks:
-  # Every Spectra hook is an offer: optional, so it asks and never runs on its own.
+  # Every Spectra hook is an offer: optional, so it asks and never runs on its own. None carries a
+  # condition, because Spec Kit's command templates skip any hook that has one.
+  #
+  # Order: Spec Kit's command templates show an event's hooks in the order they are listed here and do
+  # not sort them by priority (per-event lists with priority arrived in Spec Kit 0.10.0). The list order
+  # below is therefore the order users see. Each priority agrees with that order so the two never
+  # disagree, but priority does not set it.
+  #
+  # Spectra registers hooks only after core Spec Kit commands. What follows a Spectra agent is that
+  # agent's own closing suggestion, written from how its run turned out.
   after_specify:
     command: speckit.spectra.test-plan
     optional: true
     prompt: "Generate a test plan for this spec? It uses the feature this specify run just recorded, so no path is needed."
     description: "Offer a stakeholder test plan right after the specification is written"
-  # A list, so UAT is offered before a pull request: listed first and given the lower priority number,
-  # which Spec Kit sorts on (per-event lists with priority arrived in Spec Kit 0.10.0).
+  after_clarify:
+    command: speckit.spectra.test-plan
+    optional: true
+    prompt: "Build or refresh the test plan from the clarified spec? It uses the feature this clarify run worked on, so no path is needed."
+    description: "Offer a test plan built from the clarified specification"
   after_implement:
+    # speckit.converge is a core Spec Kit command, not a Spectra one. Spec Kit shows a hook that targets
+    # a core command (verified on 1.2.4), but its extension reference does not document this, so a later
+    # release could stop showing this one offer. Nothing else depends on it.
+    - command: speckit.converge
+      optional: true
+      priority: 3
+      prompt: "Check the build against the spec, plan, and tasks for work that is still unbuilt?"
+      description: "Offer converge after implementation, before UAT and a pull request"
     - command: speckit.spectra.uat
       optional: true
       priority: 5
@@ -141,6 +162,14 @@ hooks:
       priority: 10
       prompt: "Open a pull request for this spec?"
       description: "Offer to open a PR after implementation completes"
+  # Converge ends with its own next step: implement when it appended tasks, review or a PR when nothing
+  # remained. In the second case nothing else offers UAT, so this does. The prompt reads correctly either
+  # way, and the UAT agent's implementation-incomplete check makes an early run safe.
+  after_converge:
+    command: speckit.spectra.uat
+    optional: true
+    prompt: "Run UAT now? If converge just added tasks, finish them with implement first — UAT will tell you if any are still open."
+    description: "Offer UAT after converge, so a converged feature is tested before a pull request"
 
 tags:
   - "documentation"

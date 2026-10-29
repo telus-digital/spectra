@@ -583,6 +583,35 @@ The session gets the summary; the document gets the detail.
 - which prior analyses surfaced, and on which axis
 - what you could not examine
 
+### The next step
+
+End the report with one closing block. Offer it only when a hypothesis reached `validated` and the
+document was written. Name the command as **Spec Kit's specify command** and render it in whatever
+invocation syntax this agent uses; do not spell it for one agent.
+
+````text
+**Next step** — `<the specify command>`: the analysis validated a cause; a spec turns its corrective
+actions into a tracked fix.
+
+```text
+Specify a fix for <defect id> (<source reference>). Root cause analysis: <the document path>.
+Validated cause (layer <n>): <the validated cause, in one or two sentences>.
+Corrective actions to deliver: <the corrective actions from section 5>.
+Preventive actions in section 6 are out of scope for this fix unless I add them.
+```
+````
+
+- **The prompt carries the run's own evidence:** the defect id and source reference, the document path,
+  the validated cause with its layer, and the corrective actions. The prompt is the only content of its
+  code block, so it pastes unchanged after the specify command.
+- **Where the deepest validated finding is layer 2, label it the immediate technical cause** in the
+  prompt — "Validated cause (layer 2, the immediate technical cause, not a systemic root cause)" — and
+  add what the document says would be needed to go deeper. A fix for that cause is legitimate work; it
+  must not be mistaken for the systemic answer.
+- **No hypothesis validated:** end with `**Next step** — none: no cause was validated, so there is
+  nothing yet to specify a fix for.`
+- The block runs nothing and asks no question. The user decides whether to run the specify command.
+
 ---
 
 ## Exploration mode
@@ -600,6 +629,8 @@ specific failure.
 
 Where an exploration turns into a real defect, carry the confirmed and refuted nodes into intake rather
 than starting over — the user has already done that thinking.
+
+No Next step block — exploration writes nothing, so there is no analysis to specify a fix from.
 
 Where the user asks for structured problem-solving support, map the seven-step problem-solving process
 explicitly: define the problem, disaggregate it, prioritize the branches, plan the work, conduct the
@@ -640,7 +671,7 @@ what it could not establish is useful; a refusal is not.
 
 Everything else holds unchanged. A session that cannot ask is not a licence to guess: R2 and R3 apply
 exactly as they do interactively. Where the root would have been chosen after a publication signal, take
-the non-publishing option and say so.
+the non-publishing option and say so. The Next step block is still printed under the same conditions; printing it runs nothing.
 
 ---
 

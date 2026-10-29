@@ -699,8 +699,8 @@ What it refuses to do is as important as what it does:
   `--non-interactive` for CI.
 - **Use it when** — a spec is finished, your team works test-first, and you want the test set reviewed and
   agreed before the implementation is planned. Skip it when nobody outside the implementing team needs to
-  see the test set; it is an add-on. After `specify`, an optional hook offers it — the hook only asks, and
-  the run picks up the feature `specify` just recorded.
+  see the test set; it is an add-on. After `specify` or `clarify`, an optional hook offers it — the hook
+  only asks, and the run picks up the feature `specify` recorded.
 - **Where it writes** — `test-plan.md` in the active feature's directory, beside its `spec.md`. No sequence number, no
   artifact subfolder, no `Artifact root:` resolution for the output. A test plan is *about one feature*, so
   its identity is that feature's directory, exactly as `spec.md` and `plan.md` beside it carry no number.
@@ -874,7 +874,8 @@ show a secret is masked or skipped, and the report records what was withheld.
   branch name, no picker. A path to the feature directory or its `spec.md` only confirms it, and a
   mismatch stops. `--env <name>` to act on a named environment. `--non-interactive` for CI.
 - **Use it when** — implementation is done and you want acceptance evidence before opening a pull
-  request. After implement, an optional hook offers it ahead of `create-pr`; the hook only asks.
+  request. After implement, an optional hook offers it ahead of `create-pr`, and another offers it after
+  converge; the hooks only ask.
 - **Drivability is judged in its own session.** It states which tools it relied on; a scenario marked
   `agent` that this session cannot reach becomes *awaiting human* rather than a guess.
 - **Template** — `uat-report-template.md`. Override it at

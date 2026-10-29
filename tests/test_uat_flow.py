@@ -78,6 +78,17 @@ def hooks_block() -> str:
     return manifest.partition("\nhooks:")[2].partition("\ntags:")[0]
 
 
+def after_implement_block() -> str:
+    """The `after_implement` event alone, bounded at the next event key.
+
+    Spec 041 put `after_converge` after it, which also offers UAT; reading to the end of the hooks block
+    would let that entry satisfy or break an assertion about `after_implement`.
+    """
+    block = hooks_block().partition("after_implement:")[2]
+    following = re.search(r"^  after_[a-z_]+:[ \t]*$", block, re.M)
+    return block[:following.start()] if following else block
+
+
 class TheCommandIsRegistered(unittest.TestCase):
 
     def test_the_command_file_exists(self):
@@ -313,7 +324,7 @@ class NoStaleProse(unittest.TestCase):
         self.assertEqual(first.strip(), "/speckit-spectra-uat")
 
     def test_the_after_implement_prompt_names_no_path(self):
-        block = hooks_block().partition("after_implement:")[2]
+        block = after_implement_block()
         entry = block[block.index("speckit.spectra.uat"):]
         prompt = entry[entry.index("prompt:"):entry.index("\n", entry.index("prompt:"))]
         self.assertNotIn("specs/", prompt)
@@ -475,15 +486,15 @@ class TheHooksOfferUatBeforeAPullRequest(unittest.TestCase):
     """Spec 032 FR-050 — offered after implement, ahead of create-pr, and only ever as an offer."""
 
     def test_uat_is_offered_after_implement(self):
-        block = hooks_block().partition("after_implement:")[2]
+        block = after_implement_block()
         self.assertIn("speckit.spectra.uat", block)
 
     def test_uat_comes_before_create_pr(self):
-        block = hooks_block().partition("after_implement:")[2]
+        block = after_implement_block()
         self.assertLess(block.index("speckit.spectra.uat"), block.index("speckit.spectra.create-pr"))
 
     def test_uat_has_the_lower_priority_number(self):
-        block = hooks_block().partition("after_implement:")[2]
+        block = after_implement_block()
         entries = re.split(r"\n    - ", block)
         priority = {}
         for entry in entries:
@@ -496,7 +507,7 @@ class TheHooksOfferUatBeforeAPullRequest(unittest.TestCase):
     def test_every_spectra_hook_is_optional(self):
         block = hooks_block()
         self.assertNotIn("optional: false", block)
-        self.assertGreaterEqual(block.count("optional: true"), 3)
+        self.assertGreaterEqual(block.count("optional: true"), 6)
 
 
 if __name__ == "__main__":

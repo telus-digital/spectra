@@ -3,6 +3,48 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.30.0] - 2026-10-29
+
+Every SDLC command now ends by suggesting what comes next, and none of those suggestions runs on its own.
+After a core Spec Kit command the suggestion is a hook. After a Spectra agent it is a closing block in the
+agent's own report, written from how the run turned out.
+
+### Added
+- **The test plan is offered after `clarify`.** Clarification changes acceptance criteria, so a test plan
+  built before it can be stale. The new `after_clarify` hook offers to build or refresh it for the feature
+  the clarify run worked on, with no path to type.
+- **Converge is offered after `implement`, ahead of UAT and a pull request.** `after_implement` now offers
+  `converge`, then `uat`, then `create-pr`, in that order, so unbuilt work is caught before anyone tests
+  or reviews it.
+- **UAT is offered after `converge`.** When converge reports nothing left to build, Spec Kit points at
+  review or a PR, and nothing offered UAT. The new `after_converge` hook does, with a prompt that holds
+  either way: "Run UAT now? If converge just added tasks, finish them with implement first — UAT will tell
+  you if any are still open." The UAT agent's existing implementation-incomplete check catches an early run.
+- **`defect-rca`, `impact`, and `flaky-test-detector` end with a Next step block.** Each names Spec Kit's
+  specify command, in the running agent's own syntax, with a ready-to-paste prompt built from the run:
+  - `defect-rca` offers it only when a cause was validated, and labels a layer-2 cause as the immediate
+    technical cause. With no validated cause it says why instead. Exploration mode prints no block.
+  - `impact` ends every run that wrote an analysis with a conditional pointer: the go / no-go decision is
+    the stakeholders', and if they approve, this is the next step. It never states or predicts the
+    decision, and still writes nothing under `specs/`.
+  - `flaky-test-detector` offers it only for fixes it could not apply (the remedy is in production code,
+    a guardrail forbids it, or it was not confident), or for every open row when the developer declines
+    to have fixes applied. Rows the developer deleted are never offered.
+
+### Changed
+- **`requires.speckit_version` is now `>=0.11.2`**, the first Spec Kit release with the `converge` command
+  and its `after_converge` event.
+- **The hooks comment in `extension.yml` now says list order, not priority, sets what users see.** Spec
+  Kit's command templates show an event's hooks in list order and do not sort them by priority. The old
+  comment said they did.
+
+### Notes
+- The `after_implement` → `converge` offer targets a core Spec Kit command. Spec Kit shows it today
+  (verified on 1.2.4), but its extension reference does not document hooks on core commands, so a later
+  release could stop showing that one offer. Nothing else depends on it.
+- Every Spectra hook is `optional: true` with no `condition`. The `adr`, `brd`, `domain-analyzer`,
+  `methodology`, `test-strategy`, `deployment-strategy`, and `kb-vault` endings are unchanged.
+
 ## [1.29.1] - 2026-10-25
 
 ### Fixed

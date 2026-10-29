@@ -172,7 +172,7 @@ Run the analysis again? A new plan would replace this file.
 ```
 
 Do not analyze first and ask afterwards, and do not overwrite silently. If they decline, stop — nothing
-further read, nothing written.
+further read, nothing written — and end with `**Next step** — none: every proposed fix was applied.`
 
 ## Step 1c — The file is there but you cannot read it
 
@@ -332,7 +332,8 @@ a file whose header is false.
 
 **If the developer declines**, at either question: create nothing, leave any existing file
 **byte-for-byte unchanged**, leave the working tree untouched, and say that nothing was written. Declining
-is always safe, and the developer should be able to see that it was.
+is always safe, and the developer should be able to see that it was. No Next step block follows: nothing
+was written, so there is nothing to specify from.
 
 ## Step 6 — Write the analysis file
 
@@ -416,6 +417,9 @@ Go ahead?
 ```
 
 No argument skips this gate either. If they decline: the file stands, no source is edited, and you say so.
+Then end with the Next step block from Step 9, offering every row still open in the written analysis — a
+spec is the other way to deliver them. Its why line here is not Step 9's: the line reads
+"you chose not to have these fixes applied here", after the command.
 
 ## Step 8 — Work the list
 
@@ -531,6 +535,36 @@ changed with created files marked and suite-wide changes called out, and the fac
 committed. The developer's next move is reading the diff, and this report is what tells them where to
 look.
 
+### The next step
+
+End the report with one closing block. Name the command as **Spec Kit's specify command** and render it
+in whatever invocation syntax this agent uses; do not spell it for one agent.
+
+**Offer it for exactly the rows a spec can act on** — rows left open whose outcome in `## Outcomes` is
+one of three reasons from Step 8: the real remedy is in **production code**, a **guardrail** forbids the
+remedy, or you were **not confident** in the fix. After a Gate 2 decline (Step 7), offer every row still
+open. Rows the developer deleted are never offered — deleting a row is a choice not to fix it. Rows whose
+test can no longer be found, or whose evidence has gone, are not offered either: there is nothing sound
+left to specify.
+
+````text
+**Next step** — `<the specify command>`: these fixes are beyond what this agent may apply.
+
+```text
+Specify fixes for these flaky tests, from .specify/memory/flaky-test-analysis.md:
+- FT-006  web/src/billing/invoice.test.ts "renders the invoice summary" — proposed fix: <the proposed fix>
+  — not applied: <the recorded reason>
+```
+````
+
+- **One line per offered row:** its `FT-NNN` id, the test's file and name, the proposed fix, and the
+  recorded reason it was not applied. Cite `.specify/memory/flaky-test-analysis.md`. The prompt is the only
+  content of its code block, so it pastes unchanged after the specify command.
+- **Every row fixed:** end with `**Next step** — none: every proposed fix was applied.`
+- **Only rows that were not found or whose evidence has gone are left open:** end with
+  `**Next step** — none: the remaining rows no longer point at a test or evidence a spec could act on.`
+- The block runs nothing and asks no question. The user decides whether to run the specify command.
+
 ## Step 10 — When there is nothing to act on
 
 Two ways to get here, and both end the run cleanly. **Write nothing in either case.**
@@ -552,3 +586,5 @@ identified no likely-flaky tests, and **do not offer to create a plan.** There i
 If an analysis file already existed and the developer had agreed to a re-analysis that then found
 nothing: leave that file exactly as it is, say that you did, and tell them they can delete it if they no
 longer need the record. You do not delete it for them.
+
+Both ways end with `**Next step** — none: nothing was proposed.`

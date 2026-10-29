@@ -43,7 +43,8 @@ mismatch stops. `--env <name>` to act on a named environment. `--non-interactive
 ## Use it when
 
 implementation is done and you want acceptance evidence before opening a pull
-request. After implement, an optional hook offers it ahead of `create-pr`; the hook only asks.
+request. After implement, an optional hook offers it ahead of `create-pr`, and another offers it after
+converge; the hooks only ask.
 
 ## Drivability is judged in its own session.
 

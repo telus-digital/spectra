@@ -721,7 +721,7 @@ class TheHandoffIsPrintedNeverWired(unittest.TestCase):
     def test_it_is_offered_by_an_optional_hook_that_only_asks(self):
         """Spec 032 FR-040 to FR-042, reversing spec 021 FR-005."""
         text = phrases()
-        self.assertIn("offered by an optional hook after specify", text)
+        self.assertIn("offered by an optional hook after specify or clarify", text)
         self.assertIn("the hook only asks", text)
 
     def test_the_hook_does_not_relax_the_never_infer_rule(self):
@@ -741,7 +741,10 @@ class TheHandoffIsPrintedNeverWired(unittest.TestCase):
         """The claim above, checked against the file that carries the registration."""
         manifest = MANIFEST.read_text(encoding="utf-8")
         hooks = manifest.partition("\nhooks:")[2].partition("\ntags:")[0]
-        after_specify = hooks.partition("after_specify:")[2].partition("after_implement:")[0]
+        after_specify = hooks.partition("after_specify:")[2]
+        # Bound at the next event key, so an `after_clarify` entry beside it is never read as this one.
+        following = re.search(r"^  after_[a-z_]+:[ \t]*$", after_specify, re.M)
+        after_specify = after_specify[:following.start()] if following else after_specify
         self.assertIn("speckit.spectra.test-plan", after_specify)
         self.assertIn("optional: true", after_specify)
         self.assertNotIn(
