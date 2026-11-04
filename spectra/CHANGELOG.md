@@ -3,6 +3,39 @@
 All notable changes to the `spectra` extension are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.31.0] - 2026-11-04
+
+The methodology agent now settles the team's spec persistence model: what happens when the behaviour of an
+already-delivered feature changes. Spec Kit leaves that to each team and enforces nothing, so an agent working
+on tasks only knows whether to edit the existing spec or start a new feature directory if the constitution
+tells it. Lens 4 (Spec lifecycle & traceability) now asks, and the answer reaches the constitution as one
+guardrail written phase by phase.
+
+### Added
+- **Question 5 offers four persistence models and Skip.** Living Spec, Flow-Forward, Flow-Back, and Hybrid
+  (Living Spec by default), each with what it fits and what it risks. Exactly one model is accepted and the
+  other three declined.
+- **The recommendation follows the project's history.** In brownfield mode the agent reads the default
+  branch's first-parent history for three signals: a delivered spec edited after delivery, a spec that
+  extends or supersedes an earlier one, and plan or tasks changing while the spec does not. Each is reported
+  with a count and citations. Exactly one signal recommends its model; several, none, or a greenfield project
+  recommends Hybrid.
+- **One guardrail, written as phase obligations.** The accepted model becomes a MUST guardrail that says what
+  the specify, plan, tasks, implement, and converge phases do, including which artifact is updated first
+  when implementation shows the spec is wrong. It names phases, never an agent's invocation syntax.
+  Cross-links use the exact wording `extends spec NNN` / `supersedes spec NNN`, with the matching
+  `extended by` / `superseded by` back-link line as the only edit allowed in a completed directory.
+- **Hybrid is decided per change type.** The Hybrid option shows a proposed mapping (`feature` →
+  flow-forward; `fix`, `refactor`, `hotfix` → living; `docs`, `spike` → none where no spec is needed). The
+  guardrail always carries the mapping, and the document's mode-choice table gains a Persistence column.
+- **A `persistence` front-matter key and a persistence reference** in the Spec lifecycle section of
+  `ENGINEERING_METHODOLOGY.md`. Re-runs offer the previous model back; a file written before this release is
+  asked as new.
+
+### Changed
+- Question 5 no longer uses the Recommended set / Codify only what exists / Full set / Skip shape. The round
+  still has nine lenses and ten questions, and nothing is renumbered.
+
 ## [1.30.0] - 2026-10-29
 
 Every SDLC command now ends by suggesting what comes next, and none of those suggestions runs on its own.

@@ -19,6 +19,12 @@ The rules pinned here (spec 035):
   adopted item is never reverted — including the Delivery & workflow records carried over from the
   domain analyzer.
 
+The rules added by spec 042:
+
+- **The persistence model is one decision inside lens 4.** Question 5 offers four exclusive models and
+  Skip, the accepted one becomes one guardrail written as phase obligations, and the round still holds
+  ten questions.
+
 Where the file lives is asserted in `test_doc_output_paths.py`, with the other singletons.
 
 Standard library only, like the rest of the suite.
@@ -48,6 +54,8 @@ LENSES = (
     "AI collaboration rules",
     "Governance & evolution",
 )
+
+MODELS = ("Living Spec", "Flow-Forward", "Flow-Back", "Hybrid")
 
 
 def flat(text: str) -> str:
@@ -259,6 +267,11 @@ class TheClarificationRound(unittest.TestCase):
     def test_nothing_is_written_before_the_round_ends(self):
         self.assertIn("after the round, never before", section("## Step 7"))
 
+    def test_question_five_is_excluded_from_the_four_option_shape(self):
+        text = section("## Step 5")
+        self.assertIn("for questions 3, 4, 6–8 and 10, the four are", text)
+        self.assertNotIn("for questions 3–8 and 10", text)
+
 
 class TheDocument(unittest.TestCase):
     def test_the_candidate_record_keys_in_order(self):
@@ -362,6 +375,239 @@ class TheMethodologyStack(unittest.TestCase):
             with self.subTest(option=option):
                 self.assertIn(f"**{option}**", text)
         self.assertIn("one table, a row per adopted overlay", text)
+
+
+def question_five() -> str:
+    """The flattened question 5 bullet of Step 5; Step 5 holds earlier `**Skip**` labels of its own."""
+    text = section("## Step 5")
+    start = text.index("question 5 has its own shape")
+    return text[start : text.index("**free text is always valid.**", start)]
+
+
+def persistence_rules() -> str:
+    """The flattened lens 4 persistence paragraphs of Step 4, up to the lens 8 paragraph that follows."""
+    text = COMMAND.read_text(encoding="utf-8")
+    start = text.index("**The persistence guardrail.**")
+    return flat(text[start : text.index("**Lens 8 is about", start)])
+
+
+class TheSpecPersistenceModel(unittest.TestCase):
+    """Lens 4 settles the spec persistence model (spec 042, contracts/question-five.md and
+    contracts/persistence-guardrail.md)."""
+
+    # US1 — the question
+
+    def test_question_five_has_its_own_shape(self):
+        text = section("## Step 5")
+        self.assertIn("question 5 has its own shape", text)
+        self.assertIn("four persistence models exclude each other", text)
+
+    def test_five_options_in_order(self):
+        text = question_five()
+        labels = (
+            "**living spec**",
+            "**flow-forward**",
+            "**flow-back**",
+            "**hybrid (living spec by default)**",
+            "**skip**",
+        )
+        positions = [text.index(label) for label in labels]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_one_model_accepted_the_rest_declined(self):
+        text = question_five()
+        self.assertIn("the chosen model is accepted and the other three declined", text)
+        self.assertIn(
+            "other lens 4 candidates take the same decision as the model unless free text excludes them", text
+        )
+
+    def test_skip_leaves_lens_four_skipped(self):
+        self.assertIn("skip leaves every lens 4 candidate `skipped`", question_five())
+
+    def test_each_model_states_fit_and_risk(self):
+        text = question_five()
+        for phrase in (
+            "the spec is the contract",
+            "losing implementation rationale",
+            "audit trails",
+            "context spread over several directories",
+            "small teams, fast iteration",
+            "silent drift",
+            "the spec stays authoritative",
+            "the threshold is only as good as the mapping",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+    def test_the_models_count_as_one_slot(self):
+        self.assertIn("the four persistence models count as one slot", section("## Step 4"))
+
+    # US2 — the guardrail
+
+    def test_preamble_new_capability_and_delivered(self):
+        text = persistence_rules()
+        self.assertIn("a new capability must get its own feature directory", text)
+        self.assertIn("merged to the default branch", text)
+
+    def test_each_model_names_all_five_phases(self):
+        text = persistence_rules()
+        labels = [f"**{model.lower()}**" for model in MODELS]
+        starts = [text.index(label) for label in labels]
+        for i, model in enumerate(MODELS):
+            block = text[starts[i] : starts[i + 1] if i + 1 < len(starts) else None]
+            for phase in ("specify", "plan", "tasks", "implement", "converge"):
+                with self.subTest(model=model, phase=phase):
+                    self.assertIn(phase, block)
+
+    def test_divergence_updates_an_artifact_first(self):
+        text = persistence_rules()
+        self.assertIn("`spec.md` must be updated first", text)
+        self.assertIn("the **new** `spec.md` must be updated first", text)
+
+    def test_cross_link_wording_is_exact(self):
+        text = persistence_rules()
+        for phrase in ("extends spec nnn", "supersedes spec nnn", "extended by spec nnn", "superseded by spec nnn"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+        self.assertIn("no other edit is allowed in a completed feature directory", text)
+
+    def test_flow_back_agrees_before_merge(self):
+        text = persistence_rules()
+        self.assertIn("before the pull request carrying the change merges", text)
+        self.assertIn("analyze phase", text)
+
+    def test_phases_not_invocations(self):
+        text = persistence_rules()
+        self.assertNotIn("/speckit-", text)
+        self.assertNotIn("$speckit-", text)
+
+    def test_guardrail_is_must_in_lens_four(self):
+        text = persistence_rules()
+        self.assertIn("em-spec-lifecycle-traceability-", text)
+        self.assertIn("strictness is **must**", text)
+
+    def test_existing_constitution_rules_apply(self):
+        self.assertIn("suppress and `amends:` rules", persistence_rules())
+
+    def test_persistence_never_conflicts_with_an_overlay(self):
+        self.assertIn(
+            "the persistence guardrail's implement obligation is not an overlay and never conflicts with one",
+            section("## Step 5"),
+        )
+
+    # US3 — brownfield evidence
+
+    def test_three_signals_are_named(self):
+        text = section("## Step 4")
+        for phrase in (
+            "first-parent",
+            "delivery point",
+            "changes that directory's `spec.md`",
+            "`plan.md` or `tasks.md` while its `spec.md` is unchanged",
+            "names another spec directory it builds on",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+    def test_recommendation_follows_one_signal_or_hybrid(self):
+        text = section("## Step 4")
+        self.assertIn("exactly one signal", text)
+        self.assertIn("two or more signals, or none, recommend hybrid", text)
+
+    def test_counts_and_citations(self):
+        self.assertIn("with a count and up to three citations", section("## Step 4"))
+
+    def test_greenfield_recommends_hybrid(self):
+        self.assertIn("**spec lifecycle & traceability** — hybrid", section("## Step 4"))
+
+    # US4 — Hybrid's mapping
+
+    def test_default_mapping_is_pinned(self):
+        text = command()
+        for pair in (
+            "`feature` → flow-forward",
+            "`fix` → living",
+            "`refactor` → living",
+            "`hotfix` → living",
+            "`docs` → —",
+            "`spike` → —",
+        ):
+            with self.subTest(pair=pair):
+                self.assertIn(pair, text)
+
+    def test_dash_only_where_no_spec_is_required(self):
+        self.assertIn(
+            "`—` only where the accepted mode-choice table says that change type needs no spec", command()
+        )
+
+    def test_hybrid_needs_no_extra_question(self):
+        text = section("## Step 5")
+        self.assertIn("choosing hybrid accepts the mapping as shown", text)
+        self.assertIn("no further question", text)
+
+    def test_mapping_always_in_the_statement(self):
+        self.assertIn("the hybrid guardrail always carries the mapping in its statement", command())
+
+    def test_persistence_column_only_under_hybrid(self):
+        text = section("## Step 7")
+        self.assertIn("a **persistence** column", text)
+        self.assertIn("only when hybrid is accepted", text)
+
+    def test_no_table_means_statement_only(self):
+        self.assertIn("when question 3 adopted no mode-choice table", command())
+
+    def test_defaults_take_hybrid_with_its_mapping(self):
+        self.assertIn(
+            "**use your defaults** accepts the recommended model and, for hybrid, the proposed mapping",
+            section("## Step 5"),
+        )
+
+    # US5 — front matter, reference, re-runs, non-interactive, template
+
+    def test_front_matter_key(self):
+        text = section("## Step 7")
+        self.assertIn("persistence: hybrid", text)
+        self.assertIn(
+            "`persistence` is `living`, `flow-forward`, `flow-back`, or `hybrid`, and absent when question 5 "
+            "was skipped or not asked",
+            text,
+        )
+
+    def test_five_references_are_written(self):
+        text = section("## Step 7")
+        self.assertIn("five references are always written", text)
+        self.assertIn("**a persistence reference**", text)
+        self.assertNotIn("four references are always written", text)
+
+    def test_reference_when_nothing_accepted(self):
+        self.assertIn("no spec persistence model was chosen", section("## Step 7"))
+
+    def test_rerun_offers_prior_model(self):
+        text = section("## Re-running")
+        self.assertIn("pre-filled from the `persistence` key", text)
+        self.assertIn("last run you chose", text)
+        self.assertIn("a prior document with no `persistence` key leaves the model undecided", text)
+
+    def test_rerun_declined_model_stays_selectable(self):
+        self.assertIn("a declined model stays selectable", section("## Re-running"))
+
+    def test_decisions_record_the_hybrid_mapping(self):
+        # Step 7's Constitution input example holds a `## ` line, so slice the whole command instead.
+        text = command()
+        start = text.index("### decisions and sources")
+        self.assertIn(
+            "for question 5, the answer taken records the accepted model and, for hybrid, the accepted "
+            "per-change-type mapping, including any free-text adjustment",
+            text[start:],
+        )
+
+    def test_non_interactive_asks_no_model(self):
+        self.assertIn("no `persistence` key", section("## Non-interactive mode"))
+
+    def test_template_describes_the_reference(self):
+        text = flat(TEMPLATE.read_text(encoding="utf-8"))
+        start = text.index("## spec lifecycle & traceability")
+        self.assertIn("persistence reference", text[start : text.index("## ", start + 3)])
 
 
 class SiblingGroundIsReferred(unittest.TestCase):

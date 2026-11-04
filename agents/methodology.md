@@ -8,7 +8,7 @@ phase: foundation
 order: 30
 status: available
 summary: Find, choose, and record the team's engineering methodology — spec-driven by default, with test-first or behaviour-first as binding phase obligations — and hand it to the constitution.
-manifest: Say whether the project is brownfield or greenfield and whether the constitution will be created or updated, then work nine lenses — methodology stack, work modes, requirements intake, spec lifecycle, branching, review gates, change records, AI collaboration, governance — and ask the team ten questions one at a time, each with at least four options, one recommended, one Skip. Spec-driven development is the fixed base; test-first, behaviour-first, domain-first, contract-first, and ADR-driven overlays enter only as obligations bound to a spec-kit phase. Then write an onboarding-grade methodology with a Constitution input section to <artifact-root>/ENGINEERING_METHODOLOGY.md and hand it to /speckit-constitution to create or update the constitution. Reads documents imported by kb-vault as claimed, never as current practice.
+manifest: Say whether the project is brownfield or greenfield and whether the constitution will be created or updated, then work nine lenses — methodology stack, work modes, requirements intake, spec lifecycle and persistence model, branching, review gates, change records, AI collaboration, governance — and ask the team ten questions one at a time, each with at least four options, one recommended, one Skip. Spec-driven development is the fixed base; test-first, behaviour-first, domain-first, contract-first, and ADR-driven overlays enter only as obligations bound to a spec-kit phase. Then write an onboarding-grade methodology with a Constitution input section to <artifact-root>/ENGINEERING_METHODOLOGY.md and hand it to /speckit-constitution to create or update the constitution. Reads documents imported by kb-vault as claimed, never as current practice.
 ---
 
 Say whether the project is brownfield or greenfield and whether this
@@ -49,7 +49,8 @@ or agreeing a methodology for a new project — including whether test-first is 
    changelog configuration, `CONTRIBUTING.md`, `specs/`, the constitution, and the sibling documents —
    accepted entries only.
 3. Works nine lenses: methodology stack, work modes and classification, requirements intake, spec
-   lifecycle and traceability, branching and integration, review and merge gates, change records, AI
+   lifecycle and traceability (including the team's spec persistence model: Living Spec, Flow-Forward,
+   Flow-Back, or Hybrid), branching and integration, review and merge gates, change records, AI
    collaboration rules, and governance and evolution. In brownfield mode each reports current practice
    with citations before proposing; in greenfield mode each offers defaults.
 4. Treats spec-driven development as the base, and offers TDD, BDD/ATDD, DDD, contract-first, and
@@ -57,7 +58,9 @@ or agreeing a methodology for a new project — including whether test-first is 
    specify, plan, tasks, or implement — TDD's implement obligation is checked in `tasks.md` — with a
    strictness (MUST or SHOULD) and a scope you choose.
 5. Asks you ten questions, one at a time. Each has at least four options, one recommended and one
-   **Skip**, and free text always works.
+   **Skip**, and free text always works. Question 5 offers the four persistence models and Skip; the
+   chosen one becomes a guardrail that tells each spec-kit phase what to do when a delivered feature's
+   behaviour changes.
 6. Only after the last answer, writes `docs/ENGINEERING_METHODOLOGY.md` — or `ENGINEERING_METHODOLOGY.md`
    at your declared artifact root — with a mode-choice table, branch-naming and commit-prefix references,
    the obligations matrix, and a **Constitution input** section holding exactly what you accepted. It is

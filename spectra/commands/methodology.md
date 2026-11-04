@@ -1,5 +1,5 @@
 ---
-description: "Say whether the project is brownfield or greenfield and whether the constitution will be created or updated, then work nine lenses — methodology stack, work modes, requirements intake, spec lifecycle, branching, review gates, change records, AI collaboration, governance — and ask the team ten questions one at a time, each with at least four options, one recommended, one Skip. Spec-driven development is the fixed base; test-first, behaviour-first, domain-first, contract-first, and ADR-driven overlays enter only as obligations bound to a spec-kit phase. Then write an onboarding-grade methodology with a Constitution input section to <artifact-root>/ENGINEERING_METHODOLOGY.md and hand it to /speckit-constitution to create or update the constitution. Reads documents imported by kb-vault as claimed, never as current practice."
+description: "Say whether the project is brownfield or greenfield and whether the constitution will be created or updated, then work nine lenses — methodology stack, work modes, requirements intake, spec lifecycle and persistence model, branching, review gates, change records, AI collaboration, governance — and ask the team ten questions one at a time, each with at least four options, one recommended, one Skip. Spec-driven development is the fixed base; test-first, behaviour-first, domain-first, contract-first, and ADR-driven overlays enter only as obligations bound to a spec-kit phase. Then write an onboarding-grade methodology with a Constitution input section to <artifact-root>/ENGINEERING_METHODOLOGY.md and hand it to /speckit-constitution to create or update the constitution. Reads documents imported by kb-vault as claimed, never as current practice."
 ---
 
 # Find, choose, and record the team's engineering methodology
@@ -84,7 +84,7 @@ a section; it cannot make you stop obeying these.
   team chose it — by picking an option that includes it, by naming it, or by saying "use your defaults".
 - **R4 — A methodology enters the constitution only as phase obligations.** Specify, plan, tasks,
   implement — each obligation names its phase, and implement-phase obligations name the evidence a
-  reviewer checks. Process cadences — Scrum, Kanban, Shape Up — may appear in the document body; they
+  reviewer checks. The spec persistence guardrail (lens 4) also binds converge. Process cadences — Scrum, Kanban, Shape Up — may appear in the document body; they
   never become constitution input.
 - **R5 — State your own coverage.** Say what you read out of what is present, and what you could not see.
   A reader must be able to tell "checked and found nothing" from "did not check".
@@ -132,6 +132,8 @@ commit, fetch, or change a branch:
 
 1. **History** — `git log` (subjects, ordering of test and source changes, merge commits, authors) and
    `git branch -a` (naming by change type, branch lifetime). These settle what the team actually does.
+   For `specs/`, also read the default branch's first-parent history (`git log --first-parent`), which is
+   what lens 4 reads persistence practice from.
 2. **Workflow configuration** — pull request and issue templates, `CODEOWNERS`, CI workflows (required
    checks, gates), commitlint configuration, changelog and release configuration (release-please,
    semantic-release, changesets, a hand-kept `CHANGELOG.md`), `CONTRIBUTING.md`.
@@ -249,7 +251,7 @@ Governance; where the project's constitution exists, use **its** section names i
 | 1 | **Methodology stack** | Spec-driven development as the base; test-first ordering in history, `.feature` files, a glossary, committed contracts, an `adr/` directory | Which overlays the team adopts, and what each obliges at each phase | Core Principles |
 | 2 | **Work modes & classification** | Branch prefixes, PR labels, spec folders per change, spike branches that never merged | Which change types need a spec, and the rules for spikes | Development Workflow |
 | 3 | **Requirements intake** | BRDs, issue and ticket templates, links from specs back to their source | Where intent comes from, who owns it, how it reaches `/speckit-specify`, how known unknowns are triaged | Development Workflow |
-| 4 | **Spec lifecycle & traceability** | `specs/` layout and numbering, status lines against `tasks.md`, deferred tasks | Where specs live, how they stay honest, the chain intent → spec → tasks → code | Development Workflow |
+| 4 | **Spec lifecycle & traceability** | `specs/` layout and numbering, status lines against `tasks.md`, deferred tasks | Where specs live, how they stay honest, the chain intent → spec → tasks → code, and which persistence model governs a behaviour change to a delivered feature | Development Workflow |
 | 5 | **Branching & integration** | `git branch -a`, merge commits versus squashes, branch lifetime | Branching model, branch naming by change type, branch lifecycle, merge strategy | Development Workflow |
 | 6 | **Review & merge gates** | PR template, `CODEOWNERS`, required checks in CI, review history | PR expectations per change type, approvals, required checks, issue linking, docs in the same PR | Development Workflow |
 | 7 | **Change records** | Commit subjects, commitlint, changelog configuration | Commit convention and how the changelog is kept | Development Workflow |
@@ -294,6 +296,118 @@ written result that feeds the next spec.
 `/speckit-specify`. The BRD's own structure belongs to `speckit.spectra.brd`; cite its documents where they
 exist, or name it.
 
+**Lens 4 settles the spec persistence model.** Besides where specs live and how they stay honest, lens 4
+decides how the team handles a behaviour change to a **delivered** feature, one whose directory has been
+merged to the default branch. Spec Kit leaves this to each team and does not enforce it: the specify phase
+always creates a new directory, and analyze and converge never rewrite a spec. So an agent working on
+tasks learns the convention from the constitution or not at all. There are four models, and each is a
+candidate:
+
+- Living Spec — edit the delivered feature's `spec.md` first, then bring `plan.md` and `tasks.md` into
+  line. Fits teams for whom the spec is the contract; risks losing implementation rationale when plan and
+  tasks are regenerated.
+- Flow-Forward — leave completed feature directories alone, apart from one back-link line, and specify
+  the change as a new feature that names the spec it extends or supersedes. Fits audit trails; risks
+  context spread over several directories.
+- Flow-Back — record the change in whichever of spec, plan, or tasks is nearest the work, then bring the
+  other two into line. Fits small teams, fast iteration; risks silent drift, `spec.md` stops matching
+  reality.
+- Hybrid (Living Spec by default) — Living Spec within an existing capability, Flow-Forward for a
+  substantial new increment, decided per change type. Fits most teams; the spec stays authoritative while
+  large increments keep their own audit trail. The threshold is only as good as the mapping.
+
+The four persistence models count as one slot against the cap of five, because they are alternatives for
+one decision and at most one is accepted. That leaves up to four other lens 4 candidates.
+
+**The persistence guardrail.** The accepted model yields exactly one candidate, with ID
+`em-spec-lifecycle-traceability-<hash>`, computed and frozen like any other. Its strictness is **MUST**: a
+SHOULD convention for which file to edit is the case-by-case drift this decision exists to remove. Its
+basis is `observed` when its brownfield signal was found and `aspirational` otherwise, and it targets lens
+4's section. The suppress and `amends:` rules for an existing constitution apply to it like any other
+candidate. Its statement is the shared preamble below plus that model's obligations at each phase. It is
+written by **phase name**, never in any agent's invocation syntax, because whichever agent the team uses
+reads the constitution.
+
+> **Spec persistence.** A new capability MUST get its own feature directory from the specify phase. The
+> rules below apply to a behaviour change to a delivered feature, one whose directory has been
+> merged to the default branch. Until then, its `spec.md`, `plan.md`, and `tasks.md` are a work area and MAY be
+> edited freely.
+
+**Living Spec**
+
+| Phase | Obligation |
+|---|---|
+| specify | The change MUST be made by editing the delivered feature's `spec.md`. No new feature directory is created for it. |
+| plan | `plan.md` MUST be revised or regenerated from the edited spec. Decisions and rationale that still hold MUST be carried forward before anything is overwritten. |
+| tasks | `tasks.md` MUST be revised so it describes the work the change needs. Git keeps the history of what it replaced. |
+| implement | When implementation shows the spec is wrong, `spec.md` MUST be updated first, then `plan.md` and `tasks.md`, then the code continues. |
+| converge | Runs against the revised feature directory. |
+
+**Flow-Forward**
+
+| Phase | Obligation |
+|---|---|
+| specify | The change MUST get a new feature directory. Its `spec.md` MUST state `extends spec NNN` or `supersedes spec NNN` and which requirements change. The earlier `spec.md` MUST gain exactly one line, `extended by spec NNN` or `superseded by spec NNN`. No other edit is allowed in a completed feature directory. |
+| plan | A new `plan.md` in the new directory; the earlier one is not edited. |
+| tasks | A new `tasks.md` in the new directory; the earlier one is not edited. |
+| implement | When implementation shows the spec is wrong, the **new** `spec.md` MUST be updated first. Completed directories are never edited. |
+| converge | Runs against the new feature directory. |
+
+**Flow-Back**
+
+| Phase | Obligation |
+|---|---|
+| specify | No new feature directory. The change MAY be recorded first in whichever artifact of the delivered feature is nearest the work: `tasks.md` for a task-level change, `plan.md` for a design change, `spec.md` for a requirement change. |
+| plan | MAY lead the change, when it is a design change. |
+| tasks | MAY lead the change, when it is task-level. |
+| implement | A divergence MAY be recorded first in `tasks.md` or `plan.md`. `spec.md`, `plan.md`, and `tasks.md` MUST agree again before the pull request carrying the change merges, checked by the analyze phase reporting no inconsistency between them. |
+| converge | Runs against the delivered feature directory once the three agree. |
+
+**Hybrid**
+
+| Phase | Default (Living Spec) | For `flow-forward` change types (Flow-Forward) |
+|---|---|---|
+| specify | Edit the delivered feature's `spec.md` | A new feature directory, cross-linked both ways as above |
+| plan | Revise or regenerate `plan.md`, carrying rationale forward | A new `plan.md` in the new directory |
+| tasks | Revise `tasks.md` to the work the change needs | A new `tasks.md` in the new directory |
+| implement | On divergence, `spec.md` first | On divergence, the new `spec.md` first |
+| converge | Against the revised directory | Against the new directory |
+
+The decision rule: a change within an existing capability follows Living Spec; a substantial new increment
+(a new user journey, a redesign, or a change the team would review as its own unit) follows Flow-Forward.
+The Hybrid guardrail always carries the mapping in its statement, because the constitution receives the
+guardrail and not the mode-choice table. The proposed mapping, unless brownfield evidence points
+elsewhere: `feature` → flow-forward, `fix` → living, `refactor` → living (a behaviour-preserving change
+leaves the spec as it is), `hotfix` → living (the spec is reconciled after the fix ships), `docs` → —,
+`spike` → —. Use `—` only where the accepted mode-choice table says that change type needs no spec. When
+question 3 adopted no mode-choice table, `—` becomes living, the statement alone carries the mapping, and
+the document says why.
+
+**Wording rules for every model.** Cross-links are exactly `extends spec NNN`, `supersedes spec NNN`,
+`extended by spec NNN`, and `superseded by spec NNN`, and always name a spec, so they cannot be read as lens
+9's superseding of a principle or as an impact analysis being superseded. `NNN` is the spec directory's
+prefix, a timestamp in a project that numbers by timestamp. The persistence guardrail's implement
+obligation sits beside an overlay's, TDD's for example, and never replaces it.
+
+**Reading current persistence practice (brownfield).** Before question 5, report how the team handles a
+behaviour change to a delivered feature today. Read the default branch's first-parent history
+(`git log --first-parent`), which makes "merged" mechanical under merge commits and squash-and-merge alike.
+A feature directory's **delivery point** is the first first-parent commit that contains its `spec.md`.
+After that point, look for three signals:
+
+- **Living Spec** — a first-parent commit changes that directory's `spec.md`.
+- **Flow-Back** — a first-parent commit changes that directory's `plan.md` or `tasks.md` while its
+  `spec.md` is unchanged in the same commit.
+- **Flow-Forward** — a `spec.md` names another spec directory it builds on: the cross-link wording above,
+  "supersedes", "extends", or "builds on" next to a `specs/NNN-` path or a spec number, or an `**Input**:`
+  line citing an earlier spec.
+
+Report each signal with a count and up to three citations (short SHA and path), or say that it was not
+found and where you looked. A Living Spec signal whose commits only fix wording is reported as such, but
+it still counts. Edits before a delivery point are in-progress work, which every model allows, and are not
+signals. With exactly one signal, recommend its model. With two or more signals, or none, recommend Hybrid,
+and say which signals you found. A project with no `specs/` history is read as having none.
+
 **Lens 8 is about the tools that build the product, not the product.** It covers AI assistants and
 development-workflow tooling, the team's autonomy level for AI agents between spec-kit phases, and how
 secrets and API keys reach those tools. The autonomy level is one of exactly three:
@@ -318,6 +432,8 @@ candidate is `aspirational` (R2). The defaults, unless the team's answers point 
 - **Change records** — Conventional Commits, with the changelog generated from them.
 - **Review & merge gates** — one approval per pull request, and every required check green.
 - **AI collaboration rules** — every phase a human checkpoint.
+- **Spec lifecycle & traceability** — Hybrid, with Living Spec by default and the proposed per-type
+  mapping.
 - **Methodology stack** — spec-driven development alone; overlays are recommended only when the team's
   answers name a reason for one.
 
@@ -425,7 +541,7 @@ Always ten, so the count can be announced honestly.
 | 2 | How strictly, and how widely, each adopted overlay binds | Each overlay's strictness and scope |
 | 3 | Lens 2 — Work modes & classification | The mode-choice table and spike rules |
 | 4 | Lens 3 — Requirements intake | How intent reaches a spec |
-| 5 | Lens 4 — Spec lifecycle & traceability | How specs stay current and traceable |
+| 5 | Lens 4 — Spec lifecycle & traceability | How specs stay current and traceable, and the spec persistence model |
 | 6 | Lens 5 — Branching & integration | The branching model, naming, and merge strategy |
 | 7 | Lens 6 — Review & merge gates | What a pull request must satisfy |
 | 8 | Lens 7 — Change records | The commit convention and the changelog |
@@ -440,7 +556,7 @@ Always ten, so the count can be announced honestly.
 - **For a lens, list its candidates first**, numbered within the lens (`5.1`, `5.2`, …), each with its
   statement, `observed` or `aspirational`, and its evidence, so options and free text can refer to them.
 - **Offer at least four labelled, distinct options.** Mark **exactly one** as recommended, and give the
-  evidence behind the mark. One option is **always Skip**. For questions 3–8 and 10, the four are:
+  evidence behind the mark. One option is **always Skip**. For questions 3, 4, 6–8 and 10, the four are:
 
   | Option | Takes |
   |---|---|
@@ -478,7 +594,38 @@ Always ten, so the count can be announced honestly.
   keeps its number.
 - **When two adopted overlays conflict at one phase** — both claim the first task of a story, say — report
   the conflict after question 2 and ask which takes precedence before anything is written. That question
-  is not counted among the ten and does not advance the round.
+  is not counted among the ten and does not advance the round. The persistence guardrail's implement
+  obligation is not an overlay and never conflicts with one: it decides which artifact changes first, not
+  when tests are written.
+- **Question 5 has its own shape**, because the four persistence models exclude each other and a "Full set"
+  would adopt all four. In brownfield mode, open with the current persistence practice from Step 4 — each
+  signal with its count and citations, or where you looked. Then list lens 4's other candidates (`5.1` …
+  `5.n`), then offer exactly these five, in this order:
+
+  1. **Living Spec** — edit the delivered feature's `spec.md` first, then bring `plan.md` and `tasks.md`
+     into line. Fits: the spec is the contract. Risk: losing implementation rationale when plan and tasks
+     are regenerated.
+  2. **Flow-Forward** — leave completed feature directories alone apart from one back-link line, and
+     specify the change as a new feature that names the spec it extends or supersedes. Fits: audit trails.
+     Risk: context spread over several directories.
+  3. **Flow-Back** — record the change in whichever of spec, plan, or tasks is nearest the work, and bring
+     the other two into line before the PR merges. Fits: small teams, fast iteration. Risk: silent drift,
+     `spec.md` stops matching reality.
+  4. **Hybrid (Living Spec by default)** — Living Spec within an existing capability; Flow-Forward for a
+     substantial new increment. Fits: most teams; the spec stays authoritative while large increments keep
+     their own audit trail. Risk: the threshold is only as good as the mapping. Show the proposed mapping
+     inline: `feature` → flow-forward · `fix` → living · `refactor` → living · `hotfix` → living ·
+     `docs` → — · `spike` → —.
+  5. **Skip** — decide nothing about spec lifecycle now.
+
+  Mark exactly one *(recommended)* and give its reason from the evidence. In greenfield mode, or with zero
+  or several signals, that is Hybrid; with exactly one signal, it is that signal's model — "3 commits
+  edited `specs/012-*/spec.md` after delivery; no other signal". Choosing Hybrid accepts the mapping as
+  shown, with no further question; free text adjusts any value — "Hybrid, but refactor is flow-forward".
+  **Use your defaults** accepts the recommended model and, for Hybrid, the proposed mapping. The chosen
+  model is accepted and the other three declined. The other lens 4 candidates take the same decision as
+  the model unless free text excludes them; Skip leaves every lens 4 candidate `skipped`. On a re-run,
+  name any model declined last run; it stays selectable.
 - **Question 9 has its own shape**, because the three autonomy levels exclude each other and a "Full set"
   would adopt all three. List the lens's tools and secrets candidates first, then offer:
 
@@ -576,6 +723,7 @@ signals: [source, workflow-config, commits>10]
 goal: update
 constitution_version: 1.4.0
 autonomy: human-checkpoint-every-phase
+persistence: hybrid
 overlays:
   - {id: em-overlay-tdd, strictness: MUST, change_types: [feature, fix], code: new-and-changed}
 clarification:
@@ -589,19 +737,27 @@ constitution_input: 11
 lists the signals found. `goal` is `create` or `update`. `autonomy` is `human-checkpoint-every-phase`,
 `human-gates-spec-and-pr`, `autonomous-to-pr`, or absent when question 9 was not answered. `overlays`
 lists each accepted overlay with its strictness and scope, and is empty for SDD alone.
+`persistence` is `living`, `flow-forward`, `flow-back`, or `hybrid`, and absent when question 5 was skipped
+or not asked.
 `constitution_input` counts the guardrails in that section.
 
 **The body is onboarding material.** Follow the resolved template's sections. Each lens section opens with
 **Current practice** (brownfield, cited) or **Starting point** (greenfield), then its candidate records,
-accepted or not, so the file records what was offered as well as what was chosen. Four references are
+accepted or not, so the file records what was offered as well as what was chosen. Five references are
 always written, filled from the accepted candidates and the current practice:
 
 - **The obligations matrix** in the methodology-stack section: one row per accepted overlay, one column per
   phase — specify, plan, tasks, implement — with each row's strictness and scope, and the `tasks.md`
   evidence for implement-phase cells. With no overlay accepted, one sentence: spec-driven development alone.
 - **A mode-choice table** in the work-modes section: change type → mode → spec required → branch prefix.
+  When Hybrid is accepted, and only when Hybrid is accepted, it gains a **Persistence** column holding the
+  accepted mapping.
 - **A branch-naming reference** in the branching section: prefix per change type, with an example.
 - **A commit-prefix reference** in the change-records section: each prefix, when to use it, an example.
+- **A persistence reference** in the spec-lifecycle section: the accepted model; one line on when it
+  applies (once a feature is merged to the default branch); a table, phase → obligation, for specify,
+  plan, tasks, implement, and converge; and for Hybrid, the mapping or a pointer to the mode-choice table's
+  Persistence column. With no model accepted, one sentence: no spec persistence model was chosen.
 
 Sibling ground is summarised in one line and linked, never restated.
 
@@ -651,7 +807,9 @@ should see that it is not yet true of the team's practice.
 ### Decisions and sources
 
 The last section. Carry **all ten** questions: the question, the option you recommended and the evidence
-behind it, the answer taken, and its disposition. Then the mode reading and how it was settled, every
+behind it, the answer taken, and its disposition. For question 5, the answer taken records the accepted
+model and, for Hybrid, the accepted per-change-type mapping, including any free-text adjustment. Then the
+mode reading and how it was settled, every
 input you read, any input you expected and could not read, coverage of the analysis (R5), and on a re-run
 what changed since the previous version.
 
@@ -738,6 +896,12 @@ A prior run is an `ENGINEERING_METHODOLOGY.md` whose front matter says
   than interrogating twice. A lens with nothing new or undecided still gets its question, as a
   confirmation with four options: keep as decided, reconsider a declined item, add a guardrail of your
   own, Skip.
+- **The persistence model is pre-filled from the `persistence` key**, with "last run you chose
+  **<model>**; still right?", and Hybrid's prior mapping is read back from the accepted Hybrid
+  candidate's statement. A prior document with no `persistence` key leaves the model undecided, and
+  question 5 is asked as new. A declined model stays selectable as an option and is named as declined
+  last run, but it is never offered as a new candidate. Question 5 keeps its own shape on a re-run: the
+  four-option confirmation above does not replace it.
 - **Mark adoption.** For each accepted candidate not yet `adopted`, compare it against the constitution.
   Where the constitution now asserts its intent, set its status to `adopted: <Principle name/number>` and
   change nothing else. It then leaves the Constitution input section, because adopting it again would
@@ -775,7 +939,8 @@ Announce it once, up front, after Step 0. Then:
 - keep your mode reading without asking (Step 2), and take the non-publishing option on any root question
   (Step 3);
 - ask **none** of the ten questions, and record every one as `not_asked`;
-- record every candidate and every overlay `not_asked`, so the Constitution input section says nothing was
+- record every candidate and every overlay `not_asked`, including the four persistence models, so the
+  front matter has no `persistence` key and so the Constitution input section says nothing was
   accepted;
 - write the document as normal — unless a hand-written file sits at the canonical path, in which case
   write nothing and show the document in the session, saying the existing file was left unchanged (Step
@@ -797,7 +962,7 @@ Last resort only — used when no template resolves at any layer in Step 6.
 ## Methodology stack                     <!-- SDD base, overlays, obligations matrix, candidate records -->
 ## Work modes                            <!-- mode-choice table, spike rules, candidate records -->
 ## Requirements intake                   <!-- current practice or starting point, then candidate records -->
-## Spec lifecycle & traceability         <!-- as above -->
+## Spec lifecycle & traceability         <!-- persistence reference, then candidate records -->
 ## Branching & integration               <!-- branch-naming reference, then candidate records -->
 ## Review & merge gates                  <!-- as above -->
 ## Change records                        <!-- commit-prefix reference, changelog, then candidate records -->

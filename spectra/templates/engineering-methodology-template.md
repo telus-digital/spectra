@@ -14,7 +14,7 @@
   - What this template CANNOT change: the YAML front matter; the candidate record (keys `id`, `lens`,
     `section`, `evidence`, `basis`, `decision`, `status`, in that order); evidence for every statement of
     current practice; the observed/aspirational basis; the obligations matrix as the closed set of phase
-    obligations; the Constitution input format; an ID frozen once written; and every prior team decision
+    obligations; the persistence reference's phase obligations; the Constitution input format; an ID frozen once written; and every prior team decision
     carried forward on a re-run. Those rules live in the command, not here, because `/speckit-constitution`
     and later runs of the command read this file and depend on them.
   - Organisation-specific facts — internal URLs, ticket systems, BA tools — appear only when the team
@@ -68,10 +68,14 @@
 
 <!--
   Where spec artifacts live, how they are numbered, how a spec's status is kept honest against tasks.md,
-  how deferred tasks are recorded, and the chain intent → spec → tasks → code.
+  how deferred tasks are recorded, and the chain intent → spec → tasks → code. Then the persistence
+  reference: the accepted spec persistence model (Living Spec, Flow-Forward, Flow-Back, or Hybrid), when
+  it applies (once a feature is merged to the default branch), and a phase → obligation table for
+  specify, plan, tasks, implement, and converge; for Hybrid, the per-change-type mapping. With no model
+  accepted, one sentence saying so.
 -->
 
-[CURRENT PRACTICE AND CANDIDATE RECORDS]
+[CURRENT PRACTICE, PERSISTENCE REFERENCE, AND CANDIDATE RECORDS]
 
 ## Branching & integration
 

@@ -273,7 +273,8 @@ what the history shows. It never edits the constitution and adopts nothing you d
    changelog configuration, `CONTRIBUTING.md`, `specs/`, the constitution, and the sibling documents —
    accepted entries only.
 3. Works nine lenses: methodology stack, work modes and classification, requirements intake, spec
-   lifecycle and traceability, branching and integration, review and merge gates, change records, AI
+   lifecycle and traceability (including the team's spec persistence model: Living Spec, Flow-Forward,
+   Flow-Back, or Hybrid), branching and integration, review and merge gates, change records, AI
    collaboration rules, and governance and evolution. In brownfield mode each reports current practice
    with citations before proposing; in greenfield mode each offers defaults.
 4. Treats spec-driven development as the base, and offers TDD, BDD/ATDD, DDD, contract-first, and
@@ -281,7 +282,9 @@ what the history shows. It never edits the constitution and adopts nothing you d
    specify, plan, tasks, or implement — TDD's implement obligation is checked in `tasks.md` — with a
    strictness (MUST or SHOULD) and a scope you choose.
 5. Asks you ten questions, one at a time. Each has at least four options, one recommended and one
-   **Skip**, and free text always works.
+   **Skip**, and free text always works. Question 5 offers the four persistence models and Skip; the
+   chosen one becomes a guardrail that tells each spec-kit phase what to do when a delivered feature's
+   behaviour changes.
 6. Only after the last answer, writes `docs/ENGINEERING_METHODOLOGY.md` — or `ENGINEERING_METHODOLOGY.md`
    at your declared artifact root — with a mode-choice table, branch-naming and commit-prefix references,
    the obligations matrix, and a **Constitution input** section holding exactly what you accepted. It is
