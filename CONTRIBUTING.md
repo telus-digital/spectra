@@ -254,7 +254,7 @@ output before moving on:
    file under [`agents/`](agents/) — the **only source of truth for agent information** — bumps the
    extension `version` with a matching `spectra/CHANGELOG.md` entry, rebuilds
    `docs/packages/spectra.zip` with `python3 tools/build_package.py`, and updates the `spectra`
-   entry's `version` and command count in `catalog.json`.
+   entry's `version`, command count and `requires.speckit_version` in `catalog.json`.
 5. **Write the agent's file.** `agents/<id>.md` holds everything about the agent: a flat
    `key: value` header, then — for a shipped agent — its long description in Markdown:
 

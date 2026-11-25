@@ -55,6 +55,16 @@ DESCRIPTION = "TELUS Digital - Agentic software engineering across the entire SD
 # is zero-dependency by constitution and `yaml` is not importable here.
 DESCRIPTION_LINE = re.compile(r'^  description: "(.*)"$', re.M)
 
+# `  speckit_version: "…"` — the `requires:` block's Spec Kit floor, two spaces deep, the only line at
+# that depth with this key. Same scanner discipline as DESCRIPTION_LINE above.
+SPECKIT_VERSION_LINE = re.compile(r'^  speckit_version: "(.*)"$', re.M)
+
+
+def parse_manifest_speckit_version(text: str):
+    """`requires.speckit_version` from extension.yml text, or None when the line is missing."""
+    match = SPECKIT_VERSION_LINE.search(text)
+    return match.group(1) if match else None
+
 
 # `  version: "1.3.1"` — the `extension:` block's own version, at two-space indentation. Anchored to
 # the line so a nested `version:` deeper in the file (for example under `requires:`) cannot match.
@@ -91,7 +101,8 @@ def check_generated_listings() -> list:
 
 
 def check_catalog_parity() -> list:
-    """`spectra/extension.yml` and `catalog.json` agree on the version and the command count."""
+    """`spectra/extension.yml` and `catalog.json` agree on the version, the Spec Kit floor
+    (`requires.speckit_version`), and the command count."""
     problems = []
     try:
         manifest_text = MANIFEST.read_text(encoding="utf-8")
@@ -106,6 +117,13 @@ def check_catalog_parity() -> list:
     if manifest_version != catalog_version:
         problems.append(
             f"extension.yml is {manifest_version!r} but catalog.json says {catalog_version!r}.")
+
+    manifest_floor = parse_manifest_speckit_version(manifest_text)
+    catalog_floor = entry.get("requires", {}).get("speckit_version")
+    if manifest_floor != catalog_floor:
+        problems.append(
+            f"extension.yml requires Spec Kit {manifest_floor!r} but catalog.json says "
+            f"{catalog_floor!r}.")
 
     manifest_commands = len(generate_agent_docs.MANIFEST_COMMAND.findall(manifest_text))
     catalog_commands = entry.get("provides", {}).get("commands")

@@ -285,7 +285,8 @@ Once the command file exists, Principle V requires all of this **in the same cha
 2. Register the command in `spectra/extension.yml`, and any template under `provides.templates`.
 3. Bump `extension.version` in `spectra/extension.yml`, with a matching `spectra/CHANGELOG.md` entry.
    Renaming or removing a command is MAJOR.
-4. Mirror the version into `catalog.json`, along with `updated_at` and the command count.
+4. Mirror the version into `catalog.json`, along with `updated_at`, the command count, and
+   `requires.speckit_version`.
 5. Nothing to hand-edit on `docs/getting-started/agents.html`: the command's sidebar entry and card
    are generated from `agents/`. Do **not** put a version or the extension description on that page —
    it fetches both at load time, and the checks enforce it.
