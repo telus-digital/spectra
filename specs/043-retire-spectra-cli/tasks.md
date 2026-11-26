@@ -215,16 +215,16 @@ merging to `main`.
 [contracts/required-checks.md](contracts/required-checks.md) § The switch sequence and
 [quickstart.md](quickstart.md) Scenarios 6 and 7.
 
-- [ ] T058 **Maintainer**: Commit the branch (no Sync Impact Report comment in the constitution) and merge `043-retire-spectra-cli` into local `main`; confirm `python3 -m unittest discover -s tests` and `python3 tools/checks.py --all` pass on the merge
-- [ ] T059 **Maintainer**: `git push --force origin HEAD:refs/heads/ci`, wait for `gh run list --branch ci --limit 1` to complete green, then confirm `gh api repos/telus-digital/spectra/commits/$(git rev-parse HEAD)/check-runs --jq '.check_runs[].name'` lists exactly `Tests pass`, `Catalog and package stay in sync`, `CodeQL finds no high-severity issues`
-- [ ] T060 **Maintainer**: Point ruleset "Protect main — tested" (id 23750842) at the three contexts with the script in [contracts/required-checks.md](contracts/required-checks.md) § Ruleset update; confirm `gh api repos/telus-digital/spectra/rulesets/23750842 --jq '[.rules[] | select(.type=="required_status_checks") | .parameters.required_status_checks[].context]'` prints the three. Start no other ship between this step and T061
-- [ ] T061 **Maintainer**: `python3 tools/ship.py`; it reports the file and ruleset agree, waits for green on `ci`, and pushes the same SHA to `main` with no bypassed status check (SC-005)
-- [ ] T062 **Maintainer**: Delete the 13 CLI Releases with their tags, any remaining remote tags, and local tags:
+- [X] T058 **Maintainer**: Commit the branch (no Sync Impact Report comment in the constitution) and merge `043-retire-spectra-cli` into local `main`; confirm `python3 -m unittest discover -s tests` and `python3 tools/checks.py --all` pass on the merge
+- [X] T059 **Maintainer**: `git push --force origin HEAD:refs/heads/ci`, wait for `gh run list --branch ci --limit 1` to complete green, then confirm `gh api repos/telus-digital/spectra/commits/$(git rev-parse HEAD)/check-runs --jq '.check_runs[].name'` lists exactly `Tests pass`, `Catalog and package stay in sync`, `CodeQL finds no high-severity issues`
+- [X] T060 **Maintainer**: Point ruleset "Protect main — tested" (id 23750842) at the three contexts with the script in [contracts/required-checks.md](contracts/required-checks.md) § Ruleset update; confirm `gh api repos/telus-digital/spectra/rulesets/23750842 --jq '[.rules[] | select(.type=="required_status_checks") | .parameters.required_status_checks[].context]'` prints the three. Start no other ship between this step and T061
+- [X] T061 **Maintainer**: `python3 tools/ship.py`; it reports the file and ruleset agree, waits for green on `ci`, and pushes the same SHA to `main` with no bypassed status check (SC-005)
+- [X] T062 **Maintainer**: Delete the 13 CLI Releases with their tags, any remaining remote tags, and local tags:
   `gh release list -R telus-digital/spectra --limit 100 --json tagName --jq '.[].tagName' | while read -r t; do gh release delete "$t" -R telus-digital/spectra --cleanup-tag --yes; done`, then
   `git ls-remote --tags origin | awk '{print $2}' | sed 's#refs/tags/##; s#\^{}##' | sort -u | while read -r t; do git push origin --delete "refs/tags/$t"; done`, then
   `git tag -l | while read -r t; do git tag -d "$t"; done` (FR-007, FR-030)
-- [ ] T063 **Maintainer**: Verify none remain (SC-004): `gh release list -R telus-digital/spectra --limit 100` and `git ls-remote --tags origin` print nothing, and `gh api repos/telus-digital/spectra/releases --jq length` prints `0`; then open the published landing page and confirm nothing on it broke
-- [ ] T064 **Maintainer**: Tell internal users to uninstall the CLI (`uv tool uninstall spectra-cli`) and use `specify` from now on. Outside the repository; the docs carry no such guidance (FR-026)
+- [X] T063 **Maintainer**: Verify none remain (SC-004): `gh release list -R telus-digital/spectra --limit 100` and `git ls-remote --tags origin` print nothing, and `gh api repos/telus-digital/spectra/releases --jq length` prints `0`; then open the published landing page and confirm nothing on it broke
+- [X] T064 **Maintainer**: Tell internal users to uninstall the CLI (`uv tool uninstall spectra-cli`) and use `specify` from now on. Outside the repository; the docs carry no such guidance (FR-026)
 
 ---
 
