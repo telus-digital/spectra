@@ -1,10 +1,10 @@
 # Spectra Constitution
 
-Spectra is a curated set of [Spec Kit](https://github.com/github/spec-kit) commands — delivered as a
-single self-contained Spec Kit extension — that enable full agentic development across the entire
-software development lifecycle (SDLC), built and maintained by TELUS Digital. This constitution
-governs how Spectra itself is built and how every command in the extension is authored, published,
-and maintained.
+Spectra is an extension by TELUS Digital that enhances [GitHub Spec Kit](https://github.com/github/spec-kit):
+a single self-contained Spec Kit extension whose commands enable full agentic development across the
+entire software development lifecycle (SDLC). It is installed, updated, and removed with Spec Kit's own
+`specify` CLI. This constitution governs how Spectra itself is built and how every command in the
+extension is authored, published, and maintained.
 
 ## Core Principles
 
@@ -37,8 +37,7 @@ rather than ad-hoc edits. Specs live under `specs/`, and the project constitutio
   allowed; editing files is not.
 - **Scope — what is feature work.** Feature work is a new capability or an enhancement, or a material
   change to how something behaves: adding an agent; materially changing what an agent does, asks, or
-  produces; changing how the `spectra` CLI works — its command surface, install or update flow, or
-  prerequisites; and changing how Spectra is packaged, distributed, or released. It goes through specs
+  produces; and changing how Spectra is packaged, distributed, or released. It goes through specs
   however few lines it takes. Everything else is outside these rules and MAY be done directly in chat,
   with or without plan mode and with no spec: small bug fixes that restore intended behavior, cosmetic
   and wording changes, typos, broken links, formatting, and documentation or tooling housekeeping. So
@@ -50,8 +49,8 @@ rather than ad-hoc edits. Specs live under `specs/`, and the project constitutio
   into a small fix and does not waive a checkpoint. An agent MUST NOT read a broad request — "build X
   end to end" — as permission to run more than one phase.
 - **Work outside specs is still governed.** A small fix skips the spec, not the other principles: a fix
-  to a command still bumps the catalog version and resyncs the package (Principle V), a fix to the CLI
-  still follows Principle VI, and every change still lands through `tools/ship.py`.
+  to a command still bumps the catalog version and resyncs the package (Principle V), and every change
+  still lands through `tools/ship.py`.
 
 Rationale: Spectra's value proposition is agentic SDD across the SDLC. If we do not use it to build
 ourselves, we cannot credibly recommend it, and we lose our best feedback loop on the extension we
@@ -145,9 +144,9 @@ Spec Kit core agents are header-only. Nothing about an agent is authored anywher
 `tools/generate_agent_docs.py` renders every output from that source, and every output is committed so
 the repository reads correctly for someone who never runs it:
 
-- `agents-list.json` — the published, machine-readable roster read at run time by `spectra agent-list`
-  and by `docs/agents.html`. It is a **generated output** with an unchanged schema, field names, and
-  order, and MUST NOT be edited by hand; installed copies of the CLI depend on its shape.
+- `agents-list.json` — the published, machine-readable roster read at run time by `docs/agents.html`.
+  It is a **generated output** with an unchanged schema, field names, and order, and MUST NOT be edited
+  by hand; the roster page depends on its shape.
 - the Agents table and every agent section of `AGENTS_LIST.md`, and the Commands table and per-agent
   sections of `spectra/README.md`;
 - each Spectra command's description in `spectra/extension.yml` and in its command file's front matter,
@@ -178,15 +177,11 @@ because the source changed or because an output was edited by hand.
 `AGENTS_LIST.md`, and the published `docs/packages/spectra.zip` MUST never drift from the `spectra/`
 folder or from `agents/`.
 
-This sync obligation governs the **catalog channel only** (the extension, its package, and the pages
-that link to them). The `spectra` CLI is a *separate* distribution channel with its own version and is
-NOT expected to move in lockstep with the catalog — it is governed by Principle VI.
-
-The published pages MUST NOT hard-code data that another artifact already defines — neither channel's
-version number, nor the extension's description, nor the agent roster. This binds both the landing page
+The published pages MUST NOT hard-code data that another artifact already defines — neither the
+extension's version number, nor its description, nor the agent roster. This binds both the landing page
 (`docs/index.html`) and the agents page (`docs/getting-started/agents.html`): each reads the extension
-version and description it shows from `catalog.json` at page load, and the landing page reads the CLI
-version from the newest published GitHub Release. The roster page (`docs/agents.html`) reads the agents
+version and description it shows from `catalog.json` at page load. The roster page (`docs/agents.html`)
+reads the agents
 from `agents-list.json`. The per-agent cards on the agents page are rendered into static HTML from
 `agents/` when the generator runs, so they are neither hand-written in the page nor fetched at load
 time. The `description-parity` check in
@@ -194,56 +189,29 @@ time. The `description-parity` check in
 description. A value typed into HTML is drift waiting to happen; a value fetched from the artifact that
 defines it cannot drift.
 
-Rationale: The repo is the catalog channel's only distribution point — users discover and install the
-extension entirely from it, against the raw `catalog.json`. A stale catalog or a missing zip ships a
+Rationale: The repo is the extension's only distribution point — users discover and install it
+entirely from it, against the raw `catalog.json`. A stale catalog or a missing zip ships a
 broken install. Keeping a single catalog entry and rebuilding the zip as part of finishing a command
 keeps the landing page, catalog, and download link consistent by construction.
 
-### VI. Two Independently-Versioned Release Channels
+### VI. A Single Release Channel
 
-Spectra ships through **two** distribution channels, and each carries its **own** version number on its
-**own** cadence. They are NOT 1:1 and MUST be versioned independently:
+Spectra ships exactly **one** thing: the `spectra` extension. It is distributed over the raw
+`catalog.json` and `docs/packages/spectra.zip` links (Principle V), and its version is authoritative in
+`spectra/extension.yml`, mirrored into the `spectra` entry of `catalog.json`. That version MUST bump —
+per SemVer — whenever a command (agent) is added, changed, or removed. **Merging to `main` is the
+release**: once `tools/ship.py` lands the change, the catalog and package are live at their raw URLs,
+with no further step.
 
-- **Catalog channel** — the `spectra` extension, distributed over the raw `catalog.json` and
-  `docs/packages/spectra.zip` links. Its version is authoritative in `spectra/extension.yml` (mirrored
-  into the `spectra` entry of `catalog.json`) and MUST bump — per SemVer — whenever a command (agent) is
-  added, changed, or removed. This channel is **never tagged**: merging to `main` is its release.
-- **CLI channel** — the `spectra_cli/` package, distributed as a `uv` tool installed from this repo's
-  git URL (`uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra`). Its version is
-  authoritative in the root `VERSION` file (read by `pyproject.toml`, reported at runtime via
-  `importlib.metadata`, and mirrored by the release tag) and MUST bump — per SemVer — only when the CLI
-  itself changes in a way consumers should pick up.
+**The repository MUST carry no git tags and no GitHub Releases.** No tag or Release may be created for an
+extension version, and no workflow may publish one. The version lives in `spectra/extension.yml` and
+`catalog.json`, and `spectra/CHANGELOG.md` records what changed in each version.
 
-**Git tags and GitHub Releases on this repository belong to the CLI channel, and only to it.** Tags MUST
-be bare semver (`X.Y.Z`); Releases MUST be titled `Spectra CLI X.Y.Z`. The catalog channel MUST NOT be
-tagged or released. Reserving tags for one channel is what makes `/releases/latest` an unambiguous
-answer to "what is the newest `spectra` command" — which both `spectra update` and the landing page
-depend on. If the catalog also cut releases, the CLI's update check could resolve to an extension
-release and attempt to install it as a version of itself.
-
-**The CLI's own version MUST remain readable outside a Spec Kit project.** `spectra version` reports the
-whole stack, so it legitimately requires a project with Spectra installed and cannot answer "what version
-is this command?" from an arbitrary directory. Bare `spectra` MUST therefore keep printing a `cli vX.Y.Z`
-line, and MUST keep working anywhere while changing nothing. Three things depend on exactly that: the CI
-assertion that the installed distribution matches the committed `VERSION`, the release smoke test, and the
-clean-room check that removing a project's agents leaves the command intact. None of them can use
-`spectra version` — the last one deliberately runs in the state where `spectra version` correctly
-refuses. A change that drops the banner's version line would break all three without failing loudly.
-
-The two version numbers MUST NOT be coupled: adding or changing a command (an agent/extension) bumps the
-catalog/extension version **without necessarily** touching the CLI, and changing `spectra_cli/` bumps the
-CLI version **without necessarily** touching the extension or catalog. A change to one channel MUST NOT
-force a version bump of the other, and the two versions are not expected to match at any point in time.
-
-To keep that independence real rather than aspirational, the CLI MUST NOT hard-code the set of
-extensions it installs. It MUST read `catalog.json` at run time and install what the catalog
-advertises, so adding an agent reaches every existing install with no CLI release at all.
-
-Rationale: The catalog and the CLI serve different needs and change for different reasons — the catalog
-evolves as we add SDLC agents, while the CLI changes only when the onboarding flow does. Forcing a
-shared version number would either inflate the CLI on every agent addition or block agent releases on
-unrelated CLI work. Independent SemVer per channel keeps each artifact's version honest about what
-actually changed in it.
+Rationale: With one artifact there is one version, and it already lives in `extension.yml` and
+`catalog.json` — the files Spec Kit reads when it installs or updates the extension. A tag or Release
+would be a second copy of that number that nothing reads and that could drift from it, and a Release page
+would advertise a download path Spec Kit does not use. Keeping the version in the manifest and the history
+in the changelog leaves exactly one place to look and one place to change.
 
 ### VII. Document Artifacts Live Under One Declared Root
 
@@ -400,18 +368,10 @@ from then on, for everyone, permanently. Requiring the same of future document a
 being re-litigated per agent, which is exactly how the `adr`/`brd` divergence arose in the first place.
 
 ## Publishing & Distribution Standards
-- **Semantic Versioning (per channel).** Both release channels follow [SemVer](https://semver.org/) on
-  independent cadences (Principle VI). Each **extension (catalog) release** MUST bump `extension.version`
-  in `spectra/extension.yml` and the matching `version` in the `catalog.json` entry, and add a matching
-  `spectra/CHANGELOG.md` entry under that version heading; renaming or removing a command is a breaking
-  (MAJOR) change. Each **CLI release** MUST bump the root `VERSION` file and be published under a
-  matching bare-semver Git tag `X.Y.Z`; a breaking change to the install flow, the command surface, or
-  the prerequisites is MAJOR. A bump to one channel MUST NOT be mirrored onto the other unless that
-  channel actually changed.
-- **The CLI version is single-sourced and CI-enforced.** `VERSION` is the sole source of truth for the
-  CLI: `pyproject.toml` reads it and the tool reports it via `importlib.metadata`. The release workflow
-  MUST refuse to publish when the pushed tag and `VERSION` disagree, so the committed version, the git
-  tag, and the installed version cannot drift.
+- **Semantic Versioning.** The extension follows [SemVer](https://semver.org/) (Principle VI). Each
+  extension release MUST bump `extension.version` in `spectra/extension.yml` and the matching `version`
+  in the `catalog.json` entry, and add a matching `spectra/CHANGELOG.md` entry under that version heading;
+  renaming or removing a command is a breaking (MAJOR) change.
 - **Compatibility pinning.** `spectra/extension.yml` MUST set `requires.speckit_version` to the Spec
   Kit version range actually tested against. Re-test when Spec Kit is upgraded.
 - **Required manifest fields.** `extension.yml` MUST provide `schema_version`, `id`, `name`,
@@ -536,4 +496,4 @@ settled in the maintainer's head.
 the change, including the maintainer reviewing their own. Complexity that violates a principle MUST be
 justified or removed; unjustified violations block the change.
 
-**Version**: 2.1.1 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-10-26
+**Version**: 3.0.0 | **Ratified**: 2026-07-12 | **Last Amended**: 2026-11-25

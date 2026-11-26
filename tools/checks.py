@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # Copyright 2026 TELUS Digital
 # SPDX-License-Identifier: Apache-2.0
-"""The catalog-channel drift checks, defined once and run from two places.
+"""The catalog and package drift checks, defined once and run from two places.
 
-**Maintainer tooling. Not shipped** — `pyproject.toml` lists its packages explicitly, so nothing under
-`tools/` reaches a user's machine.
+**Maintainer tooling. Not shipped:** nothing under `tools/` is part of the extension package.
 
 Constitution Principle V says `catalog.json`, `docs/index.html`, the generated agent listings and the
 published zip must never drift from the `spectra/` folder or from `agents/`. These are the
@@ -20,10 +19,6 @@ here lets the workflow and the pre-flight run the *same* code::
 Each check returns a list of human-readable problems; an empty list means it passed. Adding a check
 means adding it to `CHECKS` and adding a step to `ci.yml` — `tests/test_ci_contract.py` fails when
 those two disagree, so a check cannot be registered here and silently never run in CI.
-
-The `cli` job's assertions are deliberately **not** here. They need an installed wheel across a Python
-matrix, so they are environment setup as much as they are checks, and pretending otherwise would give
-a local run a false sense of completeness.
 """
 
 from __future__ import annotations
@@ -42,7 +37,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_package  # noqa: E402
 import generate_agent_docs  # noqa: E402
 
-from spectra_cli import extension as extension_module  # noqa: E402
 
 MANIFEST = REPO_ROOT / "spectra" / "extension.yml"
 CATALOG = REPO_ROOT / "catalog.json"
@@ -56,11 +50,32 @@ AGENTS_PAGE = REPO_ROOT / "docs" / "getting-started" / "agents.html"
 DESCRIPTION = "TELUS Digital - Agentic software engineering across the entire SDLC."
 
 # `  description: "…"` — the `extension:` block's own description, two spaces deep. Anchored to the
-# line for the same reason the CLI's version scanner is: a nested `description:` under `provides:`
+# line for the same reason as `_VERSION_LINE` below: a nested `description:` under `provides:`
 # must not match. This is a scanner over a shape Spec Kit fixes, not a YAML parser — the repository
 # is zero-dependency by constitution and `yaml` is not importable here.
 DESCRIPTION_LINE = re.compile(r'^  description: "(.*)"$', re.M)
 
+
+# `  version: "1.3.1"` — the `extension:` block's own version, at two-space indentation. Anchored to
+# the line so a nested `version:` deeper in the file (for example under `requires:`) cannot match.
+# The quotes may be double, single, or absent: the published manifest uses double quotes, but Spec Kit
+# re-serializes an installed copy with single quotes, and a quote left inside the captured value would
+# make the version compare wrongly. The closing quote must match the opening one, and a trailing
+# comment is allowed.
+_VERSION_LINE = re.compile(r'''^  version:\s*(["']?)([^"'\s#]+)\1\s*(?:#.*)?$''')
+
+
+def parse_manifest_version(text: str):
+    """The `extension.version` value from manifest text, or None.
+
+    Stops at the first match, which is the `extension:` block's own version because that block is
+    first in every manifest Spec Kit writes.
+    """
+    for line in text.splitlines():
+        match = _VERSION_LINE.match(line)
+        if match:
+            return match.group(2).strip() or None
+    return None
 
 def check_generated_listings() -> list:
     """Every generated agent output still matches what `agents/` renders.
@@ -86,7 +101,7 @@ def check_catalog_parity() -> list:
 
     entry = catalog.get("extensions", {}).get("spectra", {})
 
-    manifest_version = extension_module.parse_manifest_version(manifest_text)
+    manifest_version = parse_manifest_version(manifest_text)
     catalog_version = entry.get("version")
     if manifest_version != catalog_version:
         problems.append(
@@ -209,7 +224,7 @@ def run(names) -> int:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         prog="checks",
-        description="Run the catalog-channel drift checks (Constitution Principle V).",
+        description="Run the catalog and package drift checks (Constitution Principle V).",
     )
     parser.add_argument("name", nargs="?", choices=sorted(CHECKS),
                         help="a single check to run; omit with --all to run every check")

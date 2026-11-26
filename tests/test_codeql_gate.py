@@ -29,7 +29,7 @@ def rule(rule_id, severity=None):
     return {"id": rule_id, "properties": properties}
 
 
-def result(rule_id, uri="spectra_cli/cli.py", line=10, **extra):
+def result(rule_id, uri="tools/checks.py", line=10, **extra):
     return {
         "ruleId": rule_id,
         "message": {"text": f"{rule_id} found here\nsecond line is dropped"},
@@ -74,7 +74,7 @@ class WhatBlocks(GateCase):
                                          extension_rules=[rule("py/sql-injection", "8.8")]))
         code, out = self.gate()
         self.assertEqual(1, code)
-        self.assertIn("::error file=spectra_cli/cli.py,line=10::py/sql-injection (severity 8.8)", out)
+        self.assertIn("::error file=tools/checks.py,line=10::py/sql-injection (severity 8.8)", out)
 
     def test_a_critical_finding_fails_the_job(self):
         self.write("python.sarif", sarif([result("py/code-injection")],
@@ -102,7 +102,7 @@ class WhatIsOnlyReported(GateCase):
         self.write("python.sarif", sarif([result("py/weak")], extension_rules=[rule("py/weak", "5.0")]))
         code, out = self.gate()
         self.assertEqual(0, code)
-        self.assertIn("::warning file=spectra_cli/cli.py,line=10::py/weak (severity 5.0)", out)
+        self.assertIn("::warning file=tools/checks.py,line=10::py/weak (severity 5.0)", out)
 
     def test_a_quality_finding_is_a_warning(self):
         """Quality queries carry no security-severity; they inform and never block."""

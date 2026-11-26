@@ -727,7 +727,7 @@ specify bundle install &lt;id&gt;     # only after you have read it</code></pre>
 
     <h3>4.4 Catalogs and trust</h3>
     <p>Catalogs are where <code>search</code> and <code>add</code> look. Each is <strong>install-allowed</strong> or <strong>discovery-only</strong>: out of the box, Spec Kit&rsquo;s official catalog allows installs, while its community catalog lets you find components but not install them.</p>
-    <p>SPECTRA arrives the same way: <code>spectra install</code> registers SPECTRA&rsquo;s public catalog with <code>--install-allowed</code> and installs the extension from it. That registration in <code>.specify/extension-catalogs.yml</code> takes the place of the built-in list, which is why <code>specify extension search</code> in a SPECTRA project offers only SPECTRA. (Extensions shipped inside Spec Kit, such as <code>bug</code> and <code>assess</code>, still install normally.)</p>
+    <p>SPECTRA arrives the same way: <code>specify extension catalog add &hellip; --install-allowed</code> registers SPECTRA&rsquo;s public catalog, and <code>specify extension add spectra</code> installs the extension from it. That registration in <code>.specify/extension-catalogs.yml</code> takes the place of the built-in list, which is why <code>specify extension search</code> in a SPECTRA project offers only SPECTRA. (Extensions shipped inside Spec Kit, such as <code>bug</code> and <code>assess</code>, still install normally.)</p>
     <ul>
       <li>Community components are maintained independently and not reviewed by Spec Kit&rsquo;s maintainers. Read the source before installing.</li>
       <li>Never flip a discovery-only catalog to install-allowed to get past the guard &mdash; that flag <em>is</em> the vetting boundary.</li>
@@ -949,7 +949,7 @@ specify bundle info bugfix</code></pre>
       <li><strong>Preset catalogs</strong> are configured separately: Spec Kit&rsquo;s official (install allowed) and community (discovery only). Some community presets do at organization scale what you did by hand in step 8; <code>specify preset info &lt;id&gt;</code> names the repository to read first.</li>
       <li><strong>Bundles:</strong> <code>search</code> marks each entry verified or community; <code>info bugfix</code> expands the first-party bug-fix bundle.</li>
     </ul>
-    <div class="note"><span class="note-label">&ldquo;Bundle not found&rdquo;?</span>First-party bundles arrived in Spec Kit 1.0.9. Check with <code>spectra version</code>; bring Spec Kit current with <code>spectra update</code>.</div>
+    <div class="note"><span class="note-label">&ldquo;Bundle not found&rdquo;?</span>First-party bundles arrived in Spec Kit 1.0.9. Check with <code>specify self check</code>; bring Spec Kit current with <code>specify self upgrade</code>.</div>
     <p>Before opening the answer, note for <code>bugfix</code>: what it adds, who maintains it, whether it is verified, and what it touches that you already have. That is the review you owe any component.</p>
     <div class="reveal">
       <button class="reveal-trigger" type="button"><span><span class="reveal-trigger-label">Sample reading</span> &mdash; what <code>bundle info bugfix</code> tells you</span><span class="reveal-trigger-icon">+</span></button>

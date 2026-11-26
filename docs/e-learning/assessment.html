@@ -870,15 +870,17 @@
 <pre><code>unzip lab-codebase.zip -d ~/sdd-assess-lab
 cd ~/sdd-assess-lab/lab-codebase
 git init &amp;&amp; git add -A &amp;&amp; git commit -m "baseline"
-spectra install</code></pre>
-    <p>Accept the offer to initialize Spec Kit, pick your agent, and restart it. No <code>npm install</code> needed.</p>
+specify init --here
+specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed
+specify extension add spectra</code></pre>
+    <p><code>specify init --here</code> asks you to confirm because the folder isn&rsquo;t empty; accept, and pick your agent. <code>--install-allowed</code> is required, because Spec Kit treats catalogs as discovery-only by default. Then restart your agent. No <code>npm install</code> needed.</p>
 
     <h3>5.2 Add the assess extension</h3>
 <pre><code>specify extension add assess</code></pre>
     <p>The install ends with <code>&#9888; Configuration may be required</code>, pointing at <code>.specify/extensions/assess/</code>. Ignore it; the extension ships no configuration file. Then <strong>restart your agent</strong> so it loads the five new commands.</p>
     <ul class="checklist">
       <li><code>specify extension list</code> shows <code>assess</code>, and typing <code>/speckit-assess</code> in your agent offers all five stages.</li>
-      <li>If the add fails, run <code>spectra version</code>: the course needs Spec Kit 1.0.9 or later, and <code>spectra update</code> brings it current.</li>
+      <li>If the add fails, run <code>specify self check</code>: the course needs Spec Kit 1.0.9 or later, and <code>specify self upgrade</code> brings it current.</li>
     </ul>
 
     <h2><span class="h2-num">6.</span>Intake: capture the idea (5 min)</h2>

@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Put a commit on `main`, the only way it can get there.
 
-**Maintainer tooling. Not shipped** — `pyproject.toml` lists its packages explicitly, so nothing under
-`tools/` reaches a user's machine.
+**Maintainer tooling. Not shipped:** nothing under `tools/` is part of the extension package.
 
 `main` is gated on CI: the "Protect main — tested" ruleset accepts a push only when the pushed commit
 already carries green runs of every required status check, and nobody can bypass it. Check runs attach

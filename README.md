@@ -6,7 +6,7 @@
 
 **Agentic software engineering across the entire SDLC**
 
-<sub>A curated catalog of [Spec Kit](https://github.com/github/spec-kit) extensions that enable full agentic development across the entire software development lifecycle.</sub>
+<sub>An extension by TELUS Digital that enhances [GitHub Spec Kit](https://github.com/github/spec-kit): agents that take spec-driven development across the entire software development lifecycle. You install and manage it with Spec Kit's own `specify` CLI.</sub>
 
 </div>
 
@@ -21,9 +21,9 @@
 - [Starting on an existing codebase](#starting-on-an-existing-codebase)
 - [Security, policy, and compliance](#security-policy-and-compliance)
 - [Installation](#installation)
-  - [Installer (recommended)](#installer-recommended)
-  - [Manual](#manual)
-- [Two release channels](#two-release-channels)
+  - [Keep current](#keep-current)
+  - [Projects with more than one agent](#projects-with-more-than-one-agent)
+  - [Remove](#remove)
 - [Support and compatibility](#support-and-compatibility)
 - [License and trademarks](#license-and-trademarks)
 - [Disclaimer](#disclaimer)
@@ -178,13 +178,13 @@ Inheriting the perimeter is the floor, not the ceiling. Spectra is also built to
 
 ### Supply chain
 
-- **Markdown only.** The published extension is six command files, four templates, and its licence,
-  notice, trademark policy, and changelog. No scripts, no binaries, no post-install hooks. Read it yourself at
-  [`spectra/`](spectra/) or inside [`docs/packages/spectra.zip`](docs/packages/spectra.zip).
-- **No telemetry.** The `spectra` command reports nothing about you, your code, or your project. Its
-  only network calls are bodyless `GET` requests to `api.github.com` and `raw.githubusercontent.com`,
-  reading the published catalog, agent roster, and latest release number. Set
-  `SPECTRA_NO_UPDATE_CHECK=1` (or pass `--no-update-check`) to switch the release check off entirely.
+- **Markdown only.** The published extension is 14 command files and 13 templates, plus its licence,
+  notice, trademark policy, and changelog. No scripts, no binaries, no post-install hooks: TELUS Digital
+  ships no executable code. Spec Kit installs the files, and the agent you already approved runs them.
+  Read it yourself at [`spectra/`](spectra/) or inside
+  [`docs/packages/spectra.zip`](docs/packages/spectra.zip).
+- **No telemetry.** SPECTRA makes no network calls of its own. Spec Kit fetches the public catalog and
+  package when you install or update; nothing reports on you, your code, or your project.
 - **No credentials to grant.** The catalog is public — no GitHub login, no token, no `gh` setup.
 - **Auditable and pinnable.** Apache-2.0 with the source in the open, and every extension pins the
   Spec Kit version it was tested against (`requires.speckit_version`). Commit
@@ -192,36 +192,12 @@ Inheriting the perimeter is the floor, not the ceiling. Spectra is also built to
 
 ## Installation
 
-Spectra installs **into** a Spec Kit project, and its catalog is **public** — there's no GitHub login
-or token involved either way. Pick one path: the **Installer** does everything for you, or
-**Manual** walks you through it step by step.
+SPECTRA installs **into** a Spec Kit project with Spec Kit's own `specify` CLI, and its catalog is
+**public**: there's no GitHub login, token, or `gh` setup involved. You don't need to clone this repo.
+These instructions were checked against Spec Kit 1.4.5.
 
-### Installer (recommended)
-
-The recommended path — **you don't need to clone this repo.** Spectra ships as a
-[`uv`](https://docs.astral.sh/uv/) tool. Install it once, from anywhere:
-
-```bash
-uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra
-```
-
-That puts a `spectra` command on your `PATH`. Then `cd` into the project you want Spectra in and run
-the install:
-
-```bash
-spectra install
-```
-
-(Bare `spectra` just prints the banner and points at `--help` — it never touches the current folder.
-`install` is the verb that does the work.)
-
-It installs the `specify` CLI if it's missing (at the latest Spec Kit release), offers to run
-`specify init` if the current folder isn't a Spec Kit project yet, registers the Spectra catalog,
-installs every extension the catalog advertises, and — in a project with more than one coding agent
-installed — registers Spectra's commands for **every** one of them, restoring your default integration
-afterwards. It works on macOS, Linux, and Windows.
-
-When it finishes, **restart your AI agent** to pick up the new commands.
+**Before you start**, you need [`uv`](https://docs.astral.sh/uv/) and Git (uv uses Git to fetch Spec
+Kit from GitHub), and internet access to `github.com` and `raw.githubusercontent.com`.
 
 <details>
 <summary>Don't have <code>uv</code> yet?</summary>
@@ -240,194 +216,30 @@ alternatives.
 
 </details>
 
-#### Working with your agents
-
-Once Spectra is installed, the **top-level commands act on the agents in the project you're standing
-in**:
+**1. Install Spec Kit** (once per machine):
 
 ```bash
-spectra agent-list   # every agent Spectra offers, grouped by SDLC phase (works anywhere)
-spectra check        # is Spectra installed in this project? offers to install it if not
-spectra version      # is my whole stack current? checks all four components
-spectra update       # bring every out-of-date component current, after one confirmation
-spectra uninstall    # remove the agents from this project; the command stays on your machine
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 ```
 
-`spectra agent-list` reads the published roster at run time, so a newly published agent shows up
-without you updating anything.
-
-#### Keeping everything up to date
-
-Two commands cover the whole stack. `spectra version` reports it; `spectra update` fixes it:
+**2. Initialize a Spec Kit project.** Skip this if the folder already has `.specify/`. Run it inside
+your project folder; it asks which coding agent you use and registers Spec Kit's commands for it:
 
 ```bash
-spectra version   # is every part of my stack current?
-spectra update    # bring every out-of-date part current, after one confirmation
+specify init --here
 ```
 
-Both check **four** things, because all four have to be current for Spectra to work:
+Run the next steps, and every SPECTRA command, from **inside** that project. New to spec-driven
+development? Read the [Spec Kit docs](https://github.github.io/spec-kit/) first: SPECTRA assumes you're
+comfortable with the `specify → plan → tasks → implement` loop.
 
-| Component | What it is |
-|---|---|
-| Spec Kit CLI | Spec Kit's own `specify` command |
-| Core agents | the Spec Kit integration installed in `.specify/` |
-| SPECTRA CLI | the `spectra` command itself |
-| SPECTRA agents | the SPECTRA extension installed in this project |
-
-```text
-Spec Kit CLI:    ✓ up to date (0.16.5)
-Core agents:     ! needs updating (0.15.1 -> 0.16.5) — kiro-cli, claude
-                   kiro-cli: ✓ up to date (0.16.5)
-                   claude:   ! needs updating (0.15.1 -> 0.16.5)
-SPECTRA CLI:     ✓ up to date (6.1.0)
-SPECTRA agents:  ✓ up to date (1.3.1)
-
-  You can update by running: spectra update
-```
-
-Anything that can't be checked — no network, no `specify` on `PATH` — is reported as `unknown` rather
-than guessed at, and `spectra update` skips it instead of acting on a state it couldn't establish.
-
-#### Projects with more than one agent installed
-
-A Spec Kit project can have several agent integrations installed at once — `claude` and `kiro-cli`, say —
-with one of them marked as the default. **Core agents covers all of them.** The row is behind when any
-installed integration is behind, shows the oldest version found, and names the ones that need work; when
-they disagree you also get a line each, as above. `spectra update` then upgrades every one of them in a
-single run, and **never changes which agent your project targets** — it names each integration rather than
-switching your default.
-
-Two things follow from that:
-
-- **If Spec Kit refuses an upgrade** because managed files have been modified locally, `spectra update`
-  lists the exact files first — grouped per integration, with shared templates and scripts as their own
-  group — and asks once, defaulting to *no*. Answering yes overwrites them with the bundled versions;
-  answering no leaves those integrations alone and updates everything else. There is no way to preview what
-  diverged, so the choice really is overwrite or leave it.
-- **`--force` authorizes that overwrite** without being asked, for scripted runs. `--yes` deliberately does
-  not: it approves the update plan, not the discarding of your edits. A run with no terminal attached and no
-  `--force` overwrites nothing and tells you which flag would.
-
-If an installed integration has no Spectra commands registered for it, `spectra version` says so and names
-`spectra install` as the fix — which is what closes the gap, since **installing covers every agent in the
-project**. See the next section for how that works.
-
-#### Every agent gets Spectra's commands
-
-`spectra install` registers Spectra's commands for **every** integration installed in the project, not just
-the default one. Spec Kit only ever registers an extension for the *active* integration, so the install
-briefly makes each uncovered agent the default in turn, and then **sets your default back to what it was**
-as the last thing it does. It tells you before it starts, and names the default it will restore:
-
-```text
-[4/4] Registering Spectra with your other agents
-› Spectra's commands are registered for kiro-cli only.
-  claude is installed here but has no Spectra commands.
-
-  To add them, each agent has to be made the project's default for a moment.
-  This run will do that for: claude
-  Then it will set the default back to kiro-cli, where it is now.
-
-› Registering Spectra's commands for claude…
-✓ claude — Spectra's commands registered
-✓ default restored to kiro-cli
-```
-
-Four things are worth knowing:
-
-- **Your default integration is never changed as an outcome.** It moves during the run, is disclosed before
-  it moves, and is restored as the run's final act — including after a failure or a Ctrl-C. If the
-  restoration itself can't be completed, the run prints the exact command that fixes it.
-- **Nothing you customized is overwritten.** Activating an integration preserves locally modified managed
-  files, so this step never asks for `--force` and never accepts it.
-- **`spectra update` keeps coverage.** Updating the extension unregisters it for every agent and
-  re-registers only the default, so the update asks once — defaulting to *no*, or authorized by `--yes` —
-  and puts the other agents back. Without this, an update would quietly undo what the install did.
-- **Single-agent projects see none of this.** No extra step, no question, no extra line of output.
-
-Landed in a half-covered project? Run `spectra install` again. It reports the extension as already
-installed rather than failing, and repairs the coverage:
-
-```text
-✓ SPECTRA is already installed here (1.5.0) and up to date.
-```
-
-> **If a run was killed mid-rotation** — the terminal closed, the machine slept — your project may be left
-> defaulting to another agent. Nothing is broken and nothing was lost; put it back with
-> `specify integration use <your-original-default>`, or just run `spectra install` again, which reports the
-> current default as it works.
-
-Managing the **tool itself** takes three verbs, and all work from any folder — Spec Kit project or not:
+**3. Register the SPECTRA catalog** (once per project):
 
 ```bash
-spectra cli version     # show the spectra command's version, and whether a newer one exists
-spectra cli update      # update the spectra command itself, from any folder
-spectra cli uninstall   # remove the spectra command from this machine
+specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed
 ```
 
-> **Changed in 6.4.0.** `spectra cli version` is back too, as the read-only partner to `spectra cli update`:
-> it reports the `spectra` command's own version and whether a newer release exists, from any folder, and
-> tells you to run `spectra cli update` when there is one. It never checks your agents — `spectra version`
-> still does that, inside a project. `--no-update-check` keeps it offline; it then shows just the version.
-
-> **Changed in 6.3.0.** `spectra cli update` is back, with a narrower meaning than it had before 6.0.0:
-> it updates the `spectra` command and nothing else, and it works anywhere. `spectra update` is still
-> the command that brings your whole stack current, but it needs a Spec Kit project to run in — so on a
-> fresh machine or in a new folder, `spectra cli update` is how you get the latest command before
-> `spectra install`. It asks before updating; `--yes` skips the question.
-
-> **Changed in 6.0.0.** `spectra cli version` and `spectra cli update` were retired, and
-> `spectra version` and `spectra update` absorbed them to cover all four components. Both have since
-> returned with narrower, tool-only meanings: `spectra cli update` in 6.3.0 and `spectra cli version` in
-> 6.4.0 (above).
-
-> **Changed in 5.0.0.** `--version`, `--update`, and `--uninstall` were removed. They reported on the
-> *tool*, which is the number you're least likely to care about. Run one and it tells you which
-> replacement you want.
-
-**The command and the extensions still release separately** — and that's deliberate. New agents reach
-you through the catalog, not through a new `spectra` release. What changed in 6.0.0 is only that one
-command now *reports and updates* both, instead of making you run two.
-
-See [Two release channels](#two-release-channels) for why.
-
-`spectra cli uninstall` removes the `spectra` command only. Extensions already installed into your
-projects are left untouched — remove those with `specify extension remove spectra`.
-
-### Manual
-
-Prefer to wire it up by hand (or `uv` isn't an option for you)? Because the catalog is public,
-there's nothing to authenticate — no GitHub token, no `gh` login.
-
-**1. Install the `specify` CLI (Spec Kit).** Spectra installs into a Spec Kit project, so you need Spec
-Kit first — follow the [Spec Kit installation guide](https://github.com/github/spec-kit#-get-started)
-(it uses [`uv`](https://docs.astral.sh/uv/)), then verify it's on your `PATH`:
-
-```bash
-specify --version
-```
-
-**2. Initialize a Spec Kit project** (or use an existing one). This creates the `.specify/` directory
-and registers Spec Kit's commands for your coding agent:
-
-```bash
-specify init               # in a new directory, or `specify init .` in an existing one
-```
-
-Run the next step — and every Spectra command — from **inside** that project (a folder containing
-`.specify/`). New to spec-driven development? Read the [Spec Kit docs](https://github.github.io/spec-kit/)
-first — Spectra assumes you're comfortable with the `specify → plan → tasks → implement` loop.
-
-**3. Add the Spectra catalog.** Point Spec Kit at the public catalog so `search` / `add` / `update`
-resolve against it:
-
-```bash
-specify extension catalog add \
-  https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json \
-  --name spectra --priority 5 --install-allowed
-```
-
-`--install-allowed` is required — catalogs are discovery-only by default, which blocks
+`--install-allowed` is required: catalogs are discovery-only by default, which blocks
 `specify extension add` from installing anything in them. This writes the catalog into
 `.specify/extension-catalogs.yml`:
 
@@ -439,63 +251,69 @@ catalogs:
     install_allowed: true
 ```
 
-**Commit `.specify/extension-catalogs.yml`** so everyone who clones the project inherits the catalog —
-no per-developer setup. (Prefer not to touch project config? Set `SPECKIT_CATALOG_URL` to the same URL
-to use Spectra everywhere.)
+**Commit `.specify/extension-catalogs.yml`** so everyone who clones the project inherits the catalog,
+with no per-developer setup.
 
-**4. Install and use the extension.**
+**4. Install SPECTRA, then restart your agent:**
 
 ```bash
-specify extension search          # find the Spectra extension
-specify extension add spectra     # install spectra and register all its commands with your agent
-specify extension list            # show what's installed, with status and version
-specify extension update spectra  # pull a newer version once one is published
-specify extension remove spectra  # uninstall (configs are backed up by default)
+specify extension add spectra
 ```
 
-Spectra ships as a **single extension** — `specify extension add spectra` registers every
-`speckit.spectra.*` command at once (run `spectra agent-list` to see them). After installing,
-**restart your AI agent** so it picks up the new commands, then run one. On Claude:
+SPECTRA ships as a **single extension**: `specify extension add spectra` registers every
+`speckit.spectra.*` command at once. **Restart your AI agent** so it picks up the new commands, then
+run one. On Claude:
 
 ```
 /speckit-spectra-adr We should standardize on PostgreSQL for all primary data stores
 ```
 
 Spec Kit translates each command into your agent's native format at install time, so the extension
-supports every agent — but the **trigger you type differs by agent**. Every Spectra command lives
-under the unified `speckit.spectra.*` namespace (e.g. `speckit.spectra.adr` in the manifest), and how
-you invoke it depends on how your agent registers it:
+supports every agent, but the **trigger you type differs by agent**:
 
 - **Claude** installs commands as *skills*, invoked with a leading slash and dashes: `/speckit-spectra-adr ...`.
-- **Other agents** register it under a slightly different trigger — e.g. kiro-cli keeps the dots:
-  `/speckit.spectra.adr ...`.
+- **Other agents** register it under a slightly different trigger. For example, kiro-cli keeps the
+  dots: `/speckit.spectra.adr ...`.
 
-The examples in this README use Claude's form; adjust the trigger for your agent.
+The examples in this README use Claude's form; adjust the trigger for your agent. Your agent's own
+command or skill list shows the exact triggers, the [agent reference](https://telus-digital.github.io/spectra/getting-started/agents.html)
+describes every command, and the extension's own README has full per-command usage: see
+[`spectra/`](spectra/README.md).
 
-After install, the CLI prints the provided commands, and `specify extension info spectra` (or your
-agent's own command/skill list) shows the exact triggers to use.
+### Keep current
 
-The extension has its own README with full per-command usage details — see [`spectra/`](spectra/README.md).
+Run these inside the project:
 
-## Two release channels
+```bash
+specify self check                 # is a newer Spec Kit available?
+specify self upgrade               # upgrade Spec Kit
+specify integration upgrade        # bring the project's core agent files current
+specify extension update spectra   # update SPECTRA (asks you to confirm)
+specify extension list             # what is installed, and at which version
+```
 
-Spectra ships two things, and they carry **two different version numbers on purpose**:
+### Projects with more than one agent
 
-| | The `spectra` CLI | The `spectra` extension |
-|---|---|---|
-| What it is | the uv tool that sets everything up | the agents your AI assistant runs |
-| You install it with | `uv tool install spectra-cli --from git+…` | `specify extension add spectra` |
-| You check it with | `spectra cli version` from any folder, or `spectra version` in a project | `spectra version` |
-| You update it with | `spectra update`, or `spectra cli update` from any folder (`spectra cli uninstall` to remove it) | `spectra update` (or `specify extension update spectra`) |
-| Its version comes from | the latest [GitHub Release](https://github.com/telus-digital/spectra/releases) | `version` in [`catalog.json`](catalog.json) |
+Spec Kit registers an extension's commands only for the project's **default** agent, and an update
+that installs a newer version of SPECTRA removes them from every other agent. If your project has more
+than one agent installed, give the others SPECTRA's commands by making each one the default briefly,
+then setting your usual default back. Do this after installing SPECTRA, and again after any update that
+installed a newer version.
 
-They are **not** expected to match, and a bump to one does not imply a bump to the other. Adding a new
-agent bumps the extension only — you do **not** need a new `spectra` command to get it, because the
-command reads the live catalog every time it runs. Changing the setup flow bumps the command only.
+```bash
+specify integration status             # lists installed agents and the current default
+specify integration use <other-agent>  # registers SPECTRA's commands for that agent
+specify integration use <your-default> # sets your default back (it keeps its commands)
+```
 
-Git tags and GitHub Releases on this repo belong to the **command** channel; the extension is
-published continuously from `main` over raw URLs and is never tagged. Both current versions are shown
-live on the [Spectra landing page](https://telus-digital.github.io/spectra/).
+### Remove
+
+```bash
+specify extension remove spectra
+```
+
+It removes SPECTRA's commands from every agent in the project and leaves Spec Kit, other extensions,
+and your default agent untouched.
 
 ## Support and compatibility
 

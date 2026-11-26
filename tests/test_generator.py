@@ -180,7 +180,7 @@ class HandWrittenTextIsUntouched(unittest.TestCase):
 
 
 class RosterFileIsUnchanged(unittest.TestCase):
-    """User Story 3 — installed CLIs and docs/agents.html read this file at run time."""
+    """User Story 3 — docs/agents.html reads this file at load time."""
 
     def test_the_generated_roster_is_byte_identical_to_the_committed_one(self):
         with sandbox() as root:
@@ -195,8 +195,8 @@ class RosterFileIsUnchanged(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("agents-list.json: does not match what agents/ renders", out)
 
-    def test_the_built_roster_passes_the_cli_parser(self):
-        from spectra_cli import roster as roster_module
+    def test_the_built_roster_passes_the_roster_parser(self):
+        roster_module = gen.roster_module  # tools/roster.py, as the generator imports it
         with sandbox() as root:
             run(root)
             roster = roster_module.load(root / "agents-list.json", strict=True)
@@ -562,9 +562,8 @@ class Renderers(unittest.TestCase):
 class WritePath(unittest.TestCase):
     """The rendered string is not the guarantee — what lands on disk is.
 
-    An earlier version of the writer asked the text layer for `\\n` via
-    `Path.write_text(newline=...)`, which only exists on Python 3.10+ and crashed on the 3.9 floor
-    `pyproject.toml` declares. Rendering was correct; writing was not. So these assert on bytes.
+    The writer encodes bytes itself rather than asking the text layer for `\\n`, so a CRLF checkout
+    cannot reintroduce a platform-specific line ending. These assert on the bytes that land.
     """
 
     def test_a_run_writes_no_carriage_returns(self):
@@ -583,21 +582,6 @@ class WritePath(unittest.TestCase):
             self.assertEqual(code, 0, out)
             self.assertNotIn(b"\r", path.read_bytes(),
                              "a CRLF checkout must come out normalized, not rewritten as CRLF")
-
-    def test_the_writer_does_not_depend_on_a_python_3_10_only_api(self):
-        """Parsed, not grepped — the source explains this pitfall in prose, and prose is not a call."""
-        import ast
-
-        offenders = []
-        for name in ("generate_agent_docs.py", "agent_source.py", "markdown_subset.py"):
-            source = h.repo_file("tools", name).read_text(encoding="utf-8")
-            for node in ast.walk(ast.parse(source)):
-                if isinstance(node, ast.Call) and getattr(node.func, "attr", None) == "write_text" \
-                        and "newline" in {kw.arg for kw in node.keywords if kw.arg}:
-                    offenders.append(f"{name}:{node.lineno}: write_text(newline=...)")
-        self.assertEqual(offenders, [],
-                         "Path.write_text(newline=...) is 3.10+ and pyproject declares a 3.9 floor; "
-                         "write bytes instead")
 
 
 if __name__ == "__main__":

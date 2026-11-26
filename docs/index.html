@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Spectra — Spec Kit extensions by TELUS Digital</title>
-<meta name="description" content="A curated catalog of Spec Kit extensions that enable full agentic development across the entire software development lifecycle. One uv command installs it." />
+<title>SPECTRA — a Spec Kit extension by TELUS Digital</title>
+<meta name="description" content="SPECTRA is an extension by TELUS Digital that enhances GitHub Spec Kit: agents that take spec-driven development across the entire software development lifecycle. You install and manage it with Spec Kit's own specify CLI." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
@@ -334,24 +334,24 @@
 <div class="wrap">
 
   <section class="hero">
-    <span class="eyebrow"><span class="dot"></span> TELUS Digital · Agentic SDLC</span>
+    <span class="eyebrow"><span class="dot"></span> TELUS Digital · Spec Kit extension</span>
     <h1>SPECTRA</h1>
     <p class="tagline">Agentic software engineering across the entire SDLC.</p>
     <p class="lede">
-      A curated catalog of <a href="https://github.com/github/spec-kit">Spec Kit</a> extensions that
-      take spec-driven development beyond code: structured BRD authoring, context-aware architecture
-      decision records, business-domain guardrail analysis, and correctly-targeted PR delivery. One
-      command installs the <code>spectra</code> tool; it handles the rest.
+      SPECTRA is an extension by TELUS Digital that enhances
+      <a href="https://github.com/github/spec-kit">GitHub Spec Kit</a>: agents that take spec-driven
+      development across the entire software development lifecycle, from structured BRD authoring and
+      context-aware architecture decision records to test strategy and correctly-targeted PR delivery.
+      You install and manage it with Spec Kit's own <code>specify</code> CLI.
     </p>
     <div class="cta">
-      <a class="btn btn-primary" href="#install">Install with uv &nbsp;<small>one command</small></a>
+      <a class="btn btn-primary" href="#install">Install with Spec Kit &nbsp;&darr;</a>
       <a class="btn btn-ghost" href="getting-started/index.html">Getting Started &nbsp;&rarr;</a>
     </div>
     <div class="pills">
-      <span class="release" id="release"><span class="dot"></span><span id="release-version"></span></span>
       <span class="release" id="ext-release"><span class="dot"></span><span id="ext-version"></span></span>
     </div>
-    <p class="subnote">Runs on macOS, Windows &amp; Linux · installed as a uv tool · public catalog, no token needed</p>
+    <p class="subnote">Runs on macOS, Windows &amp; Linux · installed with Spec Kit&rsquo;s <code>specify</code> CLI · public catalog, no token needed</p>
     <p class="subnote">Works with every coding agent Spec Kit supports — Claude Code, GitHub Copilot, Cursor, Codex, and many more. <a href="https://github.github.com/spec-kit/reference/integrations.html">See the full list of supported agents &rarr;</a></p>
   </section>
 
@@ -359,8 +359,8 @@
     <div class="grid3">
       <div class="card">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 12 10 5 10-5M2 17l10 5 10-5"/></svg>
-        <h3>One command, fully set up</h3>
-        <p>Installs the Spec Kit CLI if it's missing, offers to initialize your project, registers the public catalog, and installs every extension in it.</p>
+        <h3>Built on Spec Kit</h3>
+        <p>SPECTRA is a Spec Kit extension: register its public catalog in a Spec Kit project, add it with <code>specify</code>, and your agent offers SPECTRA's commands alongside Spec Kit's own.</p>
       </div>
       <div class="card">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v14H4z"/><path d="M4 9h16"/><path d="M9 13h7"/></svg>
@@ -380,12 +380,12 @@
     <div class="panel">
       <ul class="check">
         <li><b>uv</b> — <span>Astral's Python tool installer; it manages Python for you. Not sure if you have it? <a href="#get-uv">Check &amp; install it below</a>.</span></li>
-        <li><b>Git</b> — <span>uv uses it to fetch Spectra from GitHub. Not sure if you have it? <a href="#get-uv">Check &amp; install it below</a>.</span></li>
-        <li><b>A Spec Kit project</b> — <span>Spectra installs <b>into</b> one: a folder containing <code>.specify/</code>. Don't have one? <code>spectra</code> offers to create it for you, and installs the <code>specify</code> CLI first if it's missing.</span></li>
+        <li><b>Git</b> — <span>uv uses it to fetch Spec Kit from GitHub. Not sure if you have it? <a href="#get-uv">Check &amp; install it below</a>.</span></li>
+        <li><b>A Spec Kit project</b> — <span>SPECTRA installs <b>into</b> one: a folder containing <code>.specify/</code>. Don't have one? Step 2 below creates it with <code>specify init</code>.</span></li>
         <li><b>Internet access</b> — <span>to <code>github.com</code> and <code>raw.githubusercontent.com</code>. The catalog is public, so there's no login, token, or <code>gh</code> setup.</span></li>
       </ul>
 
-      <p class="osnote" id="get-uv"><b>Get uv &amp; Git</b> — both are needed before you install Spectra. First check whether each is already installed, and install only what's missing. Pick your operating system:</p>
+      <p class="osnote" id="get-uv"><b>Get uv &amp; Git</b> — both are needed before you install Spec Kit and SPECTRA. First check whether each is already installed, and install only what's missing. Pick your operating system:</p>
 
       <div class="tabs" data-tabs>
         <div class="tablist" role="tablist" aria-label="Operating system">
@@ -471,75 +471,46 @@
 
   <section class="block" id="install">
     <h2><span class="num">02</span>Install &amp; use</h2>
-    <div class="tabs" data-tabs>
-      <div class="tablist" role="tablist" aria-label="Installation method">
-        <button class="tab" type="button" role="tab" id="tab-installer" aria-controls="panel-installer" aria-selected="true">Installer (recommended)</button>
-        <button class="tab" type="button" role="tab" id="tab-manual" aria-controls="panel-manual" aria-selected="false" tabindex="-1">Manual</button>
-      </div>
+    <div class="panel">
+      <p class="muted" style="margin:0 0 18px">Every step uses Spec Kit&rsquo;s own <code>specify</code> CLI. Register the public SPECTRA catalog once per project (this marks it install-allowed, so the install resolves by name with no &ldquo;untrusted source&rdquo; prompt), then add the extension and restart your agent.</p>
+      <ol class="steps" style="counter-reset:s -1">
+        <li>
+          <b>Prerequisites.</b> <span class="os">Make sure you have <b>uv</b> and <b>Git</b> installed. Not sure? <a href="#prereqs">Check the Before you start section</a>.</span>
+        </li>
+        <li>
+          <b>Install Spec Kit.</b> <span class="os">Once per machine. SPECTRA installs into a Spec Kit project, so you need Spec Kit first.</span>
+          <pre><code>uv tool install specify-cli --from git+https://github.com/github/spec-kit.git</code></pre>
+        </li>
+        <li>
+          <b>Initialize a Spec Kit project.</b> <span class="os">Skip this if the folder already has <code>.specify/</code>. Run it inside your project folder; it asks which coding agent you use.</span>
+          <pre><code>specify init --here</code></pre>
+        </li>
+        <li>
+          <b>Register the SPECTRA catalog.</b> <span class="os">Once per project, inside the Spec Kit project.</span>
+          <pre><code>specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed</code></pre>
+          <p class="more"><code>--install-allowed</code> is required: catalogs are discovery-only by default. Commit the resulting <code>.specify/extension-catalogs.yml</code> so everyone who clones the project inherits the catalog.</p>
+        </li>
+        <li>
+          <b>Install SPECTRA, then restart your agent.</b>
+          <pre><code>specify extension add spectra</code></pre>
+          <div class="callout"><b>Restart your AI agent</b> so it picks up the new commands. Then see the <a href="getting-started/agents.html">agent reference</a>.</div>
+        </li>
+      </ol>
 
-      <!-- Installer (recommended) -->
-      <div class="tabpanel" role="tabpanel" id="panel-installer" aria-labelledby="tab-installer">
-        <div class="panel">
-          <ol class="steps" style="counter-reset:s -1">
-            <li>
-              <b>Prerequisites.</b> <span class="os">Make sure you have <b>uv</b> and <b>Git</b> installed. Not sure? <a href="#prereqs">Check the Before you start section</a>.</span>
-            </li>
-            <li>
-              <b>Install Spectra.</b> <span class="os">Run once, from anywhere — this installs the <code>spectra</code> command itself.</span>
-              <pre><code>uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra</code></pre>
-            </li>
-            <li>
-              <b>Run the install inside your project.</b> <span class="os"><code>cd</code> into the project you want Spectra in, then:</span>
-              <pre><code>spectra install</code></pre>
-              <p class="more">It checks for the Spec Kit CLI (installing it if missing), confirms you’re in a Spec Kit project (offering <code>specify init</code> if not), registers the public Spectra catalog, and installs every extension the catalog advertises. Bare <code>spectra</code> just prints the banner and points at <code>--help</code> — <code>install</code> is the verb that changes anything.</p>
-              <div class="callout">When it finishes, <b>restart your AI agent</b> so it picks up the new commands. Then see the <a href="getting-started/agents.html">agent reference</a>.</div>
-            </li>
-            <li>
-                      <b>Work with your agents.</b> <span class="os">Top-level commands act on the project you're standing in.</span>
-                      <pre><code>spectra agent-list   # every agent Spectra offers, from anywhere</code></pre>
-                      <pre><code>spectra check        # is Spectra installed here?</code></pre>
-                      <pre><code>spectra version      # are my agents current?</code></pre>
-                      <pre><code>spectra update       # bring them up to the published version</code></pre>
-                      <pre><code>spectra uninstall    # remove them from this project</code></pre>
-                      <p class="more"><code>spectra agent-list</code> reads the published roster at run time, so a newly published agent shows up without you updating anything.</p>
-                    </li>
-                    <li>
-                      <b>Keep the whole stack current.</b> <span class="os">One command reports all four components — Spec Kit&rsquo;s CLI, the core agents, the <code>spectra</code> command, and your agents — and one brings them current.</span>
-                      <pre><code>spectra version         # is every part of my stack current?</code></pre>
-                      <pre><code>spectra update          # bring every out-of-date part current</code></pre>
-                      <pre><code>spectra cli version     # check just the command, from any folder</code></pre>
-                      <pre><code>spectra cli update      # update just the command, from any folder</code></pre>
-                      <pre><code>spectra cli uninstall   # remove the command from this machine</code></pre>
-                      <p class="more">The <b>command</b> and the <b>extensions</b> still release separately and on their own schedule — you do not need a new <code>spectra</code> version to get new agents. <span class="os">Changed in 6.4.0: <code>spectra cli version</code> is back, and reports only the <code>spectra</code> command's version — from any folder — telling you to run <code>spectra cli update</code> when a newer one exists. Changed in 6.3.0: <code>spectra cli update</code> is back, and updates only the <code>spectra</code> command — from any folder, including one that is not a Spec Kit project yet, where <code>spectra update</code> cannot run. Changed in 6.2.0: <code>spectra install</code> now registers Spectra's commands for <b>every</b> integration installed in the project, not just the default one — each uncovered agent is briefly made the default, and your original default is restored as the run's last act, disclosed before it happens. <code>spectra update</code> keeps that coverage instead of silently dropping it, asking once (or authorized by <code>--yes</code>). Re-running <code>spectra install</code> in a project that already has Spectra now repairs a half-covered project instead of failing. Changed in 6.1.0: <code>Core agents</code> now covers <b>every</b> integration installed in the project, not just the default one, and <code>spectra update</code> upgrades all of them in one run — disclosing any locally modified files and asking once before overwriting them (<code>--force</code> authorizes that without being asked; <code>--yes</code> does not). Changed in 6.0.0: <code>spectra cli version</code> and <code>spectra cli update</code> were retired into the two commands above (both have since returned as tool-only commands: <code>cli update</code> in 6.3.0, <code>cli version</code> in 6.4.0). Changed in 5.0.0: <code>--version</code>, <code>--update</code> and <code>--uninstall</code> were removed; run any of them and it names its replacement.</span></p>
-                    </li>
-          </ol>
-        </div>
-      </div>
+      <p class="osnote"><b>Keep current</b> — run these inside the project:</p>
+      <pre><code>specify self check                 # is a newer Spec Kit available?</code></pre>
+      <pre><code>specify self upgrade               # upgrade Spec Kit</code></pre>
+      <pre><code>specify integration upgrade        # bring the project's core agent files current</code></pre>
+      <pre><code>specify extension update spectra   # update SPECTRA (asks you to confirm)</code></pre>
+      <pre><code>specify extension list             # what is installed, and at which version</code></pre>
 
-      <!-- Manual -->
-      <div class="tabpanel" role="tabpanel" id="panel-manual" aria-labelledby="tab-manual" hidden>
-        <div class="panel">
-          <p class="muted" style="margin:0 0 18px">Prefer copy-paste, or can’t install a tool? Register the public catalog once per project (this marks it install-allowed, so installs resolve by name with no “untrusted source” prompt), then install the extension and restart your agent.</p>
-          <ol class="steps" style="counter-reset:s -1">
-            <li>
-              <b>Prerequisites.</b> <span class="os">Make sure you have <b>uv</b> and <b>Git</b> installed. Not sure? <a href="#prereqs">Check the Before you start section</a>.</span>
-            </li>
-            <li>
-              <b>Install the Spec Kit CLI.</b> <span class="os">Spectra installs into a Spec Kit project, so you need Spec Kit first.</span>
-              <pre><code>uv tool install specify-cli --from git+https://github.com/github/spec-kit.git</code></pre>
-            </li>
-            <li>
-              <b>Register the Spectra catalog.</b> <span class="os">Run inside a Spec Kit project.</span>
-              <pre><code>specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed</code></pre>
-              <p class="more"><code>--install-allowed</code> is required — catalogs are discovery-only by default. Commit the resulting <code>.specify/extension-catalogs.yml</code> so everyone who clones the project inherits the catalog.</p>
-            </li>
-            <li>
-              <b>Install the extension, then restart your agent.</b>
-              <pre><code>specify extension add spectra</code></pre>
-            </li>
-          </ol>
-        </div>
-      </div>
+      <p class="osnote"><b>Projects with more than one agent</b> — Spec Kit registers an extension&rsquo;s commands only for the project&rsquo;s <b>default</b> agent, and an update that installs a newer version of SPECTRA removes them from every other agent. If your project has more than one agent installed, give the others SPECTRA&rsquo;s commands by making each one the default briefly, then setting your usual default back. Do this after installing SPECTRA, and again after any update that installed a newer version.</p>
+      <pre><code>specify integration status             # lists installed agents and the current default</code></pre>
+      <pre><code>specify integration use &lt;other-agent&gt;  # registers SPECTRA's commands for that agent</code></pre>
+      <pre><code>specify integration use &lt;your-default&gt; # sets your default back (it keeps its commands)</code></pre>
+
+      <p class="osnote"><b>Remove</b> — removes SPECTRA&rsquo;s commands from every agent in the project and leaves Spec Kit, other extensions, and your default agent untouched:</p>
+      <pre><code>specify extension remove spectra</code></pre>
     </div>
   </section>
 
@@ -553,34 +524,15 @@
 
 
   <footer class="site">
-    <span>SPECTRA · a curated catalog of Spec Kit extensions · by TELUS Digital</span>
+    <span>SPECTRA · a Spec Kit extension by TELUS Digital</span>
     <span><a href="https://github.com/telus-digital/spectra">github.com/telus-digital/spectra</a></span>
   <span class="legal">Copyright 2026 TELUS Digital. Licensed under the <a href="https://github.com/telus-digital/spectra/blob/main/LICENSE">Apache License 2.0</a>; see <a href="https://github.com/telus-digital/spectra/blob/main/NOTICE">NOTICE</a>. The licence grants no trademark rights &mdash; "TELUS", "TELUS Digital", "Spectra", and the TELUS Digital logo are excluded, and forks must rebrand (<a href="https://github.com/telus-digital/spectra/blob/main/TRADEMARK.md">TRADEMARK.md</a>). Spectra agents produce drafts for human review; their output is not legal, regulatory, medical, financial, or compliance advice and does not constitute certification or audit.</span>
   </footer>
 
 </div>
 <script>
-  // Two independently-versioned channels, both read live so neither is ever hand-typed here:
-  //   * the CLI  -> the newest published GitHub Release (tags/Releases are CLI-only)
-  //   * the extension -> the version field in the catalog itself
-  // See the constitution, Principle VI.
-  (function () {
-    var pill = document.getElementById("release");
-    var label = document.getElementById("release-version");
-    if (!pill || !label) return;
-    fetch("https://api.github.com/repos/telus-digital/spectra/releases/latest", {
-      headers: { Accept: "application/vnd.github+json" }
-    })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (data) {
-        if (!data || !data.tag_name) return;
-        var v = String(data.tag_name).replace(/^v/, "");
-        label.textContent = "CLI v" + v;
-        pill.classList.add("show");
-      })
-      .catch(function () { /* leave the pill hidden */ });
-  })();
-
+  // The extension version, read live from the catalog so it is never hand-typed here
+  // (constitution Principle V).
   (function () {
     var pill = document.getElementById("ext-release");
     var label = document.getElementById("ext-version");

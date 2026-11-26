@@ -1,18 +1,19 @@
 # Copyright 2026 TELUS Digital
 # SPDX-License-Identifier: Apache-2.0
 
-"""The agent roster: one parser, two callers.
+"""The agent roster parser: the one definition of a valid `agents-list.json`.
 
-`agents-list.json` is the single source of truth for the agents Spectra offers. Two very different
-things read it — the `spectra agent-list` command fetches it over the network, and the maintainer's
-documentation generator loads it from disk — and they must agree exactly on what a valid roster is.
-So both come through :func:`parse` here. A second parser in `tools/` would be a second opinion, and
-the first time the two disagreed, one of them would be publishing something the other rejected.
+**Maintainer tooling. Not shipped:** nothing under `tools/` is part of the extension package.
 
-**Schema tolerance is asymmetric on purpose.** A newer *minor* schema renders with a notice and
-unknown fields are ignored; only a newer *major* schema is refused. Principle VI promises that a new
-agent reaches every installed CLI with no CLI release — if any additive change to this file broke
-`agent-list` for older installs, that promise would quietly become false.
+`agents-list.json` is generated from `agents/` by `tools/generate_agent_docs.py`, which passes the roster
+it builds through :func:`parse` before anything is written, and it is read at load time by the roster
+page, `docs/agents.html`. That page is why the schema, field names, and order stay fixed (constitution
+Principle V). Every check of the roster's shape comes through here: a second parser would be a second
+opinion, and the first time the two disagreed, one of them would accept something the other rejected.
+
+**Schema tolerance is asymmetric on purpose.** A newer *minor* schema parses with a notice and unknown
+fields are ignored (`strict=False`); only a newer *major* schema is refused. The generator loads the
+committed roster with `strict=True`, where an unknown field is an error.
 """
 
 from __future__ import annotations
@@ -21,11 +22,9 @@ import json
 import re
 from pathlib import Path
 
-from spectra_cli import net
-
 ROSTER_PATH = "agents-list.json"
 
-# The highest schema major this CLI understands. A roster at 1.x renders; 2.x is refused.
+# The highest schema major this parser understands. A roster at 1.x renders; 2.x is refused.
 SUPPORTED_SCHEMA_MAJOR = 1
 
 STATUSES = ("available", "planned")
@@ -133,11 +132,11 @@ def _parse_schema_version(raw):
 def parse(data, *, strict=False) -> Roster:
     """Validate and structure a roster document.
 
-    `strict=False` — the CLI's mode — ignores unrecognized fields so a newer minor schema still
-    renders. `strict=True` — the generator's mode — rejects them, because an unrecognized field in
+    `strict=False` — the reading mode — ignores unrecognized fields so a newer minor schema still
+    parses. `strict=True` — the generator's mode — rejects them, because an unrecognized field in
     the committed roster means a typo or a schema bump nobody expanded the tooling for.
 
-    Raises :class:`RosterError` for a malformed document, and for a schema major this CLI does not
+    Raises :class:`RosterError` for a malformed document, and for a schema major this parser does not
     understand.
     """
     if not isinstance(data, dict):
@@ -146,8 +145,7 @@ def parse(data, *, strict=False) -> Roster:
     schema_version, major, minor = _parse_schema_version(data.get("schema_version"))
     if major > SUPPORTED_SCHEMA_MAJOR:
         raise RosterError(
-            f"the roster uses schema version {schema_version}, which needs a newer SPECTRA CLI.\n"
-            "  Update it with: spectra update")
+            f"the roster uses schema version {schema_version}, which needs a newer tools/roster.py.")
     newer_minor = major == SUPPORTED_SCHEMA_MAJOR and minor > _current_minor()
 
     raw_phases = data.get("phases")
@@ -212,7 +210,7 @@ def _require(entry, keys, kind):
 
 
 def _current_minor() -> int:
-    """The minor schema this CLI was written against.
+    """The minor schema this parser was written against.
 
     Kept as a function so the supported version lives in one place next to the major, and so tests
     can reason about "newer minor" without hard-coding a number twice.
@@ -236,11 +234,3 @@ def load(path=ROSTER_PATH, *, strict=True) -> Roster:
         raise RosterError(f"{path} is not valid JSON ({exc}).") from exc
     return parse(data, strict=strict)
 
-
-def fetch(timeout: int = net.TIMEOUT) -> Roster:
-    """Parse the published roster. The CLI's entry point.
-
-    Lets :class:`net.FetchError` through unchanged — "could not reach it" and "reached it but could
-    not understand it" are different problems and deserve different messages.
-    """
-    return parse(net.fetch_json(ROSTER_PATH, timeout=timeout), strict=False)

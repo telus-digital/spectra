@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Fail the CodeQL job when the scan found something serious.
 
-**Maintainer tooling. Not shipped** — `pyproject.toml` lists its packages explicitly, so nothing under
-`tools/` reaches a user's machine.
+**Maintainer tooling. Not shipped:** nothing under `tools/` is part of the extension package.
 
 `github/codeql-action/analyze` succeeds whether or not it finds anything: the findings go to the
 Security tab, and the job stays green. That is fine when a pull request's own "Code scanning results"

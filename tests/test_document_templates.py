@@ -81,8 +81,8 @@ FORBIDDEN_SUFFIXES = {".sh", ".ps1", ".py", ".bash", ".zsh", ".exe", ".bin", ".d
 def manifest_templates() -> dict:
     """`provides.templates` as {name: file}, parsed without a YAML dependency.
 
-    The repository is zero-dependency by constitution, and `yaml` is not importable here — the CLI's own
-    manifest reader is regex-based for the same reason.
+    The repository is zero-dependency by constitution, and `yaml` is not importable here — the manifest
+    readers in `tools/checks.py` are regex-based for the same reason.
     """
     text = MANIFEST.read_text(encoding="utf-8")
     block = text.split("\n  templates:\n", 1)

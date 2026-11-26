@@ -11,8 +11,8 @@ This is the only inbound channel for this repository. Issues and Discussions are
 is no public tracker a report could be filed in — and filing one elsewhere in public would disclose
 the vulnerability before it can be fixed.
 
-Please include the affected component (the `spectra` extension or the `spectra` CLI), the version,
-reproduction steps, and the impact you observed.
+Please include the affected component (the `spectra` extension or the repository's maintainer tooling),
+the extension version, reproduction steps, and the impact you observed.
 
 Reports are acknowledged within five business days where possible. Spectra is maintained by one
 person; there is no on-call rotation behind that number.
@@ -21,10 +21,10 @@ person; there is no on-call rotation behind that number.
 
 In scope:
 
-- The `spectra` CLI (`spectra_cli/`), including the install flow and anything it executes
 - Shipped agent commands under `spectra/commands/`, including prompt injection, unintended
   destructive file operations, and exfiltration of project contents
 - The catalog and package distribution path (`catalog.json`, `docs/packages/spectra.zip`)
+- The repository's maintainer tooling (`tools/` and the CI workflows under `.github/workflows/`)
 
 Out of scope:
 
@@ -39,5 +39,6 @@ not for contribution. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for what that mea
 
 ## Supported versions
 
-The extension and the CLI version independently. Security fixes land on the latest version of each.
-There are no long-term support branches.
+Only the latest published version of the `spectra` extension — the version in
+[`catalog.json`](catalog.json) — is supported. Security fixes land on that version, and are live once
+merged to `main`. There are no long-term support branches.

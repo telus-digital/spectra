@@ -14,9 +14,9 @@ One Markdown file per agent, named by its id, opening with a flat header::
     ---
 
 and, for an agent Spectra ships, a long description. `agents/_phases.md` holds the lifecycle phases
-as a run of such headers, in order. The header is parsed by hand — the repository supports Python
-3.9, so there is no `tomllib`, and the zero-dependency rule rules out YAML — and values are literal:
-everything after the first `": "`, so a summary may carry colons, quotes and dashes untouched.
+as a run of such headers, in order. The header is parsed by hand — the zero-dependency rule rules out
+a YAML library — and values are literal: everything after the first `": "`, so a summary may carry
+colons, quotes and dashes untouched.
 
 Every problem is reported with the file and, where one applies, the line, and every problem in the
 directory is reported at once rather than one per run.
@@ -365,7 +365,7 @@ def _load_agent(path, phase_ids, problems):
     if len(problems) > count:
         return None
 
-    # The CLI's roster parser rejects these too, but it can only name the agent, not the file and line.
+    # tools/roster.py rejects these too, but it can only name the agent, not the file and line.
     if fields["status"] == "planned" and "command" in keys:
         problems.append(f"{name}:{at['command']}: a planned agent records no command.")
     elif fields["status"] == "available" and "command" not in keys:

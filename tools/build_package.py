@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Rebuild `docs/packages/spectra.zip` from the `spectra/` folder.
 
-**Maintainer tooling. Not shipped** — `pyproject.toml` lists its packages explicitly, so nothing under
-`tools/` reaches a user's machine.
+**Maintainer tooling. Not shipped:** nothing under `tools/` is part of the extension package.
 
 Constitution Principle V requires the published package never to drift from the `spectra/` folder, and
 `.github/workflows/ci.yml` enforces it by unzipping and running `diff -r`. Doing the rebuild here

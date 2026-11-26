@@ -700,35 +700,36 @@
 cd todo-app</code></pre>
     <p>The flags pre-answer the prompts (TypeScript, Tailwind, App Router, no <code>src/</code>, no linter, Turbopack, default import alias). If your version still asks something, accept the default. Then run <code>npm run dev</code>, open <a href="http://localhost:3000">http://localhost:3000</a>, confirm you see the Next.js welcome page, and stop the server with <code>Ctrl+C</code>.</p>
 
-    <h3>1.3 Install SPECTRA</h3>
-    <p>SPECTRA ships as a <a href="https://docs.astral.sh/uv/"><code>uv</code></a> tool. Install it once, from anywhere:</p>
-<pre><code>uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra</code></pre>
-    <p>Run <code>spectra</code> on its own to verify: the banner&rsquo;s <code>cli vX.Y.Z</code> line is your installed version. Bare <code>spectra</code> is informational only and never touches the current folder. (No <code>uv</code> or Git yet? The <a href="../index.html#prereqs">SPECTRA install guide</a> has per-OS steps.)</p>
-    <p><code>spectra</code> is a setup and lifecycle command, not a replacement for Spec Kit. The workflow you&rsquo;re about to run is Spec Kit&rsquo;s; SPECTRA puts it in place, keeps it current, and adds its own <code>speckit.spectra.*</code> agents on top.</p>
+    <h3>1.3 Install Spec Kit</h3>
+    <p>SPECTRA is an extension by TELUS Digital that enhances <a href="https://github.com/github/spec-kit">GitHub Spec Kit</a>; you install and manage it with Spec Kit&rsquo;s own <code>specify</code> CLI. Install Spec Kit once per machine, from anywhere, with <a href="https://docs.astral.sh/uv/"><code>uv</code></a>:</p>
+<pre><code>uv tool install specify-cli --from git+https://github.com/github/spec-kit.git</code></pre>
+    <p>(No <code>uv</code> or Git yet? The <a href="../index.html#prereqs">SPECTRA install guide</a> has per-OS steps.) The workflow you&rsquo;re about to run is Spec Kit&rsquo;s; SPECTRA adds its own <code>speckit.spectra.*</code> agents on top.</p>
 
     <h3>1.4 Install SPECTRA into the project</h3>
     <p>From <code>todo-app/</code>:</p>
-<pre><code>spectra install</code></pre>
-    <p>That one command:</p>
+<pre><code>specify init --here
+specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed
+specify extension add spectra</code></pre>
+    <p>Those three commands:</p>
     <ol>
-      <li>Installs Spec Kit&rsquo;s <code>specify</code> CLI if it&rsquo;s missing.</li>
-      <li>Offers to initialize this folder as a Spec Kit project. Say yes: it runs exactly <code>specify init --here --force</code> &mdash; &ldquo;here&rdquo; is this folder, and <code>--force</code> lets it proceed in a folder that already has files. It may overwrite Spec Kit&rsquo;s own managed files but doesn&rsquo;t delete your app. When it asks for your coding agent, pick the one from 1.1.</li>
-      <li>Registers the public SPECTRA catalog.</li>
-      <li>Installs the SPECTRA extension.</li>
+      <li>Initialize this folder as a Spec Kit project &mdash; &ldquo;here&rdquo; is this folder. Because the folder already has files, <code>specify init</code> asks you to confirm; say yes. It adds Spec Kit&rsquo;s files alongside your app rather than replacing it. When it asks for your coding agent, pick the one from 1.1. (In a folder that already has <code>.specify/</code>, skip this command.)</li>
+      <li>Register the public SPECTRA catalog for this project. <code>--install-allowed</code> is required: Spec Kit treats catalogs as discovery-only by default. The registration is written to <code>.specify/extension-catalogs.yml</code>; on a team project, commit that file so everyone who clones the project inherits the catalog.</li>
+      <li>Install the SPECTRA extension and register its commands for your agent.</li>
     </ol>
     <p>Your project now has, alongside the scaffold (shown for Claude Code):</p>
 <pre><code>.specify/
   memory/constitution.md    # the constitution - a template until step 2
   templates/                # spec, plan, tasks, checklist, constitution templates
   extensions/spectra/       # the SPECTRA extension
+  extension-catalogs.yml    # the registered SPECTRA catalog
 .claude/skills/             # speckit-* and speckit-spectra-* skills</code></pre>
     <p><code>specify init</code> infers nothing from your code; everything under <code>.specify/</code> starts as a template.</p>
     <div class="note"><span class="note-label">Restart your AI agent.</span>Commands are written to disk at install time, so an agent that was already running won't see them.</div>
-    <p>Then check the stack and see what&rsquo;s on offer:</p>
-<pre><code>spectra version
-spectra agent-list</code></pre>
-    <p><code>spectra version</code> reports every part of the stack. This course needs <strong>Spec Kit 1.0.9 or later</strong>; if yours is older, <code>spectra update</code> brings it current. <code>spectra agent-list</code> prints SPECTRA&rsquo;s roster by SDLC phase, marking each agent <em>core</em> or <em>add-on</em> and saying whether Spec Kit or SPECTRA provides it. Today you use Spec Kit&rsquo;s agents; the <code>speckit.spectra.*</code> ones are beyond this lab.</p>
-    <div class="note"><span class="note-label">No SPECTRA?</span>From step 2 on, everything except the pull-request offer in step 9 is plain Spec Kit. Install it with <code>uv tool install specify-cli</code>, then run <code>specify init --here --force --integration claude</code> in <code>todo-app/</code> (<code>specify integration list</code> shows the other agents&rsquo; keys). Add <code>--non-interactive</code> for CI or agent harnesses, and <code>--script sh|ps|py</code> to pick the helper-script flavour.</div>
+    <p>Then check what&rsquo;s installed:</p>
+<pre><code>specify extension list
+specify self check</code></pre>
+    <p><code>specify extension list</code> shows SPECTRA and the version you installed. <code>specify self check</code> reports whether a newer Spec Kit is available. This course needs <strong>Spec Kit 1.0.9 or later</strong>; if yours is older, <code>specify self upgrade</code> brings it current. To see what&rsquo;s on offer, open the <a href="../agents.html">Agent Roster</a>: it lists every agent by SDLC phase, marking each <em>core</em> or <em>add-on</em> and saying whether Spec Kit or SPECTRA provides it. Today you use Spec Kit&rsquo;s agents; the <code>speckit.spectra.*</code> ones are beyond this lab.</p>
+    <div class="note"><span class="note-label">No SPECTRA?</span>From step 2 on, everything except the pull-request offer in step 9 is plain Spec Kit. Run the Spec Kit install in 1.3 and <code>specify init --here</code> from 1.4, and skip the catalog and extension commands.</div>
 
     <h3>1.5 Sanity-check the agent</h3>
     <p>Open your agent in <code>todo-app/</code> and type <code>/speckit</code>. The command list should show <code>speckit-constitution</code> through <code>speckit-converge</code>, plus SPECTRA&rsquo;s <code>speckit-spectra-*</code> agents. If not, restart the agent and check it&rsquo;s running in <code>todo-app/</code>. (Don&rsquo;t test with a bare <code>/speckit-specify</code>: without a description it just stops with an error.)</p>

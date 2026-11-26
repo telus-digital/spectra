@@ -3,9 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Render every agent output from `agents/`, the only source of truth for agent information.
 
-**Maintainer tooling. Not shipped.** `pyproject.toml` lists its packages explicitly
-(`packages = ["spectra_cli"]`), so nothing under `tools/` reaches a user's machine, and the shipped
-CLI gains no dependency from anything here.
+**Maintainer tooling. Not shipped:** nothing under `tools/` is part of the extension package.
 
 Run it after editing anything under `agents/`::
 
@@ -16,8 +14,8 @@ Each agent is one file, `agents/<id>.md` — a flat header of facts and, for an 
 long description — and the phases live in `agents/_phases.md` (see `tools/agent_source.py`). From that
 source this script writes, and `--check` verifies (constitution Principle V):
 
-- `agents-list.json`, whole — the published roster that installed CLIs and `docs/agents.html` read at
-  run time, byte-for-byte in the shape they have always read;
+- `agents-list.json`, whole — the published roster that `docs/agents.html` reads at load time,
+  byte-for-byte in the shape it has always read;
 - marked regions: the Agents table and every agent section of `AGENTS_LIST.md`, the Commands table
   and per-agent sections of `spectra/README.md`, and the sidebar and cards of
   `docs/getting-started/agents.html`;
@@ -28,9 +26,8 @@ Prose is written by a person, once, in `agents/`. The two long-form outputs carr
 each agent and differ only in framing. A stale output and a hand-edited one fail `--check` the same
 way: the output differs from what the source renders.
 
-The built roster is passed through :mod:`spectra_cli.roster`, the parser the CLI itself uses, before
-anything is written, so the generator can never publish a roster the CLI would reject. The dependency
-runs tools -> package, never the reverse.
+The built roster is passed through `tools/roster.py`, the one roster parser, before anything is
+written, so the generator can never publish a roster that parser would reject.
 """
 
 from __future__ import annotations
@@ -49,7 +46,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import agent_source  # noqa: E402
 import markdown_subset as md  # noqa: E402
-from spectra_cli import roster as roster_module  # noqa: E402
+import roster as roster_module  # noqa: E402
 
 SCHEMA_VERSION = "1.0"
 
@@ -387,7 +384,7 @@ def render_roster_json(source) -> str:
 
 
 def build_roster(source):
-    """The roster as the CLI would read it, or raise: nothing is written from a roster it rejects."""
+    """The roster as `tools/roster.py` parses it, or raise: nothing is written from a roster it rejects."""
     data = json.loads(render_roster_json(source))
     try:
         return roster_module.parse(data, strict=True)
@@ -613,9 +610,8 @@ def run(check: bool) -> int:
         return 0
 
     for relative_path in stale:
-        # Written as bytes on purpose. `Path.write_text(newline=...)` only exists on Python 3.10+,
-        # and `pyproject.toml` declares a 3.9 floor — but the deeper reason is that bypassing the
-        # text layer is a stronger guarantee than asking it for `\n`: `read_text` already normalized
+        # Written as bytes on purpose: bypassing the text layer is a stronger guarantee than asking
+        # it for `\n`: `read_text` already normalized
         # any CRLF input, so encoding the result cannot reintroduce a platform-specific ending.
         (REPO_ROOT / relative_path).write_bytes(outputs[relative_path][1].encode("utf-8"))
         print(f"rewrote {relative_path}")

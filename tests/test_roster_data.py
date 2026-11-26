@@ -15,9 +15,11 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 
 import helpers as h  # noqa: E402
-from spectra_cli import extension, roster  # noqa: E402
+import roster  # noqa: E402
+from checks import parse_manifest_version  # noqa: E402
 
 ROSTER_PATH = h.repo_file("agents-list.json")
 MANIFEST_PATH = h.repo_file("spectra", "extension.yml")
@@ -163,9 +165,9 @@ class ManifestAgreement(unittest.TestCase):
         for agent in self.parsed.shipped():
             self.assertTrue(agent.command.startswith("speckit.spectra."), agent.id)
 
-    def test_the_installed_manifest_version_is_readable(self):
+    def test_the_committed_manifest_version_is_readable(self):
         """The version scanner and the committed manifest must not drift apart."""
-        self.assertIsNotNone(extension.read_manifest_version(MANIFEST_PATH))
+        self.assertIsNotNone(parse_manifest_version(MANIFEST_PATH.read_text(encoding="utf-8")))
 
 
 if __name__ == "__main__":

@@ -16,9 +16,8 @@ That is the only way anything reaches `main`. Never `git push origin main`.
 
 | What changed | Bump | Path |
 | --- | --- | --- |
-| A new agent, or an existing one | `spectra/extension.yml` + `catalog.json` | [Path A](#path-a--an-agent-catalog-channel) |
-| `spectra_cli/` | `VERSION`, then a git tag | [Path B](#path-b--the-cli-cli-channel) |
-| Docs, specs, tooling, housekeeping | nothing | [Path C](#path-c--everything-else) |
+| A new agent, or an existing one | `spectra/extension.yml` + `catalog.json` | [Path A](#path-a--an-agent-the-extension) |
+| Docs, specs, tooling, housekeeping | nothing | [Path B](#path-b--everything-else) |
 | Nothing — you just want a verdict | — | `python tools/ship.py --dry-run` |
 
 ---
@@ -35,21 +34,17 @@ live; [the commands at the end of this section](#confirming-the-settings) show i
 | `ship.py` pre-flight, on your machine | Catalog drift checks | Quality | Yes, nothing is pushed | [`tools/checks.py`](tools/checks.py) |
 | | The full `unittest` suite | Quality | Yes, nothing is pushed | [`tests/`](tests/) |
 | Any push, including to `ci` | Secret scanning **push protection** | Security | Yes, the push is rejected | Repo settings |
-| CI on the `ci` branch, required by the ruleset | `CLI installs and runs (3.9)` and `(3.12)` | Quality | Yes | `ci.yml` → `cli` |
+| CI on the `ci` branch, required by the ruleset | `Tests pass` | Quality | Yes | `ci.yml` → `tests` |
 | | `Catalog and package stay in sync` | Quality | Yes | `ci.yml` → `catalog` |
 | | `CodeQL finds no high-severity issues` | Security and quality | Yes for high and critical security findings; everything else is a warning | `ci.yml` → `codeql` |
-| A release tag is pushed | The tag equals `VERSION` | Release integrity | Yes, no Release is published | [`release.yml`](.github/workflows/release.yml) |
 | Continuously | Secret scanning, with **validity checks** | Security | No, raises an alert | Repo settings |
 | | Dependabot alerts and security updates | Security | No, raises an alert or a PR | Repo settings |
 | Whenever someone reports one | Private vulnerability reporting | Security intake | — | Repo settings, [`SECURITY.md`](SECURITY.md) |
 
 ### What the required CI jobs assert
 
-- **`CLI installs and runs`**, on Python 3.9 (the floor in `pyproject.toml`) and 3.12. It installs
-  the package and runs the full test suite. It checks that the installed version and the bare
-  `spectra` banner both report `VERSION`, that the removed flags name their replacements, and that
-  `spectra cli version` and `spectra cli update` run outside a Spec Kit project. It also checks that the wheel ships `spectra_cli/` only (never `tools/`,
-  `tests/` or `agents-list.json`), and that bare `spectra` writes nothing to the current directory.
+- **`Tests pass`** runs the full `unittest` suite on the runner's current stable Python, the same
+  suite the pre-flight runs. It installs nothing: the zero-dependency rule covers the whole repository.
 - **`Catalog and package stay in sync`** runs the four checks in `tools/checks.py`, the same code the
   pre-flight runs: every generated output matches what `agents/` renders; `extension.yml`, `catalog.json`
   and the zip agree; every published copy of the description agrees; and the zip matches `spectra/`.
@@ -66,8 +61,7 @@ live; [the commands at the end of this section](#confirming-the-settings) show i
   If that prints `"type": "tag"`, it is an annotated tag; resolve it once more with
   `gh api repos/<owner>/<repo>/git/tags/<sha> --jq .object.sha`.
 - **The workflow token is read-only by default.** `ci.yml` sets `contents: read`. Only the `codeql`
-  job widens it, to `security-events: write`, so it can upload to the Security tab. `release.yml`
-  holds `contents: write` because publishing a Release needs it.
+  job widens it, to `security-events: write`, so it can upload to the Security tab.
 - **`main` is protected by [two rulesets](#the-two-rulesets)**, and nobody can bypass the one that
   requires the checks.
 
@@ -120,11 +114,11 @@ The thing that makes this work: **check runs attach to a commit SHA, not to a br
 So a commit can earn its checks somewhere harmless and carry them to `main`:
 
 1. `ship.py` force-pushes your commit to the **`ci`** branch.
-2. `.github/workflows/ci.yml` triggers on that branch and runs the four required jobs.
+2. `.github/workflows/ci.yml` triggers on that branch and runs the three required jobs.
 3. Each job attaches a check run to **that SHA**.
-4. `ship.py` waits for all four to complete, and stops if any failed.
+4. `ship.py` waits for all three to complete, and stops if any failed.
 5. `ship.py` pushes **the same SHA** to `main`.
-6. The ruleset evaluates the pushed commit, finds four green required checks, and allows it.
+6. The ruleset evaluates the pushed commit, finds three green required checks, and allows it.
 
 `ci` is scratch space. It is force-pushed on every ship and nothing ever branches from it.
 
@@ -133,7 +127,7 @@ So a commit can earn its checks somewhere harmless and carry them to `main`:
 | Ruleset | Rules | Who can bypass | What it stops |
 | --- | --- | --- | --- |
 | **Protect main — structure** | `deletion`, `non_fast_forward` | `@alibahaloo` (always) | Accidental deletion and accidental force-push. Deliberate history rewrites stay possible. |
-| **Protect main — tested** | `required_status_checks` ×4 | **nobody** | Untested and failing code. This is the real gate. |
+| **Protect main — tested** | `required_status_checks` ×3 | **nobody** | Untested and failing code. This is the real gate. |
 
 They are split because bypass is per-ruleset, not per-rule. A single ruleset would force a choice
 between keeping admin powers and having a gate. Split, you keep every admin power **except** the
@@ -143,11 +137,10 @@ There is deliberately no `pull_request` rule. It was removed when the gate moved
 left in place it fired a bypassed violation on every push, which trains you to ignore bypass
 warnings. Now every bypass warning means something.
 
-## The four required checks
+## The three required checks
 
 ```
-CLI installs and runs (3.9)
-CLI installs and runs (3.12)
+Tests pass
 Catalog and package stay in sync
 CodeQL finds no high-severity issues
 ```
@@ -190,9 +183,9 @@ You will meet these as `remote:` lines on a rejected push.
 
 | Message | What happened | What to do |
 | --- | --- | --- |
-| `4 of 4 required status checks are expected` | The commit has never been through CI. | Use `python tools/ship.py`. |
+| `3 of 3 required status checks are expected` | The commit has never been through CI. | Use `python tools/ship.py`. |
 | `Required status check "X" is failing` | CI ran and X failed. | Read the run, fix, ship again. |
-| `N of 4 required status checks are in progress` | A run is in flight — **possibly on a different commit**, see below. | Wait for it to finish. `ship.py` already does. |
+| `N of 3 required status checks are in progress` | A run is in flight — **possibly on a different commit**, see below. | Wait for it to finish. `ship.py` already does. |
 | `GH013: Repository rule violations found` … `Push cannot contain secrets` | Push protection found a secret in a commit. It fires on the push to `ci`, before any CI runs. | Remove the secret from history and rotate it. Use the bypass link only for a confirmed false positive. |
 | `Cannot force-push to this branch` | The structure ruleset. You have bypass, so you will see this as a *bypassed* violation on a force-push, not a rejection. | Nothing — it is informational. |
 
@@ -228,11 +221,17 @@ Rename a CI job and the ruleset keeps requiring the old context, which will neve
 `main` becomes unpushable, and the fix cannot be delivered by a push. `test_ci_contract.py` and
 `ship.py` both guard this, but if you are deliberately renaming a job, the order matters:
 
-1. Change `ci.yml` on the `ci` branch and push it there.
-2. Read the new context names off that run.
-3. Update the ruleset's required contexts in the GitHub UI or via `gh api`.
-4. Update `.github/required-checks.json` to match.
-5. Ship normally.
+1. Change `ci.yml` and `.github/required-checks.json` together, in one commit — the contract test
+   fails if they disagree — and push it to the `ci` branch only:
+   `git push --force origin HEAD:refs/heads/ci`.
+2. Read the new context names off that run:
+   ```bash
+   gh api repos/telus-digital/spectra/commits/$(git rev-parse HEAD)/check-runs --jq '.check_runs[].name'
+   ```
+3. Update the ruleset's required contexts to exactly those names, in the GitHub UI or via `gh api`.
+4. Ship normally. `ship.py` confirms the file and the live ruleset agree before it pushes anything.
+
+Between steps 3 and 4 ship nothing else: `main` now requires contexts only this commit has earned.
 
 ### In-flight runs are counted, whoever they belong to
 
@@ -276,7 +275,7 @@ locally only** — `git push` appears nowhere in `.claude/skills/`, `.specify/ex
 Run `python tools/ship.py --dry-run` as often as you like while working. It runs the catalog checks
 and the full test suite, pushes nothing, and does not mind a dirty tree.
 
-## Path A — an agent (catalog channel)
+## Path A — an agent (the extension)
 
 Authoring is [`CONTRIBUTING.md` → Add a new command](CONTRIBUTING.md#add-a-new-command-use-the-spec-kit-workflow).
 Once the command file exists, Principle V requires all of this **in the same change**:
@@ -302,50 +301,11 @@ Then:
 python tools/ship.py
 ```
 
-No tag and no GitHub Release: the catalog channel is **never** tagged (Principle VI). Merging to
-`main` *is* its release — the raw `catalog.json` and zip URLs are live the moment the push lands.
+Nothing else to do: merging to `main` *is* the release (Principle VI) — the raw `catalog.json` and zip
+URLs are live the moment the push lands. The repository carries no git tags and no GitHub Releases, so
+there is nothing to tag and nothing to publish.
 
-## Path B — the CLI (CLI channel)
-
-The ordering here is the whole point: **ship first, tag second.** The tag has to point at a commit
-that already carries green checks, so tagging before shipping tags something that may never land.
-
-1. Bump the root [`VERSION`](VERSION) file in the same commit as the code change it describes.
-   MAJOR for a breaking change to the install flow, the command surface, or the prerequisites.
-2. ```bash
-   python tools/ship.py
-   ```
-3. Tag the commit that just landed, and push the tag:
-   ```bash
-   git tag 6.3.0 && git push origin 6.3.0
-   ```
-4. `release.yml` verifies the tag matches `VERSION`, then publishes "Spectra CLI 6.3.0" with
-   auto-generated notes, explicitly marked **Latest**. Watch it with `gh run watch`.
-5. Verify the Latest slot:
-   ```bash
-   gh api repos/telus-digital/spectra/releases/latest --jq '{tag: .tag_name, name: .name}'
-   ```
-
-   > **Never publish or re-publish an old release without re-checking this.** Left to GitHub's
-   > default, "Latest" resolves by `created_at` with `published_at` as the tie-breaker, so touching
-   > an older release can steal the slot and point `spectra update` and the landing page's version
-   > pill at an ancient version. Fix with
-   > `gh release edit <newest-tag> -R telus-digital/spectra --latest`.
-
-6. Smoke-test what a consumer gets, from any directory:
-   ```bash
-   uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra --force
-   spectra
-   ```
-   The banner's `cli vX.Y.Z` line is the version and works anywhere. `spectra version` is
-   deliberately not used here: it reports the whole stack and so needs a Spec Kit project with
-   Spectra installed, which a bare smoke test has no reason to build. For a full clean-room run,
-   use [`test/run.sh`](test/run.sh).
-
-Bumping the extension does **not** bump the CLI, and vice versa. The two channels are versioned
-independently and are not expected to match (Principle VI).
-
-## Path C — everything else
+## Path B — everything else
 
 Docs, specs, tooling, housekeeping. No version bump, nothing to rebuild — unless you touched a file
 under `spectra/`, in which case you are on Path A whether it felt like it or not, because the zip

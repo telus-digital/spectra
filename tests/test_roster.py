@@ -1,8 +1,8 @@
 """Roster parsing: ordering, the schema gate, and every field rule.
 
-The schema gate is the load-bearing part. Principle VI promises a new agent reaches every installed
-CLI with no CLI release, so an additive change to the roster must never break an older reader — hence
-newer-minor renders and only newer-major refuses.
+The schema gate is the load-bearing part: an additive change to the roster must never break a reader
+written against an older minor, so newer-minor parses and only newer-major refuses. The parser lives in
+`tools/roster.py`; the generator runs every roster it builds through it.
 """
 
 from __future__ import annotations
@@ -12,9 +12,10 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 
 import helpers as h  # noqa: E402
-from spectra_cli import net, roster  # noqa: E402
+import roster  # noqa: E402
 
 
 class Ordering(unittest.TestCase):
@@ -72,8 +73,8 @@ class SchemaGate(unittest.TestCase):
         with self.assertRaises(roster.RosterError) as caught:
             roster.parse(h.roster(schema_version="2.0"))
         message = str(caught.exception)
-        self.assertIn("newer SPECTRA CLI", message)
-        self.assertIn("spectra update", message)
+        self.assertIn("2.0", message)
+        self.assertIn("newer tools/roster.py", message)
 
     def test_unknown_fields_are_ignored_when_reading_published_data(self):
         data = h.roster()
@@ -166,21 +167,6 @@ class Loading(unittest.TestCase):
             with self.assertRaises(roster.RosterError) as caught:
                 roster.load(path)
         self.assertIn("not valid JSON", str(caught.exception))
-
-    def test_fetch_reads_the_published_roster(self):
-        with h.serve_roster() as base, h.raw_base(base):
-            self.assertEqual(len(roster.fetch().agents), 5)
-
-    def test_fetch_lets_a_network_failure_through_as_a_fetch_error(self):
-        """Unreachable and unparseable are different problems and get different messages."""
-        with h.raw_base(h.UNREACHABLE_BASE):
-            with self.assertRaises(net.FetchError):
-                roster.fetch()
-
-    def test_fetch_raises_a_roster_error_for_a_document_it_cannot_understand(self):
-        with h.serve({"agents-list.json": '{"schema_version": "1.0"}'}) as base, h.raw_base(base):
-            with self.assertRaises(roster.RosterError):
-                roster.fetch()
 
 
 if __name__ == "__main__":

@@ -10,8 +10,8 @@ inspectable by anyone deciding whether to trust the extension. If you just want 
 Spectra, see the [README](README.md).
 
 **This file is how to build things. [`SHIPPING.md`](SHIPPING.md) is how to land them.** `main` is
-gated on CI and the only way onto it is `python tools/ship.py`; the mechanism, the per-channel
-release paths, and what to do when a push is rejected all live there, stated once.
+gated on CI and the only way onto it is `python tools/ship.py`; the mechanism, the release path, and
+what to do when a push is rejected all live there, stated once.
 
 Spectra is a **single self-contained** [Spec Kit](https://github.com/github/spec-kit) extension,
 `spectra/`, at the repo root. Every Spectra capability is a **command** under it, registered in one
@@ -31,14 +31,14 @@ spectra/
 ├── catalog.json                   # THE catalog — single source of truth; install points here
 ├── agents/                        # THE agent source — one <id>.md per agent, plus _phases.md
 ├── agents-list.json               # the published roster, generated from agents/ (never hand-edit)
-├── VERSION                        # THE CLI version — single source of truth; the release tag must match
-├── pyproject.toml                 # packaging for the `spectra-cli` uv tool
-├── spectra_cli/                   # THE CLI (installed as `spectra`; NOT the extension)
-│   ├── cli.py                     #   argparse entry point: install / --version / --update / --uninstall
-│   ├── install.py                 #   the 3-step flow: specify CLI → project → catalog + extensions
-│   ├── version.py                 #   version reporting and uv-delegated update/uninstall
-│   └── ui.py                      #   colors, splash, prompts, subprocess helpers
-├── .github/workflows/             # CI + the tag-triggered CLI release
+├── tools/                         # maintainer scripts — never shipped in the package
+│   ├── generate_agent_docs.py     #   renders every agent listing from agents/
+│   ├── roster.py                  #   the roster parser the generator uses
+│   ├── build_package.py           #   rebuilds docs/packages/spectra.zip
+│   ├── checks.py                  #   the catalog drift checks CI and ship.py both run
+│   └── ship.py                    #   the only way onto main (see SHIPPING.md)
+├── tests/                         # stdlib unittest, nothing to install: python3 -m unittest discover -s tests
+├── .github/workflows/             # CI: the required checks ship.py earns on the `ci` branch
 ├── assets/                         # shared images (committed)
 │   ├── TELUS_Digital_logo.png      #   the one logo (used by the README + landing page)
 │   ├── SDD.png                     #   Spec-Driven Development diagram
@@ -75,13 +75,12 @@ spectra/
     └── TRADEMARK.md               #   trademark policy (ships inside the zip)
 ```
 
-Two things live here, and it matters which one you are touching. [`spectra/`](spectra/) is **the
-extension** — the agents, shipped over raw links and versioned in `extension.yml`. `spectra_cli/` is
-**the CLI** — the `spectra` command that sets a project up, shipped as a uv tool and versioned in
-`VERSION`. They release independently; see [Two release channels](#release-the-cli-spectra-cli).
+One thing ships from here: [`spectra/`](spectra/), **the extension** — the agents, shipped over raw
+links and versioned in `extension.yml`. Everything else is maintainer tooling or published docs.
+Merging to `main` is the release; see [Publish](#publish-the-catalog-and-package).
 
-New capabilities are added as command files under `spectra/commands/`, not as new top-level folders
-and not as CLI code. The repo is **public**; clients fetch the catalog and package over **direct
+New capabilities are added as command files under `spectra/commands/`, not as new top-level folders.
+The repo is **public**; clients fetch the catalog and package over **direct
 `raw.githubusercontent.com` links** to `telus-digital/spectra`, so anyone installs by name with no
 authentication. There is no build script: when you add or change a command you update `catalog.json`
 and `docs/packages/spectra.zip` by hand (see [Publish](#publish-the-catalog-and-package)).
@@ -231,7 +230,7 @@ is itself how the published extension gets exercised. A new capability is a **ne
 `spectra/commands/`** registered in `spectra/extension.yml` — never a new top-level extension folder.
 
 This applies to feature work — a new agent, a material change to what an agent does, or a change to
-how the CLI works. A small bug fix, a cosmetic change, or housekeeping needs no spec, though it still
+how Spectra is packaged or released. A small bug fix, a cosmetic change, or housekeeping needs no spec, though it still
 bumps the version and resyncs the package like any other change to `spectra/`.
 
 Run these Spec Kit commands in order from your agent (Claude triggers shown in parentheses; the
@@ -304,12 +303,11 @@ output before moving on:
 7. **Test locally.** Install your working copy with `--dev` and exercise it end to end — see
    [Test the extension locally](#test-the-extension-locally). Iterate by re-running `/speckit.implement`
    or editing the generated files directly.
-8. **Publish** — [`SHIPPING.md` → Path A](SHIPPING.md#path-a--an-agent-catalog-channel). Commit
+8. **Publish** — [`SHIPPING.md` → Path A](SHIPPING.md#path-a--an-agent-the-extension). Commit
    everything the step above produced, then `python tools/ship.py`; `main` is gated on CI and a
    direct push is rejected. The catalog and package are live over their `raw.githubusercontent.com`
-   links the moment it lands — no Pages build to wait on, and no release at all: merging publishes
-   the roster, which is why a new agent reaches every installed `spectra` command without a CLI
-   release.
+   links the moment it lands — no Pages build to wait on, and no release step at all: merging to
+   `main` is the release.
 
 The [Anatomy of an extension](#anatomy-of-an-extension) section above documents the structure the
 workflow produces — read it so you can review and refine the generated output, not so you can build
@@ -318,7 +316,7 @@ the files by hand.
 ## Test the extension locally
 
 You don't need to publish to try the extension — install it straight from your working copy with
-`--dev`. (The raw `--from` URL only works after you commit and push `catalog.json` and `docs/`; use
+`--dev`. (The catalog install only works once `catalog.json` and `docs/` have landed on `main`; use
 `--dev` before that.)
 
 1. **Spin up a throwaway Spec Kit project:**
@@ -352,8 +350,7 @@ You don't need to publish to try the extension — install it straight from your
 The extension is distributed from the `telus-digital/spectra` repo itself, fetched over direct
 `raw.githubusercontent.com` links. The repo is **public**, so clients fetch the catalog and download
 packages with **no authentication** — the raw URLs resolve anonymously. There is no catalog server;
-only the raw links. (The `spectra` CLI is the other channel, published as a GitHub Release; see
-[Release the CLI](#release-the-cli-spectra-cli).)
+only the raw links.
 
 > Clients reach the catalog at `https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json`
 > and the package at `https://raw.githubusercontent.com/telus-digital/spectra/main/docs/packages/spectra.zip`
@@ -378,8 +375,8 @@ maintained by hand and committed:
   agent information**. Adding an agent here and running `tools/generate_agent_docs.py` is what makes it
   visible everywhere.
 - `agents-list.json` (repo root) — the public, machine-readable **agent roster**, generated from
-  `agents/` and committed. Read at run time by `spectra agent-list` and by `docs/agents.html`; its
-  schema is fixed because installed CLIs depend on it. Never edit it by hand.
+  `agents/` and committed. Read at load time by `docs/agents.html`, which is why its schema is fixed;
+  `tools/roster.py` is the one definition of that schema. Never edit it by hand.
 - `docs/index.html` — the landing page that walks users through adding the catalog, then installing
   the extension by name.
 - `assets/TELUS_Digital_logo.png` — the one logo, used by the README and the landing page.
@@ -390,122 +387,46 @@ the README, must all use the `raw.githubusercontent.com/telus-digital/spectra/ma
 ### Test, then publish
 
 **Test** the built extension locally with `--dev` (see [above](#test-the-extension-locally)) — the
-raw `--from` URLs are not live until you push, so build and test freely first.
+raw URLs are not live until the change lands on `main`, so build and test freely first.
 
-Publishing is [`SHIPPING.md` → Path A](SHIPPING.md#path-a--an-agent-catalog-channel): the full list
+Publishing is [`SHIPPING.md` → Path A](SHIPPING.md#path-a--an-agent-the-extension): the full list
 of what Principle V requires in the same change, then `python tools/ship.py`. The catalog and
 package are live at their raw URLs the moment the push lands.
 
 ### How users install
 
-The landing page shows the flow. They register the catalog once per project — this marks it
-install-allowed, so installs resolve by name with no untrusted-source prompt (and no authentication,
-since the catalog is public):
+The landing page shows the flow. Users need uv and Git, and internet access to `github.com` and
+`raw.githubusercontent.com`:
 
 ```bash
-specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json \
-  --name spectra --install-allowed
-```
+# 1. Install Spec Kit (once per machine)
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
-Then they install the extension by name and restart their agent:
+# 2. Initialize a Spec Kit project (skip if the folder already has .specify/)
+specify init --here
 
-```bash
+# 3. Register the SPECTRA catalog (once per project; commit .specify/extension-catalogs.yml)
+specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed
+
+# 4. Install SPECTRA, then restart your coding agent
 specify extension add spectra
 ```
 
-A one-off or offline install can still go straight from a zip with
-`specify extension add spectra --from https://raw.githubusercontent.com/telus-digital/spectra/main/docs/packages/spectra.zip` —
-that path shows the untrusted-source prompt (*"Continue with installation? [y/N]"*), which they answer `y`.
+`--install-allowed` is required, because catalogs are discovery-only by default; with it, installs
+resolve by name with no untrusted-source prompt (and no authentication, since the catalog is public).
+Committing `.specify/extension-catalogs.yml` lets everyone who clones the project inherit the catalog.
+Restarting the agent makes it pick up the new commands.
 
 **Shipping updates.** Because users install from a registered catalog, `specify extension update spectra`
 works against it. To release an update: bump `version` in `spectra/extension.yml`, add a
 `spectra/CHANGELOG.md` entry, rebuild `docs/packages/spectra.zip`, bump the entry's `version` in
-`catalog.json`, and commit. Users run `specify extension update spectra` (or re-install with
-`--force`) to pull the new version.
-
-## Release the CLI (`spectra-cli`)
-
-The catalog and packages are one channel (raw links, above). The **CLI** is a *separate* channel:
-the `spectra_cli/` package, installed by consumers as a [`uv`](https://docs.astral.sh/uv/) tool
-straight from this repo's git URL.
-
-```bash
-uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra
-```
-
-There is **no build artifact and no release asset** — uv builds the wheel from source at install time.
-A GitHub Release is still published for every version, because that Release object is what
-`spectra version` / `spectra update` and the landing page's version pill read via
-`/releases/latest`.
-
-### Tags and Releases belong to the CLI
-
-Git tags and GitHub Releases on this repo mean **the CLI, and only the CLI**. The extension channel
-has nothing to tag — merging to `main` *is* its release, since clients fetch `catalog.json` and the
-zip from `main` over raw links.
-
-Keeping tags single-purpose is what makes `/releases/latest` a reliable answer to *"what is the newest
-`spectra` command"*. If the extension also cut releases, the CLI's update check would sometimes
-resolve to an extension release and try to install it as a version of itself.
-
-So that a reader can never mistake one for the other:
-
-- name Releases **"Spectra CLI X.Y.Z"**, never "Spectra X.Y.Z" — `release.yml` does this automatically;
-- tag with **bare semver** (`3.0.0`), not `vX.Y.Z`. The legacy `v1.0.0`…`v2.0.0` tags are the retired
-  `spectra-setup.py` installer channel; the release workflow's tag filter deliberately does not match
-  them, so they can never trigger a CLI release.
-
-### VERSION is the single source of truth
-
-[`VERSION`](VERSION) at the repo root holds the CLI version. `pyproject.toml` reads it
-(`[tool.setuptools.dynamic] version = { file = "VERSION" }`) and the tool reports it at runtime via
-`importlib.metadata`, so the committed version, the git tag, and the installed version cannot drift.
-`release.yml` **fails the release** if the pushed tag and `VERSION` disagree.
-
-### When to cut a release
-
-Cut one **whenever the `spectra_cli/` package changes** in a way consumers should pick up (new
-prompts, changed steps, a fixed flow). Bump per SemVer:
-
-- **patch** (`3.0.1`) — bug fix, wording, no behavior change to the flow.
-- **minor** (`3.1.0`) — new optional step, flag, or capability, backward-compatible.
-- **major** (`4.0.0`) — the install flow, the command surface, or the prerequisites change in a
-  breaking way.
-
-**Adding or changing an agent is not a CLI release.** The command reads `catalog.json` at run time and
-installs whatever it advertises, so a new extension reaches every existing install with no CLI change
-at all. Bump the extension, not this. See [Publish the catalog and package](#publish-the-catalog-and-package).
-
-### How to cut a release
-
-[`SHIPPING.md` → Path B](SHIPPING.md#path-b--the-cli-cli-channel), which carries the whole
-procedure: bump `VERSION`, **ship before tagging** (the tag has to point at a commit that already
-passed CI), let `release.yml` publish, verify the Latest slot, then smoke-test what a consumer gets.
-
-The ordering is the part that is easy to get wrong and the reason it is written down once.
-
-### How consumers get it
-
-```bash
-uv tool install spectra-cli --from git+https://github.com/telus-digital/spectra
-spectra
-```
-
-Unpinned, so new installs track `main`. Keep `main` releasable. A specific version is pinned by
-appending the tag (`--from git+https://github.com/telus-digital/spectra@3.0.0`), which is exactly what
-`spectra update` does. Keep the README's [Installation](README.md#installation) section and the
-landing page in sync if the install command ever changes.
-
-> **Heads-up:** the `download_url`s inside `catalog.json` point at `raw.githubusercontent.com/.../main/...`,
-> **not** at release assets — extension packages are distributed over raw links and are unaffected by
-> CLI releases. The two channels version independently.
+`catalog.json`, and ship it. Users run `specify extension update spectra` to pull the new version.
 
 ## Conventions
 
-- **Versioning.** [Semantic Versioning](https://semver.org/), **per channel**. The extension's version
-  lives in `spectra/extension.yml` (mirrored into `catalog.json`) and gets a `spectra/CHANGELOG.md`
-  entry; the CLI's lives in `VERSION` and is released by tag. The two are independent — never bump one
-  just because the other moved.
+- **Versioning.** [Semantic Versioning](https://semver.org/). The extension's version lives in
+  `spectra/extension.yml` (mirrored into `catalog.json`) and gets a `spectra/CHANGELOG.md` entry.
+  Merging to `main` is the release: nothing is tagged and no Release is published (Principle VI).
 - **Command namespace.** Always `speckit.spectra.<command>` — a fixed `spectra` segment followed by
   a clear, descriptive command name (e.g. `adr`, `domain-analyzer`, `create-pr`).
 - **One source file, all agents.** Generic format plus `$ARGUMENTS`. Never hard-code an agent's syntax.
@@ -549,10 +470,9 @@ and an agent named after the scheme implies a relationship TELUS Digital does no
 compliance agent's `description` must be framed as analysis or readiness support, never as
 certification, audit, attestation, or assurance.
 
-**4. Keep the notices intact.** `LICENSE`, `NOTICE`, and `TRADEMARK.md` ship with the extension and
-the CLI. Attribution is a licence condition under Apache-2.0 §4, not a courtesy. If you add a
-dependency, a diagram, or any third-party material, add it to `NOTICE` in the same commit. Every
-`.py` file under `spectra_cli/` and `tools/` carries a `SPDX-License-Identifier: Apache-2.0` header.
+**4. Keep the notices intact.** `LICENSE`, `NOTICE`, and `TRADEMARK.md` ship with the extension.
+Attribution is a licence condition under Apache-2.0 §4, not a courtesy. If you add a dependency, a diagram, or any third-party material, add it to `NOTICE` in the same commit. Every
+`.py` file under `tools/` carries a `SPDX-License-Identifier: Apache-2.0` header.
 
 **Provenance of diagrams and assets.** Everything in `assets/` must be original TELUS Digital work
 or material TELUS Digital holds a licence to. Do not commit a redrawn version of a third-party

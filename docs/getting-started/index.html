@@ -281,13 +281,27 @@
         <span class="arrow">Read about agentic SDD &rarr;</span>
       </a>
     </div>
+
+    <div class="panel" id="add-spectra" style="margin-top:18px">
+      <h3 style="margin:0 0 8px">Add SPECTRA</h3>
+      <p class="muted" style="margin:0 0 12px">SPECTRA is an extension by TELUS Digital that enhances Spec Kit, so it goes
+        into the Spec Kit project you just initialized, with the same <code>specify</code> CLI. Inside the project,
+        register the public SPECTRA catalog once, then add the extension:</p>
+      <pre><code>specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed</code></pre>
+      <pre><code>specify extension add spectra</code></pre>
+      <p class="muted" style="margin:12px 0 0"><code>--install-allowed</code> is required: catalogs are discovery-only by
+        default. Commit <code>.specify/extension-catalogs.yml</code> so everyone who clones the project inherits the
+        catalog. Then restart your agent so it picks up SPECTRA's commands, and see the
+        <a href="agents.html">agent reference</a>.</p>
+    </div>
   </section>
 
   <section class="block" id="next">
     <div class="panel" style="text-align:center;padding:30px 24px;background:rgba(167,139,250,0.06);border-color:rgba(167,139,250,0.30)">
       <p style="color:var(--text);font-size:17px;margin:0 0 10px;font-weight:600">Comfortable with the Spec Kit loop?</p>
-      <p style="color:var(--muted);font-size:15px;margin:0 auto 20px;max-width:560px">SPECTRA adds agents around it:
-        before the first spec, between the phases, and after the build. See how they fit real situations.</p>
+      <p style="color:var(--muted);font-size:15px;margin:0 auto 20px;max-width:560px"><a href="#add-spectra">Add SPECTRA</a>
+        to the project and it adds agents around that loop: before the first spec, between the phases, and after the
+        build. See how they fit real situations.</p>
       <div class="cta" style="justify-content:center">
         <a class="btn btn-primary" href="spectra.html">Next: SPECTRA scenarios &nbsp;&rarr;</a>
         <a class="btn btn-ghost" href="../e-learning/index.html">Take the E-Learning course</a>
@@ -296,7 +310,7 @@
   </section>
 
   <footer class="site">
-    <span>SPECTRA · a curated catalog of Spec Kit extensions · by TELUS Digital</span>
+    <span>SPECTRA · a Spec Kit extension by TELUS Digital</span>
     <span><a href="https://github.com/telus-digital/spectra">github.com/telus-digital/spectra</a></span>
     <span class="legal">Copyright 2026 TELUS Digital. Licensed under the <a href="https://github.com/telus-digital/spectra/blob/main/LICENSE">Apache License 2.0</a>; see <a href="https://github.com/telus-digital/spectra/blob/main/NOTICE">NOTICE</a>. The licence grants no trademark rights &mdash; "TELUS", "TELUS Digital", "Spectra", and the TELUS Digital logo are excluded, and forks must rebrand (<a href="https://github.com/telus-digital/spectra/blob/main/TRADEMARK.md">TRADEMARK.md</a>). Spectra agents produce drafts for human review; their output is not legal, regulatory, medical, financial, or compliance advice and does not constitute certification or audit.</span>
   </footer>

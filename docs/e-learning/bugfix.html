@@ -720,7 +720,7 @@
     <p>The assessment says what broke and why. <code>fix.md</code> says what changed and where it departed from the plan. <code>test.md</code> says what was run, and by whom. Commit all three with the fix and a reviewer can follow the repair from the reported symptom through to the evidence without asking you anything.</p>
 
     <h2><span class="h2-num">3.</span>Where SPECTRA fits</h2>
-    <p>The bug workflow is Spec Kit&rsquo;s, and everything in Section 2 works the same in a plain Spec Kit project. SPECTRA installs the toolchain (<code>spectra install</code>) and adds agents on either side of the fix: one goes deeper than triage, the other delivers the result.</p>
+    <p>The bug workflow is Spec Kit&rsquo;s, and everything in Section 2 works the same in a plain Spec Kit project. SPECTRA, an extension by TELUS Digital that enhances Spec Kit, adds agents on either side of the fix: one goes deeper than triage, the other delivers the result.</p>
 
     <h3>3.1 Triage or root cause?</h3>
     <p>Four commands in this course sound alike and answer different questions:</p>
@@ -768,10 +768,12 @@ printf 'node_modules/\n.next/\nnext-env.d.ts\n' &gt; .gitignore
 git init &amp;&amp; git add -A &amp;&amp; git commit -m "baseline"</code></pre>
 
     <h3>4.2 Install the toolchain</h3>
-<pre><code>spectra install
+<pre><code>specify init --here
+specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed
+specify extension add spectra
 specify extension add bug
 git add -A &amp;&amp; git commit -m "Add Spec Kit, SPECTRA and the bug extension"</code></pre>
-    <p><code>spectra install</code> offers to run <code>specify init --here --force</code>; accept, and pick your usual agent. <code>specify extension add bug</code> may print &ldquo;Configuration may be required&rdquo;. The extension has no configuration, so ignore it. Committing the toolchain separately keeps your fix commit readable. Then <strong>restart your agent</strong> in this folder. You don&rsquo;t need a constitution, a spec or a plan for this module.</p>
+    <p><code>specify init --here</code> asks you to confirm because the folder isn&rsquo;t empty; accept, and pick your usual agent. <code>--install-allowed</code> is required, because Spec Kit treats catalogs as discovery-only by default. <code>specify extension add bug</code> may print &ldquo;Configuration may be required&rdquo;. The extension has no configuration, so ignore it. Committing the toolchain separately keeps your fix commit readable. Then <strong>restart your agent</strong> in this folder. You don&rsquo;t need a constitution, a spec or a plan for this module.</p>
     <ul class="checklist">
       <li><code>specify extension list</code> shows the <code>bug</code> extension and SPECTRA.</li>
       <li>Your agent offers <code>/speckit-bug-assess</code>, <code>/speckit-bug-fix</code> and <code>/speckit-bug-test</code>.</li>

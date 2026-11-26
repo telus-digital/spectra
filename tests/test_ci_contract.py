@@ -14,7 +14,7 @@ turns that from a trap into a failing test. See SHIPPING.md for the recovery ord
 
 There is no YAML parser available — the repository is zero-dependency by constitution and `yaml` is
 not importable here — so the workflow is read with anchored regexes over the exact committed shape,
-the same approach `spectra_cli/extension.py` takes to `extension.yml` and for the same reason. Each
+the same approach `tools/checks.py` takes to `extension.yml` and for the same reason. Each
 regex quotes the shape it matches. A scanner, not a parser.
 """
 
@@ -38,15 +38,16 @@ WORKFLOW = h.repo_file(".github", "workflows", "ci.yml")
 REQUIRED_CHECKS = h.repo_file(".github", "required-checks.json")
 
 # A job header is a two-space-indented key directly under `jobs:`:
-#   cli:
+#   tests:
 JOB_HEADER = re.compile(r"^  ([a-z][a-z0-9-]*):$", re.M)
 
 # Its display name — the thing GitHub turns into a status context — is four spaces deep:
-#     name: CLI installs and runs
+#     name: Tests pass
 JOB_NAME = re.compile(r"^    name: (.+)$", re.M)
 
-# A matrix suffixes the context with the value in parentheses:
-#         python-version: ['3.9', '3.12']
+# A matrix, where a job has one, suffixes the context with the value in parentheses; a job with no
+# matrix produces its bare name:
+#         python-version: ['3.12', '3.13']
 MATRIX_VERSIONS = re.compile(r"^        python-version: \[(.+)\]$", re.M)
 
 # What a step invokes:

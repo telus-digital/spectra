@@ -640,7 +640,7 @@
       </div>
       <div class="meta-item">
         <span class="meta-label">Prerequisites</span>
-        <span class="meta-value">Modules 1&ndash;3; SPECTRA CLI, Git, Node.js 18.18+</span>
+        <span class="meta-value">Modules 1&ndash;3; Spec Kit, Git, Node.js 18.18+</span>
       </div>
     </div>
   </header>
@@ -718,15 +718,17 @@ git init &amp;&amp; git add -A &amp;&amp; git commit -m "baseline"</code></pre>
     <h2><span class="h2-num">3.</span>Install SPECTRA and review the diff (10 min)</h2>
 
     <h3>3.1 Initialize in place</h3>
-<pre><code>spectra install</code></pre>
-    <p>Same command as Module 3. It notices this folder isn't a Spec Kit project yet and offers to initialize it; accept. What it runs is exactly <code>specify init --here --force</code>, the command Spec Kit's guide prescribes for an existing repository. <code>--here</code> targets the current folder; <code>--force</code> allows a non-empty folder and may replace files at the paths Spec Kit manages. It won't delete your application, but that permission to overwrite is why you made the baseline first.</p>
-    <p>When prompted for an AI agent, pick the one you used in Module 3. SPECTRA then registers its catalog and installs its extension. Restart the agent afterwards. Everything in this lab except <code>/speckit-spectra-domain-analyzer</code> and the pull-request offer after implement is plain Spec Kit.</p>
+<pre><code>specify init --here
+specify extension catalog add https://raw.githubusercontent.com/telus-digital/spectra/main/catalog.json --name spectra --priority 5 --install-allowed
+specify extension add spectra</code></pre>
+    <p>The same three commands as Module 3. <code>specify init --here</code> is the command Spec Kit's guide prescribes for an existing repository: <code>--here</code> targets the current folder. Because the folder isn't empty, it asks you to confirm; accept. It adds Spec Kit's files and may replace files at the paths Spec Kit manages. It won't delete your application, but that permission to overwrite is why you made the baseline first.</p>
+    <p>When prompted for an AI agent, pick the one you used in Module 3. The next command registers SPECTRA's catalog for this project &mdash; <code>--install-allowed</code> is required, because Spec Kit treats catalogs as discovery-only by default &mdash; and the last installs the SPECTRA extension. Restart the agent afterwards. Everything in this lab except <code>/speckit-spectra-domain-analyzer</code> and the pull-request offer after implement is plain Spec Kit.</p>
 
     <h3>3.2 Review the diff</h3>
 <pre><code>git status</code></pre>
     <p>Read what changed before going further. You should see only new, untracked folders:</p>
     <ul>
-      <li><code>.specify/</code> &mdash; Spec Kit's templates, scripts, and extensions, plus <code>.specify/memory/constitution.md</code>, still an unfilled template.</li>
+      <li><code>.specify/</code> &mdash; Spec Kit's templates, scripts, and extensions, plus <code>.specify/memory/constitution.md</code>, still an unfilled template, and <code>.specify/extension-catalogs.yml</code>, the SPECTRA catalog registration. Committing it lets everyone who clones the repository inherit the catalog.</li>
       <li>Your agent's skill or command files &mdash; for Claude Code, <code>.claude/skills/speckit-*</code>, including SPECTRA's <code>speckit-spectra-*</code>.</li>
     </ul>
     <p>No modified files: <code>app/</code>, <code>lib/</code>, and <code>package.json</code> are untouched. And notice what's missing: no <code>specs/</code> folder. Initialization infers no specs for the behaviour your app already has. Commit it:</p>
